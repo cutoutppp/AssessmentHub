@@ -255,35 +255,22 @@
     let CURRENT_TAB = 'worklist'; // ควบคุมการสลับ Tab
 
     window.onload = function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlId = urlParams.get('id');
-      const urlPin = urlParams.get('pin');
-      
-      let savedSession = localStorage.getItem('teac_session_v3');
-      if (urlId && urlPin) {
-        savedSession = JSON.stringify({ id: urlId, pin: urlPin });
-        localStorage.setItem('teac_session_v3', savedSession);
-        // Remove the parameters from the URL so they don't stay in the address bar
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-      
-      if (savedSession) {
+      let sgsUser = localStorage.getItem('sgs_user');
+      if (sgsUser) {
         try {
-          const cred = JSON.parse(savedSession);
-          TEMP_IDCARD = cred.id;
-          showLoader('กำลังเข้าสู่ระบบอัตโนมัติ...');
-          google.script.run.withSuccessHandler(res => {
-              if(res && res.success) {
-                CURRENT_TEACHER = res.name; IS_ADMIN = res.isAdmin;
-                document.getElementById('loginScreen').classList.add('hidden');
-                setupDashboard();
-              } else {
-                hideLoader(); localStorage.removeItem('teac_session_v3'); showLoginStep('idCardStep');
-              }
-            }).withFailureHandler(err => { hideLoader(); showLoginStep('idCardStep'); })
-            .verifyPinLogin(cred.id, cred.pin);
-        } catch(e) { localStorage.removeItem('teac_session_v3'); showLoginStep('idCardStep'); }
-      } else { showLoginStep('idCardStep'); }
+          const user = JSON.parse(sgsUser);
+          TEMP_IDCARD = user.userid;
+          CURRENT_TEACHER = user.prefix + user.firstname + ' ' + user.lastname;
+          IS_ADMIN = user.is_admin;
+          document.getElementById('loginScreen').classList.add('hidden');
+          setupDashboard();
+          return;
+        } catch(e) { 
+          console.error("Failed to parse sgs_user", e);
+        }
+      }
+      // If not logged in or no sgs_user found, redirect to main hub
+      window.location.href = '/AssessmentHub/';
     };
 
     function showLoginStep(stepId) {
