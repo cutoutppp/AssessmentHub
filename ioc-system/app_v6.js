@@ -682,39 +682,41 @@ if(parseBtn) {
                 
                 // Check if line indicates correct answer e.g. *① or *ก
                 if (line.startsWith('*')) {
-                    const ansMatch = line.match(/^\*([ก-ฮa-dA-D①-④])/);
+                    const ansMatch = line.match(/^\*([ก-ฮa-dA-D①-⑤]|[1-5]\))/);
                     if (ansMatch) {
                         isAns = true;
-                        let rawChar = ansMatch[1].toLowerCase();
-                        if (rawChar === 'ก' || rawChar === 'a' || rawChar === '①') ansChar = 'ก';
-                        if (rawChar === 'ข' || rawChar === 'b' || rawChar === '②') ansChar = 'ข';
-                        if (rawChar === 'ค' || rawChar === 'c' || rawChar === '③') ansChar = 'ค';
-                        if (rawChar === 'ง' || rawChar === 'd' || rawChar === '④') ansChar = 'ง';
-                        line = line.replace(/^\*[ก-ฮa-dA-D①-④][\.\)]?\s*/, '').trim();
+                        let rawChar = ansMatch[1].toLowerCase().replace(')', '');
+                        if (rawChar === 'ก' || rawChar === 'a' || rawChar === '①' || rawChar === '1') ansChar = 'ก';
+                        if (rawChar === 'ข' || rawChar === 'b' || rawChar === '②' || rawChar === '2') ansChar = 'ข';
+                        if (rawChar === 'ค' || rawChar === 'c' || rawChar === '③' || rawChar === '3') ansChar = 'ค';
+                        if (rawChar === 'ง' || rawChar === 'd' || rawChar === '④' || rawChar === '4') ansChar = 'ง';
+                        if (rawChar === 'จ' || rawChar === 'e' || rawChar === '⑤' || rawChar === '5') ansChar = 'จ';
+                        line = line.replace(/^\*([ก-ฮa-dA-D①-⑤][\.\)]?|[1-5]\))\s*/, '').trim();
                     } else {
                         line = line.substring(1).trim();
                     }
                 }
                 
-                const choiceStartMatch = line.match(/^([ก-ฮa-dA-D①-④])[\.\)]?\s*/);
+                const choiceStartMatch = line.match(/^([ก-ฮa-dA-D①-⑤][\.\)]?|[1-5]\))\s*/);
                 if (choiceStartMatch) {
-                    if (!currentQ) currentQ = { question_text: '', choices: ['', '', '', ''], ans: '', hasChoices: false };
+                    if (!currentQ) currentQ = { question_text: '', choices: ['', '', '', '', ''], ans: '', hasChoices: false };
                     currentQ.hasChoices = true;
                     
-                    const choiceRegex = /(?:^|\s+)([ก-ฮa-dA-D①-④])[\.\)]?\s*(.*?)(?=\s+[ก-ฮa-dA-D①-④][\.\)]?\s*|$)/g;
+                    const choiceRegex = /(?:^|\s+)([ก-ฮa-dA-D①-⑤][\.\)]?|[1-5]\))\s*(.*?)(?=\s+(?:[ก-ฮa-dA-D①-⑤][\.\)]?|[1-5]\))\s*|$)/g;
                     let cMatch;
                     while ((cMatch = choiceRegex.exec(line)) !== null) {
-                        let char = cMatch[1].toLowerCase();
+                        let char = cMatch[1].toLowerCase().replace(/[\.\)]/g, '');
                         let idx = -1;
-                        if (char === 'ก' || char === 'a' || char === '①') idx = 0;
-                        if (char === 'ข' || char === 'b' || char === '②') idx = 1;
-                        if (char === 'ค' || char === 'c' || char === '③') idx = 2;
-                        if (char === 'ง' || char === 'd' || char === '④') idx = 3;
+                        if (char === 'ก' || char === 'a' || char === '①' || char === '1') idx = 0;
+                        if (char === 'ข' || char === 'b' || char === '②' || char === '2') idx = 1;
+                        if (char === 'ค' || char === 'c' || char === '③' || char === '3') idx = 2;
+                        if (char === 'ง' || char === 'd' || char === '④' || char === '4') idx = 3;
+                        if (char === 'จ' || char === 'e' || char === '⑤' || char === '5') idx = 4;
                         
-                        if (idx !== -1) {
+                        if (idx !== -1 && idx < 5) {
                             currentQ.choices[idx] = cMatch[2].trim();
                             if (isAns || ansChar) {
-                                currentQ.ans = (idx===0?'ก':idx===1?'ข':idx===2?'ค':'ง');
+                                currentQ.ans = (idx===0?'ก':idx===1?'ข':idx===2?'ค':idx===3?'ง':'จ');
                                 isAns = false;
                                 ansChar = '';
                             }
@@ -756,23 +758,37 @@ if(parseBtn) {
         
         // Parse Subjective Questions
         if (subjText.trim()) {
-            const lines = subjText.trim().split('\n').map(l => l.trim()).filter(l => l);
+            const lines = subjText.split('\n').map(l => l.trim()).filter(l => l);
+            let currentSubjQ = '';
+            
+            const pushSubj = () => {
+                if (currentSubjQ.trim()) {
+                    let qText = currentSubjQ.replace(/^\d+[\.\)]\s*/, '').trim();
+                    parsedQuestions.push({
+                        q_num: qIndex++,
+                        question_text: qText,
+                        choice_a: '',
+                        choice_b: '',
+                        choice_c: '',
+                        choice_d: '',
+                        correct_answer: '',
+                        indicator: '',
+                        is_subjective: true,
+                        image_url: '',
+                        passage_text: ''
+                    });
+                }
+            };
+
             for (let line of lines) {
-                let qText = line.replace(/^\d+[\.\)]\s*/, '').trim();
-                parsedQuestions.push({
-                    q_num: qIndex++,
-                    question_text: qText,
-                    choice_a: '',
-                    choice_b: '',
-                    choice_c: '',
-                    choice_d: '',
-                    correct_answer: '',
-                    indicator: '',
-                    is_subjective: true,
-                    image_url: '',
-                    passage_text: ''
-                });
+                if (line.match(/^\d+[\.\)]\s*/)) {
+                    pushSubj();
+                    currentSubjQ = line;
+                } else {
+                    currentSubjQ = currentSubjQ ? currentSubjQ + '\n' + line : line;
+                }
             }
+            pushSubj();
         }
         
         renderTable();
