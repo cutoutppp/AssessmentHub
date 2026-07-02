@@ -1433,8 +1433,8 @@ function fallbackRegexParse(objText, subjText) {
                     image_url: '', passage_text: ''
                 });
             } else {
-                // Split by choices e.g. "ก. " or "1) " even if they are on the same line
-                const choiceSplit = block.split(/(?:\s+|^)(?:[กขคจงABCDabcd]|1|2|3|4|5)[\.\)]\s+/);
+                // Split by choices e.g. "ก. " or "1) " or "① " even if they are on the same line
+                const choiceSplit = block.split(/(?:\s+|^)(?:(?:[กขคจงABCDabcd]|1|2|3|4|5)[\.\)]|[①-⑤])\s+/);
                 let q_text = choiceSplit[0].trim();
                 let choices = [];
                 for (let j = 1; j < choiceSplit.length; j++) {
