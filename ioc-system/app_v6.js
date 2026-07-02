@@ -2305,10 +2305,10 @@ function proceedExport(includeFailed) {
                     const indicator = q.ind || q.passage_text || '[ไม่ได้ระบุตัวชี้วัด]';
                     if (!groupedData[indicator]) groupedData[indicator] = { objective: [], subjective: [] };
                     
-                    const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
-                    const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
-                    const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
-                    const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
+                    const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
+                    const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
+                    const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
+                    const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
                     const isSubj = (!a && !b && !c && !d);
                     
                     if (isSubj) groupedData[indicator].subjective.push(q);
@@ -2329,10 +2329,10 @@ function proceedExport(includeFailed) {
                         const start = currentObjectiveNum;
                         const questions = g.objective.map(q => {
                             const num = currentObjectiveNum++;
-                            const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
-                            const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
-                            const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
-                            const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
+                            const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
+                            const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
+                            const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
+                            const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
 
                             return {
                                 question_num: num,
@@ -2397,10 +2397,10 @@ function proceedExport(includeFailed) {
                 
                 let currentQNum = 1;
                 const questionsList = passedQuestions.map(q => {
-                    const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
-                    const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
-                    const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
-                    const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
+                    const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
+                    const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
+                    const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
+                    const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
                     const isSubj = (!a && !b && !c && !d);
                     
                     return {
