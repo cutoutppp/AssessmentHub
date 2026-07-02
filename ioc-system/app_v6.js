@@ -2148,15 +2148,46 @@ if (printReportBtn) {
 
 
 // Export Modal Logic
-const exportSettingsModal = document.getElementById('exportSettingsModal');
-const closeExportModalBtn = document.getElementById('closeExportModalBtn');
-const cancelExportModalBtn = document.getElementById('cancelExportModalBtn');
-const confirmExportBtn = document.getElementById('confirmExportBtn');
+let exportSettingsModal;
+let closeExportModalBtn;
+let cancelExportModalBtn;
+let confirmExportBtn;
+let exportObjCount;
+let exportObjScore;
+let exportSubjCount;
+let exportSubjScore;
 
-const exportObjCount = document.getElementById('exportObjCount');
-const exportObjScore = document.getElementById('exportObjScore');
-const exportSubjCount = document.getElementById('exportSubjCount');
-const exportSubjScore = document.getElementById('exportSubjScore');
+document.addEventListener('DOMContentLoaded', () => {
+    exportSettingsModal = document.getElementById('exportSettingsModal');
+    closeExportModalBtn = document.getElementById('closeExportModalBtn');
+    cancelExportModalBtn = document.getElementById('cancelExportModalBtn');
+    confirmExportBtn = document.getElementById('confirmExportBtn');
+
+    exportObjCount = document.getElementById('exportObjCount');
+    exportObjScore = document.getElementById('exportObjScore');
+    exportSubjCount = document.getElementById('exportSubjCount');
+    exportSubjScore = document.getElementById('exportSubjScore');
+
+    if (exportObjScore) exportObjScore.addEventListener('input', validateExportScore);
+    if (exportSubjScore) exportSubjScore.addEventListener('input', validateExportScore);
+
+    const exportTestPaperBtn = document.getElementById('exportTestPaperBtn');
+    if (exportTestPaperBtn) {
+        exportTestPaperBtn.addEventListener('click', showExportModal);
+    }
+
+    if (closeExportModalBtn) closeExportModalBtn.addEventListener('click', hideExportModal);
+    if (cancelExportModalBtn) cancelExportModalBtn.addEventListener('click', hideExportModal);
+
+    if (confirmExportBtn) {
+        confirmExportBtn.addEventListener('click', () => {
+            hideExportModal();
+            const includeFailEl = document.getElementById('includeFailedQuestions');
+            const exportIncludeFailed = includeFailEl ? includeFailEl.checked : false;
+            proceedExport(exportIncludeFailed);
+        });
+    }
+});
 
 let currentObjCount = 0;
 let currentSubjCount = 0;
@@ -2182,8 +2213,6 @@ function validateExportScore() {
     }
 }
 
-if(exportObjScore) exportObjScore.addEventListener('input', validateExportScore);
-if(exportSubjScore) exportSubjScore.addEventListener('input', validateExportScore);
 
 function showExportModal() {
     if (!currentReportData || currentReportData.length === 0) {
@@ -2242,22 +2271,6 @@ function showExportModal() {
 
 function hideExportModal() {
     exportSettingsModal.classList.add('hidden');
-}
-
-const exportTestPaperBtn = document.getElementById('exportTestPaperBtn');
-if (exportTestPaperBtn) {
-    exportTestPaperBtn.addEventListener('click', showExportModal);
-}
-
-if (closeExportModalBtn) closeExportModalBtn.addEventListener('click', hideExportModal);
-if (cancelExportModalBtn) cancelExportModalBtn.addEventListener('click', hideExportModal);
-
-if (confirmExportBtn) {
-    confirmExportBtn.addEventListener('click', () => {
-        hideExportModal();
-        const exportIncludeFailed = document.getElementById('includeFailedQuestions') ? document.getElementById('includeFailedQuestions').checked : false;
-        proceedExport(exportIncludeFailed);
-    });
 }
 
 function proceedExport(includeFailed) {
