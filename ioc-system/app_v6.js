@@ -75,10 +75,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const pid = urlParams.get('project_id');
     const vpid = urlParams.get('view_results');
     
-    // DEV MODE: Auto-login if on localhost
+    // DEV MODE: Force teacher code 444 for testing
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        localStorage.setItem('teacher_code', 'T001'); // Mock Teacher Code
-        sessionStorage.setItem('teacher_name', 'ครูทดสอบ (Local Dev)');
+        localStorage.setItem('teacher_code', '444');
+        sessionStorage.removeItem('teacher_name');
     }
     
     // Check for SSO via LocalStorage (Shared from AssessmentHub on same domain)
@@ -2850,17 +2850,48 @@ function _loadImageFile(file) {
     }
     const reader = new FileReader();
     reader.onload = function(e) {
-        const dataUrl = e.target.result; // "data:image/png;base64,XXXX"
-        const parts   = dataUrl.split(',');
-        _mediaPendingBase64 = parts[1];
-        _mediaPendingMime   = file.type;
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800;
+            const MAX_HEIGHT = 800;
+            let width = img.width;
+            let height = img.height;
 
-        const imgEl     = document.getElementById('imagePreview');
-        const preview   = document.getElementById('imagePreviewContainer');
-        const placeholder = document.getElementById('imagePlaceholder');
-        if (imgEl)       imgEl.src = dataUrl;
-        if (preview)     preview.classList.remove('hidden');
-        if (placeholder) placeholder.classList.add('hidden');
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width *= MAX_HEIGHT / height;
+                    height = MAX_HEIGHT;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            
+            // Fill background with white in case of transparent PNGs
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            const parts = dataUrl.split(',');
+            
+            _mediaPendingBase64 = parts[1];
+            _mediaPendingMime   = 'image/jpeg';
+
+            const imgEl     = document.getElementById('imagePreview');
+            const preview   = document.getElementById('imagePreviewContainer');
+            const placeholder = document.getElementById('imagePlaceholder');
+            if (imgEl)       imgEl.src = dataUrl;
+            if (preview)     preview.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
+        };
+        img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
