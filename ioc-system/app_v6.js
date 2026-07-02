@@ -2329,13 +2329,19 @@ function proceedExport(includeFailed) {
                         const start = currentObjectiveNum;
                         const questions = g.objective.map(q => {
                             const num = currentObjectiveNum++;
+                            
+                            const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
+                            const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
+                            const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
+                            const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
+
                             return {
                                 question_num: num,
                                 question_text: q.text || q.question_text || '',
-                                choice_a: q.a || q.choice_a || '',
-                                choice_b: q.b || q.choice_b || '',
-                                choice_c: q.c || q.choice_c || '',
-                                choice_d: q.d || q.choice_d || ''
+                                choice_a: a,
+                                choice_b: b,
+                                choice_c: c,
+                                choice_d: d
                             };
                         });
                         objective_groups.push({
