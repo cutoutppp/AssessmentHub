@@ -1418,8 +1418,8 @@ function fallbackRegexParse(objText, subjText) {
     
     function parseBlock(text, isSubj) {
         if (!text.trim()) return;
-        // Split by question numbers e.g. "1. " or "1) " at the start of a line
-        const qBlocks = text.split(/(?:^|\n)\s*(?:\d+[\.\)]\s+)/);
+        // Split by question numbers e.g. "1. " or "1) " at the start of a line or after spaces
+        const qBlocks = text.split(/(?:\s+|^)(?:\d+[\.\)]\s+)/);
         for (let i = 1; i < qBlocks.length; i++) {
             let block = qBlocks[i].trim();
             if (!block) continue;
@@ -1433,8 +1433,8 @@ function fallbackRegexParse(objText, subjText) {
                     image_url: '', passage_text: ''
                 });
             } else {
-                // Split by choices e.g. "ก. " or "1) "
-                const choiceSplit = block.split(/(?:^|\n)\s*(?:[กขคจงABCDabcd]|1|2|3|4|5)[\.\)]\s+/);
+                // Split by choices e.g. "ก. " or "1) " even if they are on the same line
+                const choiceSplit = block.split(/(?:\s+|^)(?:[กขคจงABCDabcd]|1|2|3|4|5)[\.\)]\s+/);
                 let q_text = choiceSplit[0].trim();
                 let choices = [];
                 for (let j = 1; j < choiceSplit.length; j++) {
@@ -2329,7 +2329,6 @@ function proceedExport(includeFailed) {
                         const start = currentObjectiveNum;
                         const questions = g.objective.map(q => {
                             const num = currentObjectiveNum++;
-                            
                             const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
                             const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
                             const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
