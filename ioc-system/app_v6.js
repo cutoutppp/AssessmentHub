@@ -743,7 +743,7 @@ if (docxUploadInput) {
                                     currentQuestionNumber = 1;
 
                                     // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤])/g, '\n$1');
+                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
                                     examLines.push(...line.split('\n'));
                                 }
                             } else {
@@ -763,7 +763,7 @@ if (docxUploadInput) {
                                     subjLines.push(line);
                                 } else {
                                     // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤])/g, '\n$1');
+                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
                                     examLines.push(...line.split('\n'));
                                 }
                             }
@@ -1339,6 +1339,11 @@ function renderTable() {
                     ${q.indicator ? `<div class="mt-1 text-xs text-green-600 break-words font-medium px-2 py-1 bg-green-50 rounded">${q.indicator}</div>` : ''}
                 </div>
             </td>
+            <td class="px-4 py-4 align-middle text-center">
+                <button onclick="deleteQuestion(${idx})" class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 hover:text-red-700 transition-colors shadow-sm" title="ลบข้อสอบนี้">
+                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
         
@@ -1419,7 +1424,7 @@ function fallbackRegexParse(objText, subjText) {
     function parseBlock(text, isSubj) {
         if (!text.trim()) return;
         // Split by question numbers e.g. "1. " or "1) " at the start of a line or after spaces
-        const qBlocks = text.split(/(?:\s+|^)(?:\d+[\.\)]\s+)/);
+        const qBlocks = text.split(/(?:\s+|^)(?:\d+\.\s+|\d+\)\s*)/);
         for (let i = 1; i < qBlocks.length; i++) {
             let block = qBlocks[i].trim();
             if (!block) continue;
@@ -1433,8 +1438,8 @@ function fallbackRegexParse(objText, subjText) {
                     image_url: '', passage_text: ''
                 });
             } else {
-                // Split by choices e.g. "ก. " or "1) " or "① " even if they are on the same line
-                const choiceSplit = block.split(/(?:\s+|^)(?:(?:[กขคจงABCDabcd]|1|2|3|4|5)[\.\)]|[①-⑤])\s+/);
+                // Split by choices e.g. "ก. " or "1) " or "① " even if they are on the same line (supports missing spaces)
+                const choiceSplit = block.split(/(?:\n|\s+|^)(?:[กขคจงABCDabcd][\.\)]\s*|[1-5]\.\s+|[1-5]\)\s*|[①-⑤❶-❺➀-➄➊-➎]\s*)/);
                 let q_text = choiceSplit[0].trim();
                 let choices = [];
                 for (let j = 1; j < choiceSplit.length; j++) {
@@ -1481,6 +1486,26 @@ window.addManualQuestion = (isSubjective) => {
     setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }, 100);
+};
+
+window.deleteQuestion = (idx) => {
+    Swal.fire({
+        title: 'ยืนยันการลบ',
+        text: 'คุณต้องการลบข้อสอบนี้ใช่หรือไม่?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'ลบ',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            parsedQuestions.splice(idx, 1);
+            // Re-number questions
+            parsedQuestions.forEach((q, i) => q.q_num = i + 1);
+            renderTable();
+        }
+    });
 };
 
 function updateAnswerStats() {
