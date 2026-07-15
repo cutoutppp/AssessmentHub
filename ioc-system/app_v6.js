@@ -2928,9 +2928,15 @@ function initTinderCard(card) {
     });
 }
 
+let isSwipeAnimating = false;
+
 function flyOut(direction, score) {
+    if (isSwipeAnimating) return;
+    
     const card = document.querySelector('#cardsContainer > div');
     if(!card) return;
+    
+    isSwipeAnimating = true;
     
     card.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
     if(direction === 'right') {
@@ -2957,6 +2963,7 @@ function flyOut(direction, score) {
     setTimeout(() => {
         reviewIndex++;
         renderTinderCard();
+        isSwipeAnimating = false;
     }, 400);
 }
 
