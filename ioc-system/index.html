@@ -34,7 +34,7 @@
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <div>
-                    <h1 class="text-base font-bold text-gray-800 leading-none">Tinder-IOC</h1>
+                    <h1 class="text-base font-bold text-gray-800 leading-none">Tinder-IOC <span class="text-[10px] font-normal text-gray-400">v2.0.0</span></h1>
                 </div>
             </div>
 
@@ -473,6 +473,17 @@
                     <div class="stat-card bg-blue-50 border-blue-100">
                         <p class="text-xs text-blue-600 font-medium mb-1">ผู้เชี่ยวชาญประเมินแล้ว</p>
                         <p class="text-2xl font-bold text-blue-700" id="statReviewers">0 คน</p>
+                    </div>
+                </div>
+
+                <!-- Evaluator Status List -->
+                <div id="evaluatorStatusSection" class="p-4 bg-gray-50 rounded-xl border border-gray-200 mb-6 hidden">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        สถานะการประเมินจากผู้เชี่ยวชาญ
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="evaluatorsListContainer">
+                        <!-- Dynamic list of 3 experts -->
                     </div>
                 </div>
 
