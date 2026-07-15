@@ -1273,33 +1273,33 @@ function renderTable() {
         if (!q.is_subjective) {
             choiceHtml = `
                 <div class="mt-2 space-y-1">
-                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ก" ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'checked' : ''} onchange="updateAns(${idx}, 'ก'); renderTable();" class="sr-only">
-                        <span class="text-sm font-medium ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800' : 'text-gray-700'} w-4">①</span>
+                    <label id="lbl-${idx}-ก" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ก" ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ก');" class="sr-only">
+                        <span id="spn-${idx}-ก" class="text-sm font-medium ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800' : 'text-gray-700'} w-4">①</span>
                         <div class="flex-1 relative">
                             <div id="c-view-${idx}-a" class="text-sm ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'a')">${q.choice_a || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
                             <textarea id="c-edit-${idx}-a" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'a', this.value)">${q.choice_a}</textarea>
                         </div>
                     </label>
-                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ข" ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'checked' : ''} onchange="updateAns(${idx}, 'ข'); renderTable();" class="sr-only">
-                        <span class="text-sm font-medium ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800' : 'text-gray-700'} w-4">②</span>
+                    <label id="lbl-${idx}-ข" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ข" ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ข');" class="sr-only">
+                        <span id="spn-${idx}-ข" class="text-sm font-medium ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800' : 'text-gray-700'} w-4">②</span>
                         <div class="flex-1 relative">
                             <div id="c-view-${idx}-b" class="text-sm ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'b')">${q.choice_b || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
                             <textarea id="c-edit-${idx}-b" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'b', this.value)">${q.choice_b}</textarea>
                         </div>
                     </label>
-                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ค" ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'checked' : ''} onchange="updateAns(${idx}, 'ค'); renderTable();" class="sr-only">
-                        <span class="text-sm font-medium ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800' : 'text-gray-700'} w-4">③</span>
+                    <label id="lbl-${idx}-ค" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ค" ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ค');" class="sr-only">
+                        <span id="spn-${idx}-ค" class="text-sm font-medium ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800' : 'text-gray-700'} w-4">③</span>
                         <div class="flex-1 relative">
                             <div id="c-view-${idx}-c" class="text-sm ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'c')">${q.choice_c || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
                             <textarea id="c-edit-${idx}-c" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'c', this.value)">${q.choice_c}</textarea>
                         </div>
                     </label>
-                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ง" ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'checked' : ''} onchange="updateAns(${idx}, 'ง'); renderTable();" class="sr-only">
-                        <span class="text-sm font-medium ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800' : 'text-gray-700'} w-4">④</span>
+                    <label id="lbl-${idx}-ง" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ง" ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ง');" class="sr-only">
+                        <span id="spn-${idx}-ง" class="text-sm font-medium ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800' : 'text-gray-700'} w-4">④</span>
                         <div class="flex-1 relative">
                             <div id="c-view-${idx}-d" class="text-sm ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'd')">${q.choice_d || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
                             <textarea id="c-edit-${idx}-d" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'd', this.value)">${q.choice_d}</textarea>
@@ -1359,9 +1359,11 @@ function renderTable() {
     
     // Render equations using MathJax
     if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise([tableContainer]).catch(function (err) {
-            console.error('MathJax error: ', err.message);
-        });
+        setTimeout(() => {
+            window.MathJax.typesetPromise([tableContainer]).catch(function (err) {
+                console.error('MathJax error: ', err.message);
+            });
+        }, 100);
     }
 }
 
@@ -1377,9 +1379,56 @@ window.editField = (type, idx, letter = '') => {
 };
 
 window.saveField = (type, idx, letter, value) => {
-    if (type === 'q') parsedQuestions[idx].question_text = value.trim();
-    else parsedQuestions[idx]['choice_' + letter] = value.trim();
-    renderTable();
+    const val = value.trim();
+    if (type === 'q') parsedQuestions[idx].question_text = val;
+    else parsedQuestions[idx]['choice_' + letter] = val;
+    
+    // Update UI directly instead of renderTable() for huge performance gain
+    const viewId = type === 'q' ? `q-view-${idx}` : `c-view-${idx}-${letter}`;
+    const editId = type === 'q' ? `q-edit-${idx}` : `c-edit-${idx}-${letter}`;
+    const viewEl = document.getElementById(viewId);
+    
+    if (viewEl) {
+        viewEl.innerHTML = val || `<span class="text-gray-400 italic">เพิ่ม${type === 'q' ? 'โจทย์' : 'ตัวเลือก'}...</span>`;
+        viewEl.classList.remove('invisible');
+        document.getElementById(editId).classList.add('hidden');
+        
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([viewEl]).catch(err => console.error(err));
+        }
+    }
+};
+
+window.updateAnsUI = (idx, val) => {
+    parsedQuestions[idx].correct_answer = val;
+    updateAnswerStats();
+    
+    // Direct DOM manipulation instead of renderTable() to avoid lag
+    const letters = ['ก', 'ข', 'ค', 'ง'];
+    const engLetters = ['a', 'b', 'c', 'd'];
+    
+    letters.forEach((l, i) => {
+        const isSelected = (l === val);
+        const lbl = document.getElementById(`lbl-${idx}-${l}`);
+        const spn = document.getElementById(`spn-${idx}-${l}`);
+        const view = document.getElementById(`c-view-${idx}-${engLetters[i]}`);
+        
+        if (lbl) {
+            lbl.className = `flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${isSelected ? 'bg-green-50 border-green-300' : 'border-transparent'}`;
+        }
+        if (spn) {
+            spn.className = `text-sm font-medium ${isSelected ? 'text-green-800' : 'text-gray-700'} w-4`;
+        }
+        if (view) {
+            if (isSelected) {
+                view.classList.remove('text-gray-700');
+                view.classList.add('text-green-800', 'font-medium');
+            } else {
+                view.classList.remove('text-green-800', 'font-medium');
+                view.classList.add('text-gray-700');
+            }
+        }
+    });
 };
 
 window.updateAns = (idx, val) => { parsedQuestions[idx].correct_answer = val; updateAnswerStats(); };
@@ -1683,14 +1732,88 @@ if (startReviewBtn) {
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: 'getProjectQuestions', payload: { project_id: expertProjectId } })
+                body: JSON.stringify({ action: 'getProjectQuestions', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
             });
             const data = await response.json();
             if (data.status === 'success') {
-                currentReviewQuestions = data.data;
-                reviewIndex = 0;
-                currentReviews = [];
+                const qData = Array.isArray(data.data) ? data.data : (data.data.questions || []);
+                const reviewedIds = new Set(data.data.reviewed_question_ids || []);
                 
+                if (reviewedIds.size > 0 && reviewedIds.size < qData.length) {
+                    // Incomplete evaluation! Show Swal prompt
+                    const promptRes = await Swal.fire({
+                        title: 'พบข้อมูลการประเมินเดิม',
+                        text: `คุณเคยประเมินชุดข้อสอบนี้ค้างไว้จำนวน ${reviewedIds.size} ข้อ จากทั้งหมด ${qData.length} ข้อ คุณต้องการทำต่อหรือเริ่มใหม่?`,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'ทำต่อ (Resume)',
+                        cancelButtonText: 'เริ่มใหม่ทั้งหมด (Restart)'
+                    });
+                    
+                    if (promptRes.isConfirmed) {
+                        // Continue: filter out already reviewed questions
+                        currentReviewQuestions = qData.filter(q => !reviewedIds.has(String(q.question_id)));
+                        reviewIndex = 0;
+                        currentReviews = [];
+                    } else {
+                        // Reset: call resetReviewerReviews and then use all questions
+                        Swal.showLoading();
+                        const resetRes = await fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
+                        });
+                        const resetData = await resetRes.json();
+                        if (resetData.status === 'success') {
+                            currentReviewQuestions = qData;
+                            reviewIndex = 0;
+                            currentReviews = [];
+                        } else {
+                            showToast('เกิดข้อผิดพลาดในการรีเซ็ตข้อมูล', 'error');
+                            return;
+                        }
+                    }
+                } else if (reviewedIds.size >= qData.length && qData.length > 0) {
+                    // Already completed! Ask if they want to re-evaluate (restart)
+                    const promptRes = await Swal.fire({
+                        title: 'ประเมินเสร็จสมบูรณ์แล้ว',
+                        text: `คุณประเมินชุดข้อสอบนี้ครบถ้วนแล้ว (${qData.length}/${qData.length} ข้อ) หากต้องการประเมินใหม่ทั้งหมด ข้อมูลการประเมินเดิมจะถูกลบถาวร`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'ลบของเดิมและเริ่มใหม่',
+                        cancelButtonText: 'ยกเลิก'
+                    });
+                    
+                    if (promptRes.isConfirmed) {
+                        Swal.showLoading();
+                        const resetRes = await fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
+                        });
+                        const resetData = await resetRes.json();
+                        if (resetData.status === 'success') {
+                            currentReviewQuestions = qData;
+                            reviewIndex = 0;
+                            currentReviews = [];
+                        } else {
+                            showToast('เกิดข้อผิดพลาดในการรีเซ็ตข้อมูล', 'error');
+                            return;
+                        }
+                    } else {
+                        // User cancelled
+                        return;
+                    }
+                } else {
+                    // Fresh start
+                    currentReviewQuestions = qData;
+                    reviewIndex = 0;
+                    currentReviews = [];
+                }
+                
+                Swal.close();
                 document.getElementById('expertSetup').classList.add('hidden');
                 document.getElementById('tinderArea').classList.remove('hidden');
                 
@@ -1776,6 +1899,13 @@ function renderTinderCard() {
     
     // Initialize Swipe Physics
     initTinderCard(card);
+    
+    // Render equations using MathJax
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        setTimeout(() => {
+            window.MathJax.typesetPromise([card]).catch(err => console.error(err));
+        }, 50);
+    }
 }
 
 const btnMinusOne = document.getElementById('btnMinusOne');
@@ -1872,7 +2002,12 @@ window.viewReport = async (projectId) => {
                 revs.forEach(r => {
                     scoreSum += parseInt(r.score) || 0;
                     totalReviewers.add(r.reviewer_code);
-                    if(r.comment) cmtList.push(r.comment);
+                    if(r.comment) {
+                        cmtList.push({
+                            text: r.comment,
+                            reviewer_name: r.reviewer_name || ('ผู้ประเมินรหัส ' + r.reviewer_code)
+                        });
+                    }
                 });
                 const ioc = (scoreSum / 3).toFixed(2);
                 const isPassed = parseFloat(ioc) >= 0.5;
@@ -1895,6 +2030,18 @@ window.viewReport = async (projectId) => {
                     isPassed: isPassed,
                     comments: cmtList,
                     scores: revs.map(r => r.score),
+                    score1: (() => {
+                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_1).trim());
+                        return r !== undefined ? r.score : '';
+                    })(),
+                    score2: (() => {
+                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_2).trim());
+                        return r !== undefined ? r.score : '';
+                    })(),
+                    score3: (() => {
+                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_3).trim());
+                        return r !== undefined ? r.score : '';
+                    })(),
                     image_url: q.image_url,
                     passage_text: q.passage_text
                 });
@@ -1917,6 +2064,66 @@ window.viewReport = async (projectId) => {
             if(prjName) prjName.textContent = currentPrintProjectInfo ? currentPrintProjectInfo.project_name : 'รายงานผล IOC';
             if(prjId) prjId.textContent = projectId;
             
+            // Render Evaluator Status Section
+            const statusSection = document.getElementById('evaluatorStatusSection');
+            const listContainer = document.getElementById('evaluatorsListContainer');
+            if (statusSection && listContainer && data.data.expert_names) {
+                statusSection.classList.remove('hidden');
+                listContainer.innerHTML = '';
+                
+                const expNames = data.data.expert_names;
+                const expReviews = data.data.expert_reviews || {};
+                const totalQ = qList.length;
+                
+                const experts = [
+                    { key: 'expert_1', label: 'ผู้เชี่ยวชาญคนที่ 1' },
+                    { key: 'expert_2', label: 'ผู้เชี่ยวชาญคนที่ 2' },
+                    { key: 'expert_3', label: 'ผู้เชี่ยวชาญคนที่ 3' }
+                ];
+                
+                experts.forEach((exp, idx) => {
+                    const code = currentPrintProjectInfo ? String(currentPrintProjectInfo[exp.key] || '').trim() : '';
+                    const name = expNames[exp.key] || 'ยังไม่ได้ระบุ';
+                    const count = expReviews[exp.key] || 0;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col justify-between';
+                    
+                    let statusHtml = '';
+                    let btnHtml = '';
+                    
+                    if (!code) {
+                        statusHtml = `<span class="text-gray-400">กรุณาระบุในการตั้งค่า</span>`;
+                    } else if (count >= totalQ && totalQ > 0) {
+                        statusHtml = `<span class="text-green-600 font-medium">ประเมินเสร็จสมบูรณ์ (${count}/${totalQ} ข้อ)</span>`;
+                    } else if (count > 0) {
+                        statusHtml = `<span class="text-yellow-600 font-medium">ประเมินค้างอยู่ (${count}/${totalQ} ข้อ)</span>`;
+                    } else {
+                        statusHtml = `<span class="text-red-500 font-medium">ยังไม่ได้ประเมิน (0/${totalQ} ข้อ)</span>`;
+                    }
+                    
+                    if (code && count > 0) {
+                        btnHtml = `
+                            <button onclick="confirmResetExpertReviews('${projectId}', '${code}', '${name}')" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded border border-red-200 font-medium transition-colors">
+                                ส่งประเมินใหม่ (รีเซ็ต)
+                            </button>
+                        `;
+                    }
+                    
+                    card.innerHTML = `
+                        <div>
+                            <div class="text-xs text-gray-400 font-bold">${exp.label}</div>
+                            <div class="font-semibold text-gray-700 text-sm mt-0.5">${name}</div>
+                            <div class="text-xs mt-2">สถานะ: ${statusHtml}</div>
+                        </div>
+                        <div class="mt-3 flex justify-end">
+                            ${btnHtml}
+                        </div>
+                    `;
+                    listContainer.appendChild(card);
+                });
+            }
+            
             // Render Table
             if(tbody) {
                 tbody.innerHTML = '';
@@ -1929,7 +2136,7 @@ window.viewReport = async (projectId) => {
                     let sHtml = q.scores.map(s => `<span class="inline-block w-6 text-center ${s>0?'text-green-600':(s<0?'text-red-600':'text-gray-500')}">${s}</span>`).join('');
                     if(!sHtml) sHtml = '-';
                     
-                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${c}</div>`).join('');
+                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${c.text} <span class="text-gray-400">(${c.reviewer_name})</span></div>`).join('');
 tr.innerHTML = `
                         <td class="px-4 py-3 text-center border-b">${q.q_num}</td>
                         <td class="px-4 py-3 border-b">
@@ -1962,6 +2169,38 @@ tr.innerHTML = `
     } catch (error) {
         console.error('Fetch report error:', error);
         if(tbody) tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500">การเชื่อมต่อขัดข้อง</td></tr>';
+    }
+};
+
+window.confirmResetExpertReviews = async (projectId, expertCode, expertName) => {
+    const result = await Swal.fire({
+        title: 'คุณแน่ใจหรือไม่?',
+        text: `ต้องการล้างผลการประเมินทั้งหมดของ ${expertName} เพื่อให้ประเมินใหม่หรือไม่? (ข้อมูลเดิมจะถูกลบถาวร)`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ต้องการรีเซ็ต',
+        cancelButtonText: 'ยกเลิก'
+    });
+    
+    if (result.isConfirmed) {
+        Swal.showLoading();
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: projectId, reviewer_code: expertCode } })
+            });
+            const resData = await response.json();
+            if (resData.status === 'success') {
+                Swal.fire('สำเร็จ!', 'ส่งงานให้ผู้ประเมินทำใหม่เรียบร้อยแล้ว', 'success');
+                await window.viewReport(projectId);
+            } else {
+                Swal.fire('เกิดข้อผิดพลาด', resData.message || 'ไม่สามารถทำรายการได้', 'error');
+            }
+        } catch (error) {
+            Swal.fire('การเชื่อมต่อล้มเหลว', error.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้', 'error');
+        }
     }
 };
 
@@ -2092,10 +2331,10 @@ if (printReportBtn) {
                 return {
                     'ข้อสอบ': (i + 1) + '. ' + textOut,
                     'เลขตัวชี้วัด หรือมาตรฐาน': q.ind || '-',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 1': q.scores[0] !== undefined ? q.scores[0] : '',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 2': q.scores[1] !== undefined ? q.scores[1] : '',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 3': q.scores[2] !== undefined ? q.scores[2] : '',
-                    'คะแนนรวม': q.scores.reduce((a,b)=>a+(isNaN(parseInt(b))?0:parseInt(b)), 0)
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 1': q.score1 !== undefined ? q.score1 : '',
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 2': q.score2 !== undefined ? q.score2 : '',
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 3': q.score3 !== undefined ? q.score3 : '',
+                    'คะแนนรวม': [q.score1, q.score2, q.score3].reduce((a,b)=>a+(isNaN(parseInt(b))?0:parseInt(b)), 0)
                 };
             });
 
