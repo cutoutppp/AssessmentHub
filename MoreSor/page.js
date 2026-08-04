@@ -533,13 +533,20 @@ function DashboardContent() {
         
         {/* Header - Matching TeacherHub */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+          <div className="flex items-center gap-3">
             <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
               MoreSor
             </h1>
-            <p className="text-slate-600 mt-1 font-medium text-lg">
-              ระบบจัดการข้อมูล มส.
-            </p>
+            <button 
+              onClick={() => setShowPatchNotes(true)}
+              className="px-2.5 py-1 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full hover:shadow-lg hover:scale-105 transition-all cursor-pointer shadow-md"
+            >
+              v1.1.0
+            </button>
+          </div>
+          <p className="text-slate-600 mt-1 font-medium text-lg">
+            ระบบจัดการข้อมูล มส.
+          </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link 
