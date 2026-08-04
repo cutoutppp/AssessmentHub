@@ -619,31 +619,71 @@ function DashboardContent() {
 
             {timeframeState.phase === 1 ? (
               <div 
+                onDragOver={handleDragOver}
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="max-w-xl mx-auto border-2 border-dashed border-blue-200 rounded-2xl p-16 cursor-pointer hover:bg-blue-50/50 hover:border-blue-400 transition-all duration-300 group"
+                className={`max-w-xl mx-auto border-4 border-dashed rounded-3xl p-16 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 relative overflow-hidden group 
+                  ${isDragActive ? 'border-blue-500 bg-blue-50 scale-105' : ''}
+                  ${submissionMode === 1 && !isDragActive
+                    ? 'border-purple-200 bg-purple-50 hover:bg-purple-100 hover:border-purple-400 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]' 
+                    : !isDragActive ? 'border-blue-200 bg-slate-50 hover:bg-blue-50 hover:border-blue-400' : ''}`}
               >
                 <input 
                   type="file" 
                   ref={fileInputRef} 
                   className="hidden" 
                   accept="application/pdf"
+                  multiple={submissionMode === 1}
                   onChange={handleFileUpload}
+                  disabled={loading}
                 />
                 {loading ? (
                   <div className="flex flex-col items-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-blue-200 rounded-full blur-xl animate-pulse"></div>
-                      <Loader2 className="w-14 h-14 text-blue-600 animate-spin relative z-10" />
-                    </div>
-                    <p className="text-lg font-medium text-blue-900 mt-6 animate-pulse">กำลังสกัดข้อมูลจาก PDF และดึง Masterdata...</p>
+                    <div className={`w-16 h-16 border-4 border-slate-200 rounded-full animate-spin mb-6 ${submissionMode === 1 ? 'border-t-purple-600' : 'border-t-blue-600'}`}></div>
+                    {uploadProgress ? (
+                      <>
+                        <h3 className={`text-xl font-bold animate-pulse ${submissionMode === 1 ? 'text-purple-800' : 'text-slate-800'}`}>
+                          กำลังอัปโหลดไฟล์ {uploadProgress.current}/{uploadProgress.total}
+                        </h3>
+                        <p className="text-slate-500 mt-2 font-medium truncate max-w-[200px]">{uploadProgress.filename}</p>
+                        <div className="w-full bg-slate-200 rounded-full h-2.5 mt-4">
+                          <div className={`h-2.5 rounded-full transition-all duration-300 ${submissionMode === 1 ? 'bg-purple-600' : 'bg-blue-600'}`} style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}></div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-blue-200 rounded-full blur-xl animate-pulse"></div>
+                          <Loader2 className="w-14 h-14 text-blue-600 animate-spin relative z-10" />
+                        </div>
+                        <p className="text-lg font-medium text-blue-900 mt-6 animate-pulse">กำลังสกัดข้อมูลจาก PDF และดึง Masterdata...</p>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center">
-                    <div className="bg-blue-100 p-5 rounded-full mb-6 group-hover:scale-110 group-hover:bg-blue-600 transition-all duration-300">
-                      <UploadCloud className="w-10 h-10 text-blue-600 group-hover:text-white transition-colors" />
+                  <div className="flex flex-col items-center w-full pointer-events-none">
+                    <div className={`p-5 rounded-full mb-6 transition-all duration-300 
+                      ${isDragActive ? 'scale-125 bg-blue-600' : ''}
+                      ${!isDragActive && submissionMode === 1 ? 'bg-purple-100 group-hover:bg-purple-600 group-hover:scale-110' : ''}
+                      ${!isDragActive && submissionMode !== 1 ? 'bg-blue-100 group-hover:bg-blue-600 group-hover:scale-110' : ''}`}>
+                      <UploadCloud className={`w-10 h-10 transition-colors 
+                        ${isDragActive ? 'text-white' : ''}
+                        ${!isDragActive && submissionMode === 1 ? 'text-purple-600 group-hover:text-white' : ''}
+                        ${!isDragActive && submissionMode !== 1 ? 'text-blue-600 group-hover:text-white' : ''}`} />
                     </div>
-                    <h3 className="text-2xl font-bold text-slate-800 mb-3">{submissionMode === 1 ? 'อัปโหลดไฟล์ PDF (ส่งรอบแรก)' : 'อัปโหลดไฟล์ PDF (ปพ.5 เช็ค มส.)'}</h3>
-                    <p className="text-slate-500 font-medium">คลิกที่นี่เพื่อเลือกไฟล์จากระบบฐานข้อมูล</p>
+                    <h3 className={`text-2xl font-bold mb-3 
+                      ${isDragActive ? 'text-blue-600' : ''}
+                      ${!isDragActive && submissionMode === 1 ? 'text-purple-900' : ''}
+                      ${!isDragActive && submissionMode !== 1 ? 'text-slate-800' : ''}`}>
+                      {isDragActive 
+                        ? 'วางไฟล์เพื่ออัปโหลด' 
+                        : (submissionMode === 1 ? 'ลากไฟล์มาวาง หรือคลิกเพื่ออัปโหลดหลายไฟล์' : 'ลากไฟล์มาวาง หรือคลิกเพื่ออัปโหลด')}
+                    </h3>
+                    <p className={`${submissionMode === 1 ? 'text-purple-600/70' : 'text-slate-500'} font-medium`}>
+                      {submissionMode === 1 ? 'อัปโหลดได้หลายไฟล์พร้อมกัน (เฉพาะ PDF)' : 'รองรับเฉพาะไฟล์ PDF จากระบบฐานข้อมูล'}
+                    </p>
                   </div>
                 )}
               </div>
@@ -968,6 +1008,62 @@ function DashboardContent() {
           </div>
         )}
       </div>
+
+
+      {/* Patch Notes Modal */}
+      {showPatchNotes && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative border border-slate-100 max-h-[80vh] flex flex-col">
+            <button 
+              onClick={() => setShowPatchNotes(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+            
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-600">
+                <FileSpreadsheet className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-slate-800">Patch Notes</h3>
+                <p className="text-indigo-600 font-medium">???????????????: v1.1.0</p>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-6 text-sm text-slate-600">
+              <div>
+                <h4 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span> v1.1.0 (Latest Update)
+                </h4>
+                <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <li><strong>????????? Drag & Drop:</strong> ????????????? ??.5 ??????????????????????????</li>
+                  <li><strong>??????? 1 (Multiple Upload):</strong> ???????????????? ???????????????????????? 1 ???????????????????????????????????????????? Drive ?????</li>
+                  <li><strong>?????? UI ?????????????:</strong> ????????????????????????????????????????????? (Progress Bar)</li>
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-slate-800 text-lg flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-slate-300"></span> v1.0.0 (Initial Release)
+                </h4>
+                <ul className="list-disc pl-6 mt-2 space-y-2 text-slate-500">
+                  <li>??????????????????????????????????????? (??? 1 ?????? 2)</li>
+                  <li>?????????????????????????????? (?????????? 100% ?????????????????????)</li>
+                  <li>????????????? PDF ?????????????????????????????????????????????????????? 80%</li>
+                </ul>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowPatchNotes(false)}
+              className="mt-6 w-full px-6 py-3.5 rounded-2xl font-bold text-white bg-slate-800 hover:bg-slate-700 transition-colors shadow-lg hover:-translate-y-0.5"
+            >
+              ???????
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Custom Confirm Modal */}
       {confirmModal.isOpen && (
