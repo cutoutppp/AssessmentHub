@@ -15,7 +15,7 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedTeachers, setExpandedTeachers] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'midterm'|'final'>('final');
+  const [activeTab, setActiveTab] = useState<'midterm'|'final'>('midterm');
 
   const handleDownloadGroupDoc = async (groupName: string, teacherNames: string[]) => {
     if (!downloadSavedDoc) return;
@@ -91,17 +91,29 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
   // Combine Teacher Data with Submissions
   const dashboardData = useMemo(() => {
     return teacherData.map(t => {
-      // Normalize for old data fallback
-      const normalizeCode = (c: string) => (c || "").replace(/\s/g, '').toUpperCase();
+      const normalizeClass = (c: string) => (c || "").toString().replace(/ห้อง/g, '/').replace(/[^0-9/]/g, '').trim();
+      const normalizeCode = (c: string) => (c || "").toString().replace(/\s+/g, '').toUpperCase().trim();
+
       const matchSubjectAndClass = (s: any, t: any) => {
-        if (s.subject_code === t.subject_code && s.class_level === t.class_level) return true;
+        if (normalizeCode(s.subject_code) !== normalizeCode(t.subject_code)) return false;
         
-        if (normalizeCode(s.subject_code) === normalizeCode(t.subject_code)) {
-          // If teacherData class_level is "ม.5" and submission is "ม.5/11", it matches
-          if (s.class_level && t.class_level && s.class_level.startsWith(t.class_level)) {
-            return true;
-          }
+        const sClassClean = normalizeClass(s.class_level);
+        const tClassClean = normalizeClass(t.class_level);
+        
+        if (sClassClean === tClassClean) return true;
+        
+        const tcRaw = (t.class_level || "").toString();
+        const tcClean = tcRaw.replace(/\s+/g, "");
+        if (tcRaw.includes(s.class_level) || tcRaw.includes(sClassClean)) return true;
+        
+        const parts = sClassClean.split('/');
+        if (parts.length === 2) {
+          if (tcClean.includes(`${parts[0]}/${parts[1]}`) || tcClean.includes(`${parts[0]}ห้อง${parts[1]}`)) return true;
         }
+        
+        if (s.class_level && t.class_level && String(s.class_level).startsWith(String(t.class_level))) return true;
+        if (s.class_level && t.class_level && String(t.class_level).startsWith(String(s.class_level))) return true;
+        
         return false;
       };
 
@@ -210,8 +222,8 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
 
     return Object.entries(groupMap).map(([groupName, teachers]) => {
       const totalTeachers = teachers.length;
-      const midCompleteTeachers = teachers.filter(t => t.overall_status_midterm.includes('สมบูรณ์')).length;
-      const finCompleteTeachers = teachers.filter(t => t.overall_status_final.includes('สมบูรณ์')).length;
+      const midCompleteTeachers = teachers.filter(t => t.mid_submitted === t.total_classes && t.total_classes > 0).length;
+      const finCompleteTeachers = teachers.filter(t => t.fin_submitted === t.total_classes && t.total_classes > 0).length;
       return {
         groupName,
         teachers,
