@@ -83,18 +83,31 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
   // Filter submissions to match the current Year and Semester (ignore round to show both)
   const semesterSubmissions = useMemo(() => {
     return submissions.filter(s => 
-      s.year === academicYear && 
-      s.semester === semester
+      String(s.year) === String(academicYear) && 
+      String(s.semester) === String(semester)
     );
   }, [submissions, academicYear, semester]);
 
   // Combine Teacher Data with Submissions
   const dashboardData = useMemo(() => {
     return teacherData.map(t => {
+      // Normalize for old data fallback
+      const normalizeCode = (c: string) => (c || "").replace(/\s/g, '').toUpperCase();
+      const matchSubjectAndClass = (s: any, t: any) => {
+        if (s.subject_code === t.subject_code && s.class_level === t.class_level) return true;
+        
+        if (normalizeCode(s.subject_code) === normalizeCode(t.subject_code)) {
+          // If teacherData class_level is "ม.5" and submission is "ม.5/11", it matches
+          if (s.class_level && t.class_level && s.class_level.startsWith(t.class_level)) {
+            return true;
+          }
+        }
+        return false;
+      };
+
       // Midterm submissions
       const midSubs = semesterSubmissions.filter(s => 
-        s.subject_code === t.subject_code && 
-        s.class_level === t.class_level &&
+        matchSubjectAndClass(s, t) && 
         s.round === "กลางภาค"
       ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       
@@ -102,8 +115,7 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
 
       // Final submissions
       const finSubs = semesterSubmissions.filter(s => 
-        s.subject_code === t.subject_code && 
-        s.class_level === t.class_level &&
+        matchSubjectAndClass(s, t) && 
         s.round === "ปลายภาค"
       ).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       

@@ -521,7 +521,7 @@ function App() {
               className="text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1 rounded-full transition shadow-sm cursor-pointer flex items-center gap-1.5 align-middle"
               title="คลิกเพื่อดูบันทึกการอัปเดตระบบ (Patch Notes)"
             >
-              <span>v1.2.4</span>
+              <span>v1.2.5</span>
             </button>
           </h1>
           <p className="text-slate-500 text-lg">อัปโหลดไฟล์ PDF (SGS) และไฟล์ Excel (NextSchool) พร้อมกันหลายไฟล์</p>
@@ -1071,7 +1071,7 @@ function App() {
                 <span className="text-3xl">📋</span>
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">บันทึกการอัปเดตระบบ (Patch Notes)</h3>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">เวอร์ชันปัจจุบัน: <span className="text-blue-600 font-bold">v1.2.4</span> (20 กรกฎาคม 2569)</p>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">เวอร์ชันปัจจุบัน: <span className="text-blue-600 font-bold">v1.2.5</span> (5 สิงหาคม 2569)</p>
                 </div>
               </div>
               <button 
