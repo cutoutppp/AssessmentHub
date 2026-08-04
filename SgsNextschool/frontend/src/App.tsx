@@ -374,11 +374,11 @@ function App() {
     };
     
     const payloadPairs = [{
-      subject_code: subjectCode,
+      subject_code: tInfo.subject_code || subjectCode,
       subject_name: p.subject_name || tInfo.subject_name || "",
       subject_group: tInfo.subject_group,
       teacher_name: tInfo.teacher_name,
-      class_level: classLevel,
+      class_level: tInfo.class_level || classLevel,
       sgs_filename: p.sgs_filename,
       nextschool_filename: p.nextschool_filename,
       sgs_pdf_b64: p.results?.sgs_pdf_b64,
