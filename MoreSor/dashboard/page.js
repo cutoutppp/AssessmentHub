@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('ทั้งหมด');
   const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [submissionMode, setSubmissionMode] = useState(2); // 1: round 1, 2: round 2
 
   // Timeframe State
   const [timeframeState, setTimeframeState] = useState({ phase: 1, message: 'กำลังโหลดข้อมูลเวลา...' });
@@ -44,6 +45,7 @@ export default function Dashboard() {
           configJson.config.forEach(c => {
              if (c.Key === 'Phase1_Deadline') p1Date = new Date(c.Value);
              if (c.Key === 'Phase2_Deadline') p2Date = new Date(c.Value);
+             if (c.Key === 'Submission_Mode') setSubmissionMode(parseInt(c.Value) || 2);
           });
           
           if (p1Date && now <= p1Date) {
@@ -198,11 +200,13 @@ export default function Dashboard() {
         {/* Header - Matching TeacherHub */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Moresor Dashboard
+            <h1 className={`text-3xl font-extrabold tracking-tight ${submissionMode === 1 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent' : 'text-slate-900'}`}>
+              {submissionMode === 1 ? 'Moresor Dashboard - ส่ง ปพ.5 (รอบแรก)' : 'Moresor Dashboard'}
             </h1>
             <p className="text-slate-500 mt-2 font-medium">
-              ระบบประมวลผลและติดตามสถานะ มส. (SGS Integration)
+              {submissionMode === 1 
+                ? 'ติดตามสถานะการนำส่งไฟล์ ปพ.5 เพื่อเก็บเป็นหลักฐานในระบบ' 
+                : 'ระบบประมวลผลและติดตามสถานะ มส. (SGS Integration)'}
             </p>
           </div>
           <div className="flex gap-3">
@@ -267,10 +271,10 @@ export default function Dashboard() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
                 <div className="relative z-10">
                   <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> ส่งแล้ว
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> {submissionMode === 1 ? 'อัปโหลดแล้ว' : 'ส่งแล้ว'}
                   </p>
                   <p className="text-4xl font-bold text-slate-900 mt-2">{stats.submitted}</p>
-                  <p className="text-emerald-600 text-sm mt-1">วิชาที่ยืนยันแล้ว</p>
+                  <p className="text-emerald-600 text-sm mt-1">{submissionMode === 1 ? 'วิชาที่มีไฟล์ ปพ.5' : 'วิชาที่ยืนยันแล้ว'}</p>
                 </div>
               </div>
 
@@ -278,10 +282,10 @@ export default function Dashboard() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-rose-50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
                 <div className="relative z-10">
                   <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-rose-500" /> ยังไม่ส่ง
+                    <Clock className="w-4 h-4 text-rose-500" /> {submissionMode === 1 ? 'รออัปโหลด' : 'ยังไม่ส่ง'}
                   </p>
                   <p className="text-4xl font-bold text-slate-900 mt-2">{stats.pending}</p>
-                  <p className="text-rose-600 text-sm mt-1">วิชาที่รอการประมวลผล</p>
+                  <p className="text-rose-600 text-sm mt-1">{submissionMode === 1 ? 'วิชาที่ยังไม่ส่งไฟล์' : 'วิชาที่รอการประมวลผล'}</p>
                 </div>
               </div>
             </div>
@@ -415,11 +419,11 @@ export default function Dashboard() {
                       <div className="pt-3 flex justify-between items-center border-t border-slate-50">
                         {isComplete ? (
                           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> ส่งครบแล้ว
+                            <CheckCircle2 className="w-3.5 h-3.5" /> {submissionMode === 1 ? 'อัปโหลดครบแล้ว' : 'ส่งครบแล้ว'}
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-md">
-                            <Clock className="w-3.5 h-3.5" /> รอส่ง {teacher.pending} วิชา
+                            <Clock className="w-3.5 h-3.5" /> {submissionMode === 1 ? `รออัปโหลด ${teacher.pending} วิชา` : `รอส่ง ${teacher.pending} วิชา`}
                           </span>
                         )}
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-blue-600 transition-colors flex items-center gap-1">
