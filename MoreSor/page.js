@@ -11,6 +11,8 @@ function DashboardContent() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: upload, 2: preview
   const [submissionMode, setSubmissionMode] = useState(2); // 1: round 1, 2: round 2
+  const [isDragActive, setIsDragActive] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null); // { current: 1, total: 3, filename: '' }
   
   const [metaData, setMetaData] = useState(null); // courseCode, classRoom, etc.
   const [masterData, setMasterData] = useState(null); // totalHours, teacherName, courseName
@@ -187,21 +189,125 @@ function DashboardContent() {
     }
   };
 
-  const handleFileUpload = async (e) => {
-    const selectedFile = e.target.files[0];
-    if (!selectedFile) {
-        showAlert('กรุณาอัปเลือกไฟล์ PDF ก่อน', 'warning');
-        return;
+  const handleFilesSelection = (filesList) => {
+    if (!filesList || filesList.length === 0) return;
+    const files = Array.from(filesList).filter(f => f.type === 'application/pdf');
+    if (files.length === 0) {
+      showAlert('กรุณาอัปโหลดเฉพาะไฟล์ PDF เท่านั้น', 'warning');
+      return;
     }
+
+    if (submissionMode === 1) {
+      processMultipleFilesDrive(files);
+    } else {
+      // โหมด 2 รับแค่ไฟล์แรกไฟล์เดียว เพราะต้องตรวจสอบ มส. ทีละวิชา
+      processSingleFileMS(files[0]);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    handleFilesSelection(e.target.files);
+    // เคลียร์ค่า input ให้สามารถเลือกไฟล์เดิมซ้ำได้
+    if (e.target) e.target.value = null;
+  };
+
+  const processMultipleFilesDrive = async (files) => {
+    setLoading(true);
+    let successCount = 0;
+    let errors = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      setUploadProgress({ current: i + 1, total: files.length, filename: currentFile.name });
+      
+      try {
+        const formData = new FormData();
+        formData.append('file', currentFile);
+
+        // 1. Parse PDF
+        const uploadRes = await fetch('http://localhost:8000/api/moresor/upload-pdf', {
+          method: 'POST',
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (!uploadData.success) throw new Error(uploadData.error || 'Parsing failed');
+
+        // Check for ✘ pattern
+        if (uploadData.students && uploadData.students.length > 0 && uploadData.students.every(s => s.status === '✘')) {
+          throw new Error('ตรวจพบการขาดเรียนทุกคน (ยังไม่ได้เช็คชื่อ)');
+        }
+
+        // 2. Fetch Masterdata
+        const mdRes = await fetch('http://localhost:8000/api/moresor/masterdata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            courseCode: uploadData.courseCode,
+            classRoom: uploadData.classRoom
+          })
+        });
+        const mdData = await mdRes.json();
+        if (!mdData.success) throw new Error(mdData.error || 'ไม่พบข้อมูลใน Masterdata');
+        
+        const mData = mdData.data;
+        if (mData.teacherName && mData.teacherName !== loggedInTeacher) {
+          throw new Error(`ไฟล์นี้เป็นวิชาของครู "${mData.teacherName}" ไม่ใช่วิชาของคุณ`);
+        }
+
+        // 3. Upload to Drive
+        const toBase64 = f => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(f);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+        const base64Str = await toBase64(currentFile);
+        
+        const driveRes = await fetch('http://localhost:8000/api/moresor/upload-pdf-drive', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fileBase64: base64Str,
+                fileName: currentFile.name,
+                courseCode: uploadData.courseCode,
+                classRoom: uploadData.classRoom,
+                teacherName: mData.teacherName,
+                subjectGroup: mData.subjectGroup || "อื่นๆ"
+            })
+        });
+        const driveData = await driveRes.json();
+        if (!driveData.success) throw new Error(driveData.error || 'อัปโหลดลง Drive ไม่สำเร็จ');
+        
+        successCount++;
+      } catch (err) {
+        errors.push(`${currentFile.name}: ${err.message}`);
+      }
+    }
+
+    setLoading(false);
+    setUploadProgress(null);
+
+    if (errors.length > 0) {
+      if (successCount === 0) {
+        showAlert(`อัปโหลดล้มเหลวทั้งหมด\n${errors.join('\n')}`, 'error');
+      } else {
+        showAlert(`อัปโหลดสำเร็จ ${successCount}/${files.length} ไฟล์\n\nข้อผิดพลาด:\n${errors.join('\n')}`, 'warning');
+      }
+    } else {
+      showAlert(`อัปโหลดไฟล์สำเร็จ ${successCount} ไฟล์ เรียบร้อยแล้ว!`, 'success');
+    }
+    fetchDashboardData();
+  };
+
+  const processSingleFileMS = async (selectedFile) => {
     setFile(selectedFile);
-    
     setLoading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     try {
       // 1. Parse PDF using the external Render backend
-      const uploadRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf', {
+      const uploadRes = await fetch('http://localhost:8000/api/moresor/upload-pdf', {
         method: 'POST',
         body: formData
       });
@@ -218,82 +324,12 @@ function DashboardContent() {
         classRoom: uploadData.classRoom
       });
 
-      // 2. Fetch Masterdata
-      const mdRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/masterdata', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          courseCode: uploadData.courseCode,
-          classRoom: uploadData.classRoom
-        })
-      });
-      
-      let totalHours = 0;
-      let mData = null;
-
-      if (mdRes.ok) {
-        const mdData = await mdRes.json();
-        if (mdData.success) {
-          // Check if this class belongs to the logged-in teacher
-          if (mdData.data.teacherName && mdData.data.teacherName !== loggedInTeacher) {
-            showAlert(`ไฟล์นี้เป็นวิชาของครู "${mdData.data.teacherName}" ไม่ใช่ของคุณ กรุณาอัปโหลดไฟล์ให้ตรงกับวิชาที่คุณสอนครับ`, 'error', 'อัปโหลดผิดวิชา');
-            setLoading(false);
-            return;
-          }
-          
-          mData = mdData.data;
-          setMasterData(mdData.data);
-          totalHours = mdData.data.totalHours;
-        } else {
-          showAlert('ไม่พบข้อมูลวิชานี้ในระบบ (Masterdata) กรุณาตรวจสอบว่ามีวิชานี้ในตารางสอนหรือไม่', 'error');
-          setLoading(false);
-          return;
-        }
       } else {
         const errorData = await mdRes.json().catch(() => ({}));
         showAlert('เกิดข้อผิดพลาดในการดึงข้อมูล: ' + (errorData.error || 'โปรดลองใหม่อีกครั้ง'), 'error');
         setLoading(false);
         return;
       }
-
-      if (submissionMode === 1) {
-        try {
-          const toBase64 = f => new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.readAsDataURL(f);
-              reader.onload = () => resolve(reader.result.split(',')[1]);
-              reader.onerror = error => reject(error);
-          });
-          const base64Str = await toBase64(selectedFile);
-          
-          const driveRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf-drive', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  fileBase64: base64Str,
-                  fileName: selectedFile.name,
-                  courseCode: uploadData.courseCode,
-                  classRoom: uploadData.classRoom,
-                  teacherName: mData ? mData.teacherName : "",
-                  subjectGroup: mData ? (mData.subjectGroup || "อื่นๆ") : "อื่นๆ"
-              })
-          });
-          const driveData = await driveRes.json();
-          if (driveData.success) {
-              showAlert('อัปโหลดไฟล์ลง Google Drive และบันทึกการส่ง (รอบ 1) เรียบร้อยแล้ว!', 'success');
-              setFile(null);
-              fetchDashboardData();
-          } else {
-              showAlert('เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ' + driveData.error, 'error');
-          }
-        } catch(e) {
-          showAlert('เกิดข้อผิดพลาด: ' + e.message, 'error');
-        }
-        setLoading(false);
-        return;
-      }
-
-      // 3. Process students
       const processed = uploadData.students.map(s => {
         let percentage = 0;
         let remark = '';
@@ -334,6 +370,34 @@ function DashboardContent() {
     }
     
     setLoading(false);
+  };
+
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFilesSelection(e.dataTransfer.files);
+    }
   };
 
   const handleRemarkChange = (index, value) => {
