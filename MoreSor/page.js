@@ -36,8 +36,8 @@ function DashboardContent() {
   const [editingStudent, setEditingStudent] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   
-  // Confirm Modal State
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, title: '', message: '', isZero: false, count: 0 });
+  const [showPatchNotes, setShowPatchNotes] = useState(false);
   
   // Alert Modal State
   const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', type: 'error' }); // type: 'error' | 'success' | 'warning'
@@ -213,7 +213,7 @@ function DashboardContent() {
 
   const processMultipleFilesDrive = async (files) => {
     setLoading(true);
-    let successCount = 0;
+    let successCount = 0; let successFiles = [];
     let errors = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -225,22 +225,22 @@ function DashboardContent() {
         formData.append('file', currentFile);
 
         // 1. Parse PDF
-        const uploadRes = await fetch('http://localhost:8000/api/moresor/upload-pdf', {
+        const uploadRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf', {
           method: 'POST',
           body: formData
         });
         const uploadData = await uploadRes.json();
         if (!uploadData.success) throw new Error(uploadData.error || 'Parsing failed');
 
-        // Check for ✘ pattern
-        if (uploadData.students && uploadData.students.length > 0 && uploadData.students.every(s => s.status === '✘')) {
+        // Check for โ pattern
+        if (uploadData.students && uploadData.students.length > 0 && uploadData.students.every(s => s.status === 'โ')) {
           throw new Error('ตรวจพบการขาดเรียนทุกคน (ยังไม่ได้เช็คชื่อ)');
         }
 
         // 2. Fetch Masterdata
-        const mdRes = await fetch('http://localhost:8000/api/moresor/masterdata', {
+        const mdRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/masterdata', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          
           body: JSON.stringify({
             courseCode: uploadData.courseCode,
             classRoom: uploadData.classRoom
@@ -263,11 +263,11 @@ function DashboardContent() {
         });
         const base64Str = await toBase64(currentFile);
         
-        const driveRes = await fetch('http://localhost:8000/api/moresor/upload-pdf-drive', {
+        const driveRes = await fetch(GAS_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            
             body: JSON.stringify({
-                fileBase64: base64Str,
+                action: 'uploadPdfToDrive', fileBase64: base64Str,
                 fileName: currentFile.name,
                 courseCode: uploadData.courseCode,
                 classRoom: uploadData.classRoom,
@@ -278,7 +278,7 @@ function DashboardContent() {
         const driveData = await driveRes.json();
         if (!driveData.success) throw new Error(driveData.error || 'อัปโหลดลง Drive ไม่สำเร็จ');
         
-        successCount++;
+        successCount++; successFiles.push(currentFile.name);
       } catch (err) {
         errors.push(`${currentFile.name}: ${err.message}`);
       }
@@ -307,7 +307,7 @@ function DashboardContent() {
 
     try {
       // 1. Parse PDF using the external Render backend
-      const uploadRes = await fetch('http://localhost:8000/api/moresor/upload-pdf', {
+      const uploadRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf', {
         method: 'POST',
         body: formData
       });
@@ -324,6 +324,35 @@ function DashboardContent() {
         classRoom: uploadData.classRoom
       });
 
+      // 2. Fetch Masterdata
+      const mdRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/masterdata', {
+        method: 'POST',
+        
+        body: JSON.stringify({
+          courseCode: uploadData.courseCode,
+          classRoom: uploadData.classRoom
+        })
+      });
+      
+      let totalHours = 0;
+      let mData = null;
+
+      if (mdRes.ok) {
+        const mdData = await mdRes.json();
+        if (mdData.success) {
+          if (mdData.data.teacherName && mdData.data.teacherName !== loggedInTeacher) {
+            showAlert(`ไฟล์นี้เป็นวิชาของครู "${mdData.data.teacherName}" ไม่ใช่ของคุณ กรุณาอัปโหลดไฟล์ให้ตรงกับวิชาที่คุณสอนครับ`, 'error', 'อัปโหลดผิดวิชา');
+            setLoading(false);
+            return;
+          }
+          mData = mdData.data;
+          setMasterData(mdData.data);
+          totalHours = mdData.data.totalHours;
+        } else {
+          showAlert('ไม่พบข้อมูลวิชานี้ในระบบ (Masterdata) กรุณาตรวจสอบว่ามีวิชานี้ในตารางสอนหรือไม่', 'error');
+          setLoading(false);
+          return;
+        }
       } else {
         const errorData = await mdRes.json().catch(() => ({}));
         showAlert('เกิดข้อผิดพลาดในการดึงข้อมูล: ' + (errorData.error || 'โปรดลองใหม่อีกครั้ง'), 'error');
@@ -554,7 +583,7 @@ function DashboardContent() {
               href={overviewHref}
               className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-5 py-2.5 rounded-xl font-semibold shadow-sm border border-blue-200 transition-all duration-200 flex items-center gap-2"
             >
-              🏫 สำหรับครูที่ปรึกษา/วิชาการ
+              👨‍🏫 สำหรับครูที่ปรึกษา/วิชาการ
             </Link>
             <Link 
               href={dashboardHref}
@@ -622,6 +651,23 @@ function DashboardContent() {
                   <p className="text-sm font-medium text-slate-500">ผู้ใช้งานปัจจุบัน</p>
                   <p className="text-lg font-bold text-slate-800">{loggedInTeacher}</p>
                 </div>
+              </div>
+            </div>
+
+            {/* Mode Explanation Box */}
+            <div className={`mb-8 p-5 rounded-2xl border text-left flex gap-4 ${submissionMode === 1 ? 'bg-purple-50 border-purple-100' : 'bg-blue-50 border-blue-100'}`}>
+              <div className={`p-3 rounded-full h-fit ${submissionMode === 1 ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
+                <FileSpreadsheet className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className={`font-bold text-lg mb-1 ${submissionMode === 1 ? 'text-purple-800' : 'text-blue-800'}`}>
+                  {submissionMode === 1 ? 'ส่งเวลาเรียนครั้งที่ 1' : 'โหมดที่ 2: ตรวจสอบ มส. รายบุคคล'}
+                </h4>
+                <p className={`text-sm leading-relaxed ${submissionMode === 1 ? 'text-purple-700' : 'text-blue-700'}`}>
+                  {submissionMode === 1 
+                    ? 'ในรอบนี้ คุณครูสามารถ "ลากไฟล์ PDF หลายๆ ไฟล์พร้อมกัน" มาวางเพื่ออัปโหลดเก็บเป็นหลักฐานลงส่วนกลางได้เลย โดยระบบจะอัปโหลดขึ้น Google Drive และบันทึกลิงก์ให้อัตโนมัติ' 
+                    : 'ในรอบนี้ คุณครูต้อง "อัปโหลดทีละ 1 ไฟล์" เพื่อให้ระบบคำนวณเวลาเรียนของนักเรียน และคัดกรองคนที่ติด มส. ให้คุณครูตรวจสอบความถูกต้องก่อนส่ง'}
+                </p>
               </div>
             </div>
 
@@ -1035,7 +1081,7 @@ function DashboardContent() {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-slate-800">Patch Notes</h3>
-                <p className="text-indigo-600 font-medium">???????????????: v1.1.0</p>
+                <p className="text-indigo-600 font-medium">เวอร์ชันปัจจุบัน: v1.1.0</p>
               </div>
             </div>
             
@@ -1045,9 +1091,9 @@ function DashboardContent() {
                   <span className="w-2 h-2 rounded-full bg-emerald-500"></span> v1.1.0 (Latest Update)
                 </h4>
                 <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li><strong>????????? Drag & Drop:</strong> ????????????? ??.5 ??????????????????????????</li>
-                  <li><strong>??????? 1 (Multiple Upload):</strong> ???????????????? ???????????????????????? 1 ???????????????????????????????????????????? Drive ?????</li>
-                  <li><strong>?????? UI ?????????????:</strong> ????????????????????????????????????????????? (Progress Bar)</li>
+                  <li><strong>อัปโหลดแบบ Drag & Drop:</strong> สามารถลากไฟล์ ปพ.5 มาวางเพื่ออัปโหลดได้เลย</li>
+                  <li><strong>อัปโหลดทีละหลายไฟล์ (Multiple Upload):</strong> สามารถเลือกไฟล์หลายๆ ไฟล์พร้อมกันเพื่ออัปโหลดรวดเดียวเข้า Drive ได้เลย</li>
+                  <li><strong>ปรับปรุง UI สถานะการอัปโหลด:</strong> แสดงแถบความคืบหน้าการอัปโหลด (Progress Bar)</li>
                 </ul>
               </div>
 
@@ -1056,9 +1102,9 @@ function DashboardContent() {
                   <span className="w-2 h-2 rounded-full bg-slate-300"></span> v1.0.0 (Initial Release)
                 </h4>
                 <ul className="list-disc pl-6 mt-2 space-y-2 text-slate-500">
-                  <li>??????????????????????????????????????? (??? 1 ?????? 2)</li>
-                  <li>?????????????????????????????? (?????????? 100% ?????????????????????)</li>
-                  <li>????????????? PDF ?????????????????????????????????????????????????????? 80%</li>
+                  <li>รองรับการอัปโหลดและตรวจสอบเวลาเรียน (ภาค 1 และภาค 2)</li>
+                  <li>ระบบประมวลผลการมาเรียน (ตรวจสอบ 100% ว่านักเรียนผ่านเกณฑ์หรือไม่)</li>
+                  <li>รองรับการอ่าน PDF รายงานเวลาเรียน และสรุปรายชื่อนักเรียนที่เวลาเรียนไม่ถึง 80%</li>
                 </ul>
               </div>
             </div>
@@ -1067,7 +1113,7 @@ function DashboardContent() {
               onClick={() => setShowPatchNotes(false)}
               className="mt-6 w-full px-6 py-3.5 rounded-2xl font-bold text-white bg-slate-800 hover:bg-slate-700 transition-colors shadow-lg hover:-translate-y-0.5"
             >
-              ???????
+              ปิดหน้าต่าง
             </button>
           </div>
         </div>
@@ -1157,3 +1203,4 @@ function DashboardContent() {
 export default function Home() {
   return <DashboardContent />;
 }
+
