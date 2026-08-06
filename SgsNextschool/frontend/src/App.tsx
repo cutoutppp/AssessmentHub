@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import NextSchoolExcelViewer from './NextSchoolExcelViewer'
 import Swal from 'sweetalert2'
 import Dashboard from './Dashboard'
@@ -147,23 +147,12 @@ function App() {
 
     let found = teacherData.find(t => {
       if (normalizeCode(t.subject_code) !== normCode) return false;
-      const nClass = normalizeClass(t.class_level);
-      if (nClass === normInput) return true;
       
-      const raw = (t.class_level || "").toString().replace(/\s+/g, '');
-      const rawWithSpace = (t.class_level || "").toString();
+      const tClasses = (t.class_level || "").toString().split(',').map(s => normalizeClass(s));
+      if (tClasses.includes(normInput)) return true;
       
-      if (rawWithSpace.includes(classLevel)) return true;
-      if (rawWithSpace.includes(normInput)) return true;
-      
-      const parts = normInput.split('/');
-      if (parts.length === 2) {
-        if (raw.includes(`${parts[0]}/${parts[1]}`)) return true;
-        if (raw.includes(`${parts[0]}ห้อง${parts[1]}`)) return true;
-      }
-
-      if (classLevel && t.class_level && String(classLevel).startsWith(String(t.class_level))) return true;
-      if (classLevel && t.class_level && String(t.class_level).startsWith(String(classLevel))) return true;
+      const rawClasses = (t.class_level || "").toString().split(',').map(s => s.trim());
+      if (rawClasses.includes(classLevel)) return true;
 
       return false;
     });
