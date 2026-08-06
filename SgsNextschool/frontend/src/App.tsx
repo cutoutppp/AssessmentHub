@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+﻿import { useState, useRef, useEffect } from 'react'
 import NextSchoolExcelViewer from './NextSchoolExcelViewer'
 import Swal from 'sweetalert2'
 import Dashboard from './Dashboard'
@@ -161,6 +161,10 @@ function App() {
         if (raw.includes(`${parts[0]}/${parts[1]}`)) return true;
         if (raw.includes(`${parts[0]}ห้อง${parts[1]}`)) return true;
       }
+
+      if (classLevel && t.class_level && String(classLevel).startsWith(String(t.class_level))) return true;
+      if (classLevel && t.class_level && String(t.class_level).startsWith(String(classLevel))) return true;
+
       return false;
     });
 
@@ -396,10 +400,12 @@ function App() {
 
       try {
         setIsSaving(true);
-        await fetch(webhookUrl, {
+        await fetch(`${BACKEND_URL}/api/queue_save`, {
           method: "POST",
-          body: JSON.stringify(payload),
-          mode: "no-cors",
+          body: JSON.stringify({
+            webhookUrl: webhookUrl,
+            payload: payload
+          }),
           headers: {
             "Content-Type": "application/json"
           }
