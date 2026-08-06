@@ -102,17 +102,15 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
         
         if (sClassClean === tClassClean) return true;
         
-        const tcRaw = (t.class_level || "").toString();
-        const tcClean = tcRaw.replace(/\s+/g, "");
-        if (tcRaw.includes(s.class_level) || tcRaw.includes(sClassClean)) return true;
+        const tClasses = (t.class_level || "").toString().split(',').map((c: string) => normalizeClass(c));
+        if (tClasses.includes(sClassClean)) return true;
         
-        const parts = sClassClean.split('/');
-        if (parts.length === 2) {
-          if (tcClean.includes(`${parts[0]}/${parts[1]}`) || tcClean.includes(`${parts[0]}ห้อง${parts[1]}`)) return true;
-        }
+        const sClasses = (s.class_level || "").toString().split(',').map((c: string) => normalizeClass(c));
+        if (sClasses.includes(tClassClean)) return true;
         
-        if (s.class_level && t.class_level && String(s.class_level).startsWith(String(t.class_level))) return true;
-        if (s.class_level && t.class_level && String(t.class_level).startsWith(String(s.class_level))) return true;
+        const tRawArr = (t.class_level || "").toString().split(',').map((c: string) => c.trim());
+        const sRawArr = (s.class_level || "").toString().split(',').map((c: string) => c.trim());
+        if (tRawArr.some((c: string) => sRawArr.includes(c))) return true;
         
         return false;
       };
