@@ -50,33 +50,21 @@ def parse_sgs_pdf(file_content):
                 
                 # Build dynamic column mapping from headers
                 if not sgs_mapping and len(texts) > 1:
-                    row0 = [clean_text(x) for x in texts[0]]
+                    # Hardcode indices because PyMuPDF often merges header cells differently than data rows
+                    # In SGS, the data rows consistently align with: 
+                    # 1=เลขประจำตัว, 2=ชื่อ, 3=เลขที่, 4=ก่อนกลางภาค, 5=กลางภาค, 6=หลังกลางภาค, 7=ปลายภาค, 8=รวม
+                    sgs_mapping = {
+                        "before_mid": 4,
+                        "mid": 5,
+                        "after_mid": 6,
+                        "final": 7,
+                        "total": 8
+                    }
+                    
                     row1 = [clean_text(x) for x in texts[1]]
-                    
-                    sections = [
-                        {"key": "before_mid", "keywords": ["ก่อนกลางภาค", "กลอนกลางภาค", "กลอน\nกลางภาค", "ก่อน\nกลางภาค"]},
-                        {"key": "mid", "keywords": ["กลางภาค"]},
-                        {"key": "after_mid", "keywords": ["หลังกลางภาค", "หลพงกลางภาค", "หลพง\nกลางภาค", "หลัง\nกลางภาค"]},
-                        {"key": "final", "keywords": ["ปลายภาค", "ปลาย\nภาค"]},
-                        {"key": "total", "keywords": ["รวม"]},
-                    ]
-                    
-                    for i, sec in enumerate(sections):
-                        col_idx = -1
-                        for j, val in enumerate(row0):
-                            if any(k in val for k in sec["keywords"]):
-                                if sec["key"] == "mid" and ("หลัง" in val or "หลพง" in val or "ก่อน" in val or "กลอน" in val):
-                                    continue
-                                # make sure 'total' doesn't match something else
-                                if sec["key"] == "total" and j < 6:
-                                    continue
-                                col_idx = j
-                                break
-                                
-                        if col_idx != -1:
-                            sgs_mapping[sec["key"]] = col_idx
-                            if col_idx < len(row1) and str(row1[col_idx]).isdigit():
-                                max_scores[sec["key"]] = int(row1[col_idx])
+                    for key, col_idx in sgs_mapping.items():
+                        if col_idx < len(row1) and str(row1[col_idx]).isdigit():
+                            max_scores[key] = int(row1[col_idx])
                             
                 
                 for row_text, row_bbox in zip(texts, rows_bboxes):
