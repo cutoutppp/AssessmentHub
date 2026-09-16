@@ -22,8 +22,6 @@ let subjectsData = [];
 let expertsData = [];
 let myExistingProjects = []; // Store existing projects for duplicate prevention
 
-window.lastAiRequestBody = null;
-window.lastAiCombinedText = null;
 let indicatorOptions = [];
 let parsedQuestions = [];
 
@@ -74,12 +72,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const pid = urlParams.get('project_id');
     const vpid = urlParams.get('view_results');
-    
-    // DEV MODE: Force teacher code 444 for testing
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        localStorage.setItem('teacher_code', '444');
-        sessionStorage.removeItem('teacher_name');
-    }
     
     // Check for SSO via LocalStorage (Shared from AssessmentHub on same domain)
     const ssoCode = localStorage.getItem('teacher_code');
@@ -303,21 +295,43 @@ window.updateSubjectDropdownOptions = () => {
     
     const currentVal = subjectSelect.value;
     
-    // Get the currently selected examType
+    // Get the currently selected examType (default to ปลายภาค)
     const examRadios = document.getElementsByName('examType');
-    let selectedExamType = 'สอบกลางภาค';
+    let selectedExamType = 'ปลายภาค';
     for (let r of examRadios) {
-        if (r.checked) selectedExamType = 'สอบ' + r.value;
+        if (r.checked) selectedExamType = r.value;
     }
+    
+    const isTargetFinal = selectedExamType.includes('ปลายภาค');
     
     subjectSelect.innerHTML = '<option value="">-- เลือกวิชา --</option>';
     subjectsData.forEach(sub => {
         const sCodeLower = String(sub.subject_code).trim().toLowerCase();
+        
         // Check if there's a project for this subject AND this exam type
-        const hasProject = myExistingProjects && myExistingProjects.some(p => 
-            String(p.subject_code).trim().toLowerCase() === sCodeLower &&
-            String(p.exam_type).trim() === String(selectedExamType).trim()
-        );
+        const hasProject = myExistingProjects && myExistingProjects.some(p => {
+            // Do not filter out if we are editing this exact project
+            if (currentEditingProjectId && String(p.project_id) === String(currentEditingProjectId)) {
+                return false;
+            }
+            
+            const pSubCode = String(p.subject_code || '').trim().toLowerCase();
+            if (pSubCode !== sCodeLower) return false;
+            
+            // Check project exam_type
+            const pExamType = String(p.exam_type || '').trim();
+            if (pExamType) {
+                return isTargetFinal ? pExamType.includes('ปลายภาค') : pExamType.includes('กลางภาค');
+            }
+            
+            // Fallback: check project_name
+            const pName = String(p.project_name || '').trim();
+            if (pName) {
+                return isTargetFinal ? pName.includes('ปลายภาค') : pName.includes('กลางภาค');
+            }
+            
+            return false;
+        });
         
         if (!hasProject) {
             const opt = document.createElement('option');
@@ -337,6 +351,10 @@ window.updateSubjectDropdownOptions = () => {
         subjectSelect.value = currentVal;
     } else {
         subjectSelect.value = "";
+    }
+    
+    if (window.updateGeneratedProjectName) {
+        window.updateGeneratedProjectName();
     }
 };
 
@@ -386,14 +404,23 @@ async function fetchMyProjects(teacCode, teacherName) {
         if (data.status === 'success' && data.data) {
             myExistingProjects = data.data; // Store globally
             renderMyProjects(data.data);
+            if (window.updateSubjectDropdownOptions) {
+                window.updateSubjectDropdownOptions();
+            }
         } else {
             myExistingProjects = [];
             tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">ไม่พบโครงการ</td></tr>';
+            if (window.updateSubjectDropdownOptions) {
+                window.updateSubjectDropdownOptions();
+            }
         }
     } catch (error) {
         myExistingProjects = [];
         console.error('Fetch projects error:', error);
         tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-500">เกิดข้อผิดพลาดในการโหลด</td></tr>';
+        if (window.updateSubjectDropdownOptions) {
+            window.updateSubjectDropdownOptions();
+        }
     }
 }
 
@@ -458,7 +485,7 @@ window.updateGeneratedProjectName = () => {
     const selSubj = subjectsData.find(s => s.subject_code === subjCode);
     
     const examRadios = document.getElementsByName('examType');
-    let eType = 'สอบกลางภาค';
+    let eType = 'สอบปลายภาค';
     for (let r of examRadios) {
         if (r.checked) eType = 'สอบ' + r.value;
     }
@@ -470,7 +497,16 @@ window.updateGeneratedProjectName = () => {
         pSem = selSubj.semester || pSem;
     }
     
-    disp.textContent = `ชื่อชุด: สอบ ${subjCode} ${eType} เทอม ${pSem}/${pYear}`;
+    disp.textContent = `ชื่อชุด: ข้อสอบ ${subjCode} ${eType} เทอม ${pSem}/${pYear}`;
+};
+
+window.onExamTypeChange = () => {
+    if (window.updateGeneratedProjectName) {
+        window.updateGeneratedProjectName();
+    }
+    if (window.updateSubjectDropdownOptions) {
+        window.updateSubjectDropdownOptions();
+    }
 };
 
 window.editProject = async (projectId) => {
@@ -495,14 +531,12 @@ window.editProject = async (projectId) => {
             // Populate form if pInfo exists
             if (pInfo) {
                 currentEditingProjectId = pInfo.project_id || projectId;
-                const subjSel = document.getElementById('subjectSelect');
-                if(subjSel && pInfo.subject_code) subjSel.value = pInfo.subject_code;
 
-                const pNameText = pInfo.project_name || '';
-                if (pNameText.includes('กลางภาค')) {
+                const pExamType = (pInfo.exam_type || '') + ' ' + (pInfo.project_name || '');
+                if (pExamType.includes('กลางภาค')) {
                     const e = document.querySelector('input[name="examType"][value="กลางภาค"]');
                     if(e) e.checked = true;
-                } else if (pNameText.includes('ปลายภาค')) {
+                } else if (pExamType.includes('ปลายภาค')) {
                     const e = document.querySelector('input[name="examType"][value="ปลายภาค"]');
                     if(e) e.checked = true;
                 }
@@ -511,6 +545,12 @@ window.editProject = async (projectId) => {
                     const st = document.querySelector(`input[name="subjectType"][value="${pInfo.subject_type}"]`);
                     if(st) st.checked = true;
                 }
+
+                if (window.updateSubjectDropdownOptions) {
+                    window.updateSubjectDropdownOptions();
+                }
+                const subjSel = document.getElementById('subjectSelect');
+                if(subjSel && pInfo.subject_code) subjSel.value = pInfo.subject_code;
                 
                 if (window.updateGeneratedProjectName) {
                     window.updateGeneratedProjectName();
@@ -642,601 +682,151 @@ async function fetchPendingEvaluations(teacCode) {
 // ==========================================
 // EXAM PARSER
 // ==========================================
-
-// API Key for Gemini (Hardcoded as requested)
-// Obfuscated API Key for testing (bypasses basic secret scanning)
-// DO NOT use in production if billing is enabled
-const p1 = "AQ.Ab8RN";
-const p2 = "6J5w2Q7bN";
-const p3 = "8fpOLeJ3W5";
-const p4 = "849U1cD4o";
-const p5 = "qvPXJdiO4";
-const p6 = "-S8sY23A";
-const GEMINI_API_KEY = p1 + p2 + p3 + p4 + p5 + p6;
-let loadedPdfBase64 = null;
-
-// DOCX & PDF Upload Handler
-const docxUploadInput = document.getElementById('docxUploadInput');
-if (docxUploadInput) {
-    docxUploadInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        loadedPdfBase64 = null; // reset
-
-        if (file.type === "application/pdf") {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64String = e.target.result.split(',')[1];
-                loadedPdfBase64 = base64String;
-                showToast('อัปโหลดไฟล์ PDF สำเร็จ กดสร้างตารางข้อสอบได้เลย', 'success');
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // DOCX Handling
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const arrayBuffer = e.target.result;
-                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                .then(function(result) {
-                    if (rawExamInput) {
-                        const rawText = result.value || "";
-                        const lines = rawText.split('\n').map(l => l.trim()).filter(l => l);
-                        
-                        let examLines = [];
-                        let subjLines = [];
-                        let indicatorLines = [];
-                        let foundFirstQuestion = false;
-                        
-                        let objCount = 0;
-                        let subjCount = 0;
-                        
-                        let currentQuestionNumber = 0;
-                        let isSubjectiveSection = false;
-
-                        let isCollectingIndicators = false;
-
-                        for (let i = 0; i < lines.length; i++) {
-                            let line = lines[i];
-
-                            // กรอง "ลงชื่อ" ทิ้ง
-                            if (line.match(/^ลงชื่อ/)) {
-                                continue;
-                            }
-                            
-                            // ถ้าเจอบรรทัดคำถาม ให้ปิดโหมดตัวชี้วัดทันที
-                            if (line.match(/^\d+[\.\)]/)) {
-                                isCollectingIndicators = false;
-                            }
-
-                            // ปิดโหมดเก็บตัวชี้วัดเมื่อเจอคำชี้แจง หรือ ตอนที่
-                            if (line.includes("คำชี้แจง") || line.includes("ตอนที่")) {
-                                isCollectingIndicators = false;
-                            }
-
-                            // ตรวจสอบตัวชี้วัดที่แทรกอยู่ตรงไหนก็ได้ของไฟล์
-                            if (line.match(/^(ตัวชี้วัด|มาตรฐาน|ผลการเรียนรู้|สาระที่)/)) {
-                                isCollectingIndicators = true;
-                            }
-
-                            if (isCollectingIndicators) {
-                                indicatorLines.push(line);
-                                // ปิดโหมดเมื่อจบบรรทัดด้วย ( X ข้อ ) หรือ (ข้อที่ X-Y)
-                                if (line.match(/\(.*(ข้อ|ข้อที่).*\)$/)) {
-                                    isCollectingIndicators = false;
-                                }
-                                // เตะบรรทัดนี้ทิ้งไปเลย ไม่เอาไปรวมเป็นข้อสอบ
-                                continue;
-                            }
-
-                            if (!foundFirstQuestion) {
-                                // พยายามหาจำนวนข้อ ปรนัย / อัตนัย จากส่วนหัว
-                                const objMatch = line.match(/ปรนัย.*?(\d+)\s*ข้อ/);
-                                if (objMatch) objCount = parseInt(objMatch[1]);
-                                
-                                const subjMatch = line.match(/อัตนัย.*?(\d+)\s*ข้อ/);
-                                if (subjMatch) subjCount = parseInt(subjMatch[1]);
-
-                                // ตรวจสอบว่าเป็นข้อ 1 หรือไม่ (เช่น 1. หรือ 1))
-                                if (line.match(/^1[\.\)]/)) {
-                                    foundFirstQuestion = true;
-                                    currentQuestionNumber = 1;
-
-                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
-                                    examLines.push(...line.split('\n'));
-                                }
-                            } else {
-                                // ถ้าเจอข้อ 1 ไปแล้ว
-                                // เช็คว่าขึ้นข้อใหม่หรือไม่
-                                if (line.match(/^\d+[\.\)]/)) {
-                                    currentQuestionNumber++;
-                                }
-                                
-                                // เช็คว่าสลับไปเป็นอัตนัยหรือยัง
-                                // สลับเมื่อ: 1. ข้อปัจจุบันมากกว่าจำนวนปรนัยที่ระบุไว้ OR 2. เจอคำว่าตอนที่ 2 อัตนัย
-                                if ((objCount > 0 && currentQuestionNumber > objCount) || (line.includes("ตอนที่") && line.includes("อัตนัย"))) {
-                                    isSubjectiveSection = true;
-                                }
-
-                                if (isSubjectiveSection) {
-                                    subjLines.push(line);
-                                } else {
-                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
-                                    examLines.push(...line.split('\n'));
-                                }
-                            }
-                        }
-
-                        // ถ้าไม่เจอข้อ 1 เลย ให้เอาทั้งหมดลงปรนัยไปก่อน
-                        if (!foundFirstQuestion) {
-                            examLines = lines;
-                        }
-
-                        // ใส่ข้อมูลลงใน Textarea
-                        rawExamInput.value = examLines.join('\n');
-                        
-                        // ใส่ข้อมูลลงกล่องอัตนัย
-                        const rawSubjectiveInput = document.getElementById('rawSubjectiveInput');
-                        if (rawSubjectiveInput && subjLines.length > 0) {
-                            rawSubjectiveInput.value = subjLines.join('\n');
-                        }
-
-                        // ถ้ามีตัวชี้วัด ให้เอาไปใส่ในกล่องตัวชี้วัด
-                        if (indicatorLines.length > 0 && indicatorsInput) {
-                            indicatorsInput.value = indicatorLines.join('\n');
-                        }
-                        
-                        // เติมจำนวนข้อสอบคาดหวังให้อัตโนมัติ (เอาแค่ปรนัย หรือรวมอัตนัยด้วย)
-                        const expectedQuestionsInput = document.getElementById('expectedQuestionsInput');
-                        if (expectedQuestionsInput && objCount > 0) {
-                            expectedQuestionsInput.value = objCount; // ใส่แค่ปรนัย เพราะตาราง IOC เน้นปรนัย
-                        }
-
-                        showToast('แยกข้อสอบและดึงตัวชี้วัดเรียบร้อย', 'success');
-                    }
-                })
-                .catch(function(err) {
-                    console.error("Mammoth Extract Error:", err);
-                    showToast('เกิดข้อผิดพลาดในการดึงข้อความจาก Word', 'error');
-                });
-        };
-        reader.readAsArrayBuffer(file);
-        }
-    });
-}
-
 const parseBtn = document.getElementById('parseBtn');
 if(parseBtn) {
-    parseBtn.addEventListener('click', async () => {
+    parseBtn.addEventListener('click', () => {
         const rawText = rawExamInput ? rawExamInput.value : '';
         const subjText = rawSubjectiveInput ? rawSubjectiveInput.value : '';
         const indsText = indicatorsInput ? indicatorsInput.value : '';
         
-        if (!rawText.trim() && !subjText.trim() && !loadedPdfBase64) {
-            showToast('กรุณาวางข้อสอบ หรืออัปโหลดไฟล์ก่อน', 'error');
+        if (!rawText.trim() && !subjText.trim()) {
+            showToast('กรุณาวางข้อสอบก่อน', 'error');
             return;
         }
-
-        const parseLoader = document.getElementById('parseLoader');
-        const originalText = parseBtn.querySelector('span').innerText;
         
-        parseBtn.disabled = true;
-        if(parseLoader) parseLoader.classList.remove('hidden');
-        parseBtn.querySelector('span').innerText = "กำลังใช้ AI ประมวลผล...";
-
         parseIndicators(indsText);
+        
+        let qIndex = 1;
         parsedQuestions = [];
-        const tableBody = document.getElementById('examTableBody');
-        if (tableBody) tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-gray-500">กำลังประมวลผลด้วย AI กรุณารอสักครู่...</td></tr>';
-        const tableContainer = document.getElementById('tableContainer');
-        if (tableContainer) tableContainer.classList.add('hidden');
-
-        try {
-            // Combine inputs for AI
-            let combinedText = `
-ข้อมูลตัวชี้วัด (ถ้ามี ให้เอาไปจับคู่กับข้อสอบให้ถูก):
-${indsText}
-
-ข้อสอบ (อาจมีทั้งปรนัยและอัตนัย):
-${rawText}
-${subjText}
-            `.trim();
-
-            const prompt = `คุณคือผู้เชี่ยวชาญด้านการแยกโครงสร้างข้อสอบ
-กรุณาวิเคราะห์ข้อความและ/หรือไฟล์ PDF ที่ให้มา และสกัดข้อสอบออกมาทั้งหมด
-
-กรุณาแปลงข้อสอบให้เป็น JSON Array โดยใช้โครงสร้างดังนี้:
-[
-  {
-    "indicator": "ตัวชี้วัดหรือผลการเรียนรู้ของข้อนี้ (ถ้ามี)",
-    "question_text": "เนื้อหาโจทย์ (หากมีสมการ ให้พิมพ์ในรูปแบบ LaTeX และครอบด้วย $ เช่น $f(x) = \\\\frac{2}{5}$)",
-    "choices": ["ตัวเลือก 1", "ตัวเลือก 2", "ตัวเลือก 3", "ตัวเลือก 4"],
-    "correct_answer": "เฉลย (ก/ข/ค/ง)",
-    "is_subjective": false
-  }
-]
-ข้อควรระวัง: 
-- ตอบกลับมาแค่ JSON อย่างเดียว ห้ามมี Markdown หรือคำอธิบายอื่น
-- ตัดตัวเลข/ตัวอักษรนำหน้าข้อ (เช่น 1., 2.) และนำหน้าตัวเลือกที่แท้จริง ออกให้หมด ให้เหลือเฉพาะเนื้อหา
-- หากโจทย์เป็นแบบให้เรียงลำดับ หรือมีข้อความย่อย ก, ข, ค, ง อยู่ในโจทย์ และมีตัวเลือกหลักเป็นตัวเลข (เช่น 1) ก ข ค ง) ให้เก็บข้อความ ก, ข, ค, ง เหล่านั้นไว้ในเนื้อหาโจทย์ (question_text) และนำตัวเลือกหลักมาใส่ใน choices เท่านั้น
-- หากเป็นข้อสอบปรนัย ให้ใส่ is_subjective: false และกรอก choices ให้ครบ
-- หากเป็นข้อสอบอัตนัย (เขียนตอบ) ให้ใส่ is_subjective: true และกำหนด choices เป็น Array ว่าง []
-- หากคุณได้รับไฟล์เอกสาร (PDF) ให้ดึงข้อมูลจากไฟล์นั้นเป็นหลัก และจับคู่ "ตัวชี้วัด" เข้ากับข้อสอบแต่ละข้อให้ถูกต้อง
-- 🚨 ห้ามข้ามข้อสอบเด็ดขาด: คุณต้องดึงข้อสอบมาให้ครบทุกข้อตั้งแต่ข้อแรกจนถึงข้อสุดท้าย ห้ามย่อความ ห้ามตัดตอน
-- 🚨 สำคัญที่สุด 1: ในการเขียน LaTeX ลงใน JSON คุณต้องใช้ Double Backslash (\\\\) เสมอ เช่น \\\\lim หรือ \\\\frac เพื่อป้องกัน JSON Parse Error!
-- 🚨 สำคัญที่สุด 2: ห้ามกด Enter หรือมีบรรทัดใหม่ (Newline) ภายในค่า String เด็ดขาด หากต้องการขึ้นบรรทัดใหม่ให้พิมพ์ตัวอักษร \\n แทน
-- 🚨 สำคัญที่สุด 3: หากโจทย์มีเครื่องหมายคำพูด (") ให้เปลี่ยนไปใช้เครื่องหมายคำพูดเดี่ยว (') แทนทั้งหมด เพื่อไม่ให้ JSON พัง
-
-ข้อมูลข้อสอบ:
-${combinedText}`;
-
-            const requestBody = {
-                contents: [{
-                    parts: [{ text: prompt }]
-                }],
-                generationConfig: {
-                    maxOutputTokens: 8192,
-                    temperature: 0.1,
-                    responseMimeType: "application/json"
+        
+        // Parse Objective Questions
+        if (rawText.trim()) {
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l);
+            let currentPassage = '';
+            let currentQ = null;
+            
+            const pushCurrentQ = () => {
+                if (currentQ && (currentQ.hasChoices || currentQ.question_text)) {
+                    parsedQuestions.push({
+                        q_num: qIndex++,
+                        question_text: currentQ.question_text,
+                        choice_a: currentQ.choices[0],
+                        choice_b: currentQ.choices[1],
+                        choice_c: currentQ.choices[2],
+                        choice_d: currentQ.choices[3],
+                        correct_answer: currentQ.ans || 'ก',
+                        indicator: currentQ.indicator || '',
+                        is_subjective: false,
+                        image_url: '',
+                        passage_text: currentPassage
+                    });
                 }
             };
-
-            if (loadedPdfBase64) {
-                requestBody.contents[0].parts.push({
-                    inlineData: {
-                        mimeType: "application/pdf",
-                        data: loadedPdfBase64
-                    }
-                });
-            }
             
-            // Save state for continue function
-            window.lastAiRequestBody = JSON.parse(JSON.stringify(requestBody));
-            window.lastAiCombinedText = combinedText;
-
-            // ==========================================
-            // Model Fallback Loop (Merged from Sandbox)
-            // ==========================================
-            const FALLBACK_CHAIN = [
-                'gemini-flash-latest',
-                'gemini-2.0-flash',
-                'gemini-2.5-flash'
-            ];
-
-            let data = null;
-            let lastError = null;
-
-            for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
-                const tryModel = FALLBACK_CHAIN[i];
-                let res;
-                try {
-                    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
-                    });
-                } catch (netErr) {
-                    lastError = netErr;
-                    continue;
-                }
-
-                if (!res.ok) {
-                    const errBody = await res.json();
-                    const errMsg = errBody.error?.message || `HTTP ${res.status}`;
-                    const isOverloaded =
-                        res.status === 429 || // Rate Limit / Quota Exceeded
-                        res.status === 404 || // Model Deprecated
-                        res.status === 503 || 
-                        res.status === 529 ||
-                        errMsg.toLowerCase().includes('high demand') ||
-                        errMsg.toLowerCase().includes('overload') ||
-                        errMsg.toLowerCase().includes('unavailable');
-
-                    if (isOverloaded && i < FALLBACK_CHAIN.length - 1) {
-                        lastError = new Error(errMsg);
-                        continue; // ลอง model ถัดไป
-                    }
-                    throw new Error(errMsg);
-                }
-
-                data = await res.json();
-                break; // สำเร็จ
-            }
-
-            if (!data) {
-                throw lastError || new Error('ทุก model ไม่ตอบสนอง กรุณาลองใหม่อีกครั้ง');
-            }
-
-            const candidate = data.candidates?.[0];
-            if (!candidate || !candidate.content?.parts?.[0]?.text) {
-                const reason = candidate?.finishReason || 'UNKNOWN';
-                throw new Error(
-                    `AI ไม่ส่งผลลัพธ์กลับมา (finishReason: ${reason})\n` +
-                    `อาจเกิดจาก content policy หรือ prompt ยาวเกินไป`
-                );
-            }
-            let responseText = candidate.content.parts[0].text;
-            
-            // Clean up JSON and fix trailing commas
-            responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-            responseText = responseText.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-            
-            let isTruncated = false;
-            // Auto-repair truncated JSON (if it hit max tokens)
-            if (!responseText.endsWith(']')) {
-                isTruncated = true;
-                const lastBraceIdx = responseText.lastIndexOf('}');
-                if (lastBraceIdx !== -1) {
-                    responseText = responseText.substring(0, lastBraceIdx + 1) + '\n]';
-                } else {
-                    responseText += '}]'; // Super edge case fallback
-                }
-            }
-
-            let aiQuestions = [];
-            try {
-                aiQuestions = JSON.parse(responseText);
-            } catch (e) {
-                console.warn("Standard JSON parse failed. Attempting loose parse...");
-                try {
-                    // Fallback 1: Loose JS evaluation (handles unquoted keys, single quotes, trailing commas)
-                    const looseParse = new Function("return " + responseText);
-                    aiQuestions = looseParse();
-                } catch (err2) {
-                    console.warn("Loose parse failed. Attempting aggressive truncation...");
-                    // Fallback 2: Aggressive truncation (handles cut-off JSON)
-                    const lastCommaIdx = responseText.lastIndexOf('},');
-                    if (lastCommaIdx !== -1) {
-                        try {
-                            let rescuedText = responseText.substring(0, lastCommaIdx + 1) + '\n]';
-                            try {
-                                aiQuestions = JSON.parse(rescuedText);
-                            } catch (err3) {
-                                const looseParse2 = new Function("return " + rescuedText);
-                                aiQuestions = looseParse2();
-                            }
-                        } catch (err4) {
-                            if (rawExamInput) rawExamInput.value = responseText;
-                            throw new Error("AI ส่งข้อมูลผิดพลาด และไม่สามารถซ่อมแซมได้ (โปรดดูข้อความดิบในแท็บ)");
-                        }
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                let isAns = false;
+                let ansChar = '';
+                
+                // Check if line indicates correct answer e.g. *① or *ก
+                if (line.startsWith('*')) {
+                    const ansMatch = line.match(/^\*([ก-ฮa-dA-D①-④])/);
+                    if (ansMatch) {
+                        isAns = true;
+                        let rawChar = ansMatch[1].toLowerCase();
+                        if (rawChar === 'ก' || rawChar === 'a' || rawChar === '①') ansChar = 'ก';
+                        if (rawChar === 'ข' || rawChar === 'b' || rawChar === '②') ansChar = 'ข';
+                        if (rawChar === 'ค' || rawChar === 'c' || rawChar === '③') ansChar = 'ค';
+                        if (rawChar === 'ง' || rawChar === 'd' || rawChar === '④') ansChar = 'ง';
+                        line = line.replace(/^\*[ก-ฮa-dA-D①-④][\.\)]?\s*/, '').trim();
                     } else {
-                        if (rawExamInput) rawExamInput.value = responseText;
-                        throw new Error("AI ส่งข้อมูลพังเกินกว่าจะกู้คืนได้ กรุณาตรวจสอบข้อความดิบในแท็บ 'วางข้อความดิบด้วยตนเอง'");
+                        line = line.substring(1).trim();
+                    }
+                }
+                
+                const choiceStartMatch = line.match(/^([ก-ฮa-dA-D①-④])[\.\)]?\s*/);
+                if (choiceStartMatch) {
+                    if (!currentQ) currentQ = { question_text: '', choices: ['', '', '', ''], ans: '', hasChoices: false };
+                    currentQ.hasChoices = true;
+                    
+                    const choiceRegex = /(?:^|\s+)([ก-ฮa-dA-D①-④])[\.\)]?\s*(.*?)(?=\s+[ก-ฮa-dA-D①-④][\.\)]?\s*|$)/g;
+                    let cMatch;
+                    while ((cMatch = choiceRegex.exec(line)) !== null) {
+                        let char = cMatch[1].toLowerCase();
+                        let idx = -1;
+                        if (char === 'ก' || char === 'a' || char === '①') idx = 0;
+                        if (char === 'ข' || char === 'b' || char === '②') idx = 1;
+                        if (char === 'ค' || char === 'c' || char === '③') idx = 2;
+                        if (char === 'ง' || char === 'd' || char === '④') idx = 3;
+                        
+                        if (idx !== -1) {
+                            currentQ.choices[idx] = cMatch[2].trim();
+                            if (isAns || ansChar) {
+                                currentQ.ans = (idx===0?'ก':idx===1?'ข':idx===2?'ค':'ง');
+                                isAns = false;
+                                ansChar = '';
+                            }
+                        }
+                    }
+                } else {
+                    // Not a choice
+                    const qMatch = line.match(/^(\d+)[\.\)]\s*(.*)/);
+                    if (qMatch) {
+                        pushCurrentQ();
+                        currentQ = { question_text: qMatch[2].trim(), choices: ['', '', '', ''], ans: '', hasChoices: false };
+                    } else {
+                        // Could be Passage OR Question without number
+                        let nextIsChoice = false;
+                        if (i + 1 < lines.length) {
+                             if (lines[i+1].match(/^([ก-ฮa-dA-D①-④])[\.\)]?\s*(.*)/) || lines[i+1].match(/^\*([ก-ฮa-dA-D①-④])[\.\)]?\s*(.*)/)) {
+                                 nextIsChoice = true;
+                             }
+                        }
+                        
+                        if (nextIsChoice) {
+                            pushCurrentQ();
+                            currentQ = { question_text: line, choices: ['', '', '', ''], ans: '', hasChoices: false };
+                        } else {
+                            if (currentQ && !currentQ.hasChoices) {
+                                currentQ.question_text += '\n' + line;
+                            } else {
+                                pushCurrentQ();
+                                currentQ = null;
+                                // Append if previous line was also passage, or overwrite? Usually overwrite or append
+                                currentPassage = currentPassage ? currentPassage + '\n' + line : line;
+                            }
+                        }
                     }
                 }
             }
-
-            // Map AI output to parsedQuestions structure
-            aiQuestions.forEach((q, index) => {
-                let ansChar = q.correct_answer || '';
-                if (ansChar) {
-                    ansChar = ansChar.toLowerCase().replace(/[\.\)]/g, '').trim();
-                    if (ansChar === 'a' || ansChar === '1' || ansChar.includes('ก')) ansChar = 'ก';
-                    else if (ansChar === 'b' || ansChar === '2' || ansChar.includes('ข')) ansChar = 'ข';
-                    else if (ansChar === 'c' || ansChar === '3' || ansChar.includes('ค')) ansChar = 'ค';
-                    else if (ansChar === 'd' || ansChar === '4' || ansChar.includes('ง')) ansChar = 'ง';
-                    else if (ansChar === 'e' || ansChar === '5' || ansChar.includes('จ')) ansChar = 'จ';
-                    else ansChar = '';
-                }
-
+            pushCurrentQ();
+        }
+        
+        // Parse Subjective Questions
+        if (subjText.trim()) {
+            const lines = subjText.trim().split('\n').map(l => l.trim()).filter(l => l);
+            for (let line of lines) {
+                let qText = line.replace(/^\d+[\.\)]\s*/, '').trim();
                 parsedQuestions.push({
-                    q_num: index + 1,
-                    question_text: q.question_text || '',
-                    choice_a: q.choices && q.choices.length > 0 ? q.choices[0] : '',
-                    choice_b: q.choices && q.choices.length > 1 ? q.choices[1] : '',
-                    choice_c: q.choices && q.choices.length > 2 ? q.choices[2] : '',
-                    choice_d: q.choices && q.choices.length > 3 ? q.choices[3] : '',
-                    correct_answer: ansChar,
-                    indicator: q.indicator || '',
-                    is_subjective: q.is_subjective || false,
+                    q_num: qIndex++,
+                    question_text: qText,
+                    choice_a: '',
+                    choice_b: '',
+                    choice_c: '',
+                    choice_d: '',
+                    correct_answer: '',
+                    indicator: '',
+                    is_subjective: true,
                     image_url: '',
                     passage_text: ''
                 });
-            });
-
-            renderTable();
-            renderTable();
-            const continueBtn = document.getElementById('continueAiBtn');
-            if (isTruncated) {
-                if(continueBtn) continueBtn.classList.remove('hidden');
-                showToast(`⚠️ ดึงข้อสอบได้ ${parsedQuestions.length} ข้อ (ข้อสอบยาวเกินโควต้า AI จึงถูกตัดจบ) สามารถกดปุ่ม "ให้ AI ดึงข้อที่เหลือต่อ" ด้านล่างตารางได้ครับ`, 'error', 10000);
-            } else {
-                if(continueBtn) continueBtn.classList.add('hidden');
-                showToast(`ดึงข้อสอบได้ ${parsedQuestions.length} ข้อ โดย AI`, 'success');
             }
-
-        } catch (error) {
-            console.error("AI Parse Error:", error);
-            showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
-        } finally {
-            parseBtn.disabled = false;
-            if(parseLoader) parseLoader.classList.add('hidden');
-            parseBtn.querySelector('span').innerText = originalText;
         }
+        
+        renderTable();
+        showToast(`แยกข้อสอบได้ ${parsedQuestions.length} ข้อ`, 'success');
     });
 }
-
-window.continueAiParse = async () => {
-    if (!window.lastAiRequestBody || parsedQuestions.length === 0) return;
-    
-    const continueBtn = document.getElementById('continueAiBtn');
-    const continueText = document.getElementById('continueAiText');
-    const continueLoader = document.getElementById('continueLoader');
-    
-    continueBtn.disabled = true;
-    continueLoader.classList.remove('hidden');
-    continueText.innerText = "กำลังประมวลผล...";
-
-    try {
-        const reqBody = JSON.parse(JSON.stringify(window.lastAiRequestBody));
-        const extCount = parsedQuestions.length;
-        
-        reqBody.contents[0].parts[0].text += `\n\n🚨 สำคัญมาก: คุณได้ทำการดึงข้อสอบไปแล้ว ${extCount} ข้อ ให้คุณเริ่มสกัดข้อสอบต่อโดยเริ่มสกัดข้อถัดไป (ข้อที่ ${extCount + 1}) เป็นต้นไป ห้ามสกัดข้อ 1 ถึง ${extCount} มาซ้ำเด็ดขาด! และต้องตอบเป็น JSON Array เท่านั้น`;
-
-        const FALLBACK_CHAIN = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
-        let data = null;
-        let lastError = null;
-
-        for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
-            const tryModel = FALLBACK_CHAIN[i];
-            let res;
-            try {
-                res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reqBody)
-                });
-            } catch (netErr) {
-                lastError = netErr;
-                continue;
-            }
-            if (!res.ok) {
-                const errBody = await res.json();
-                const errMsg = errBody.error?.message || `HTTP ${res.status}`;
-                if ((res.status === 429 || res.status === 503 || res.status === 404) && i < FALLBACK_CHAIN.length - 1) {
-                    continue;
-                }
-                throw new Error(errMsg);
-            }
-            data = await res.json();
-            break;
-        }
-
-        if (!data) throw new Error('ทุก model ไม่ตอบสนอง');
-
-        const candidate = data.candidates?.[0];
-        if (!candidate || !candidate.content?.parts?.[0]?.text) throw new Error('AI ไม่ตอบกลับเนื้อหา');
-        
-        let responseText = candidate.content.parts[0].text;
-        responseText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-        responseText = responseText.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-        
-        let isTruncated = false;
-        if (!responseText.endsWith(']')) {
-            isTruncated = true;
-            const lastBraceIdx = responseText.lastIndexOf('}');
-            if (lastBraceIdx !== -1) {
-                responseText = responseText.substring(0, lastBraceIdx + 1) + '\n]';
-            } else {
-                responseText += '}]';
-            }
-        }
-
-        let newQuestions = [];
-        try {
-            newQuestions = JSON.parse(responseText);
-        } catch(e) {
-            const looseParse = new Function("return " + responseText);
-            newQuestions = looseParse();
-        }
-        
-        // Append to existing
-        const offset = parsedQuestions.length;
-        newQuestions.forEach((q, index) => {
-            let ansChar = q.correct_answer || '';
-            if (ansChar) {
-                ansChar = ansChar.toLowerCase().replace(/[\.\)]/g, '').trim();
-                if (ansChar === 'a' || ansChar === '1' || ansChar.includes('ก')) ansChar = 'ก';
-                else if (ansChar === 'b' || ansChar === '2' || ansChar.includes('ข')) ansChar = 'ข';
-                else if (ansChar === 'c' || ansChar === '3' || ansChar.includes('ค')) ansChar = 'ค';
-                else if (ansChar === 'd' || ansChar === '4' || ansChar.includes('ง')) ansChar = 'ง';
-                else if (ansChar === 'e' || ansChar === '5' || ansChar.includes('จ')) ansChar = 'จ';
-                else ansChar = '';
-            }
-            parsedQuestions.push({
-                q_num: offset + index + 1,
-                question_text: q.question_text || '',
-                choice_a: q.choices && q.choices.length > 0 ? q.choices[0] : '',
-                choice_b: q.choices && q.choices.length > 1 ? q.choices[1] : '',
-                choice_c: q.choices && q.choices.length > 2 ? q.choices[2] : '',
-                choice_d: q.choices && q.choices.length > 3 ? q.choices[3] : '',
-                correct_answer: ansChar,
-                indicator: q.indicator || '',
-                is_subjective: q.is_subjective || false,
-                image_url: '',
-                passage_text: ''
-            });
-        });
-
-        renderTable();
-        
-        if (isTruncated) {
-            showToast(`⚠️ ดึงข้อสอบต่อมาได้เพิ่มอีก ${newQuestions.length} ข้อ (รวม ${parsedQuestions.length} ข้อ) ขีดจำกัดยังเต็มอยู่ กดทำต่อได้ครับ`, 'error', 8000);
-            continueBtn.classList.remove('hidden');
-        } else {
-            showToast(`ดึงข้อสอบเพิ่มเติมสำเร็จ! รวม ${parsedQuestions.length} ข้อ`, 'success');
-            continueBtn.classList.add('hidden');
-        }
-        
-        setTimeout(() => {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }, 200);
-
-    } catch (error) {
-        console.error("Continue AI Error:", error);
-        showToast('เกิดข้อผิดพลาดในการดึงต่อ: ' + error.message, 'error');
-    } finally {
-        continueBtn.disabled = false;
-        continueLoader.classList.add('hidden');
-        continueText.innerText = "ให้ AI ดึงข้อที่เหลือต่อ";
-    }
-};
-
-window.autoBalanceAnswers = () => {
-    const objQuestions = parsedQuestions.filter(q => !q.is_subjective);
-    const n = objQuestions.length;
-    if (n === 0) {
-        showToast('ไม่มีข้อสอบปรนัยให้เกลี่ยเฉลย', 'warning');
-        return;
-    }
-    
-    Swal.fire({
-        title: 'เกลี่ยเฉลยอัตโนมัติ?',
-        text: 'ระบบจะสุ่มเฉลย (ก,ข,ค,ง) ให้มีสัดส่วนเท่าๆ กัน โดยจะ "ทับเฉลยเดิมทั้งหมด" คุณแน่ใจหรือไม่?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'ตกลง, สุ่มเลย!',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const baseCount = Math.floor(n / 4);
-            let remainder = n % 4;
-            
-            let pool = [];
-            ['ก', 'ข', 'ค', 'ง'].forEach(choice => {
-                for (let i = 0; i < baseCount; i++) pool.push(choice);
-            });
-            
-            // Distribute remainder randomly
-            let extras = ['ก', 'ข', 'ค', 'ง'];
-            for (let i = 0; i < remainder; i++) {
-                const randIdx = Math.floor(Math.random() * extras.length);
-                pool.push(extras.splice(randIdx, 1)[0]);
-            }
-            
-            // Shuffle pool (Fisher-Yates)
-            for (let i = pool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-            }
-            
-            // Apply to questions
-            let poolIdx = 0;
-            parsedQuestions.forEach(q => {
-                if (!q.is_subjective) {
-                    q.correct_answer = pool[poolIdx++];
-                }
-            });
-            
-            renderTable();
-            showToast('เกลี่ยเฉลยเรียบร้อยแล้ว!', 'success');
-        }
-    });
-};
 
 function parseIndicators(text) {
     indicatorOptions = [];
@@ -1273,37 +863,25 @@ function renderTable() {
         if (!q.is_subjective) {
             choiceHtml = `
                 <div class="mt-2 space-y-1">
-                    <label id="lbl-${idx}-ก" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ก" ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ก');" class="sr-only">
-                        <span id="spn-${idx}-ก" class="text-sm font-medium ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800' : 'text-gray-700'} w-4">①</span>
-                        <div class="flex-1 relative">
-                            <div id="c-view-${idx}-a" class="text-sm ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'a')">${q.choice_a || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-a" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'a', this.value)">${q.choice_a}</textarea>
-                        </div>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ก" ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'checked' : ''} onchange="updateAns(${idx}, 'ก'); renderTable();" class="sr-only">
+                        <span class="text-sm font-medium ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800' : 'text-gray-700'} w-4">①</span>
+                        <span class="flex-1 text-sm ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-gray-300 hover:bg-white rounded cursor-text" contenteditable="true" onclick="event.preventDefault(); event.stopPropagation(); this.focus();" onblur="updateChoiceText(${idx}, 'a', this.innerText)">${q.choice_a}</span>
                     </label>
-                    <label id="lbl-${idx}-ข" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ข" ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ข');" class="sr-only">
-                        <span id="spn-${idx}-ข" class="text-sm font-medium ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800' : 'text-gray-700'} w-4">②</span>
-                        <div class="flex-1 relative">
-                            <div id="c-view-${idx}-b" class="text-sm ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'b')">${q.choice_b || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-b" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'b', this.value)">${q.choice_b}</textarea>
-                        </div>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ข" ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'checked' : ''} onchange="updateAns(${idx}, 'ข'); renderTable();" class="sr-only">
+                        <span class="text-sm font-medium ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800' : 'text-gray-700'} w-4">②</span>
+                        <span class="flex-1 text-sm ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-gray-300 hover:bg-white rounded cursor-text" contenteditable="true" onclick="event.preventDefault(); event.stopPropagation(); this.focus();" onblur="updateChoiceText(${idx}, 'b', this.innerText)">${q.choice_b}</span>
                     </label>
-                    <label id="lbl-${idx}-ค" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ค" ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ค');" class="sr-only">
-                        <span id="spn-${idx}-ค" class="text-sm font-medium ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800' : 'text-gray-700'} w-4">③</span>
-                        <div class="flex-1 relative">
-                            <div id="c-view-${idx}-c" class="text-sm ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'c')">${q.choice_c || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-c" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'c', this.value)">${q.choice_c}</textarea>
-                        </div>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ค" ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'checked' : ''} onchange="updateAns(${idx}, 'ค'); renderTable();" class="sr-only">
+                        <span class="text-sm font-medium ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800' : 'text-gray-700'} w-4">③</span>
+                        <span class="flex-1 text-sm ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-gray-300 hover:bg-white rounded cursor-text" contenteditable="true" onclick="event.preventDefault(); event.stopPropagation(); this.focus();" onblur="updateChoiceText(${idx}, 'c', this.innerText)">${q.choice_c}</span>
                     </label>
-                    <label id="lbl-${idx}-ง" class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
-                        <input type="radio" name="ans_${idx}" value="ง" ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'checked' : ''} onchange="updateAnsUI(${idx}, 'ง');" class="sr-only">
-                        <span id="spn-${idx}-ง" class="text-sm font-medium ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800' : 'text-gray-700'} w-4">④</span>
-                        <div class="flex-1 relative">
-                            <div id="c-view-${idx}-d" class="text-sm ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'd')">${q.choice_d || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-d" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'd', this.value)">${q.choice_d}</textarea>
-                        </div>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
+                        <input type="radio" name="ans_${idx}" value="ง" ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'checked' : ''} onchange="updateAns(${idx}, 'ง'); renderTable();" class="sr-only">
+                        <span class="text-sm font-medium ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800' : 'text-gray-700'} w-4">④</span>
+                        <span class="flex-1 text-sm ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-gray-300 hover:bg-white rounded cursor-text" contenteditable="true" onclick="event.preventDefault(); event.stopPropagation(); this.focus();" onblur="updateChoiceText(${idx}, 'd', this.innerText)">${q.choice_d}</span>
                     </label>
                 </div>
             `;
@@ -1314,10 +892,7 @@ function renderTable() {
         tr.innerHTML = `
             <td class="px-4 py-4 text-center font-medium">${q.q_num || q.question_num || (idx + 1)}</td>
             <td class="px-4 py-4 align-top">
-                <div class="relative">
-                    <div id="q-view-${idx}" class="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap p-2 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[60px]" onclick="editField('q', ${idx})">${q.question_text || '<span class="text-gray-400 italic">เพิ่มโจทย์...</span>'}</div>
-                    <textarea id="q-edit-${idx}" class="hidden w-full text-sm font-medium text-gray-800 p-2 border border-blue-500 rounded focus:outline-none resize-y min-h-[80px] absolute top-0 left-0 z-10" onblur="saveField('q', ${idx}, '', this.value)">${q.question_text}</textarea>
-                </div>
+                <div class="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap p-1 border border-transparent hover:border-gray-300 hover:bg-white rounded cursor-text focus:outline-blue-500" contenteditable="true" onblur="updateQText(${idx}, this.innerText)">${q.question_text}</div>
                 <div class="mt-3 flex gap-2">
                     <button onclick="openMediaModal(${idx}, 'image')" class="text-xs bg-gray-50 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded flex items-center gap-1 border">🖼️ แนบรูป</button>
                     <button onclick="openMediaModal(${idx}, 'passage')" class="text-xs bg-gray-50 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded flex items-center gap-1 border">📝 บทความ</button>
@@ -1339,11 +914,6 @@ function renderTable() {
                     ${q.indicator ? `<div class="mt-1 text-xs text-green-600 break-words font-medium px-2 py-1 bg-green-50 rounded">${q.indicator}</div>` : ''}
                 </div>
             </td>
-            <td class="px-4 py-4 align-middle text-center">
-                <button onclick="deleteQuestion(${idx})" class="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 hover:text-red-700 transition-colors shadow-sm" title="ลบข้อสอบนี้">
-                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
-            </td>
         `;
         tbody.appendChild(tr);
         
@@ -1356,206 +926,12 @@ function renderTable() {
     
     tableContainer.classList.remove('hidden');
     updateAnswerStats();
-    
-    // Render equations using MathJax
-    if (window.MathJax && window.MathJax.typesetPromise) {
-        setTimeout(() => {
-            window.MathJax.typesetPromise([tableContainer]).catch(function (err) {
-                console.error('MathJax error: ', err.message);
-            });
-        }, 100);
-    }
 }
-
-window.editField = (type, idx, letter = '') => {
-    const viewId = type === 'q' ? `q-view-${idx}` : `c-view-${idx}-${letter}`;
-    const editId = type === 'q' ? `q-edit-${idx}` : `c-edit-${idx}-${letter}`;
-    document.getElementById(viewId).classList.add('invisible');
-    const editEl = document.getElementById(editId);
-    editEl.classList.remove('hidden');
-    editEl.focus();
-    editEl.style.height = 'auto';
-    editEl.style.height = editEl.scrollHeight + 10 + 'px';
-};
-
-window.saveField = (type, idx, letter, value) => {
-    const val = value.trim();
-    if (type === 'q') parsedQuestions[idx].question_text = val;
-    else parsedQuestions[idx]['choice_' + letter] = val;
-    
-    // Update UI directly instead of renderTable() for huge performance gain
-    const viewId = type === 'q' ? `q-view-${idx}` : `c-view-${idx}-${letter}`;
-    const editId = type === 'q' ? `q-edit-${idx}` : `c-edit-${idx}-${letter}`;
-    const viewEl = document.getElementById(viewId);
-    
-    if (viewEl) {
-        viewEl.innerHTML = val || `<span class="text-gray-400 italic">เพิ่ม${type === 'q' ? 'โจทย์' : 'ตัวเลือก'}...</span>`;
-        viewEl.classList.remove('invisible');
-        document.getElementById(editId).classList.add('hidden');
-        
-        if (window.MathJax && window.MathJax.typesetPromise) {
-            window.MathJax.typesetPromise([viewEl]).catch(err => console.error(err));
-        }
-    }
-};
-
-window.updateAnsUI = (idx, val) => {
-    parsedQuestions[idx].correct_answer = val;
-    updateAnswerStats();
-    
-    // Direct DOM manipulation instead of renderTable() to avoid lag
-    const letters = ['ก', 'ข', 'ค', 'ง'];
-    const engLetters = ['a', 'b', 'c', 'd'];
-    
-    letters.forEach((l, i) => {
-        const isSelected = (l === val);
-        const lbl = document.getElementById(`lbl-${idx}-${l}`);
-        const spn = document.getElementById(`spn-${idx}-${l}`);
-        const view = document.getElementById(`c-view-${idx}-${engLetters[i]}`);
-        
-        if (lbl) {
-            lbl.className = `flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${isSelected ? 'bg-green-50 border-green-300' : 'border-transparent'}`;
-        }
-        if (spn) {
-            spn.className = `text-sm font-medium ${isSelected ? 'text-green-800' : 'text-gray-700'} w-4`;
-        }
-        if (view) {
-            if (isSelected) {
-                view.classList.remove('text-gray-700');
-                view.classList.add('text-green-800', 'font-medium');
-            } else {
-                view.classList.remove('text-green-800', 'font-medium');
-                view.classList.add('text-gray-700');
-            }
-        }
-    });
-};
 
 window.updateAns = (idx, val) => { parsedQuestions[idx].correct_answer = val; updateAnswerStats(); };
 window.updateInd = (idx, val) => { parsedQuestions[idx].indicator = val; };
 window.updateQText = (idx, text) => { parsedQuestions[idx].question_text = text.trim(); };
 window.updateChoiceText = (idx, letter, text) => { parsedQuestions[idx]['choice_' + letter] = text.trim(); };
-
-window.startManualExam = () => {
-    const indsText = document.getElementById('indicatorsInput') ? document.getElementById('indicatorsInput').value : '';
-    parseIndicators(indsText);
-    parsedQuestions = [];
-    
-    const rawExam = document.getElementById('rawExamInput') ? document.getElementById('rawExamInput').value : '';
-    const rawSubj = document.getElementById('rawSubjectiveInput') ? document.getElementById('rawSubjectiveInput').value : '';
-    
-    if (rawExam.trim() || rawSubj.trim()) {
-        const parsed = fallbackRegexParse(rawExam, rawSubj);
-        if (parsed.length > 0) {
-            parsedQuestions = parsed;
-        } else {
-            addManualQuestion(false); // Add blank if regex fails entirely
-        }
-    } else {
-        addManualQuestion(false); // Add blank if inputs are empty
-    }
-    
-    const tableContainer = document.getElementById('tableContainer');
-    if (tableContainer) {
-        tableContainer.classList.remove('hidden');
-        renderTable();
-        // Smooth scroll to table
-        setTimeout(() => {
-            tableContainer.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-    }
-};
-
-function fallbackRegexParse(objText, subjText) {
-    let result = [];
-    let qCount = 1;
-    
-    function parseBlock(text, isSubj) {
-        if (!text.trim()) return;
-        // Split by question numbers e.g. "1. " or "1) " at the start of a line or after spaces
-        const qBlocks = text.split(/(?:\s+|^)(?:\d+\.\s+|\d+\)\s*)/);
-        for (let i = 1; i < qBlocks.length; i++) {
-            let block = qBlocks[i].trim();
-            if (!block) continue;
-            
-            if (isSubj) {
-                result.push({
-                    q_num: qCount++,
-                    question_text: block,
-                    choice_a: '', choice_b: '', choice_c: '', choice_d: '',
-                    correct_answer: '', indicator: '', is_subjective: true,
-                    image_url: '', passage_text: ''
-                });
-            } else {
-                // Split by choices e.g. "ก. " or "1) " or "① " even if they are on the same line (supports missing spaces)
-                const choiceSplit = block.split(/(?:\n|\s+|^)(?:[กขคจงABCDabcd][\.\)]\s*|[1-5]\.\s+|[1-5]\)\s*|[①-⑤❶-❺➀-➄➊-➎]\s*)/);
-                let q_text = choiceSplit[0].trim();
-                let choices = [];
-                for (let j = 1; j < choiceSplit.length; j++) {
-                    choices.push(choiceSplit[j].trim());
-                }
-                result.push({
-                    q_num: qCount++,
-                    question_text: q_text,
-                    choice_a: choices[0] || '',
-                    choice_b: choices[1] || '',
-                    choice_c: choices[2] || '',
-                    choice_d: choices[3] || '',
-                    correct_answer: '', indicator: '', is_subjective: false,
-                    image_url: '', passage_text: ''
-                });
-            }
-        }
-    }
-    
-    parseBlock(objText, false);
-    parseBlock(subjText, true);
-    
-    return result;
-}
-
-window.addManualQuestion = (isSubjective) => {
-    parsedQuestions.push({
-        q_num: parsedQuestions.length + 1,
-        question_text: '',
-        choice_a: isSubjective ? '' : '',
-        choice_b: isSubjective ? '' : '',
-        choice_c: isSubjective ? '' : '',
-        choice_d: isSubjective ? '' : '',
-        correct_answer: '',
-        indicator: '',
-        is_subjective: isSubjective,
-        image_url: '',
-        passage_text: ''
-    });
-    const tableContainer = document.getElementById('tableContainer');
-    if (tableContainer) tableContainer.classList.remove('hidden');
-    renderTable();
-    // Scroll to bottom of table
-    setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 100);
-};
-
-window.deleteQuestion = (idx) => {
-    Swal.fire({
-        title: 'ยืนยันการลบ',
-        text: 'คุณต้องการลบข้อสอบนี้ใช่หรือไม่?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#94a3b8',
-        confirmButtonText: 'ลบ',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            parsedQuestions.splice(idx, 1);
-            // Re-number questions
-            parsedQuestions.forEach((q, i) => q.q_num = i + 1);
-            renderTable();
-        }
-    });
-};
 
 function updateAnswerStats() {
     if (!parsedQuestions || parsedQuestions.length === 0) return;
@@ -1646,7 +1022,7 @@ if (saveProjectBtn) {
         let finalProjectName = projectName;
         let pYear = new Date().getFullYear() + 543;
         let pSem = '1';
-        let examTypeVal = 'กลางภาค';
+        let examTypeVal = 'ปลายภาค';
         const examRadios = document.getElementsByName('examType');
         for (let r of examRadios) {
             if (r.checked) examTypeVal = r.value;
@@ -1697,6 +1073,7 @@ if (saveProjectBtn) {
             const data = await response.json();
             if (data.status === 'success') {
                 showToast('บันทึกโครงการสอบสำเร็จ!', 'success');
+                currentEditingProjectId = null;
                 fetchMyProjects(currentTeacherCode, currentTeacherName);
                 parsedQuestions = [];
                 renderTable();
@@ -1732,88 +1109,14 @@ if (startReviewBtn) {
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({ action: 'getProjectQuestions', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
+                body: JSON.stringify({ action: 'getProjectQuestions', payload: { project_id: expertProjectId } })
             });
             const data = await response.json();
             if (data.status === 'success') {
-                const qData = Array.isArray(data.data) ? data.data : (data.data.questions || []);
-                const reviewedIds = new Set(data.data.reviewed_question_ids || []);
+                currentReviewQuestions = data.data;
+                reviewIndex = 0;
+                currentReviews = [];
                 
-                if (reviewedIds.size > 0 && reviewedIds.size < qData.length) {
-                    // Incomplete evaluation! Show Swal prompt
-                    const promptRes = await Swal.fire({
-                        title: 'พบข้อมูลการประเมินเดิม',
-                        text: `คุณเคยประเมินชุดข้อสอบนี้ค้างไว้จำนวน ${reviewedIds.size} ข้อ จากทั้งหมด ${qData.length} ข้อ คุณต้องการทำต่อหรือเริ่มใหม่?`,
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'ทำต่อ (Resume)',
-                        cancelButtonText: 'เริ่มใหม่ทั้งหมด (Restart)'
-                    });
-                    
-                    if (promptRes.isConfirmed) {
-                        // Continue: filter out already reviewed questions
-                        currentReviewQuestions = qData.filter(q => !reviewedIds.has(String(q.question_id)));
-                        reviewIndex = 0;
-                        currentReviews = [];
-                    } else {
-                        // Reset: call resetReviewerReviews and then use all questions
-                        Swal.showLoading();
-                        const resetRes = await fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
-                        });
-                        const resetData = await resetRes.json();
-                        if (resetData.status === 'success') {
-                            currentReviewQuestions = qData;
-                            reviewIndex = 0;
-                            currentReviews = [];
-                        } else {
-                            showToast('เกิดข้อผิดพลาดในการรีเซ็ตข้อมูล', 'error');
-                            return;
-                        }
-                    }
-                } else if (reviewedIds.size >= qData.length && qData.length > 0) {
-                    // Already completed! Ask if they want to re-evaluate (restart)
-                    const promptRes = await Swal.fire({
-                        title: 'ประเมินเสร็จสมบูรณ์แล้ว',
-                        text: `คุณประเมินชุดข้อสอบนี้ครบถ้วนแล้ว (${qData.length}/${qData.length} ข้อ) หากต้องการประเมินใหม่ทั้งหมด ข้อมูลการประเมินเดิมจะถูกลบถาวร`,
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'ลบของเดิมและเริ่มใหม่',
-                        cancelButtonText: 'ยกเลิก'
-                    });
-                    
-                    if (promptRes.isConfirmed) {
-                        Swal.showLoading();
-                        const resetRes = await fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: expertProjectId, reviewer_code: reviewerCode } })
-                        });
-                        const resetData = await resetRes.json();
-                        if (resetData.status === 'success') {
-                            currentReviewQuestions = qData;
-                            reviewIndex = 0;
-                            currentReviews = [];
-                        } else {
-                            showToast('เกิดข้อผิดพลาดในการรีเซ็ตข้อมูล', 'error');
-                            return;
-                        }
-                    } else {
-                        // User cancelled
-                        return;
-                    }
-                } else {
-                    // Fresh start
-                    currentReviewQuestions = qData;
-                    reviewIndex = 0;
-                    currentReviews = [];
-                }
-                
-                Swal.close();
                 document.getElementById('expertSetup').classList.add('hidden');
                 document.getElementById('tinderArea').classList.remove('hidden');
                 
@@ -1899,13 +1202,6 @@ function renderTinderCard() {
     
     // Initialize Swipe Physics
     initTinderCard(card);
-    
-    // Render equations using MathJax
-    if (window.MathJax && window.MathJax.typesetPromise) {
-        setTimeout(() => {
-            window.MathJax.typesetPromise([card]).catch(err => console.error(err));
-        }, 50);
-    }
 }
 
 const btnMinusOne = document.getElementById('btnMinusOne');
@@ -2002,12 +1298,7 @@ window.viewReport = async (projectId) => {
                 revs.forEach(r => {
                     scoreSum += parseInt(r.score) || 0;
                     totalReviewers.add(r.reviewer_code);
-                    if(r.comment) {
-                        cmtList.push({
-                            text: r.comment,
-                            reviewer_name: r.reviewer_name || ('ผู้ประเมินรหัส ' + r.reviewer_code)
-                        });
-                    }
+                    if(r.comment) cmtList.push(r.comment);
                 });
                 const ioc = (scoreSum / 3).toFixed(2);
                 const isPassed = parseFloat(ioc) >= 0.5;
@@ -2030,18 +1321,6 @@ window.viewReport = async (projectId) => {
                     isPassed: isPassed,
                     comments: cmtList,
                     scores: revs.map(r => r.score),
-                    score1: (() => {
-                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_1).trim());
-                        return r !== undefined ? r.score : '';
-                    })(),
-                    score2: (() => {
-                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_2).trim());
-                        return r !== undefined ? r.score : '';
-                    })(),
-                    score3: (() => {
-                        const r = revs.find(rev => currentPrintProjectInfo && String(rev.reviewer_code).trim() === String(currentPrintProjectInfo.expert_3).trim());
-                        return r !== undefined ? r.score : '';
-                    })(),
                     image_url: q.image_url,
                     passage_text: q.passage_text
                 });
@@ -2064,66 +1343,6 @@ window.viewReport = async (projectId) => {
             if(prjName) prjName.textContent = currentPrintProjectInfo ? currentPrintProjectInfo.project_name : 'รายงานผล IOC';
             if(prjId) prjId.textContent = projectId;
             
-            // Render Evaluator Status Section
-            const statusSection = document.getElementById('evaluatorStatusSection');
-            const listContainer = document.getElementById('evaluatorsListContainer');
-            if (statusSection && listContainer && data.data.expert_names) {
-                statusSection.classList.remove('hidden');
-                listContainer.innerHTML = '';
-                
-                const expNames = data.data.expert_names;
-                const expReviews = data.data.expert_reviews || {};
-                const totalQ = qList.length;
-                
-                const experts = [
-                    { key: 'expert_1', label: 'ผู้เชี่ยวชาญคนที่ 1' },
-                    { key: 'expert_2', label: 'ผู้เชี่ยวชาญคนที่ 2' },
-                    { key: 'expert_3', label: 'ผู้เชี่ยวชาญคนที่ 3' }
-                ];
-                
-                experts.forEach((exp, idx) => {
-                    const code = currentPrintProjectInfo ? String(currentPrintProjectInfo[exp.key] || '').trim() : '';
-                    const name = expNames[exp.key] || 'ยังไม่ได้ระบุ';
-                    const count = expReviews[exp.key] || 0;
-                    
-                    const card = document.createElement('div');
-                    card.className = 'p-3 bg-white rounded-lg border border-gray-200 shadow-sm flex flex-col justify-between';
-                    
-                    let statusHtml = '';
-                    let btnHtml = '';
-                    
-                    if (!code) {
-                        statusHtml = `<span class="text-gray-400">กรุณาระบุในการตั้งค่า</span>`;
-                    } else if (count >= totalQ && totalQ > 0) {
-                        statusHtml = `<span class="text-green-600 font-medium">ประเมินเสร็จสมบูรณ์ (${count}/${totalQ} ข้อ)</span>`;
-                    } else if (count > 0) {
-                        statusHtml = `<span class="text-yellow-600 font-medium">ประเมินค้างอยู่ (${count}/${totalQ} ข้อ)</span>`;
-                    } else {
-                        statusHtml = `<span class="text-red-500 font-medium">ยังไม่ได้ประเมิน (0/${totalQ} ข้อ)</span>`;
-                    }
-                    
-                    if (code && count > 0) {
-                        btnHtml = `
-                            <button onclick="confirmResetExpertReviews('${projectId}', '${code}', '${name}')" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded border border-red-200 font-medium transition-colors">
-                                ส่งประเมินใหม่ (รีเซ็ต)
-                            </button>
-                        `;
-                    }
-                    
-                    card.innerHTML = `
-                        <div>
-                            <div class="text-xs text-gray-400 font-bold">${exp.label}</div>
-                            <div class="font-semibold text-gray-700 text-sm mt-0.5">${name}</div>
-                            <div class="text-xs mt-2">สถานะ: ${statusHtml}</div>
-                        </div>
-                        <div class="mt-3 flex justify-end">
-                            ${btnHtml}
-                        </div>
-                    `;
-                    listContainer.appendChild(card);
-                });
-            }
-            
             // Render Table
             if(tbody) {
                 tbody.innerHTML = '';
@@ -2136,7 +1355,7 @@ window.viewReport = async (projectId) => {
                     let sHtml = q.scores.map(s => `<span class="inline-block w-6 text-center ${s>0?'text-green-600':(s<0?'text-red-600':'text-gray-500')}">${s}</span>`).join('');
                     if(!sHtml) sHtml = '-';
                     
-                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${c.text} <span class="text-gray-400">(${c.reviewer_name})</span></div>`).join('');
+                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${c}</div>`).join('');
 tr.innerHTML = `
                         <td class="px-4 py-3 text-center border-b">${q.q_num}</td>
                         <td class="px-4 py-3 border-b">
@@ -2169,38 +1388,6 @@ tr.innerHTML = `
     } catch (error) {
         console.error('Fetch report error:', error);
         if(tbody) tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-red-500">การเชื่อมต่อขัดข้อง</td></tr>';
-    }
-};
-
-window.confirmResetExpertReviews = async (projectId, expertCode, expertName) => {
-    const result = await Swal.fire({
-        title: 'คุณแน่ใจหรือไม่?',
-        text: `ต้องการล้างผลการประเมินทั้งหมดของ ${expertName} เพื่อให้ประเมินใหม่หรือไม่? (ข้อมูลเดิมจะถูกลบถาวร)`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'ใช่, ต้องการรีเซ็ต',
-        cancelButtonText: 'ยกเลิก'
-    });
-    
-    if (result.isConfirmed) {
-        Swal.showLoading();
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ action: 'resetReviewerReviews', payload: { project_id: projectId, reviewer_code: expertCode } })
-            });
-            const resData = await response.json();
-            if (resData.status === 'success') {
-                Swal.fire('สำเร็จ!', 'ส่งงานให้ผู้ประเมินทำใหม่เรียบร้อยแล้ว', 'success');
-                await window.viewReport(projectId);
-            } else {
-                Swal.fire('เกิดข้อผิดพลาด', resData.message || 'ไม่สามารถทำรายการได้', 'error');
-            }
-        } catch (error) {
-            Swal.fire('การเชื่อมต่อล้มเหลว', error.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้', 'error');
-        }
     }
 };
 
@@ -2331,20 +1518,23 @@ if (printReportBtn) {
                 return {
                     'ข้อสอบ': (i + 1) + '. ' + textOut,
                     'เลขตัวชี้วัด หรือมาตรฐาน': q.ind || '-',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 1': q.score1 !== undefined ? q.score1 : '',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 2': q.score2 !== undefined ? q.score2 : '',
-                    'ระดับคะแนนผู้เชียวชาญคนที่ 3': q.score3 !== undefined ? q.score3 : '',
-                    'คะแนนรวม': [q.score1, q.score2, q.score3].reduce((a,b)=>a+(isNaN(parseInt(b))?0:parseInt(b)), 0)
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 1': q.scores[0] !== undefined ? q.scores[0] : '',
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 2': q.scores[1] !== undefined ? q.scores[1] : '',
+                    'ระดับคะแนนผู้เชียวชาญคนที่ 3': q.scores[2] !== undefined ? q.scores[2] : '',
+                    'คะแนนรวม': q.scores.reduce((a,b)=>a+(isNaN(parseInt(b))?0:parseInt(b)), 0)
                 };
             });
 
             const semStr = pInfo.semester || '';
-            const getExamType = (pName) => {
-                if(!pName) return 'กลางภาค';
+            const getExamType = (pName, examType) => {
+                if(examType && examType.includes('ปลายภาค')) return 'ปลายภาค';
+                if(examType && examType.includes('กลางภาค')) return 'กลางภาค';
+                if(!pName) return 'ปลายภาค';
                 if(pName.includes('ปลายภาค')) return 'ปลายภาค';
-                return 'กลางภาค';
+                if(pName.includes('กลางภาค')) return 'กลางภาค';
+                return 'ปลายภาค';
             };
-            const examTypeStr = getExamType(pInfo.project_name);
+            const examTypeStr = getExamType(pInfo.project_name, pInfo.exam_type);
             
             const sSubj = (typeof subjectsData !== 'undefined') ? subjectsData.find(s => String(s.subject_code).trim().toLowerCase() === String(pInfo.subject_code).trim().toLowerCase()) : null;
             const getExpertName = (val) => {
@@ -2412,46 +1602,15 @@ if (printReportBtn) {
 
 
 // Export Modal Logic
-let exportSettingsModal;
-let closeExportModalBtn;
-let cancelExportModalBtn;
-let confirmExportBtn;
-let exportObjCount;
-let exportObjScore;
-let exportSubjCount;
-let exportSubjScore;
+const exportSettingsModal = document.getElementById('exportSettingsModal');
+const closeExportModalBtn = document.getElementById('closeExportModalBtn');
+const cancelExportModalBtn = document.getElementById('cancelExportModalBtn');
+const confirmExportBtn = document.getElementById('confirmExportBtn');
 
-document.addEventListener('DOMContentLoaded', () => {
-    exportSettingsModal = document.getElementById('exportSettingsModal');
-    closeExportModalBtn = document.getElementById('closeExportModalBtn');
-    cancelExportModalBtn = document.getElementById('cancelExportModalBtn');
-    confirmExportBtn = document.getElementById('confirmExportBtn');
-
-    exportObjCount = document.getElementById('exportObjCount');
-    exportObjScore = document.getElementById('exportObjScore');
-    exportSubjCount = document.getElementById('exportSubjCount');
-    exportSubjScore = document.getElementById('exportSubjScore');
-
-    if (exportObjScore) exportObjScore.addEventListener('input', validateExportScore);
-    if (exportSubjScore) exportSubjScore.addEventListener('input', validateExportScore);
-
-    const exportTestPaperBtn = document.getElementById('exportTestPaperBtn');
-    if (exportTestPaperBtn) {
-        exportTestPaperBtn.addEventListener('click', showExportModal);
-    }
-
-    if (closeExportModalBtn) closeExportModalBtn.addEventListener('click', hideExportModal);
-    if (cancelExportModalBtn) cancelExportModalBtn.addEventListener('click', hideExportModal);
-
-    if (confirmExportBtn) {
-        confirmExportBtn.addEventListener('click', () => {
-            hideExportModal();
-            const includeFailEl = document.getElementById('includeFailedQuestions');
-            const exportIncludeFailed = includeFailEl ? includeFailEl.checked : false;
-            proceedExport(exportIncludeFailed);
-        });
-    }
-});
+const exportObjCount = document.getElementById('exportObjCount');
+const exportObjScore = document.getElementById('exportObjScore');
+const exportSubjCount = document.getElementById('exportSubjCount');
+const exportSubjScore = document.getElementById('exportSubjScore');
 
 let currentObjCount = 0;
 let currentSubjCount = 0;
@@ -2477,6 +1636,8 @@ function validateExportScore() {
     }
 }
 
+if(exportObjScore) exportObjScore.addEventListener('input', validateExportScore);
+if(exportSubjScore) exportSubjScore.addEventListener('input', validateExportScore);
 
 function showExportModal() {
     if (!currentReportData || currentReportData.length === 0) {
@@ -2537,6 +1698,22 @@ function hideExportModal() {
     exportSettingsModal.classList.add('hidden');
 }
 
+const exportTestPaperBtn = document.getElementById('exportTestPaperBtn');
+if (exportTestPaperBtn) {
+    exportTestPaperBtn.addEventListener('click', showExportModal);
+}
+
+if (closeExportModalBtn) closeExportModalBtn.addEventListener('click', hideExportModal);
+if (cancelExportModalBtn) cancelExportModalBtn.addEventListener('click', hideExportModal);
+
+if (confirmExportBtn) {
+    confirmExportBtn.addEventListener('click', () => {
+        hideExportModal();
+        const exportIncludeFailed = document.getElementById('includeFailedQuestions') ? document.getElementById('includeFailedQuestions').checked : false;
+        proceedExport(exportIncludeFailed);
+    });
+}
+
 function proceedExport(includeFailed) {
     console.log("INSIDE proceedExport");
             try {
@@ -2569,10 +1746,10 @@ function proceedExport(includeFailed) {
                     const indicator = q.ind || q.passage_text || '[ไม่ได้ระบุตัวชี้วัด]';
                     if (!groupedData[indicator]) groupedData[indicator] = { objective: [], subjective: [] };
                     
-                    const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
-                    const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
-                    const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
-                    const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
+                    const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
+                    const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
+                    const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
+                    const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
                     const isSubj = (!a && !b && !c && !d);
                     
                     if (isSubj) groupedData[indicator].subjective.push(q);
@@ -2593,18 +1770,13 @@ function proceedExport(includeFailed) {
                         const start = currentObjectiveNum;
                         const questions = g.objective.map(q => {
                             const num = currentObjectiveNum++;
-                            const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
-                            const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
-                            const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
-                            const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
-
                             return {
                                 question_num: num,
                                 question_text: q.text || q.question_text || '',
-                                choice_a: a,
-                                choice_b: b,
-                                choice_c: c,
-                                choice_d: d
+                                choice_a: q.a || q.choice_a || '',
+                                choice_b: q.b || q.choice_b || '',
+                                choice_c: q.c || q.choice_c || '',
+                                choice_d: q.d || q.choice_d || ''
                             };
                         });
                         objective_groups.push({
@@ -2633,12 +1805,15 @@ function proceedExport(includeFailed) {
                     }
                 });
             
-                const getExamType2 = (pName) => {
-                    if(!pName) return 'กลางภาค';
+                const getExamType2 = (pName, examType) => {
+                    if(examType && examType.includes('ปลายภาค')) return 'ปลายภาค';
+                    if(examType && examType.includes('กลางภาค')) return 'กลางภาค';
+                    if(!pName) return 'ปลายภาค';
                     if(pName.includes('ปลายภาค')) return 'ปลายภาค';
-                    return 'กลางภาค';
+                    if(pName.includes('กลางภาค')) return 'กลางภาค';
+                    return 'ปลายภาค';
                 };
-                let examTypeStr2 = getExamType2(pInfo.project_name);
+                let examTypeStr2 = getExamType2(pInfo.project_name, pInfo.exam_type);
                 
                 let midTime = ''; let finTime = ''; let midScore = ''; let finScore = '';
                 let acaYear = pInfo.academic_year || ''; let sem = pInfo.semester || '';
@@ -2661,10 +1836,10 @@ function proceedExport(includeFailed) {
                 
                 let currentQNum = 1;
                 const questionsList = passedQuestions.map(q => {
-                    const a = (q.a || q.choice_a || '') ? ' ' + (q.a || q.choice_a) : '';
-                    const b = (q.b || q.choice_b || '') ? ' ' + (q.b || q.choice_b) : '';
-                    const c = (q.c || q.choice_c || '') ? ' ' + (q.c || q.choice_c) : '';
-                    const d = (q.d || q.choice_d || '') ? ' ' + (q.d || q.choice_d) : '';
+                    const a = (q.a || q.choice_a || '') ? '   ' + (q.a || q.choice_a) : '';
+                    const b = (q.b || q.choice_b || '') ? '   ' + (q.b || q.choice_b) : '';
+                    const c = (q.c || q.choice_c || '') ? '   ' + (q.c || q.choice_c) : '';
+                    const d = (q.d || q.choice_d || '') ? '   ' + (q.d || q.choice_d) : '';
                     const isSubj = (!a && !b && !c && !d);
                     
                     return {
@@ -2928,15 +2103,9 @@ function initTinderCard(card) {
     });
 }
 
-let isSwipeAnimating = false;
-
 function flyOut(direction, score) {
-    if (isSwipeAnimating) return;
-    
     const card = document.querySelector('#cardsContainer > div');
     if(!card) return;
-    
-    isSwipeAnimating = true;
     
     card.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
     if(direction === 'right') {
@@ -2963,7 +2132,6 @@ function flyOut(direction, score) {
     setTimeout(() => {
         reviewIndex++;
         renderTinderCard();
-        isSwipeAnimating = false;
     }, 400);
 }
 
@@ -3121,48 +2289,17 @@ function _loadImageFile(file) {
     }
     const reader = new FileReader();
     reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 800;
-            const MAX_HEIGHT = 800;
-            let width = img.width;
-            let height = img.height;
+        const dataUrl = e.target.result; // "data:image/png;base64,XXXX"
+        const parts   = dataUrl.split(',');
+        _mediaPendingBase64 = parts[1];
+        _mediaPendingMime   = file.type;
 
-            if (width > height) {
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-            } else {
-                if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                }
-            }
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            
-            // Fill background with white in case of transparent PNGs
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, width, height);
-            ctx.drawImage(img, 0, 0, width, height);
-            
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
-            const parts = dataUrl.split(',');
-            
-            _mediaPendingBase64 = parts[1];
-            _mediaPendingMime   = 'image/jpeg';
-
-            const imgEl     = document.getElementById('imagePreview');
-            const preview   = document.getElementById('imagePreviewContainer');
-            const placeholder = document.getElementById('imagePlaceholder');
-            if (imgEl)       imgEl.src = dataUrl;
-            if (preview)     preview.classList.remove('hidden');
-            if (placeholder) placeholder.classList.add('hidden');
-        };
-        img.src = e.target.result;
+        const imgEl     = document.getElementById('imagePreview');
+        const preview   = document.getElementById('imagePreviewContainer');
+        const placeholder = document.getElementById('imagePlaceholder');
+        if (imgEl)       imgEl.src = dataUrl;
+        if (preview)     preview.classList.remove('hidden');
+        if (placeholder) placeholder.classList.add('hidden');
     };
     reader.readAsDataURL(file);
 }
