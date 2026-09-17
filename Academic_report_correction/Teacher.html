@@ -1,8 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>ระบบส่งผลการเรียน</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -18,6 +21,13 @@
     .modal-backdrop { transition: opacity 0.3s ease; }
     .modal-scale { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     th { user-select: none; } 
+      @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .35; }
+    }
+    .animate-pulse {
+      animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+    }
   </style>
 </head>
 <body class="p-4 md:p-8 flex justify-center min-h-screen pb-32">
@@ -28,17 +38,8 @@
         <div class="w-24 h-24 bg-blue-50 text-blue-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner border border-blue-100"><i class="material-icons-round text-5xl drop-shadow-sm">badge</i></div>
         <h2 class="text-3xl font-black mb-2 text-slate-800">เข้าสู่ระบบผู้สอน</h2>
         <p class="text-slate-500 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">กรุณากรอกรหัสประจำตัวประชาชน<br>เพื่อยืนยันตัวตน</p>
-        <div class="relative mb-6"><input type="text" id="idCardInput" maxlength="13" inputmode="numeric" placeholder="เลขบัตรประชาชน 13 หลัก" class="w-full text-center text-xl tracking-[0.1em] font-black px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all bg-white text-blue-600 shadow-sm" onkeypress="if(event.key === 'Enter') checkIdCard()"></div>
+        <div class="relative mb-6"><input type="text" id="idCardInput" maxlength="17" inputmode="numeric" placeholder="เลขบัตรประชาชน 13 หลัก" class="w-full text-center text-xl tracking-[0.1em] font-black px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all bg-white text-blue-600 shadow-sm" onkeypress="if(event.key === 'Enter') checkIdCard()"></div>
         <button onclick="checkIdCard()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold py-4 rounded-2xl shadow-[0_8px_20px_-6px_rgba(59,130,246,0.5)] transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2 text-lg"><span>ถัดไป</span> <i class="material-icons-round text-lg">arrow_forward</i></button>
-      </div>
-
-      <div id="setupPinStep" class="hidden fade-in">
-        <div class="w-24 h-24 bg-emerald-50 text-emerald-600 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-inner border border-emerald-100"><i class="material-icons-round text-5xl drop-shadow-sm">password</i></div>
-        <h2 class="text-2xl font-black mb-2 text-slate-800">ตั้งรหัส PIN 6 หลัก</h2>
-        <p class="text-slate-500 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">สำหรับการใช้งานครั้งแรก<br>กรุณาตั้งรหัส PIN เพื่อความปลอดภัย</p>
-        <div class="space-y-4 mb-6"><input type="password" id="setupPin1" maxlength="6" inputmode="numeric" placeholder="ตั้งรหัส PIN 6 หลัก" class="w-full text-center text-2xl tracking-[0.3em] font-black px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 outline-none transition-all bg-white text-emerald-600 shadow-sm" onkeypress="if(event.key === 'Enter') document.getElementById('setupPin2').focus()"><input type="password" id="setupPin2" maxlength="6" inputmode="numeric" placeholder="ยืนยันรหัส PIN อีกครั้ง" class="w-full text-center text-2xl tracking-[0.3em] font-black px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 outline-none transition-all bg-white text-emerald-600 shadow-sm" onkeypress="if(event.key === 'Enter') saveNewPin()"></div>
-        <button onclick="saveNewPin()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-extrabold py-4 rounded-2xl shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2 text-lg"><span>ยืนยันและเข้าสู่ระบบ</span> <i class="material-icons-round text-lg">check_circle</i></button>
-        <button onclick="backToIdCard()" class="mt-5 text-slate-400 text-sm font-bold hover:text-blue-600 transition-colors">ยกเลิก</button>
       </div>
 
       <div id="enterPinStep" class="hidden fade-in">
@@ -47,7 +48,7 @@
         <p class="text-slate-500 text-sm font-medium mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">กรุณากรอกรหัส PIN 6 หลักของคุณ</p>
         <div class="relative mb-6"><input type="password" id="pinInput" maxlength="6" inputmode="numeric" placeholder="รหัส PIN 6 หลัก" class="w-full text-center text-3xl tracking-[0.3em] font-black px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 outline-none transition-all bg-white text-indigo-600 shadow-sm" onkeypress="if(event.key === 'Enter') loginWithPin()"></div>
         <button onclick="loginWithPin()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold py-4 rounded-2xl shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] transform hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 flex justify-center items-center gap-2 text-lg"><span>เข้าสู่ระบบ</span> <i class="material-icons-round text-lg">login</i></button>
-        <div class="mt-6 flex justify-between items-center text-sm font-medium"><button onclick="backToIdCard()" class="text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1"><i class="material-icons-round text-[16px]">arrow_back</i> กลับ</button><span class="text-rose-500 cursor-pointer hover:underline" onclick="showDialog('ลืมรหัส PIN?', 'กรุณาติดต่อแอดมินฝ่ายวิชาการเพื่อรีเซ็ตรหัส PIN ใหม่ครับ', 'info')">ลืมรหัส PIN?</span></div>
+        <div class="mt-6 flex justify-between items-center text-sm font-medium"><button onclick="backToIdCard()" class="text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1"><i class="material-icons-round text-[16px]">arrow_back</i> กลับ</button><span class="text-rose-500 cursor-pointer hover:underline" onclick="showDialog('ลืมรหัส PIN?', 'รหัส PIN เป็นรหัสเดียวกับที่ใช้ในระบบ AssessmentHub ครับ หากต้องการรีเซ็ตรหัสกรุณาติดต่อผู้ดูแลระบบ', 'info')">ลืมรหัส PIN?</span></div>
       </div>
     </div>
   </div>
@@ -58,13 +59,27 @@
         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 border-2 border-white"><i class="material-icons-round text-3xl">school</i></div>
         <div><p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1" id="roleBadge">Teacher Workspace</p><h1 class="text-2xl md:text-3xl font-black text-slate-800" id="teacherNameDisplay">ยินดีต้อนรับ</h1></div>
       </div>
-      <button onclick="logout()" class="w-auto px-4 h-12 bg-slate-50 text-slate-600 font-bold rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm border border-slate-200 gap-2"><i class="material-icons-round text-sm">logout</i> <span class="text-sm">ออกจากระบบ</span></button>
+      
+      <div class="flex gap-2">
+        <a href="javascript:void(0)" onclick="goToIndex()" class="w-auto px-4 h-12 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm border border-blue-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">dashboard</i> <span class="text-sm">หน้าแดชบอร์ด</span></a>
+        <button onclick="logout()" class="w-auto px-4 h-12 bg-slate-50 text-slate-600 font-bold rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm border border-slate-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">logout</i> <span class="text-sm">ออกจากระบบ</span></button>
+      </div>
     </header>
 
     <div id="adminControls" class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 p-6 md:p-8 rounded-[2rem] mb-6 hidden shadow-sm">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5">
         <h2 class="text-xl font-black text-indigo-800 flex items-center gap-2"><i class="material-icons-round text-indigo-500">security</i> โหมดผู้ดูแลระบบ (Superuser)</h2>
-        <button onclick="loadApprovals()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_5px_15px_-3px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2 w-full md:w-auto justify-center"><i class="material-icons-round text-sm">fact_check</i> หน้าอนุมัติผลการเรียน</button>
+        <div class="flex items-center gap-2.5 w-full md:w-auto flex-wrap">
+          <button onclick="configureApiUrl()" class="bg-white/90 hover:bg-white text-indigo-800 border border-indigo-200 hover:border-indigo-300 px-4 py-2.5 rounded-xl font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+            <i class="material-icons-round text-sm text-indigo-600">settings</i>
+            <span>ตั้งค่า Web App URL</span>
+          </button>
+          <button onclick="loadApprovals()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_5px_15px_-3px_rgba(79,70,229,0.4)] transition-all flex items-center gap-2 justify-center cursor-pointer">
+            <i class="material-icons-round text-sm">fact_check</i>
+            <span>หน้าอนุมัติผลการเรียน</span>
+            <span id="adminApprovalBadge" class="hidden bg-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-sm">0</span>
+          </button>
+        </div>
       </div>
 
       <div class="bg-white/90 backdrop-blur p-5 rounded-2xl border border-white flex flex-col md:flex-row gap-5">
@@ -87,6 +102,7 @@
                  <datalist id="teacherDatalist"></datalist>
               </div>
               <button onclick="executeAdminSearch()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-1 shrink-0">ค้นหา</button>
+                 <button type="button" onclick="resetToMyTasks()" title="ล้างคำค้นและกลับไปดูงานของตนเอง" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3.5 py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center gap-1 shrink-0"><i class="material-icons-round text-base">person</i> งานของฉัน</button>
            </div>
         </div>
       </div>
@@ -106,15 +122,65 @@
         <div class="text-4xl font-black text-blue-600 bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100" id="taskCount">0</div>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-3 mb-5 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+      <div class="flex flex-col sm:flex-row gap-3 mb-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
         <div class="relative flex-1">
           <i class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</i>
-          <input type="text" id="searchInput" onkeyup="filterTasks()" placeholder="ค้นหาจากตารางด้านล่าง..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm font-medium">
+          <input type="text" id="searchInput" onkeyup="filterTasks()" placeholder="ค้นหารหัสนักเรียน, ชื่อ, หรือวิชา..." class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm font-medium">
         </div>
         <div class="sm:w-1/3">
-          <select id="subjectFilter" onchange="filterTasks()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm font-bold bg-white text-slate-700 cursor-pointer">
+          <select id="subjectFilter" onchange="onSubjectFilterChange()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-sm font-bold bg-white text-slate-700 cursor-pointer">
             <option value="">-- กรองทุกรายวิชา --</option>
           </select>
+        </div>
+      </div>
+
+      <!-- Quick Filter & Batch Task Assignment Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2.5 mb-4 p-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 rounded-2xl border border-blue-100 shadow-2xs">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <span class="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
+            <i class="material-icons-round text-sm text-blue-600">filter_list</i> สถานะภาระงาน:
+          </span>
+          <button type="button" onclick="setTaskStatusFilter('all', this)" id="chipFilterAll" class="task-filter-chip active px-3 py-1.5 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-xs cursor-pointer">
+            ทั้งหมด (<span id="countFilterAll">0</span>)
+          </button>
+          <button type="button" onclick="setTaskStatusFilter('no_task', this)" id="chipFilterNoTask" class="task-filter-chip px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white text-slate-600 hover:bg-rose-50 hover:text-rose-700 border border-slate-200 cursor-pointer">
+            ⚠️ ยังไม่สั่งงาน (<span id="countFilterNoTask" class="text-rose-600 font-black">0</span>)
+          </button>
+          <button type="button" onclick="setTaskStatusFilter('unregistered', this)" id="chipFilterUnreg" class="task-filter-chip px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white text-slate-600 hover:bg-amber-50 hover:text-amber-700 border border-slate-200 cursor-pointer">
+            ⏳ ยังไม่รับงาน (<span id="countFilterUnreg" class="text-amber-600 font-black">0</span>)
+          </button>
+          <button type="button" onclick="setTaskStatusFilter('registered', this)" id="chipFilterReg" class="task-filter-chip px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 cursor-pointer">
+            ✅ รับงานแล้ว (<span id="countFilterReg" class="text-emerald-600 font-black">0</span>)
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openSubjectBulkModal()" id="btnBulkCurrentSubject" class="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 transition flex items-center gap-1.5 cursor-pointer">
+            <i class="material-icons-round text-sm">flash_on</i>
+            <span id="btnBulkCurrentSubjectText">⚡ สั่งงานด่วนทั้งวิชานี้</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bulk Action Bar -->
+      <div id="bulkActionBar" class="bg-slate-900 text-white p-3.5 rounded-2xl mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg border border-slate-800 hidden">
+        <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold">
+          <div class="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-sm">
+            <i class="material-icons-round text-base">checklist</i>
+          </div>
+          <span>เลือกนักเรียน <strong id="bulkSelectedCountText" class="text-amber-400 font-black text-sm sm:text-base mx-0.5">0</strong> คน</span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-end">
+          <button type="button" onclick="openBulkTaskModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <i class="material-icons-round text-sm">edit_note</i>
+            <span>⚡ มอบหมายงานค้างพร้อมกัน</span>
+          </button>
+          <button type="button" onclick="bulkRegisterReceipt()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer">
+            <i class="material-icons-round text-sm">how_to_reg</i>
+            <span>✍️ บันทึกรับงานทุกคน</span>
+          </button>
+          <button type="button" onclick="clearBulkSelection()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
+            ✕ ยกเลิก
+          </button>
         </div>
       </div>
 
@@ -122,12 +188,14 @@
         <table class="w-full text-sm min-w-[800px]">
           <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
             <tr>
+              <th class="px-3 py-4 text-center w-12"><input type="checkbox" id="bulkTaskSelectAll" onclick="toggleBulkTaskSelect(this)" class="custom-checkbox" title="เลือกทั้งหมด"></th>
               <th onclick="sortTasks('subjCode')" class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs cursor-pointer hover:text-blue-600 transition-colors">วิชา <i class="material-icons-round text-[12px] align-middle ml-1">swap_vert</i></th>
               <th onclick="sortTasks('stuId')" class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs cursor-pointer hover:text-blue-600 transition-colors">รหัสนักเรียน <i class="material-icons-round text-[12px] align-middle ml-1">swap_vert</i></th>
               <th onclick="sortTasks('stuName')" class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs cursor-pointer hover:text-blue-600 transition-colors">ชื่อ-นามสกุล <i class="material-icons-round text-[12px] align-middle ml-1">swap_vert</i></th>
               <th onclick="sortTasks('gradeRoom')" class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs cursor-pointer hover:text-blue-600 transition-colors">ชั้น/ห้อง <i class="material-icons-round text-[12px] align-middle ml-1">swap_vert</i></th>
               <th class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs">คะแนนเดิม</th>
               <th class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs">ผลเดิม</th>
+              <th class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs min-w-[220px]">งานค้าง / สถานะรับงาน</th>
               <th class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs w-36 md:w-44">ผลใหม่</th>
             </tr>
           </thead>
@@ -178,36 +246,60 @@
     </div>
 
     <div id="approvalView" class="glass-card p-6 md:p-8 border border-slate-100 hidden">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-5 mb-5">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-4">
         <div>
-          <button onclick="backToTasks()" class="text-indigo-500 hover:text-indigo-700 text-sm font-bold flex items-center gap-1 mb-3 transition-colors bg-indigo-50 px-3 py-1.5 rounded-lg"><i class="material-icons-round text-sm">arrow_back</i> กลับหน้ารายการ</button>
-          <h2 class="text-xl font-black flex items-center gap-2 text-slate-800"><i class="material-icons-round text-indigo-500">fact_check</i> รายการรออนุมัติ</h2>
+          <button onclick="backToTasks()" class="text-indigo-600 hover:text-indigo-800 text-sm font-bold flex items-center gap-1.5 mb-2.5 transition-colors bg-indigo-50 hover:bg-indigo-100 px-3.5 py-1.5 rounded-xl border border-indigo-200 shadow-2xs cursor-pointer">
+            <i class="material-icons-round text-sm">arrow_back</i> กลับหน้ารายการ
+          </button>
+          <h2 class="text-2xl font-black flex items-center gap-2 text-slate-800">
+            <i class="material-icons-round text-indigo-600 text-3xl">fact_check</i> รายการรออนุมัติผลการเรียน
+          </h2>
+          <p class="text-slate-500 text-xs font-medium mt-1">สามารถกดอนุมัติรายคนในตารางได้ทันที หรือเลือกหลายรายการเพื่ออนุมัติพร้อมกัน</p>
         </div>
-        <div class="text-4xl font-black text-indigo-600 bg-indigo-50 px-4 py-2 rounded-2xl border border-indigo-100" id="approveCount">0</div>
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <div class="text-center bg-indigo-50 px-5 py-2.5 rounded-2xl border border-indigo-100 shadow-2xs">
+            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">รออนุมัติ</p>
+            <div class="flex items-baseline justify-center gap-1">
+              <span class="text-3xl font-black text-indigo-600" id="approveCount">0</span>
+              <span class="text-xs font-bold text-indigo-400">คน</span>
+            </div>
+          </div>
+          <button type="button" id="approveAllTopBtn" onclick="approveAll()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-5 py-3.5 rounded-2xl font-extrabold shadow-md shadow-emerald-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all flex items-center gap-2 text-sm cursor-pointer whitespace-nowrap disabled:opacity-40 disabled:pointer-events-none" disabled>
+            <i class="material-icons-round text-lg">done_all</i>
+            <span>อนุมัติทั้งหมด</span>
+          </button>
+        </div>
       </div>
 
-      <div class="overflow-x-auto rounded-xl border border-slate-200 mb-6">
-        <table class="w-full text-sm min-w-[500px]">
-          <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+      <div class="overflow-x-auto rounded-xl border border-slate-200 mb-6 shadow-2xs">
+        <table class="w-full text-sm min-w-[700px]">
+          <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
             <tr>
-              <th class="px-5 py-4 text-center w-12"><input type="checkbox" id="selectAllCheck" class="custom-checkbox" onclick="toggleSelectAll(this)"></th>
-              <th class="px-5 py-4 text-left font-bold uppercase tracking-wider text-xs">วิชา / ครูผู้สอน</th>
-              <th class="px-5 py-4 text-left font-bold uppercase tracking-wider text-xs">นักเรียน</th>
-              <th class="px-5 py-4 text-center font-bold uppercase tracking-wider text-xs">ผลเดิม</th>
-              <th class="px-5 py-4 text-center font-bold uppercase tracking-wider text-xs bg-emerald-50 text-emerald-600">ผลใหม่</th>
+              <th class="px-4 py-4 text-center w-12"><input type="checkbox" id="selectAllCheck" class="custom-checkbox" onclick="toggleSelectAll(this)" title="เลือกทั้งหมด"></th>
+              <th class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs">วิชา / ครูผู้สอน</th>
+              <th class="px-4 py-4 text-left font-bold uppercase tracking-wider text-xs">นักเรียน</th>
+              <th class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs">ผลเดิม</th>
+              <th class="px-4 py-4 text-center font-bold uppercase tracking-wider text-xs bg-emerald-50/80 text-emerald-700">ผลใหม่</th>
+              <th class="px-5 py-4 text-center font-bold uppercase tracking-wider text-xs">การอนุมัติ</th>
             </tr>
           </thead>
           <tbody id="approveTBody" class="divide-y divide-slate-100 bg-white"></tbody>
         </table>
       </div>
       
-      <div class="flex flex-wrap justify-end gap-3">
-         <button onclick="submitRejections()" id="rejectBtn" class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-3.5 rounded-2xl font-extrabold shadow-[0_8px_20px_-6px_rgba(244,63,94,0.5)] transform hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-2 hidden text-base">
-          <i class="material-icons-round">cancel</i> ส่งกลับไปแก้ไข
-        </button>
-         <button onclick="submitApprovals()" id="approveBtn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-8 py-3.5 rounded-2xl font-extrabold shadow-[0_8px_20px_-6px_rgba(79,70,229,0.5)] transform hover:-translate-y-1 active:scale-95 transition-all flex items-center gap-2 hidden text-base">
-          <i class="material-icons-round">check_circle</i> อนุมัติ <span id="selectedCount" class="bg-white text-indigo-600 px-2 py-0.5 rounded-lg ml-1">0</span> รายการ
-        </button>
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+        <div class="text-xs font-bold text-slate-600 flex items-center gap-2">
+          <i class="material-icons-round text-indigo-500 text-lg">checklist</i>
+          <span>เลือกแล้ว: <strong id="selectedCountText" class="text-indigo-600 text-sm">0</strong> จาก <span id="totalPendingText">0</span> คน</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+          <button type="button" onclick="submitRejections()" id="rejectBtn" class="flex-1 sm:flex-initial bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-5 py-3 rounded-xl font-extrabold text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:pointer-events-none" disabled>
+            <i class="material-icons-round text-base">replay</i> <span>ตีกลับที่เลือก</span>
+          </button>
+          <button type="button" onclick="submitApprovals()" id="approveBtn" class="flex-1 sm:flex-initial bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white px-7 py-3 rounded-xl font-extrabold shadow-md shadow-indigo-500/20 transform hover:-translate-y-0.5 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer disabled:opacity-40 disabled:pointer-events-none" disabled>
+            <i class="material-icons-round text-base">check_circle</i> <span>อนุมัติที่เลือก</span> (<span id="selectedCount">0</span>)
+          </button>
+        </div>
       </div>
     </div>
 
@@ -227,12 +319,181 @@
 
   </div>
 
-  <div id="customModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4 modal-backdrop opacity-0">
-    <div id="customModalCard" class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm p-8 text-center modal-scale scale-95">
-      <div id="customModalIcon" class="w-24 h-24 mx-auto rounded-[2rem] mb-6 flex items-center justify-center shadow-inner"></div>
-      <h3 id="customModalTitle" class="text-2xl font-black text-slate-800 mb-3"></h3>
-      <p id="customModalMessage" class="text-slate-500 font-medium mb-8 whitespace-pre-line text-sm"></p>
+  <div id="customModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
+    <div id="customModalCard" class="bg-white rounded-[2rem] shadow-2xl w-full max-w-sm p-8 text-center animate-in fade-in zoom-in-95 duration-200">
+      <div id="customModalIcon" class="w-20 h-20 mx-auto rounded-3xl mb-4 flex items-center justify-center shadow-inner"></div>
+      <h3 id="customModalTitle" class="text-xl font-black text-slate-800 mb-2"></h3>
+      <p id="customModalMessage" class="text-slate-500 font-medium mb-6 whitespace-pre-line text-sm"></p>
       <div id="customModalActions" class="flex gap-3 justify-center w-full"></div>
+    </div>
+  </div>
+
+        <!-- Task Edit Modal (Single Student) -->
+  <div id="taskEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-6 sm:p-7 border border-slate-100 animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <i class="material-icons-round text-lg">edit_note</i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">ระบุ / แก้ไขภาระงานค้าง</h3>
+            <p class="text-xs text-slate-500 font-medium" id="taskModalStudentInfo">นักเรียน: -</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeTaskModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition cursor-pointer">✕</button>
+      </div>
+
+      <!-- Registration Status Bar in Modal -->
+      <div id="taskModalRegStatusBar" class="mb-3"></div>
+
+      <!-- Quick Chips Ribbon -->
+      <div class="mb-3">
+        <div class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center gap-1">
+          <span>⚡ ข้อความด่วน (คลิกเพื่อเพิ่ม):</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="appendTaskToModal('สอบแก้ตัวข้อเขียนตามที่ครูกำหนด')" class="text-xs px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg font-medium transition cursor-pointer">
+            📝 สอบแก้ตัวข้อเขียน
+          </button>
+          <button type="button" onclick="appendTaskToModal('ขาดสอบปลายภาค (ติดต่อสอบแก้ตัวข้อเขียน)')" class="text-xs px-2.5 py-1 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 border border-slate-200 rounded-lg font-medium transition cursor-pointer">
+            📝 ขาดสอบปลายภาค
+          </button>
+          <button type="button" onclick="appendTaskToModal('ขาดสอบกลางภาค (ติดต่อสอบแก้ตัวข้อเขียน)')" class="text-xs px-2.5 py-1 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 border border-slate-200 rounded-lg font-medium transition cursor-pointer">
+            📝 ขาดสอบกลางภาค
+          </button>
+          <button type="button" onclick="appendTaskToModal('เวลาเรียนไม่ครบ 80% (ทำชดเชยเวลาเรียน)')" class="text-xs px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg font-medium transition cursor-pointer">
+            ⏳ มส: เวลาเรียนไม่ครบ 80%
+          </button>
+          <button type="button" onclick="appendTaskToModal('ส่งใบงาน / แบบฝึกหัดที่ค้างส่ง')" class="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg font-medium transition cursor-pointer">
+            📑 ส่งใบงาน / แบบฝึกหัด
+          </button>
+          <button type="button" onclick="appendTaskToModal('ส่งสมุดงาน / ชิ้นงานสรุปบทเรียน')" class="text-xs px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg font-medium transition cursor-pointer">
+            📂 สมุดงาน / ชิ้นงาน
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Tasks -->
+      <div id="recentTasksSection" class="mb-3">
+        <div class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center justify-between">
+          <span>🕒 งานที่ใช้บ่อย / ล่าสุด:</span>
+          <button type="button" onclick="clearRecentTasks('single')" class="text-[10px] text-slate-400 hover:text-rose-500 cursor-pointer">ล้างประวัติ</button>
+        </div>
+        <div id="recentTasksChips" class="flex flex-wrap gap-1.5">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+
+      <!-- Textarea -->
+      <div class="mb-3">
+        <label class="block text-xs font-bold text-slate-700 mb-1">รายละเอียดภาระงานค้าง (กด Enter เพื่อขึ้นบรรทัดใหม่เมื่อมีหลายงาน)</label>
+        <textarea id="taskModalTextarea" rows="3" placeholder="พิมพ์ภาระงานที่มอบหมาย..." class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition resize-none font-medium leading-relaxed"></textarea>
+      </div>
+
+      <!-- Mark as registered checkbox option in Single Modal -->
+      <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-2.5">
+        <input type="checkbox" id="taskModalMarkRegisteredCheck" class="custom-checkbox">
+        <label for="taskModalMarkRegisteredCheck" class="text-xs font-bold text-slate-700 cursor-pointer select-none">
+          บันทึกว่านักเรียน "ลงทะเบียนรับทราบงานแล้ว" ทันที
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button type="button" onclick="clearTaskModal()" class="text-xs text-rose-500 hover:text-rose-700 font-bold px-2 py-1 transition cursor-pointer">
+          ล้างข้อความ
+        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeTaskModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer">ยกเลิก</button>
+          <button type="button" onclick="saveTaskModal()" id="taskModalSaveBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition flex items-center gap-1 cursor-pointer">
+            <i class="material-icons-round text-sm">save</i> บันทึกงานค้าง
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Task Edit Modal -->
+  <div id="bulkTaskEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-6 sm:p-7 border border-slate-100 animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <i class="material-icons-round text-lg">fact_check</i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">มอบหมายงานค้างพร้อมกัน</h3>
+            <p class="text-xs text-indigo-600 font-bold">กำลังมอบหมายให้นักเรียนที่เลือก <span id="bulkModalCount" class="text-sm font-black text-indigo-700">0</span> คน</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeBulkTaskModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold transition cursor-pointer">✕</button>
+      </div>
+
+      <!-- Quick Chips Ribbon -->
+      <div class="mb-3">
+        <div class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center gap-1">
+          <span>⚡ ข้อความด่วน (คลิกเพื่อเพิ่ม):</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" onclick="appendTaskToModal('สอบแก้ตัวข้อเขียนตามที่ครูกำหนด', 'bulk')" class="text-xs px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg font-medium transition cursor-pointer">
+            📝 สอบแก้ตัวข้อเขียน
+          </button>
+          <button type="button" onclick="appendTaskToModal('ขาดสอบปลายภาค (ติดต่อสอบแก้ตัวข้อเขียน)', 'bulk')" class="text-xs px-2.5 py-1 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 border border-slate-200 rounded-lg font-medium transition cursor-pointer">
+            📝 ขาดสอบปลายภาค
+          </button>
+          <button type="button" onclick="appendTaskToModal('ขาดสอบกลางภาค (ติดต่อสอบแก้ตัวข้อเขียน)', 'bulk')" class="text-xs px-2.5 py-1 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 text-slate-600 border border-slate-200 rounded-lg font-medium transition cursor-pointer">
+            📝 ขาดสอบกลางภาค
+          </button>
+          <button type="button" onclick="appendTaskToModal('เวลาเรียนไม่ครบ 80% (ทำชดเชยเวลาเรียน)', 'bulk')" class="text-xs px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg font-medium transition cursor-pointer">
+            ⏳ มส: เวลาเรียนไม่ครบ 80%
+          </button>
+          <button type="button" onclick="appendTaskToModal('ส่งใบงาน / แบบฝึกหัดที่ค้างส่ง', 'bulk')" class="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg font-medium transition cursor-pointer">
+            📑 ส่งใบงาน / แบบฝึกหัด
+          </button>
+          <button type="button" onclick="appendTaskToModal('ส่งสมุดงาน / ชิ้นงานสรุปบทเรียน', 'bulk')" class="text-xs px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg font-medium transition cursor-pointer">
+            📂 สมุดงาน / ชิ้นงาน
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Tasks -->
+      <div id="bulkRecentTasksSection" class="mb-3">
+        <div class="text-[11px] font-bold text-slate-500 mb-1.5 flex items-center justify-between">
+          <span>🕒 งานที่ใช้บ่อย / ล่าสุด:</span>
+          <button type="button" onclick="clearRecentTasks('bulk')" class="text-[10px] text-slate-400 hover:text-rose-500 cursor-pointer">ล้างประวัติ</button>
+        </div>
+        <div id="bulkRecentTasksChips" class="flex flex-wrap gap-1.5">
+          <!-- Dynamically filled -->
+        </div>
+      </div>
+
+      <!-- Textarea -->
+      <div class="mb-3">
+        <label class="block text-xs font-bold text-slate-700 mb-1">ภาระงานที่จะมอบหมายให้นักเรียนทุกคนที่เลือก</label>
+        <textarea id="bulkModalTextarea" rows="4" placeholder="พิมพ์ภาระงานที่มอบหมาย..." class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none font-medium leading-relaxed"></textarea>
+      </div>
+
+      <!-- Mark as registered checkbox option -->
+      <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center gap-2.5">
+        <input type="checkbox" id="bulkMarkRegisteredCheck" class="custom-checkbox">
+        <label for="bulkMarkRegisteredCheck" class="text-xs font-bold text-slate-700 cursor-pointer select-none">
+          บันทึกว่านักเรียนทุกคนที่เลือก "ลงทะเบียนรับทราบงานแล้ว" ทันที
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <button type="button" onclick="document.getElementById('bulkModalTextarea').value = ''" class="text-xs text-rose-500 hover:text-rose-700 font-bold px-2 py-1 transition cursor-pointer">
+          ล้างข้อความ
+        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeBulkTaskModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer">ยกเลิก</button>
+          <button type="button" onclick="saveBulkTaskModal()" id="bulkModalSaveBtn" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition flex items-center gap-1 cursor-pointer">
+            <i class="material-icons-round text-sm">save</i> มอบหมายงานทุกคน
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -242,109 +503,562 @@
   </div>
 
   <script>
+    
+    const RECENT_TASKS_KEY = 'teac_recent_tasks_v1';
+    function getRecentTasks() {
+      try {
+        const raw = localStorage.getItem(RECENT_TASKS_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch(e) { return []; }
+    }
+    function saveRecentTask(taskText) {
+      if (!taskText || !taskText.trim()) return;
+      const text = taskText.trim();
+      let list = getRecentTasks().filter(t => t !== text);
+      list.unshift(text);
+      if (list.length > 8) list = list.slice(0, 8);
+      try { localStorage.setItem(RECENT_TASKS_KEY, JSON.stringify(list)); } catch(e) {}
+    }
+    function renderRecentTasks(targetElementId) {
+      const el = document.getElementById(targetElementId);
+      if (!el) return;
+      const list = getRecentTasks();
+      if (list.length === 0) {
+        el.innerHTML = '<span class="text-xs text-slate-400 italic">ยังไม่มีประวัติข้อความล่าสุด</span>';
+        return;
+      }
+      el.innerHTML = list.map(item => `
+        <button type="button" onclick="appendTaskToModal('${escapeHtml(item).replace(/'/g, "\'")}', '${targetElementId.includes('bulk') ? 'bulk' : 'single'}')" class="text-xs px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 border border-slate-200 rounded-lg transition font-medium cursor-pointer max-w-[280px] truncate" title="${escapeHtml(item)}">
+          ${escapeHtml(item)}
+        </button>
+      `).join('');
+    }
+    function clearRecentTasks(target) {
+      try { localStorage.removeItem(RECENT_TASKS_KEY); } catch(e) {}
+      renderRecentTasks(target === 'bulk' ? 'bulkRecentTasksChips' : 'recentTasksChips');
+    }
+
+    function escapeHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+        // 💡 เชื่อมต่อกับ Node.js Backend / Google Apps Script
+        function showLoader(text = 'กำลังเตรียมระบบ...') {
+      const loader = document.getElementById('loader');
+      const txt = document.getElementById('loaderText');
+      if (txt) txt.innerText = text;
+      if (loader) loader.classList.remove('hidden');
+    }
+
+    function hideLoader() {
+      const loader = document.getElementById('loader');
+      if (loader) loader.classList.add('hidden');
+    }
+
+    function showDialog(title, message, type = 'info', isConfirm = false, confirmText = 'ยืนยัน', cancelText = 'ยกเลิก') {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('customModal');
+        const iconWrap = document.getElementById('customModalIcon');
+        const actions = document.getElementById('customModalActions');
+
+        document.getElementById('customModalTitle').innerText = title;
+        document.getElementById('customModalMessage').innerText = message;
+
+        if (type === 'success') {
+          iconWrap.className = 'w-16 h-16 mx-auto rounded-2xl mb-4 flex items-center justify-center text-4xl bg-emerald-100 text-emerald-500 shadow-inner';
+          iconWrap.innerHTML = '<i class="material-icons-round">check_circle</i>';
+        } else if (type === 'warning') {
+          iconWrap.className = 'w-16 h-16 mx-auto rounded-2xl mb-4 flex items-center justify-center text-4xl bg-amber-100 text-amber-500 shadow-inner';
+          iconWrap.innerHTML = '<i class="material-icons-round">warning_amber</i>';
+        } else if (type === 'error') {
+          iconWrap.className = 'w-16 h-16 mx-auto rounded-2xl mb-4 flex items-center justify-center text-4xl bg-rose-100 text-rose-500 shadow-inner';
+          iconWrap.innerHTML = '<i class="material-icons-round">error_outline</i>';
+        } else {
+          iconWrap.className = 'w-16 h-16 mx-auto rounded-2xl mb-4 flex items-center justify-center text-4xl bg-blue-100 text-blue-500 shadow-inner';
+          iconWrap.innerHTML = '<i class="material-icons-round">info</i>';
+        }
+
+        const isSetupMode = new URLSearchParams(window.location.search).get('setup') === '1' || new URLSearchParams(window.location.search).get('admin') === '1';
+        const isApiIssue = (IS_ADMIN || isSetupMode) && message && (
+          message.includes('Google Apps Script') || 
+          message.includes('Web App') || 
+          message.includes('Google Drive') || 
+          message.includes('ไม่สามารถเปิดไฟล์') ||
+          message.includes('เซิร์ฟเวอร์ตอบกลับเป็น HTML')
+        );
+
+        if (isConfirm) {
+          actions.innerHTML = `
+            <button id="dialogCancel" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition text-xs sm:text-sm cursor-pointer">${cancelText}</button>
+            <button id="dialogConfirm" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-md transition text-xs sm:text-sm cursor-pointer">${confirmText}</button>
+          `;
+        } else {
+          actions.innerHTML = `
+            <div class="flex flex-col gap-2 w-full">
+              <button id="dialogOk" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-md transition text-xs sm:text-sm cursor-pointer">ตกลง</button>
+              ${isApiIssue ? '<button type="button" id="dialogConfigApi" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"><i class="material-icons-round text-sm">settings</i> ตั้งค่า Web App URL ใหม่</button>' : ''}
+            </div>
+          `;
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        const closeModal = (res) => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          modal.onclick = null;
+          resolve(res);
+        };
+
+        modal.onclick = (e) => {
+          if (e.target === modal) closeModal(false);
+        };
+
+        if (isConfirm) {
+          const cancelBtn = document.getElementById('dialogCancel');
+          const confirmBtn = document.getElementById('dialogConfirm');
+          if (cancelBtn) cancelBtn.onclick = () => closeModal(false);
+          if (confirmBtn) confirmBtn.onclick = () => closeModal(true);
+        } else {
+          const okBtn = document.getElementById('dialogOk');
+          if (okBtn) okBtn.onclick = () => closeModal(true);
+          const cfgBtn = document.getElementById('dialogConfigApi');
+          if (cfgBtn) cfgBtn.onclick = () => { closeModal(false); configureApiUrl(); };
+        }
+      });
+    }
+
+    function configureApiUrl() {
+      const current = localStorage.getItem('custom_gas_url') || API_BASE_URL;
+      const input = prompt('ระบุ Google Apps Script Web App URL (ลงท้ายด้วย /exec):', current);
+      if (input && input.trim()) {
+        const clean = input.trim();
+        if (!clean.startsWith('http')) {
+          alert('กรุณาระบุ URL ที่ถูกต้อง (ขึ้นต้นด้วย https://)');
+          return;
+        }
+        localStorage.setItem('custom_gas_url', clean);
+        API_BASE_URL = clean;
+        alert('บันทึก Web App URL เรียบร้อยแล้ว ระบบจะโหลดใหม่อัตโนมัติ');
+        location.reload();
+      }
+    }
+
+    const ACTIVE_DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec';
+
+    // 🧹 ล้างค่า URL เก่าที่พังออกจาก localStorage อัตโนมัติ ป้องกันไม่ให้เบราว์เซอร์ไปดึง URL เก่าที่ถูกเก็บถาวรแล้ว
+    try {
+      const savedUrl = localStorage.getItem('custom_gas_url');
+      if (savedUrl && (savedUrl.includes('ak8g') || savedUrl.includes('AKfycbyDn-m9RRJTvbe8mtutmDkYmVBrsCgP5uU8P2oiN_V_7QiBwxMW_YjtzUuqmLO---ak8g') || savedUrl.includes('AKfycbxzpP9b') || savedUrl.includes('AKfycbzSf') || savedUrl.includes('AKfycbz7'))) {
+        localStorage.removeItem('custom_gas_url');
+      }
+    } catch(e) {}
+
+    const urlApiOverride = new URLSearchParams(window.location.search).get('apiUrl');
+    if (urlApiOverride) {
+      try { localStorage.setItem('custom_gas_url', urlApiOverride); } catch(e) {}
+    }
+    let API_BASE_URL = localStorage.getItem('custom_gas_url') || ACTIVE_DEPLOY_URL;
+
+    // 🚀 ฟังก์ชันตัวกลางเรียก API: ใช้ google.script.run เมื่ออยู่ใน GAS หรือ fetch เมื่อเป็น Standalone
+    function callBackend(action, params = {}, method = 'GET') {
+      return new Promise(async (resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          const runner = google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(err => reject(new Error(err && err.message ? err.message : String(err))));
+
+          switch (action) {
+            case 'check-id':
+              if (typeof runner.checkIdCardStatus === 'function') {
+                runner.checkIdCardStatus(params.idCard);
+              } else if (typeof runner.checkTeacherId === 'function') {
+                runner.checkTeacherId(params.idCard);
+              } else {
+                runner.checkIdCardStatus(params.idCard);
+              }
+              break;
+            case 'verify-pin':
+              runner.verifyPinLogin(params.idCard, params.pin);
+              break;
+            case 'tasks':
+              runner.getTasksForAdmin(params.mode, params.keyword);
+              break;
+            case 'history':
+              runner.getHistoryForAdmin(params.mode, params.keyword);
+              break;
+            case 'teachers':
+              runner.getAllTeachers();
+              break;
+            case 'approvals':
+              runner.getPendingApprovals();
+              break;
+            case 'approve':
+              runner.approveGrades(params.rowIds);
+              break;
+            case 'reject':
+              runner.rejectGrades(params.rowIds);
+              break;
+            case 'submit-grades':
+              runner.submitGrades(params.payload);
+              break;
+            case 'update-pending-task':
+              runner.updatePendingTask(params);
+              break;
+            case 'register-task':
+              runner.registerTask(params.rowId, params.specialId, params.taskDate);
+              break;
+            case 'batch-register-tasks':
+              runner.batchRegisterTasks(params.rowIds);
+              break;
+            case 'batch-update-pending-tasks':
+              runner.batchUpdatePendingTasks(params.items || params.payload);
+              break;
+            case 'sync-sgs':
+              runner.syncFromSgsNextschool(params.items || params.payload);
+              break;
+            default:
+              reject(new Error('Unknown backend action: ' + action));
+          }
+        } else {
+          // 🔄 Auto-Retry: ลองใหม่อัตโนมัติสูงสุด 3 ครั้ง เมื่อ GAS ส่ง error หรือ HTML กลับมา
+          const MAX_RETRIES = 3;
+          const isWriteAction = ['approve','reject','submit-grades','update-pending-task','register-task','batch-register-tasks','batch-update-pending-tasks','sync-sgs'].includes(action);
+
+          const urlParams = new URLSearchParams();
+          urlParams.append('action', action);
+          for (const [key, val] of Object.entries(params)) {
+            if (val === undefined || val === null) continue;
+            urlParams.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
+          }
+          const fetchUrl = `${API_BASE_URL}?${urlParams.toString()}`;
+
+          async function attemptFetch(attempt) {
+            try {
+              const res = await fetch(fetchUrl);
+              const text = await res.text();
+              try {
+                const data = JSON.parse(text);
+                return { ok: true, data };
+              } catch (jsonErr) {
+                if (text.includes('"success":true') || text.includes('"status":"success"')) {
+                  return { ok: true, data: { success: true } };
+                }
+                // GAS ส่ง HTML กลับมา — อาจเป็น cold start หรือ quota
+                const isHtmlError = text.trim().startsWith('<') || res.status === 404 || text.includes('window[\'ppConfig\']');
+                if (isHtmlError) {
+                  // ถ้ายังมี retry เหลือ และไม่ใช่ write action ให้ลองใหม่
+                  if (attempt < MAX_RETRIES && !isWriteAction) {
+                    return { ok: false, retry: true, isHtml: true, text };
+                  }
+                  let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
+                  if (text.includes('ไม่สามารถเปิดไฟล์ได้') || text.includes('drive.google.com')) {
+                    errDetail = 'Google Drive: "ขออภัย ไม่สามารถเปิดไฟล์ได้"\n\nURL Web App อาจถูกเปลี่ยนหลังจาก Deploy ใหม่\nกรุณาตรวจสอบ Apps Script > Deploy > Manage deployments';
+                  }
+                  return { ok: false, retry: false, error: new Error(errDetail) };
+                }
+                return { ok: false, retry: false, error: new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ' + text.slice(0, 150)) };
+              }
+            } catch(e) {
+              // Network error — อาจเป็น timeout ให้ retry ได้
+              if (attempt < MAX_RETRIES && !isWriteAction) {
+                return { ok: false, retry: true, error: e };
+              }
+              return { ok: false, retry: false, error: e };
+            }
+          }
+
+          let lastError = null;
+          for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            const result = await attemptFetch(attempt);
+            if (result.ok) {
+              resolve(result.data);
+              return;
+            }
+            if (!result.retry) {
+              reject(result.error);
+              return;
+            }
+            // รอแล้ว retry: 1วิ, 2วิ, 4วิ (exponential backoff)
+            lastError = result.error;
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.warn(`[callBackend] action=${action} retry ${attempt}/${MAX_RETRIES} in ${delay}ms`, result.error || result.text?.slice(0,80));
+            await new Promise(r => setTimeout(r, delay));
+          }
+          reject(lastError || new Error('เชื่อมต่อ GAS ไม่สำเร็จหลังลองใหม่ 3 ครั้ง'));
+        }
+      });
+    }
+
     let CURRENT_TEACHER = '';
     let IS_ADMIN = false;
     let ADMIN_VIEW_MODE = 'teacher'; 
     let ALL_TASKS = []; 
-    let ALL_HISTORY = []; // เก็บข้อมูลประวัติ
+    let ALL_HISTORY = []; 
     let PENDING_DATA = {};
     let APPROVAL_LIST = []; 
     let TEMP_IDCARD = ''; 
     let SORT_COL = 'stuId'; 
     let SORT_ASC = true;
-    let CURRENT_TAB = 'worklist'; // ควบคุมการสลับ Tab
+    let CURRENT_TAB = 'worklist';
+    let SELECTED_TASK_ROWS = new Set();
+    let CURRENT_TASK_FILTER = 'all'; // 'all', 'no_task', 'unregistered', 'registered'
+    let ACTIVE_TASK_ROW_ID = null; 
 
-    window.onload = function() {
+        function goToIndex() {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(url => {
+          if (url) window.top.location.href = url + '?openExternalBrowser=1';
+          else window.top.location.search = '';
+        }).withFailureHandler(() => {
+          window.top.location.search = '';
+        }).getAppUrl();
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    window.onload = async function() {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(url => {
+          if (url) API_BASE_URL = url;
+        }).getAppUrl();
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('setup') === '1') {
+        setTimeout(() => configureApiUrl(), 300);
+      }
+      const urlId = urlParams.get('id');
+      const urlName = urlParams.get('name');
+      const urlAdmin = urlParams.get('admin');
+      const urlPin = urlParams.get('pin');
+      if (urlAdmin === '1' || urlAdmin === 'true') {
+        IS_ADMIN = true;
+      }
+
+      // 1.1 ถ้าส่ง id และ name ตรงมาจากระบบหลัก Render (SSO) ให้เข้าสู่ระบบทันที
+      if (urlId && urlName) {
+        TEMP_IDCARD = urlId;
+        CURRENT_TEACHER = decodeURIComponent(urlName);
+        IS_ADMIN = urlAdmin === '1' || urlAdmin === 'true';
+        window.history.replaceState({}, document.title, window.location.pathname);
+        document.getElementById('loginScreen').classList.add('hidden');
+        setupDashboard();
+        return;
+      }
+
+      // 2. ตรวจสอบการล็อกอินมาจากระบบกลาง AssessmentHub (sgs_user ใน localStorage)
       let sgsUser = localStorage.getItem('sgs_user');
       if (sgsUser) {
         try {
           const user = JSON.parse(sgsUser);
-          TEMP_IDCARD = user.userid;
-          CURRENT_TEACHER = user.prefix + user.firstname + ' ' + user.lastname;
-          IS_ADMIN = user.is_admin;
-          document.getElementById('loginScreen').classList.add('hidden');
-          setupDashboard();
-          return;
+          if (user && (user.userid || user.idCard)) {
+            TEMP_IDCARD = user.userid || user.idCard;
+            CURRENT_TEACHER = user.name || ((user.prefix || '') + (user.firstname || '') + ' ' + (user.lastname || '')).trim();
+            IS_ADMIN = !!user.is_admin || user.role === 'admin' || !!user.isSuperuser || !!user.isAdmin;
+            document.getElementById('loginScreen').classList.add('hidden');
+            setupDashboard();
+            return;
+          }
         } catch(e) { 
           console.error("Failed to parse sgs_user", e);
         }
       }
-      // If not logged in or no sgs_user found, redirect to main hub
-      window.location.href = '/AssessmentHub/';
+
+      // 3. ตรวจสอบพารามิเตอร์ URL ที่ส่ง PIN มาด้วย
+      if (urlId && urlPin) {
+        const credObj = { id: urlId, pin: urlPin };
+        localStorage.setItem('teac_session_v3', JSON.stringify(credObj));
+        window.history.replaceState({}, document.title, window.location.pathname);
+        autoLoginWithCred(credObj);
+        return;
+      }
+
+      // 4. ตรวจสอบ Session ที่บันทึกไว้เดิม
+      let savedSession = localStorage.getItem('teac_session_v3');
+      if (savedSession) {
+        try {
+          const cred = JSON.parse(savedSession);
+          if (cred && cred.id && cred.pin) {
+            autoLoginWithCred(cred);
+            return;
+          }
+        } catch(e) { 
+          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name'); 
+        }
+      }
+
+      // 5. หากไม่มีประวัติ ให้แสดงหน้ากรอกเลขบัตร 13 หลัก พร้อมดึงเลขบัตรเดิมที่เคยกรอก (ถ้ามี)
+      const lastId = localStorage.getItem('last_teacher_id');
+      if (lastId && document.getElementById('idCardInput')) {
+        document.getElementById('idCardInput').value = lastId;
+      }
+      showLoginStep('idCardStep');
     };
+
+    async function autoLoginWithCred(cred) {
+      TEMP_IDCARD = cred.id;
+      const cachedName = localStorage.getItem('last_teacher_name');
+      const cachedAdmin = localStorage.getItem('last_teacher_is_admin') === 'true';
+
+      if (cachedName) {
+        // ⚡ เข้าสู่แดชบอร์ดทันทีใน 0.001 วินาที พร้อมแสดง Skeleton Loader
+        CURRENT_TEACHER = cachedName;
+        IS_ADMIN = cachedAdmin;
+        document.getElementById('loginScreen').classList.add('hidden');
+        setupDashboard();
+      } else {
+        showLoader('กำลังเข้าสู่ระบบ...');
+      }
+
+      try {
+        const res = await callBackend('verify-pin', { idCard: cred.id, pin: cred.pin });
+        if (res.success) {
+          CURRENT_TEACHER = res.name;
+          IS_ADMIN = res.isAdmin;
+          localStorage.setItem('last_teacher_name', res.name);
+          localStorage.setItem('last_teacher_is_admin', res.isAdmin ? 'true' : 'false');
+          document.getElementById('teacherNameDisplay').innerText = res.name;
+          if (!cachedName) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            setupDashboard();
+          }
+        } else {
+          hideLoader();
+          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name');
+          localStorage.removeItem('last_teacher_name');
+          document.getElementById('mainScreen').classList.add('hidden');
+          showLoginStep('idCardStep');
+        }
+      } catch(e) {
+        hideLoader();
+        if (!cachedName) {
+          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name');
+          showLoginStep('idCardStep');
+        }
+      }
+    }
 
     function showLoginStep(stepId) {
       document.getElementById('loginScreen').classList.remove('hidden');
-      ['idCardStep','setupPinStep','enterPinStep'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      document.getElementById(stepId).classList.remove('hidden');
+      ['idCardStep','enterPinStep'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(stepId);
+      if (target) target.classList.remove('hidden');
     }
     function backToIdCard() { TEMP_IDCARD = ''; showLoginStep('idCardStep'); }
-    function checkIdCard() {
-      const idCard = document.getElementById('idCardInput').value;
+    
+    async function checkIdCard() {
+      const idCard = document.getElementById('idCardInput').value.replace(/[-\s]/g, '').trim();
       if(!idCard || idCard.length < 13) return showDialog('แจ้งเตือน', 'กรุณากรอกรหัสประจำตัวประชาชนให้ครบ 13 หลัก', 'warning');
-      TEMP_IDCARD = idCard; showLoader('กำลังตรวจสอบข้อมูล...');
-      google.script.run.withSuccessHandler(res => {
-          hideLoader();
-          if(!res.success) return showDialog('ข้อมูลไม่ถูกต้อง', res.message, 'error');
-          if(res.action === 'setup') { showLoginStep('setupPinStep'); document.getElementById('setupPin1').focus(); } 
-          else { showLoginStep('enterPinStep'); document.getElementById('pinInput').focus(); }
-        }).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).checkIdCardStatus(idCard);
+      TEMP_IDCARD = idCard; 
+      try { localStorage.setItem('last_teacher_id', idCard); } catch(e) {}
+      
+      // ⚡ ข้ามไปหน้ากรอก PIN ทันทีใน 0 วินาที โดยไม่ต้องรอเช็คเซิร์ฟเวอร์
+      // เพราะระบบ verify-pin จะตรวจสอบทั้งเลขบัตรและรหัส PIN พร้อมกันในการกดยืนยันครั้งเดียว
+      showLoginStep('enterPinStep'); 
+      const pinEl = document.getElementById('pinInput');
+      if (pinEl) {
+        pinEl.value = '';
+        pinEl.focus();
+      }
     }
-    function saveNewPin() {
-      const pin1 = document.getElementById('setupPin1').value; const pin2 = document.getElementById('setupPin2').value;
-      if(!pin1 || pin1.length < 6) return showDialog('แจ้งเตือน', 'กรุณาตั้งรหัส PIN ให้ครบ 6 หลัก', 'warning');
-      if(pin1 !== pin2) return showDialog('ข้อผิดพลาด', 'รหัส PIN ไม่ตรงกัน', 'error');
-      showLoader('กำลังบันทึกรหัส PIN...');
-      google.script.run.withSuccessHandler(res => {
-          if(res.success) {
-             localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin1 }));
-             CURRENT_TEACHER = res.name; IS_ADMIN = res.isAdmin; document.getElementById('loginScreen').classList.add('hidden'); setupDashboard(); showDialog('ตั้งรหัสสำเร็จ', `ยินดีต้อนรับ คุณครู${res.name}`, 'success');
-          } else { hideLoader(); showDialog('ข้อผิดพลาด', res.message, 'error'); }
-        }).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).setupNewPin(TEMP_IDCARD, pin1);
-    }
-    function loginWithPin() {
-      const pin = document.getElementById('pinInput').value;
+
+        async function loginWithPin() {
+      const pin = document.getElementById('pinInput').value.trim();
       if(!pin || pin.length < 6) return showDialog('แจ้งเตือน', 'กรุณากรอกรหัส PIN ให้ครบ 6 หลัก', 'warning');
       showLoader('กำลังตรวจสอบรหัส...');
-      google.script.run.withSuccessHandler(res => {
-          if(res.success) {
-             localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin }));
-             CURRENT_TEACHER = res.name; IS_ADMIN = res.isAdmin; document.getElementById('loginScreen').classList.add('hidden'); setupDashboard();
-          } else { hideLoader(); document.getElementById('pinInput').value = ''; showDialog('รหัสไม่ถูกต้อง', res.message, 'error'); }
-        }).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).verifyPinLogin(TEMP_IDCARD, pin);
+      
+      try {
+        const res = await callBackend('verify-pin', { idCard: TEMP_IDCARD, pin });
+        if(res.success) {
+          localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin }));
+          CURRENT_TEACHER = res.name; 
+          IS_ADMIN = res.isAdmin; 
+          document.getElementById('loginScreen').classList.add('hidden'); 
+          setupDashboard();
+        } else { 
+          hideLoader(); 
+          document.getElementById('pinInput').value = ''; 
+          showDialog('รหัสไม่ถูกต้อง', res.message, 'error'); 
+        }
+      } catch(e) { 
+        hideLoader(); 
+        showDialog('พบปัญหา', 'ไม่สามารถเข้าสู่ระบบได้: ' + e.message, 'error'); 
+      }
     }
+
     function logout() {
       showDialog('ออกจากระบบ', 'คุณต้องการออกจากระบบใช่หรือไม่?', 'info', true).then(isConfirm => {
-         if(isConfirm) { showLoader('กำลังออกจากระบบ...'); localStorage.removeItem('teac_session_v3'); google.script.run.withSuccessHandler(url => window.top.location.href = url).getAppUrl(); }
+         if(isConfirm) { showLoader('กำลังออกจากระบบ...'); localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name'); window.location.reload(); }
       });
     }
 
     function setupDashboard() {
-      hideLoader(); document.getElementById('teacherNameDisplay').innerText = CURRENT_TEACHER;
+      hideLoader(); 
+      document.getElementById('teacherNameDisplay').innerText = CURRENT_TEACHER;
       if(IS_ADMIN) {
-         document.getElementById('roleBadge').innerText = 'Superuser Workspace'; document.getElementById('roleBadge').classList.replace('text-blue-500', 'text-indigo-600'); document.getElementById('adminControls').classList.remove('hidden'); loadTeacherDropdownData();
+         document.getElementById('roleBadge').innerText = 'Superuser Workspace'; 
+         document.getElementById('roleBadge').classList.replace('text-blue-500', 'text-indigo-600'); 
+         document.getElementById('adminControls').classList.remove('hidden'); 
+         setTimeout(() => loadTeacherDropdownData(), 1500);
       }
       document.getElementById('mainScreen').classList.remove('hidden');
-      switchTab('worklist'); // โหลดหน้าแรกเป็นหน้าทำงาน
+      switchTab('worklist'); 
     }
 
-    function loadTeacherDropdownData() {
-       google.script.run.withSuccessHandler(list => { let html = ''; if(list) list.forEach(t => html += `<option value="${t}">`); document.getElementById('teacherDatalist').innerHTML = html; }).getAllTeachers();
+    async function loadTeacherDropdownData() {
+       try {
+         const cached = sessionStorage.getItem('teachers_dropdown_cache');
+         if (cached) {
+           const list = JSON.parse(cached);
+           let html = ''; if(list) list.forEach(t => html += `<option value="${t}">`);
+           const el = document.getElementById('teacherDatalist');
+           if (el) el.innerHTML = html;
+           return;
+         }
+         const list = await callBackend('teachers');
+         let html = ''; if(list) list.forEach(t => html += `<option value="${t}">`);
+         const el = document.getElementById('teacherDatalist');
+         if (el) el.innerHTML = html;
+         if (list && list.length > 0) {
+           sessionStorage.setItem('teachers_dropdown_cache', JSON.stringify(list));
+         }
+       } catch(e) {}
     }
+
     function toggleAdminSearchMode() {
        let radios = document.getElementsByName('searchMode'); let mode = 'teacher'; radios.forEach(r => { if(r.checked) mode = r.value; });
        let input = document.getElementById('adminSearchBox'); let label = document.getElementById('adminSearchLabel');
        if (mode === 'teacher') { label.innerText = 'ระบุชื่อ หรือ กลุ่มสาระของครู'; input.placeholder = 'พิมพ์ชื่อครูเพื่อค้นหา...'; input.setAttribute('list', 'teacherDatalist'); } 
        else { label.innerText = 'ระบุรหัสประจำตัว หรือ ชื่อของนักเรียน'; input.placeholder = 'เช่น 12345 หรือ ชื่อนักเรียน...'; input.removeAttribute('list'); }
     }
-    function executeAdminSearch() {
+
+    function resetToMyTasks() {
+      const box = document.getElementById('adminSearchBox');
+      if (box) box.value = '';
+      const radios = document.getElementsByName('searchMode');
+      radios.forEach(r => { if (r.value === 'teacher') r.checked = true; });
+      toggleAdminSearchMode();
+      executeAdminSearch();
+    }
+
+    function executeAdminSearch(isSilent = false) {
        let radios = document.getElementsByName('searchMode'); let mode = 'teacher'; radios.forEach(r => { if(r.checked) mode = r.value; });
        let keyword = document.getElementById('adminSearchBox') ? document.getElementById('adminSearchBox').value.trim() : '';
        if (!keyword) { mode = 'teacher'; keyword = CURRENT_TEACHER; }
-       if(CURRENT_TAB === 'worklist') loadTasks(mode, keyword); else loadHistory(mode, keyword);
+       if(CURRENT_TAB === 'worklist') loadTasks(mode, keyword, isSilent); else loadHistory(mode, keyword);
     }
 
-    // 🌟 ระบบสลับหน้าจอ (Tabs)
     function switchTab(tabName) {
        CURRENT_TAB = tabName;
        let btnW = document.getElementById('tabWorklist'); let btnH = document.getElementById('tabHistory');
@@ -361,45 +1075,321 @@
        }
     }
 
-    // --- ส่วนของ Worklist ---
-    function loadTasks(mode, keyword) {
+    async function loadTasks(mode, keyword, isSilent = false) {
       ADMIN_VIEW_MODE = mode; let viewTitle = '';
       if (mode === 'teacher' && keyword === CURRENT_TEACHER) viewTitle = '(งานของคุณ)'; else if (mode === 'teacher') viewTitle = `(ค้นหาครู: ${keyword})`; else viewTitle = `(ข้อมูลนักเรียน: ${keyword})`;
       document.getElementById('currentViewName').innerText = viewTitle; document.getElementById('mainTabs').classList.remove('hidden');
-      showLoader('กำลังโหลดข้อมูล...');
-      try { google.script.run.withSuccessHandler(renderTasks).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).getTasksForAdmin(mode, keyword); } 
-      catch (e) { hideLoader(); showDialog('ข้อผิดพลาด', 'เชื่อมต่อฐานข้อมูลไม่ได้: ' + e.message, 'error'); }
+
+      const cacheKey = `tasks_cache_${mode}_${keyword}`;
+      let hasCached = false;
+
+      // ⚡ โหลดจาก Cache ทันทีใน 0.05 วินาที เพื่อให้ผู้ใช้เห็นข้อมูลทันทีโดยไม่ต้องรอจอหมุน
+      try {
+        const cachedStr = sessionStorage.getItem(cacheKey);
+        if (cachedStr) {
+          const cachedData = JSON.parse(cachedStr);
+          if (Array.isArray(cachedData)) {
+            renderTasks(cachedData);
+            hasCached = true;
+          }
+        }
+      } catch(e) {}
+
+      // ⚡ ถ้ายังไม่มี Cache ให้แสดง Skeleton Loader สวยงามทันที (ไม่บล็อกหน้าจอด้วย Modal หมุน)
+      if (!hasCached) {
+        renderTaskSkeleton();
+      }
+      
+      try {
+         const tasks = await callBackend('tasks', { mode, keyword });
+         renderTasks(tasks);
+         try { sessionStorage.setItem(cacheKey, JSON.stringify(tasks || [])); } catch(e) {}
+      } catch (e) { 
+        hideLoader(); 
+        if (!hasCached) {
+          showDialog('ข้อผิดพลาด', 'เชื่อมต่อฐานข้อมูลไม่ได้: ' + e.message, 'error'); 
+        }
+      }
+    }
+
+    function onSubjectFilterChange() {
+      const filterSubj = document.getElementById('subjectFilter').value;
+      const btnText = document.getElementById('btnBulkCurrentSubjectText');
+      if (btnText) {
+        if (filterSubj) {
+          const parts = filterSubj.split(' ');
+          const code = parts[0] || filterSubj;
+          btnText.innerText = `⚡ สั่งงานด่วนวิชา ${code}`;
+        } else {
+          btnText.innerText = '⚡ สั่งงานด่วนทั้งวิชานี้';
+        }
+      }
+      filterTasks();
+    }
+
+    function setTaskStatusFilter(filterType, btnElem) {
+      CURRENT_TASK_FILTER = filterType;
+      document.querySelectorAll('.task-filter-chip').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'shadow-xs');
+        btn.classList.add('bg-white', 'text-slate-600');
+      });
+      if (btnElem) {
+        btnElem.classList.remove('bg-white', 'text-slate-600');
+        btnElem.classList.add('bg-blue-600', 'text-white', 'shadow-xs');
+      }
+      filterTasks();
+    }
+
+    function saveTasksToCache() {
+      try {
+        let radios = document.getElementsByName('searchMode'); let mode = 'teacher'; radios.forEach(r => { if(r.checked) mode = r.value; });
+        let keyword = document.getElementById('adminSearchBox') ? document.getElementById('adminSearchBox').value.trim() : '';
+        if (!keyword) { mode = 'teacher'; keyword = CURRENT_TEACHER; }
+        const cacheKey = `tasks_cache_${mode}_${keyword}`;
+        sessionStorage.setItem(cacheKey, JSON.stringify(ALL_TASKS || []));
+      } catch(e) {}
+    }
+
+    function clearAllDataCaches() {
+      try {
+        for (let i = sessionStorage.length - 1; i >= 0; i--) {
+          const k = sessionStorage.key(i);
+          if (k && (k.startsWith('tasks_cache_') || k.startsWith('history_cache_') || k === 'approvals_cache')) {
+            sessionStorage.removeItem(k);
+          }
+        }
+      } catch(e) {}
+    }
+
+    
+    // ==========================================
+    // 💀 SKELETON LOADERS (ตัวโหลดโครงร่างกะพริบ)
+    // ==========================================
+    function renderTaskSkeleton(rowCount = 6) {
+      const tbody = document.getElementById('taskTBody');
+      if (!tbody) return;
+      let rows = '';
+      for (let i = 0; i < rowCount; i++) {
+        rows += `
+          <tr class="animate-pulse border-b border-slate-100 bg-white">
+            <td class="px-3 py-4 text-center"><div class="h-4 w-4 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-16 bg-slate-200 rounded mb-1.5"></div><div class="h-3 w-28 bg-slate-100 rounded"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-14 bg-slate-200 rounded"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-36 bg-slate-200 rounded"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-4 w-10 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-4 w-8 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-6 w-10 bg-amber-100/80 rounded-lg mx-auto"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-44 bg-slate-200 rounded mb-1.5"></div><div class="h-5 w-24 bg-slate-100 rounded-md"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-9 w-32 bg-slate-200 rounded-xl mx-auto"></div></td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = rows;
+    }
+
+    function renderHistorySkeleton(rowCount = 6) {
+      const tbody = document.getElementById('historyTBody');
+      if (!tbody) return;
+      let rows = '';
+      for (let i = 0; i < rowCount; i++) {
+        rows += `
+          <tr class="animate-pulse border-b border-slate-100 bg-white">
+            <td class="px-4 py-4 text-center"><div class="h-4 w-20 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-20 bg-slate-200 rounded mb-1.5"></div><div class="h-3 w-28 bg-slate-100 rounded"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-16 bg-slate-200 rounded mb-1"></div><div class="h-4 w-32 bg-slate-100 rounded"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-4 w-10 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-5 w-24 bg-slate-200 rounded-lg mx-auto"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-6 w-20 bg-slate-200 rounded-full mx-auto"></div></td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = rows;
+    }
+
+    function renderApprovalSkeleton(rowCount = 5) {
+      const tbody = document.getElementById('approveTBody');
+      if (!tbody) return;
+      let rows = '';
+      for (let i = 0; i < rowCount; i++) {
+        rows += `
+          <tr class="animate-pulse border-b border-slate-100 bg-white">
+            <td class="px-4 py-4 text-center"><div class="h-4 w-4 bg-slate-200 rounded mx-auto"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-24 bg-slate-200 rounded mb-1.5"></div><div class="h-3 w-20 bg-slate-100 rounded"></div></td>
+            <td class="px-4 py-4"><div class="h-4 w-14 bg-slate-200 rounded mb-1"></div><div class="h-4 w-32 bg-slate-100 rounded"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-5 w-8 bg-amber-100 rounded mx-auto"></div></td>
+            <td class="px-4 py-4 text-center"><div class="h-5 w-8 bg-emerald-100 rounded mx-auto"></div></td>
+            <td class="px-5 py-4 text-center"><div class="h-8 w-24 bg-indigo-100 rounded-xl mx-auto"></div></td>
+          </tr>
+        `;
+      }
+      tbody.innerHTML = rows;
     }
 
     function renderTasks(tasks) {
-      hideLoader(); if(!tasks) tasks = []; ALL_TASKS = tasks; document.getElementById('taskCount').innerText = tasks.length; PENDING_DATA = {}; updateSubmitBar();
-      const subjSelect = document.getElementById('subjectFilter'); const uniqueSubjs = [...new Set(tasks.map(t => t.subjCode + ' ' + t.subjName))];
+      hideLoader();
+      if (!tasks) tasks = [];
+      ALL_TASKS = tasks;
+      document.getElementById('taskCount').innerText = tasks.length;
+      PENDING_DATA = {};
+      updateSubmitBar();
+
+      const subjSelect = document.getElementById('subjectFilter');
+      const uniqueSubjs = [...new Set(tasks.map(t => t.subjCode + ' ' + t.subjName))];
       subjSelect.innerHTML = '<option value="">-- กรองทุกรายวิชา --</option>' + uniqueSubjs.map(s => `<option value="${s}">${s}</option>`).join('');
-      document.getElementById('searchInput').value = ''; filterTasks(); 
+      document.getElementById('searchInput').value = '';
+      onSubjectFilterChange();
     }
 
-    function sortTasks(colKey) { if(SORT_COL === colKey) SORT_ASC = !SORT_ASC; else { SORT_COL = colKey; SORT_ASC = true; } filterTasks(); }
+    function sortTasks(colKey) {
+      if (SORT_COL === colKey) SORT_ASC = !SORT_ASC;
+      else { SORT_COL = colKey; SORT_ASC = true; }
+      filterTasks();
+    }
 
     function filterTasks() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); const filterSubj = document.getElementById('subjectFilter').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filterSubj = document.getElementById('subjectFilter').value;
+
+      // Update filter count badges across all current tasks
+      const countAll = ALL_TASKS.length;
+      const countNoTask = ALL_TASKS.filter(t => !t.pendingTask).length;
+      const countUnreg = ALL_TASKS.filter(t => t.pendingTask && !t.isRegistered).length;
+      const countReg = ALL_TASKS.filter(t => t.isRegistered).length;
+
+      const cAllEl = document.getElementById('countFilterAll');
+      const cNoTaskEl = document.getElementById('countFilterNoTask');
+      const cUnregEl = document.getElementById('countFilterUnreg');
+      const cRegEl = document.getElementById('countFilterReg');
+      if (cAllEl) cAllEl.innerText = countAll;
+      if (cNoTaskEl) cNoTaskEl.innerText = countNoTask;
+      if (cUnregEl) cUnregEl.innerText = countUnreg;
+      if (cRegEl) cRegEl.innerText = countReg;
+
       let filtered = ALL_TASKS.filter(t => {
-        const matchSearch = t.stuId.toLowerCase().includes(searchTerm) || t.stuName.toLowerCase().includes(searchTerm) || t.subjName.toLowerCase().includes(searchTerm);
-        const matchSubj = filterSubj === '' || (t.subjCode + ' ' + t.subjName) === filterSubj; return matchSearch && matchSubj;
+        const matchSearch = t.stuId.toLowerCase().includes(searchTerm) ||
+                            t.stuName.toLowerCase().includes(searchTerm) ||
+                            t.subjName.toLowerCase().includes(searchTerm) ||
+                            (t.pendingTask && t.pendingTask.toLowerCase().includes(searchTerm));
+        const matchSubj = filterSubj === '' || (t.subjCode + ' ' + t.subjName) === filterSubj;
+
+        let matchStatus = true;
+        if (CURRENT_TASK_FILTER === 'no_task') {
+          matchStatus = !t.pendingTask;
+        } else if (CURRENT_TASK_FILTER === 'unregistered') {
+          matchStatus = !!t.pendingTask && !t.isRegistered;
+        } else if (CURRENT_TASK_FILTER === 'registered') {
+          matchStatus = !!t.isRegistered;
+        }
+
+        return matchSearch && matchSubj && matchStatus;
       });
-      filtered.sort((a, b) => { let valA = String(a[SORT_COL] || ''); let valB = String(b[SORT_COL] || ''); return SORT_ASC ? valA.localeCompare(valB, 'th', { numeric: true }) : -valA.localeCompare(valB, 'th', { numeric: true }); });
+
+      filtered.sort((a, b) => {
+        let valA = String(a[SORT_COL] || '');
+        let valB = String(b[SORT_COL] || '');
+        return SORT_ASC ? valA.localeCompare(valB, 'th', { numeric: true }) : -valA.localeCompare(valB, 'th', { numeric: true });
+      });
 
       const tbody = document.getElementById('taskTBody');
-      if (ALL_TASKS.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 mb-4"><i class="material-icons-round text-3xl">task_alt</i></div><h3 class="text-lg font-bold text-slate-700">เยี่ยมมาก!</h3><p class="text-slate-500">ไม่มีรายการที่ต้องแก้ไขในมุมมองนี้</p></td></tr>'; return; }
-      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4"><i class="material-icons-round text-3xl">search_off</i></div><h3 class="text-lg font-bold text-slate-700">ไม่พบข้อมูล</h3><p class="text-slate-500">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p></td></tr>'; return; }
+      if (ALL_TASKS.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 mb-4"><i class="material-icons-round text-3xl">task_alt</i></div><h3 class="text-lg font-bold text-slate-700">ไม่มีภาระงานที่ต้องแก้ไข</h3><p class="text-slate-500">นักเรียนทุกคนผ่านเกณฑ์เรียบร้อยแล้ว</p></td></tr>';
+        return;
+      }
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4"><i class="material-icons-round text-3xl">search_off</i></div><h3 class="text-lg font-bold text-slate-700">ไม่พบรายการตามตัวกรอง</h3><p class="text-slate-500">ลองคลิกปุ่ม "ทั้งหมด" หรือเปลี่ยนคำค้นหา</p></td></tr>';
+        return;
+      }
 
       let html = '';
       filtered.forEach(t => {
-        let selectedVal = PENDING_DATA[t.rowId] || ''; let options = '<option value="">- เลือกผลใหม่ -</option>';
-        if (t.oldGrade === 'มผ') options += `<option value="ผ" ${selectedVal === 'ผ' ? 'selected' : ''}>ผ (ผ่าน)</option>`; else if (t.oldGrade === '0' || t.oldGrade === 'มส') options += `<option value="1" ${selectedVal === '1' ? 'selected' : ''}>1</option>`; else if (t.oldGrade === 'ร') ['1','1.5','2','2.5','3','3.5','4'].forEach(g => options += `<option value="${g}" ${selectedVal === g ? 'selected' : ''}>${g}</option>`);
-        let selectClass = selectedVal ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-800';
-        let teacherBadge = ADMIN_VIEW_MODE === 'student' ? `<div class="text-[9px] md:text-[10px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100"><i class="material-icons-round text-[10px] align-middle">person</i> ${t.teacherName}</div>` : '';
+        let selectedVal = PENDING_DATA[t.rowId] || '';
+        let options = '<option value="">- เลือกผลใหม่ -</option>';
+        if (t.oldGrade === 'มผ') {
+          options += `<option value="ผ" ${selectedVal === 'ผ' ? 'selected' : ''}>ผ (ผ่าน)</option>`;
+        } else if (t.oldGrade === '0' || t.oldGrade === 'มส') {
+          options += `<option value="1" ${selectedVal === '1' ? 'selected' : ''}>1</option>`;
+        } else if (t.oldGrade === 'ร') {
+          ['1','1.5','2','2.5','3','3.5','4'].forEach(g => options += `<option value="${g}" ${selectedVal === g ? 'selected' : ''}>${g}</option>`);
+        }
 
-        html += `<tr class="hover:bg-blue-50/50 transition-colors border-b border-slate-100"><td class="px-4 py-4 min-w-[140px]"><div class="font-bold text-slate-800 text-sm">${t.subjName}</div><div class="text-[10px] md:text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">${t.subjCode}</div>${teacherBadge}</td><td class="px-4 py-4 text-left font-semibold text-slate-600 tracking-wider">${t.stuId}</td><td class="px-4 py-4 text-left font-bold text-slate-800">${t.stuName}</td><td class="px-4 py-4 text-center font-bold text-slate-500">${t.gradeRoom}</td><td class="px-4 py-4 text-center font-bold text-slate-600">${t.oldScore}</td><td class="px-4 py-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-600 rounded-lg font-black text-xs md:text-sm shadow-sm">${t.oldGrade}</span></td><td class="px-4 py-4"><select onchange="queueUpdate(${t.rowId}, this.value, this)" class="w-full border-2 rounded-xl px-2 md:px-3 py-2 text-xs md:text-sm font-bold outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/20 cursor-pointer transition-all shadow-sm ${selectClass}">${options}</select></td></tr>`;
+        let selectClass = selectedVal ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-800';
+        let teacherBadge = ADMIN_VIEW_MODE === 'student' ? `<div class="text-[9px] md:text-[10px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100"><i class="material-icons-round text-[10px] align-middle">person</i> ${escapeHtml(t.teacherName)}</div>` : '';
+
+        // Registration button (1-click interactive toggle)
+        let interactiveRegBadge = '';
+        if (t.isRegistered) {
+          let dateOnly = t.taskDate ? t.taskDate.split(' ')[0] : '';
+          interactiveRegBadge = `
+            <button type="button" onclick="toggleRowRegistration(${t.rowId}, event)" class="cursor-pointer hover:bg-emerald-100 hover:border-emerald-400 transition px-2 py-0.5 rounded-md text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 flex items-center gap-1 shadow-2xs group/reg" title="รับงานเมื่อ ${escapeHtml(t.taskDate)} (คลิกเพื่อยกเลิกการรับงาน)">
+              <i class="material-icons-round text-xs text-emerald-600 group-hover/reg:text-rose-500">check_circle</i>
+              <span>รับงานแล้ว</span>
+              <span class="text-emerald-700 font-medium">(${escapeHtml(dateOnly)})</span>
+            </button>
+          `;
+        } else {
+          interactiveRegBadge = `
+            <button type="button" onclick="toggleRowRegistration(${t.rowId}, event)" class="cursor-pointer hover:bg-amber-100 hover:border-amber-400 transition px-2 py-0.5 rounded-md text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-300 flex items-center gap-1 shadow-2xs group/unreg" title="คลิกเพื่อบันทึกว่ารับทราบงานแล้วทันที">
+              <i class="material-icons-round text-xs text-amber-600 group-hover/unreg:text-emerald-600">touch_app</i>
+              <span>ยังไม่รับงาน (คลิกรับงาน)</span>
+            </button>
+          `;
+        }
+
+        // Task Cell with 1-Click Quick Presets
+        let taskCellHtml = '';
+        if (t.pendingTask) {
+          let lines = t.pendingTask.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+          let linesHtml = lines.map(l => `<div class="text-xs font-semibold text-slate-700 leading-snug truncate max-w-[260px]" title="${escapeHtml(l)}">• ${escapeHtml(l)}</div>`).join('');
+          taskCellHtml = `
+            <div class="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/90 hover:border-blue-300 transition-all flex flex-col gap-1.5 shadow-2xs">
+              <div class="space-y-0.5 cursor-pointer" onclick="openTaskModal(${t.rowId})" title="คลิกเพื่อแก้ไขภาระงาน">${linesHtml}</div>
+              <div class="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-200/70 mt-0.5">
+                ${interactiveRegBadge}
+                <button type="button" onclick="openTaskModal(${t.rowId})" class="text-slate-400 hover:text-blue-600 transition text-xs px-2 py-0.5 rounded hover:bg-blue-100/70 flex items-center gap-0.5 cursor-pointer" title="แก้ไขข้อความงาน">
+                  <i class="material-icons-round text-xs">edit</i> แก้ไข
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          taskCellHtml = `
+            <div class="flex flex-col gap-1.5 py-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="openTaskModal(${t.rowId})" class="text-xs font-bold px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition flex items-center gap-1 cursor-pointer">
+                  <i class="material-icons-round text-xs">edit_note</i> สั่งงาน
+                </button>
+                <button type="button" onclick="quickAssignPreset(${t.rowId}, 'สอบแก้ตัวข้อเขียนตามที่ครูกำหนด', event)" class="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition cursor-pointer" title="คลิกเพื่อสั่งงานนี้ทันที">
+                  📝 สอบแก้ตัว
+                </button>
+                <button type="button" onclick="quickAssignPreset(${t.rowId}, 'ส่งใบงาน / แบบฝึกหัดที่ค้างส่ง', event)" class="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition cursor-pointer" title="คลิกเพื่อสั่งงานนี้ทันที">
+                  📑 ส่งใบงาน
+                </button>
+                <button type="button" onclick="quickAssignPreset(${t.rowId}, 'เวลาเรียนไม่ครบ 80% (ทำชดเชยเวลาเรียน)', event)" class="text-[11px] font-semibold px-2 py-0.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 transition cursor-pointer" title="คลิกเพื่อสั่งงานนี้ทันที">
+                  ⏳ มส.เวลาเรียน
+                </button>
+              </div>
+              <div class="text-[10px] text-rose-500 font-medium flex items-center gap-1">
+                <i class="material-icons-round text-[12px]">warning</i> ยังไม่มีภาระงาน
+              </div>
+            </div>
+          `;
+        }
+
+        let isRowChecked = SELECTED_TASK_ROWS.has(t.rowId) ? 'checked' : '';
+
+        html += `
+          <tr class="hover:bg-blue-50/50 transition-colors border-b border-slate-100">
+            <td class="px-3 py-4 text-center"><input type="checkbox" class="custom-checkbox bulk-task-check" value="${t.rowId}" onchange="onBulkRowCheckChange(this)" ${isRowChecked}></td>
+            <td class="px-4 py-4 min-w-[140px]"><div class="font-bold text-slate-800 text-sm">${escapeHtml(t.subjName)}</div><div class="text-[10px] md:text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">${escapeHtml(t.subjCode)}</div>${teacherBadge}</td>
+            <td class="px-4 py-4 text-left font-semibold text-slate-600 tracking-wider">${escapeHtml(t.stuId)}</td>
+            <td class="px-4 py-4 text-left font-bold text-slate-800">${escapeHtml(t.stuName)}</td>
+            <td class="px-4 py-4 text-center font-bold text-slate-500">${escapeHtml(t.gradeRoom)}</td>
+            <td class="px-4 py-4 text-center font-bold text-slate-600">${escapeHtml(t.oldScore)}</td>
+            <td class="px-4 py-4 text-center"><span class="px-3 py-1 bg-rose-100 text-rose-600 rounded-lg font-black text-xs md:text-sm shadow-sm">${escapeHtml(t.oldGrade)}</span></td>
+            <td class="px-4 py-3">${taskCellHtml}</td>
+            <td class="px-4 py-4"><select onchange="queueUpdate(${t.rowId}, this.value, this)" class="w-full border-2 rounded-xl px-2 md:px-3 py-2 text-xs md:text-sm font-bold outline-none focus:border-blue-500 focus:ring-4 ring-blue-500/20 cursor-pointer transition-all shadow-sm ${selectClass}">${options}</select></td>
+          </tr>
+        `;
       });
       tbody.innerHTML = html;
     }
@@ -408,112 +1398,981 @@
       if (val) { PENDING_DATA[rowId] = val; if(selectElem) { selectElem.classList.add('border-blue-400', 'bg-blue-50', 'text-blue-700'); selectElem.classList.remove('border-slate-200', 'bg-white', 'text-slate-800'); } } 
       else { delete PENDING_DATA[rowId]; if(selectElem) { selectElem.classList.remove('border-blue-400', 'bg-blue-50', 'text-blue-700'); selectElem.classList.add('border-slate-200', 'bg-white', 'text-slate-800'); } } updateSubmitBar();
     }
+    
     function updateSubmitBar() {
       const count = Object.keys(PENDING_DATA).length; const bar = document.getElementById('submitBar'); document.getElementById('queueCount').innerText = count;
       if (count > 0) { bar.classList.remove('hidden'); setTimeout(() => bar.style.transform = 'translateY(0)', 10); } else { bar.style.transform = 'translateY(100%)'; setTimeout(() => bar.classList.add('hidden'), 300); }
     }
+
     async function submitData() {
-      let payload = Object.keys(PENDING_DATA).map(rowId => ({ rowId: parseInt(rowId), newGrade: PENDING_DATA[rowId] }));
-      if (payload.length === 0) return;
-      const isConfirmed = await showDialog('ยืนยันการส่งผล', `คุณกำลังจะส่งผลการเรียน ${payload.length} รายการ\nเมื่อยืนยันแล้วข้อมูลจะส่งไปให้ฝ่ายวิชาการอนุมัติ`, 'warning', true);
-      if (!isConfirmed) return; showLoader('กำลังบันทึก...');
-      google.script.run.withSuccessHandler(async res => { hideLoader(); await showDialog('สำเร็จ', 'บันทึกและส่งผลการเรียนเรียบร้อยแล้ว!', 'success'); executeAdminSearch(); })
-        .withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).submitGrades(payload);
-    }
-
-    // --- 🌟 ส่วนของ History (ประวัติการส่งผล) ---
-    function loadHistory(mode, keyword) {
-      ADMIN_VIEW_MODE = mode; let viewTitle = '';
-      if (mode === 'teacher' && keyword === CURRENT_TEACHER) viewTitle = '(งานของคุณ)'; else if (mode === 'teacher') viewTitle = `(ค้นหาครู: ${keyword})`; else viewTitle = `(ข้อมูลนักเรียน: ${keyword})`;
-      document.getElementById('historyViewName').innerText = viewTitle; document.getElementById('mainTabs').classList.remove('hidden');
+      let count = Object.keys(PENDING_DATA).length; if(count === 0) return;
+      let isConfirm = await showDialog('ยืนยันการส่งผล', `คุณต้องการส่งผลการเรียนที่แก้ไขแล้วจำนวน ${count} รายการใช่หรือไม่?`, 'info', true, 'ยืนยัน', 'ยกเลิก');
+      if(!isConfirm) return;
       
-      showLoader('กำลังโหลดประวัติ...');
-      google.script.run.withSuccessHandler(renderHistory).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).getHistoryForAdmin(mode, keyword);
+      showLoader(`กำลังส่งผลการเรียน ${count} รายการ... (กรุณารอสักครู่)`);
+      let payload = Object.keys(PENDING_DATA).map(rowId => ({ rowId: parseInt(rowId), newGrade: PENDING_DATA[rowId] }));
+      
+      try {
+        const res = await callBackend('submit-grades', { payload }, 'GET');
+        hideLoader();
+        if(res && res.success !== false) {
+          // ⚡ Optimistic Update: นำรายการที่ส่งแล้วออกจากหน้างานทันทีใน 0 วินาที
+          const submittedRowIds = new Set(payload.map(p => p.rowId));
+          ALL_TASKS = ALL_TASKS.filter(t => !submittedRowIds.has(t.rowId));
+          PENDING_DATA = {}; 
+          updateSubmitBar(); 
+          document.getElementById('taskCount').innerText = ALL_TASKS.length;
+          filterTasks();
+          saveTasksToCache();
+
+          // ลบ cache ประวัติ เพื่อให้เวลาสลับไปดูประวัติจะดึงข้อมูลใหม่
+          try {
+            for (let i = sessionStorage.length - 1; i >= 0; i--) {
+              const k = sessionStorage.key(i);
+              if (k && k.startsWith('history_cache_')) sessionStorage.removeItem(k);
+            }
+          } catch(e) {}
+
+          await showDialog('สำเร็จ', `ส่งผลการเรียนสำเร็จทั้งหมด ${count} รายการ เรียบร้อยแล้ว`, 'success'); 
+        } else {
+          showDialog('เกิดข้อผิดพลาด', (res && res.message) || 'ส่งผลไม่สำเร็จ', 'error');
+        }
+      } catch (e) { 
+        hideLoader(); 
+        showDialog('ข้อผิดพลาด', 'ไม่สามารถส่งผลการเรียนได้: ' + e.message, 'error'); 
+      }
     }
 
-    function renderHistory(data) {
-      hideLoader(); ALL_HISTORY = data || []; document.getElementById('historyCount').innerText = ALL_HISTORY.length; filterHistory();
+    function openTaskModal(rowId) {
+      ACTIVE_TASK_ROW_ID = rowId;
+      const task = ALL_TASKS.find(t => t.rowId === rowId);
+      if (!task) return;
+      document.getElementById('taskModalStudentInfo').innerText = `${task.stuName} (${task.stuId}) - วิชา ${task.subjCode} ${task.subjName}`;
+      document.getElementById('taskModalTextarea').value = task.pendingTask || '';
+
+      const regCheck = document.getElementById('taskModalMarkRegisteredCheck');
+      if (regCheck) regCheck.checked = !!task.isRegistered;
+
+      // Update registration status in modal
+      const regStatusDiv = document.getElementById('taskModalRegStatusBar');
+      if (regStatusDiv) {
+        if (task.isRegistered) {
+          regStatusDiv.innerHTML = `
+            <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs font-bold text-emerald-800">
+              <span class="flex items-center gap-1.5"><i class="material-icons-round text-emerald-600 text-sm">check_circle</i> นักเรียนลงทะเบียนรับงานแล้ว (${escapeHtml(task.taskDate)})</span>
+              <button type="button" onclick="toggleRowRegistration(${task.rowId})" class="text-rose-600 hover:text-rose-800 text-[10px] underline font-bold cursor-pointer">ยกเลิกการรับงาน</button>
+            </div>
+          `;
+        } else {
+          regStatusDiv.innerHTML = `
+            <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between text-xs font-bold text-amber-800">
+              <span class="flex items-center gap-1.5"><i class="material-icons-round text-amber-600 text-sm">schedule</i> ยังไม่ได้ลงทะเบียนรับงาน</span>
+              <button type="button" onclick="toggleRowRegistration(${task.rowId})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                <i class="material-icons-round text-xs">touch_app</i> <span>✍️ บันทึกว่ารับงานแล้ว</span>
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      renderRecentTasks('recentTasksChips');
+
+      const modal = document.getElementById('taskEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('taskModalTextarea').focus(), 50);
     }
 
-    function filterHistory() {
-      const term = document.getElementById('searchHistoryInput').value.toLowerCase().trim(); const stat = document.getElementById('statusFilter').value;
-      let filtered = ALL_HISTORY.filter(t => {
-         const matchSearch = t.stuId.toLowerCase().includes(term) || t.stuName.toLowerCase().includes(term) || t.subjName.toLowerCase().includes(term);
-         const matchStat = stat === '' || t.status.includes(stat);
-         return matchSearch && matchStat;
+    function closeTaskModal() {
+      const modal = document.getElementById('taskEditModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      ACTIVE_TASK_ROW_ID = null;
+    }
+
+    function appendTaskToModal(chipText, target = 'single') {
+      const textarea = document.getElementById(target === 'bulk' ? 'bulkModalTextarea' : 'taskModalTextarea');
+      const val = textarea.value.trim();
+      if (!val) {
+        textarea.value = chipText;
+      } else {
+        const lines = val.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        if (!lines.includes(chipText)) {
+          textarea.value = val + '\n' + chipText;
+        }
+      }
+      textarea.focus();
+    }
+
+    function clearTaskModal() {
+      document.getElementById('taskModalTextarea').value = '';
+      document.getElementById('taskModalTextarea').focus();
+    }
+
+    // ⚡ 1-Click Quick Preset Assignment (Instant Optimistic UI)
+    async function quickAssignPreset(rowId, presetText, event) {
+      if (event) event.stopPropagation();
+      const taskObj = ALL_TASKS.find(t => t.rowId === rowId);
+      if (!taskObj) return;
+
+      // Optimistic update
+      taskObj.pendingTask = presetText;
+      filterTasks();
+      saveTasksToCache();
+      showToast(`สั่งงาน "${presetText.slice(0, 20)}..." สำเร็จ!`);
+
+      try {
+        const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
+        const res = await callBackend('update-pending-task', {
+          rowId: rowId,
+          specialId: specialId,
+          pendingTask: presetText
+        }, 'GET');
+        if (res && res.success === false) {
+          throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+        }
+      } catch (err) {
+        console.error('Failed to sync quick preset:', err);
+        showToast('⚠️ เตือน: ไม่สามารถบันทึกไปยังเซิร์ฟเวอร์ได้: ' + err.message);
+      }
+    }
+
+    // ⚡ 1-Click Toggle Student Registration (Instant Optimistic UI)
+    async function toggleRowRegistration(rowId, event) {
+      if (event) event.stopPropagation();
+      const taskObj = ALL_TASKS.find(t => t.rowId === rowId);
+      if (!taskObj) return;
+
+      const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
+      const wasRegistered = !!taskObj.isRegistered;
+      const nowStr = new Date().toLocaleString('th-TH');
+
+      // Optimistic in-memory update
+      if (wasRegistered) {
+        taskObj.isRegistered = false;
+        taskObj.taskDate = '';
+        showToast(`ยกเลิกการลงทะเบียนรับงานของ ${taskObj.stuName} แล้ว`);
+      } else {
+        taskObj.isRegistered = true;
+        taskObj.taskDate = nowStr;
+        showToast(`บันทึกการรับทราบงานของ ${taskObj.stuName} เรียบร้อย!`);
+      }
+
+      filterTasks();
+      saveTasksToCache();
+
+      // If single modal is currently open for this row, update its bar too
+      if (ACTIVE_TASK_ROW_ID === rowId) {
+        const regStatusDiv = document.getElementById('taskModalRegStatusBar');
+        const regCheck = document.getElementById('taskModalMarkRegisteredCheck');
+        if (regCheck) regCheck.checked = taskObj.isRegistered;
+        if (regStatusDiv) {
+          if (taskObj.isRegistered) {
+            regStatusDiv.innerHTML = `
+              <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs font-bold text-emerald-800">
+                <span class="flex items-center gap-1.5"><i class="material-icons-round text-emerald-600 text-sm">check_circle</i> นักเรียนลงทะเบียนรับงานแล้ว (${escapeHtml(taskObj.taskDate)})</span>
+                <button type="button" onclick="toggleRowRegistration(${taskObj.rowId})" class="text-rose-600 hover:text-rose-800 text-[10px] underline font-bold cursor-pointer">ยกเลิกการรับงาน</button>
+              </div>
+            `;
+          } else {
+            regStatusDiv.innerHTML = `
+              <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between text-xs font-bold text-amber-800">
+                <span class="flex items-center gap-1.5"><i class="material-icons-round text-amber-600 text-sm">schedule</i> ยังไม่ได้ลงทะเบียนรับงาน</span>
+                <button type="button" onclick="toggleRowRegistration(${taskObj.rowId})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                  <i class="material-icons-round text-xs">touch_app</i> <span>✍️ บันทึกว่ารับงานแล้ว</span>
+                </button>
+              </div>
+            `;
+          }
+        }
+      }
+
+      try {
+        const res = await callBackend('register-task', {
+          rowId: rowId,
+          specialId: specialId,
+          taskDate: wasRegistered ? 'clear' : nowStr
+        }, 'GET');
+        if (res && res.success === false) {
+          throw new Error(res.message || 'บันทึกสถานะไม่สำเร็จ');
+        }
+      } catch (err) {
+        console.error('Failed to sync registration:', err);
+        showToast('⚠️ ไม่สามารถบันทึกสถานะรับงานได้: ' + err.message);
+      }
+    }
+
+    // ⚡ Save Single Student Task Modal
+    async function saveTaskModal() {
+      if (!ACTIVE_TASK_ROW_ID) return;
+      const rowId = ACTIVE_TASK_ROW_ID;
+      const taskObj = ALL_TASKS.find(t => t.rowId === rowId);
+      if (!taskObj) return;
+
+      const newTaskText = document.getElementById('taskModalTextarea').value.trim();
+      const markRegistered = document.getElementById('taskModalMarkRegisteredCheck') ? document.getElementById('taskModalMarkRegisteredCheck').checked : false;
+
+      // Optimistic update
+      taskObj.pendingTask = newTaskText;
+      const nowStr = new Date().toLocaleString('th-TH');
+      if (markRegistered) {
+        taskObj.isRegistered = true;
+        taskObj.taskDate = taskObj.taskDate || nowStr;
+      } else if (taskObj.isRegistered && !markRegistered) {
+        taskObj.isRegistered = false;
+        taskObj.taskDate = '';
+      }
+
+      if (newTaskText) saveRecentTask(newTaskText);
+      filterTasks();
+      saveTasksToCache();
+      closeTaskModal();
+      showToast('บันทึกภาระงานค้างเรียบร้อยแล้ว');
+
+      try {
+        const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
+        const res = await callBackend('update-pending-task', {
+          rowId: rowId,
+          specialId: specialId,
+          pendingTask: newTaskText,
+          taskDate: markRegistered ? (taskObj.taskDate || nowStr) : 'clear'
+        }, 'GET');
+        if (res && res.success === false) {
+          throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+        }
+      } catch (err) {
+        console.error('Failed to save task:', err);
+        showToast('⚠️ เกิดปัญหาในการบันทึก: ' + err.message);
+      }
+    }
+
+    // ⚡ Quick Subject-Wide Bulk Assignment Modal
+    function openSubjectBulkModal() {
+      const filterSubj = document.getElementById('subjectFilter').value;
+      let targetTasks = [];
+
+      if (filterSubj) {
+        targetTasks = ALL_TASKS.filter(t => (t.subjCode + ' ' + t.subjName) === filterSubj);
+      } else {
+        targetTasks = ALL_TASKS;
+      }
+
+      if (targetTasks.length === 0) {
+        showDialog('แจ้งเตือน', 'ไม่มีรายการนักเรียนในวิชานี้ที่ต้องมอบหมายงาน', 'warning');
+        return;
+      }
+
+      // Auto select all target tasks
+      SELECTED_TASK_ROWS.clear();
+      targetTasks.forEach(t => SELECTED_TASK_ROWS.add(t.rowId));
+      document.querySelectorAll('.bulk-task-check').forEach(cb => {
+        cb.checked = SELECTED_TASK_ROWS.has(parseInt(cb.value));
       });
+      updateBulkToolbar();
 
-      const tbody = document.getElementById('historyTBody');
-      if (ALL_HISTORY.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4"><i class="material-icons-round text-3xl">history_toggle_off</i></div><h3 class="text-lg font-bold text-slate-700">ไม่มีประวัติการส่งผล</h3><p class="text-slate-500">คุณยังไม่เคยส่งผลการเรียนเข้าระบบ</p></td></tr>'; return; }
-      if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4"><i class="material-icons-round text-3xl">search_off</i></div><h3 class="text-lg font-bold text-slate-700">ไม่พบข้อมูล</h3><p class="text-slate-500">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p></td></tr>'; return; }
+      document.getElementById('bulkModalCount').innerText = SELECTED_TASK_ROWS.size;
+      document.getElementById('bulkModalTextarea').value = '';
+      document.getElementById('bulkMarkRegisteredCheck').checked = false;
+      renderRecentTasks('bulkRecentTasksChips');
+
+      const modal = document.getElementById('bulkTaskEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('bulkModalTextarea').focus(), 50);
+    }
+
+    function toggleBulkTaskSelect(masterElem) {
+      const checkboxes = document.querySelectorAll('.bulk-task-check');
+      checkboxes.forEach(cb => {
+        const rowId = parseInt(cb.value);
+        cb.checked = masterElem.checked;
+        if (masterElem.checked) {
+          SELECTED_TASK_ROWS.add(rowId);
+        } else {
+          SELECTED_TASK_ROWS.delete(rowId);
+        }
+      });
+      updateBulkToolbar();
+    }
+
+    function onBulkRowCheckChange(cb) {
+      const rowId = parseInt(cb.value);
+      if (cb.checked) {
+        SELECTED_TASK_ROWS.add(rowId);
+      } else {
+        SELECTED_TASK_ROWS.delete(rowId);
+      }
+      updateBulkToolbar();
+    }
+
+    function updateBulkToolbar() {
+      const count = SELECTED_TASK_ROWS.size;
+      const bar = document.getElementById('bulkActionBar');
+      const countElem = document.getElementById('bulkSelectedCountText');
+      const masterCheck = document.getElementById('bulkTaskSelectAll');
+
+      if (countElem) countElem.innerText = count;
+
+      if (count > 0) {
+        if (bar) bar.classList.remove('hidden');
+      } else {
+        if (bar) bar.classList.add('hidden');
+        if (masterCheck) masterCheck.checked = false;
+      }
+    }
+
+    function clearBulkSelection() {
+      SELECTED_TASK_ROWS.clear();
+      const checkboxes = document.querySelectorAll('.bulk-task-check');
+      checkboxes.forEach(cb => cb.checked = false);
+      const masterCheck = document.getElementById('bulkTaskSelectAll');
+      if (masterCheck) masterCheck.checked = false;
+      updateBulkToolbar();
+    }
+
+    function openBulkTaskModal() {
+      if (SELECTED_TASK_ROWS.size === 0) return;
+      document.getElementById('bulkModalCount').innerText = SELECTED_TASK_ROWS.size;
+      document.getElementById('bulkModalTextarea').value = '';
+      document.getElementById('bulkMarkRegisteredCheck').checked = false;
+      renderRecentTasks('bulkRecentTasksChips');
+      const modal = document.getElementById('bulkTaskEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => document.getElementById('bulkModalTextarea').focus(), 50);
+    }
+
+    function closeBulkTaskModal() {
+      const modal = document.getElementById('bulkTaskEditModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+        async function saveBulkTaskModal() {
+      if (SELECTED_TASK_ROWS.size === 0) return;
+      const newTaskText = document.getElementById('bulkModalTextarea').value.trim();
+      const markRegistered = document.getElementById('bulkMarkRegisteredCheck').checked;
+      const count = SELECTED_TASK_ROWS.size;
+
+      const saveBtn = document.getElementById('bulkModalSaveBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="inline-block animate-spin mr-1">⏳</span> กำลังบันทึก...';
+
+      try {
+        const items = [];
+        const nowStr = new Date().toLocaleString('th-TH');
+        SELECTED_TASK_ROWS.forEach(rowId => {
+          const t = ALL_TASKS.find(x => x.rowId === rowId);
+          if (t) {
+            const item = {
+              rowId: rowId,
+              specialId: t.specialId || `${t.subjCode}${t.stuId}`,
+              pendingTask: newTaskText
+            };
+            if (markRegistered) {
+              item.taskDate = nowStr;
+            }
+            items.push(item);
+          }
+        });
+
+        const res = await callBackend('batch-update-pending-tasks', { items }, 'GET');
+        if (!res.success) throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+
+        // Update in memory
+        SELECTED_TASK_ROWS.forEach(rowId => {
+          const t = ALL_TASKS.find(x => x.rowId === rowId);
+          if (t) {
+            t.pendingTask = newTaskText;
+            if (markRegistered) {
+              t.isRegistered = true;
+              t.taskDate = nowStr;
+            }
+          }
+        });
+
+        if (newTaskText) saveRecentTask(newTaskText);
+
+        filterTasks();
+        saveTasksToCache();
+        closeBulkTaskModal();
+        clearBulkSelection();
+        showToast(`มอบหมายงานให้นักเรียน ${count} คนเรียบร้อยแล้ว!`);
+      } catch (err) {
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="material-icons-round text-sm">save</i> มอบหมายงานทุกคน';
+      }
+    }
+
+        async function bulkRegisterReceipt() {
+      if (SELECTED_TASK_ROWS.size === 0) return;
+      const count = SELECTED_TASK_ROWS.size;
+      const isConfirm = await showDialog(
+        'ยืนยันบันทึกรับงาน',
+        `คุณต้องการบันทึกว่านักเรียนที่เลือกทั้ง ${count} คน ได้มารับทราบภาระงานแล้วใช่หรือไม่?`,
+        'warning',
+        true,
+        'บันทึกรับงานทุกคน',
+        'ยกเลิก'
+      );
+      if (!isConfirm) return;
+
+      showLoader(`กำลังบันทึกการรับงาน ${count} คน...`);
+      try {
+        const selectedIds = Array.from(SELECTED_TASK_ROWS);
+        const res = await callBackend('batch-register-tasks', { rowIds: selectedIds });
+        hideLoader();
+
+        if (!res.success) throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+
+        const dateStr = res.taskDate || new Date().toLocaleString('th-TH');
+        selectedIds.forEach(rowId => {
+          const t = ALL_TASKS.find(x => x.rowId === rowId);
+          if (t) {
+            t.isRegistered = true;
+            t.taskDate = dateStr;
+          }
+        });
+
+        filterTasks();
+        saveTasksToCache();
+        clearBulkSelection();
+        showToast(`บันทึกการรับงาน ${selectedIds.length} คนเรียบร้อยแล้ว!`);
+      } catch(err) {
+        hideLoader();
+        showDialog('พบปัญหา', err.message, 'error');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-6 right-6 z-[10001] bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300';
+      toast.innerHTML = `<i class="material-icons-round text-emerald-400 text-base">check_circle</i> <span>${msg}</span>`;
+      document.body.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+
+    // ==========================================
+    // 🌟 ระบบอนุมัติผลการเรียน (Admin Approval)
+    // ==========================================
+    async function loadApprovals(isSilent = false) {
+      const worklistView = document.getElementById('worklistView');
+      const historyView = document.getElementById('historyView');
+      const mainTabs = document.getElementById('mainTabs');
+      const submitBar = document.getElementById('submitBar');
+      const approvalView = document.getElementById('approvalView');
+
+      if (worklistView) worklistView.classList.add('hidden');
+      if (historyView) historyView.classList.add('hidden');
+      if (mainTabs) mainTabs.classList.add('hidden');
+      if (submitBar) submitBar.classList.add('hidden');
+      if (approvalView) approvalView.classList.remove('hidden');
+
+      const cacheKey = 'approvals_cache';
+      let hasCached = false;
+      try {
+        const cachedStr = sessionStorage.getItem(cacheKey);
+        if (cachedStr) {
+          const cachedData = JSON.parse(cachedStr);
+          if (Array.isArray(cachedData)) {
+            renderApprovals(cachedData);
+            hasCached = true;
+          }
+        }
+      } catch(e) {}
+
+      if (!hasCached) {
+        renderApprovalSkeleton();
+      }
+
+      try {
+        const tasks = await callBackend('approvals');
+        renderApprovals(tasks);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(tasks || [])); } catch(e) {}
+      } catch (e) {
+        hideLoader();
+        if (!hasCached) {
+          showDialog('พบปัญหา', 'ไม่สามารถโหลดรายการรออนุมัติได้: ' + e.message, 'error');
+        }
+      }
+    }
+
+    function backToTasks() {
+      const approvalView = document.getElementById('approvalView');
+      const mainTabs = document.getElementById('mainTabs');
+      if (approvalView) approvalView.classList.add('hidden');
+      if (mainTabs) mainTabs.classList.remove('hidden');
+      switchTab(CURRENT_TAB);
+    }
+
+    let CURRENT_APPROVAL_TASKS = [];
+
+    function updateApprovalBadge(count) {
+      const badge = document.getElementById('adminApprovalBadge');
+      if (badge) {
+        if (count > 0) {
+          badge.innerText = count;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function renderApprovals(tasks) {
+      hideLoader();
+      CURRENT_APPROVAL_TASKS = tasks || [];
+      const count = CURRENT_APPROVAL_TASKS.length;
+
+      const countEl = document.getElementById('approveCount');
+      if (countEl) countEl.innerText = count;
+
+      const totalPendingText = document.getElementById('totalPendingText');
+      if (totalPendingText) totalPendingText.innerText = count;
+
+      const approveAllTopBtn = document.getElementById('approveAllTopBtn');
+      if (approveAllTopBtn) approveAllTopBtn.disabled = count === 0;
+
+      updateApprovalBadge(count);
+
+      APPROVAL_LIST = [];
+      updateApproveBtn();
+
+      const chkAll = document.getElementById('selectAllCheck');
+      if (chkAll) chkAll.checked = false;
+
+      const tbody = document.getElementById('approveTBody');
+      if (!tbody) return;
+
+      if (count === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-16 text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                <i class="material-icons-round text-3xl">fact_check</i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-700">ไม่มีรายการรออนุมัติ</h3>
+              <p class="text-slate-500 text-xs mt-1">ขณะนี้ยังไม่มีผลการเรียนที่ครูส่งเข้ามาขออนุมัติ</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
 
       let html = '';
-      filtered.forEach(t => {
-         let badgeColor = 'bg-slate-100 text-slate-600'; let icon = 'hourglass_empty';
-         if(t.status === 'รออนุมัติ') { badgeColor = 'bg-amber-100 text-amber-600 border border-amber-200'; icon = 'hourglass_top'; }
-         else if(t.status === 'พร้อมทำงาน' || t.status.includes('เสร็จ') || t.status.includes('ซิงค์')) { badgeColor = 'bg-emerald-100 text-emerald-600 border border-emerald-200'; icon = 'check_circle'; }
-         
-         let teacherBadge = ADMIN_VIEW_MODE === 'student' ? `<div class="text-[9px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100"><i class="material-icons-round text-[10px] align-middle">person</i> ${t.teacherName}</div>` : '';
+      CURRENT_APPROVAL_TASKS.forEach(t => {
+        const safeStuName = escapeHtml(t.stuName || '');
+        const safeSubjName = escapeHtml(t.subjName || '');
+        const safeTeacher = escapeHtml(t.teacherName || '');
+        const safeStuId = escapeHtml(t.stuId || '');
+        const safeGradeRoom = escapeHtml(t.gradeRoom || '');
+        const safeSubjCode = escapeHtml(t.subjCode || '');
+        const safeOldGrade = escapeHtml(t.oldGrade || '-');
+        const safeNewGrade = escapeHtml(t.newGrade || '-');
+        const jsStuName = (t.stuName || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
-         html += `<tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
-            <td class="px-4 py-4 text-center text-xs font-bold text-slate-500">${t.date}</td>
-            <td class="px-4 py-4"><div class="font-bold text-slate-800 text-sm">${t.subjName}</div><div class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${t.subjCode}</div>${teacherBadge}</td>
-            <td class="px-4 py-4"><div class="font-semibold text-slate-600 tracking-wider text-xs">${t.stuId}</div><div class="font-bold text-slate-800 text-sm">${t.stuName}</div></td>
-            <td class="px-4 py-4 text-center font-bold text-slate-500">${t.gradeRoom}</td>
-            <td class="px-4 py-4 text-center"><span class="px-2 py-1 bg-rose-50 text-rose-500 rounded font-black text-xs">${t.oldGrade}</span> <i class="material-icons-round text-xs text-slate-300 align-middle">arrow_forward</i> <span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded font-black text-xs">${t.newGrade}</span></td>
-            <td class="px-4 py-4 text-center"><span class="px-2.5 py-1.5 rounded-lg font-black text-xs shadow-sm flex items-center justify-center gap-1 mx-auto w-max ${badgeColor}"><i class="material-icons-round text-[14px]">${icon}</i> ${t.status}</span></td>
-         </tr>`;
+        html += `
+          <tr class="hover:bg-indigo-50/40 transition-colors border-b border-slate-100">
+            <td class="px-4 py-4 text-center">
+              <input type="checkbox" value="${t.rowId}" class="custom-checkbox approve-chk" onclick="toggleApprove(this)">
+            </td>
+            <td class="px-4 py-4">
+              <div class="font-bold text-slate-800 text-base">${safeSubjName}</div>
+              <div class="text-[11px] font-bold text-indigo-600 mt-1 bg-indigo-50 inline-block px-2.5 py-0.5 rounded-lg border border-indigo-100">
+                <i class="material-icons-round text-[12px] align-middle">person</i> ครู: ${safeTeacher}
+              </div>
+              <span class="text-[10px] font-bold text-slate-400 ml-2 uppercase tracking-wider">${safeSubjCode}</span>
+            </td>
+            <td class="px-4 py-4">
+              <div class="font-bold text-slate-800 text-sm md:text-base">${safeStuName}</div>
+              <div class="text-xs font-semibold text-slate-500 mt-0.5">
+                รหัส ${safeStuId} • ชั้น ${safeGradeRoom}
+              </div>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="px-3 py-1.5 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl font-black text-sm md:text-base shadow-2xs">${safeOldGrade}</span>
+            </td>
+            <td class="px-4 py-4 text-center bg-emerald-50/40">
+              <span class="px-3.5 py-1.5 bg-emerald-100 text-emerald-700 border border-emerald-300 rounded-xl font-black text-lg md:text-xl shadow-2xs">${safeNewGrade}</span>
+            </td>
+            <td class="px-5 py-4 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button type="button" onclick="approveSingle(${t.rowId}, '${jsStuName}')" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-black shadow-sm transition-all flex items-center gap-1 cursor-pointer transform hover:scale-105 active:scale-95 whitespace-nowrap" title="อนุมัติผลการเรียนคนนี้">
+                  <i class="material-icons-round text-base">check_circle</i> <span>อนุมัติ</span>
+                </button>
+                <button type="button" onclick="rejectSingle(${t.rowId}, '${jsStuName}')" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap" title="ส่งกลับให้ครูแก้ไข">
+                  <i class="material-icons-round text-base">replay</i> <span>ตีกลับ</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
       });
       tbody.innerHTML = html;
     }
 
-    // --- ส่วนการอนุมัติ (แอดมิน) ---
-    function loadApprovals() {
-      showLoader('กำลังโหลด...'); document.getElementById('worklistView').classList.add('hidden'); document.getElementById('historyView').classList.add('hidden'); document.getElementById('mainTabs').classList.add('hidden'); document.getElementById('submitBar').classList.add('hidden'); document.getElementById('approvalView').classList.remove('hidden');
-      google.script.run.withSuccessHandler(renderApprovals).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).getPendingApprovals();
-    }
-    
-    function backToTasks() { switchTab(CURRENT_TAB); }
-
-    function renderApprovals(tasks) {
-      hideLoader(); if(!tasks) tasks = []; document.getElementById('approveCount').innerText = tasks.length;
-      APPROVAL_LIST = []; updateApproveBtn(); document.getElementById('selectAllCheck').checked = false;
-      const tbody = document.getElementById('approveTBody');
-      if (tasks.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="py-16 text-center"><div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4"><i class="material-icons-round text-3xl">fact_check</i></div><h3 class="text-lg font-bold text-slate-700">ไม่มีรายการรออนุมัติ</h3></td></tr>'; return; }
-      let html = '';
-      tasks.forEach(t => { html += `<tr class="hover:bg-indigo-50/50 transition-colors border-b border-slate-100"><td class="px-5 py-5 text-center"><input type="checkbox" value="${t.rowId}" class="custom-checkbox approve-chk" onclick="toggleApprove(this)"></td><td class="px-5 py-5"><div class="font-bold text-slate-800 text-base">${t.subjName}</div><div class="text-[10px] font-bold text-indigo-500 mt-1 bg-indigo-50 inline-block px-2 py-0.5 rounded-md">ครู: ${t.teacherName}</div></td><td class="px-5 py-5"><div class="font-bold text-slate-700 text-sm md:text-base">${t.stuName}</div><div class="text-[10px] md:text-xs font-medium text-slate-500 mt-1">${t.gradeRoom}</div></td><td class="px-5 py-5 text-center font-black text-rose-500 text-sm md:text-base">${t.oldGrade}</td><td class="px-5 py-5 text-center bg-emerald-50/50 font-black text-emerald-600 text-lg md:text-xl">${t.newGrade}</td></tr>`; }); tbody.innerHTML = html;
+    function toggleSelectAll(cb) {
+      const checkboxes = document.querySelectorAll('.approve-chk');
+      APPROVAL_LIST = [];
+      checkboxes.forEach(c => {
+        c.checked = cb.checked;
+        if (cb.checked) APPROVAL_LIST.push(parseInt(c.value, 10));
+      });
+      updateApproveBtn();
     }
 
-    function toggleSelectAll(cb) { let checkboxes = document.querySelectorAll('.approve-chk'); APPROVAL_LIST = []; checkboxes.forEach(c => { c.checked = cb.checked; if(cb.checked) APPROVAL_LIST.push(parseInt(c.value)); }); updateApproveBtn(); }
-    function toggleApprove(cb) { let val = parseInt(cb.value); if(cb.checked) APPROVAL_LIST.push(val); else APPROVAL_LIST = APPROVAL_LIST.filter(id => id !== val); updateApproveBtn(); }
+    function toggleApprove(cb) {
+      const val = parseInt(cb.value, 10);
+      if (cb.checked) {
+        if (!APPROVAL_LIST.includes(val)) APPROVAL_LIST.push(val);
+      } else {
+        APPROVAL_LIST = APPROVAL_LIST.filter(id => id !== val);
+      }
+      const chkAll = document.getElementById('selectAllCheck');
+      const allCheckboxes = document.querySelectorAll('.approve-chk');
+      if (chkAll) {
+        chkAll.checked = allCheckboxes.length > 0 && APPROVAL_LIST.length === allCheckboxes.length;
+      }
+      updateApproveBtn();
+    }
+
     function updateApproveBtn() {
-      let btn = document.getElementById('approveBtn'), rejectBtn = document.getElementById('rejectBtn'); document.getElementById('selectedCount').innerText = APPROVAL_LIST.length;
-      if(APPROVAL_LIST.length > 0) { btn.classList.remove('hidden'); rejectBtn.classList.remove('hidden'); } else { btn.classList.add('hidden'); rejectBtn.classList.add('hidden'); }
+      const btn = document.getElementById('approveBtn');
+      const rejectBtn = document.getElementById('rejectBtn');
+      const countEl = document.getElementById('selectedCount');
+      const textEl = document.getElementById('selectedCountText');
+
+      const count = APPROVAL_LIST.length;
+      if (countEl) countEl.innerText = count;
+      if (textEl) textEl.innerText = count;
+
+      if (btn) btn.disabled = count === 0;
+      if (rejectBtn) rejectBtn.disabled = count === 0;
+    }
+
+    async function approveSingle(rowId, stuName) {
+      const isConfirmed = await showDialog(
+        'ยืนยันการอนุมัติ',
+        `คุณต้องการอนุมัติผลการเรียนของ "${stuName}" ใช่หรือไม่?`,
+        'warning',
+        true,
+        'อนุมัติผล',
+        'ยกเลิก'
+      );
+      if (!isConfirmed) return;
+
+      showLoader(`กำลังอนุมัติผลของ ${stuName}... (กรุณารอสักครู่)`);
+      try {
+        const res = await callBackend('approve', { rowIds: [rowId] }, 'GET');
+        hideLoader();
+        if (res && res.success !== false) {
+          // ⚡ Optimistic in-memory update
+          CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => t.rowId !== rowId);
+          try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}
+          clearAllDataCaches();
+          renderApprovals(CURRENT_APPROVAL_TASKS);
+          await showDialog('สำเร็จ', `อนุมัติผลการเรียนของ "${stuName}" เรียบร้อยแล้ว`, 'success');
+        } else {
+          showDialog('พบปัญหา', (res && res.message) || 'อนุมัติไม่สำเร็จ', 'error');
+        }
+      } catch (e) {
+        hideLoader();
+        showDialog('พบปัญหา', 'ไม่สามารถส่งข้อมูลอนุมัติได้: ' + e.message, 'error');
+      }
+    }
+
+    async function rejectSingle(rowId, stuName) {
+      const isConfirmed = await showDialog(
+        'ยืนยันตีกลับเพื่อแก้ไข',
+        `คุณต้องการตีกลับรายการของ "${stuName}" ให้ครูผู้สอนแก้ไขใหม่ใช่หรือไม่?`,
+        'error',
+        true,
+        'ตีกลับ',
+        'ยกเลิก'
+      );
+      if (!isConfirmed) return;
+
+      showLoader(`กำลังส่งกลับให้ครูแก้ไข... (กรุณารอสักครู่)`);
+      try {
+        const res = await callBackend('reject', { rowIds: [rowId] }, 'GET');
+        hideLoader();
+        if (res && res.success !== false) {
+          // ⚡ Optimistic in-memory update
+          CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => t.rowId !== rowId);
+          try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}
+          clearAllDataCaches();
+          renderApprovals(CURRENT_APPROVAL_TASKS);
+          await showDialog('สำเร็จ', `ส่งกลับรายการของ "${stuName}" ให้ครูผู้สอนแก้ไขเรียบร้อยแล้ว`, 'success');
+        } else {
+          showDialog('พบปัญหา', (res && res.message) || 'ไม่สามารถส่งกลับได้', 'error');
+        }
+      } catch (e) {
+        hideLoader();
+        showDialog('พบปัญหา', 'ไม่สามารถส่งข้อมูลตีกลับได้: ' + e.message, 'error');
+      }
+    }
+
+    async function approveAll() {
+      if (!CURRENT_APPROVAL_TASKS || CURRENT_APPROVAL_TASKS.length === 0) return;
+      const allRowIds = CURRENT_APPROVAL_TASKS.map(t => parseInt(t.rowId, 10)).filter(id => !isNaN(id));
+      if (allRowIds.length === 0) return;
+
+      const isConfirmed = await showDialog(
+        'ยืนยันการอนุมัติทั้งหมด',
+        `คุณต้องการอนุมัติผลการเรียนที่รออนุมัติทั้งหมด ${allRowIds.length} รายการใช่หรือไม่?`,
+        'warning',
+        true,
+        `อนุมัติทั้งหมด (${allRowIds.length})`,
+        'ยกเลิก'
+      );
+      if (!isConfirmed) return;
+
+      showLoader(`กำลังอนุมัติผลการเรียนทั้งหมด ${allRowIds.length} รายการ... (กรุณารอสักครู่)`);
+      try {
+        const res = await callBackend('approve', { rowIds: allRowIds }, 'GET');
+        hideLoader();
+        if (res && res.success !== false) {
+          // ⚡ Optimistic in-memory update
+          CURRENT_APPROVAL_TASKS = [];
+          try { sessionStorage.setItem('approvals_cache', JSON.stringify([])); } catch(e) {}
+          clearAllDataCaches();
+          renderApprovals(CURRENT_APPROVAL_TASKS);
+          await showDialog('สำเร็จ', `อนุมัติผลการเรียนทั้งหมด ${allRowIds.length} รายการเรียบร้อยแล้ว`, 'success');
+        } else {
+          showDialog('พบปัญหา', (res && res.message) || 'อนุมัติไม่สำเร็จ', 'error');
+        }
+      } catch (e) {
+        hideLoader();
+        showDialog('พบปัญหา', 'ไม่สามารถส่งข้อมูลอนุมัติได้: ' + e.message, 'error');
+      }
     }
 
     async function submitApprovals() {
-      if(APPROVAL_LIST.length === 0) return; const isConfirmed = await showDialog('ยืนยัน', `อนุมัติ ${APPROVAL_LIST.length} รายการใช่หรือไม่?`, 'warning', true); if (!isConfirmed) return;
-      showLoader('กำลังอนุมัติ...'); google.script.run.withSuccessHandler(async res => { hideLoader(); await showDialog('สำเร็จ', 'อนุมัติเรียบร้อย!', 'success'); loadApprovals(); }).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).approveGrades(APPROVAL_LIST);
+      if (APPROVAL_LIST.length === 0) return;
+      const isConfirmed = await showDialog(
+        'ยืนยันการอนุมัติ',
+        `คุณต้องการอนุมัติผลการเรียนที่เลือกทั้งหมด ${APPROVAL_LIST.length} รายการใช่หรือไม่?`,
+        'warning',
+        true,
+        'อนุมัติผล',
+        'ยกเลิก'
+      );
+      if (!isConfirmed) return;
+
+      const count = APPROVAL_LIST.length;
+      showLoader(`กำลังอนุมัติผลการเรียนที่เลือก ${count} รายการ... (กรุณารอสักครู่)`);
+      try {
+        const res = await callBackend('approve', { rowIds: APPROVAL_LIST }, 'GET');
+        hideLoader();
+        if (res && res.success !== false) {
+          // ⚡ Optimistic in-memory update
+          const approvedSet = new Set(APPROVAL_LIST);
+          CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => !approvedSet.has(t.rowId));
+          try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}
+          clearAllDataCaches();
+          renderApprovals(CURRENT_APPROVAL_TASKS);
+          await showDialog('สำเร็จ', `อนุมัติผลการเรียนเรียบร้อยแล้ว (${count} รายการ)`, 'success');
+        } else {
+          showDialog('พบปัญหา', (res && res.message) || 'อนุมัติไม่สำเร็จ', 'error');
+        }
+      } catch (e) {
+        hideLoader();
+        showDialog('พบปัญหา', 'ไม่สามารถส่งข้อมูลอนุมัติได้: ' + e.message, 'error');
+      }
     }
 
     async function submitRejections() {
-      if(APPROVAL_LIST.length === 0) return; const isConfirmed = await showDialog('ยืนยันตีกลับ', `ตีกลับ ${APPROVAL_LIST.length} รายการ ใช่หรือไม่?`, 'error', true); if (!isConfirmed) return;
-      showLoader('กำลังส่งกลับ...'); google.script.run.withSuccessHandler(async res => { hideLoader(); await showDialog('สำเร็จ', 'ส่งกลับให้ครูแก้ไขเรียบร้อย!', 'success'); loadApprovals(); }).withFailureHandler(err => { hideLoader(); showDialog('พบปัญหา', err.message, 'error'); }).rejectGrades(APPROVAL_LIST); 
+      if (APPROVAL_LIST.length === 0) return;
+      const isConfirmed = await showDialog(
+        'ยืนยันตีกลับเพื่อแก้ไข',
+        `คุณต้องการตีกลับรายการที่เลือกทั้ง ${APPROVAL_LIST.length} รายการ ให้ครูผู้สอนแก้ไขใหม่ใช่หรือไม่?`,
+        'error',
+        true,
+        'ตีกลับ',
+        'ยกเลิก'
+      );
+      if (!isConfirmed) return;
+
+      const count = APPROVAL_LIST.length;
+      showLoader(`กำลังส่งกลับให้ครูแก้ไข ${count} รายการ... (กรุณารอสักครู่)`);
+      try {
+        const res = await callBackend('reject', { rowIds: APPROVAL_LIST }, 'GET');
+        hideLoader();
+        if (res && res.success !== false) {
+          // ⚡ Optimistic in-memory update
+          const rejectedSet = new Set(APPROVAL_LIST);
+          CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => !rejectedSet.has(t.rowId));
+          try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}
+          clearAllDataCaches();
+          renderApprovals(CURRENT_APPROVAL_TASKS);
+          await showDialog('สำเร็จ', `ส่งกลับให้ครูผู้สอนแก้ไขเรียบร้อยแล้ว (${count} รายการ)`, 'success');
+        } else {
+          showDialog('พบปัญหา', (res && res.message) || 'ไม่สามารถส่งกลับได้', 'error');
+        }
+      } catch (e) {
+        hideLoader();
+        showDialog('พบปัญหา', 'ไม่สามารถส่งข้อมูลตีกลับได้: ' + e.message, 'error');
+      }
     }
 
-    function showDialog(title, message, type = 'info', isConfirm = false) {
-      return new Promise((resolve) => {
-        const modal = document.getElementById('customModal'); const card = document.getElementById('customModalCard'); const iconWrap = document.getElementById('customModalIcon'); const actions = document.getElementById('customModalActions');
-        document.getElementById('customModalTitle').innerText = title; document.getElementById('customModalMessage').innerText = message;
-        if (type === 'success') { iconWrap.className = 'w-24 h-24 mx-auto rounded-[2rem] mb-6 flex items-center justify-center text-5xl bg-emerald-100 text-emerald-500 shadow-inner'; iconWrap.innerHTML = '<i class="material-icons-round">check_circle</i>'; } else if (type === 'warning') { iconWrap.className = 'w-24 h-24 mx-auto rounded-[2rem] mb-6 flex items-center justify-center text-5xl bg-amber-100 text-amber-500 shadow-inner'; iconWrap.innerHTML = '<i class="material-icons-round">warning_amber</i>'; } else if (type === 'error') { iconWrap.className = 'w-24 h-24 mx-auto rounded-[2rem] mb-6 flex items-center justify-center text-5xl bg-rose-100 text-rose-500 shadow-inner'; iconWrap.innerHTML = '<i class="material-icons-round">error_outline</i>'; }
-        if (isConfirm) actions.innerHTML = `<button id="dialogCancel" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl transition-colors">ยกเลิก</button><button id="dialogConfirm" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all">ยืนยัน</button>`; else actions.innerHTML = `<button id="dialogOk" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all">ตกลง</button>`;
-        modal.classList.remove('hidden'); modal.style.display = 'flex'; setTimeout(() => { modal.classList.remove('opacity-0'); card.classList.remove('scale-95'); card.classList.add('scale-100'); }, 10);
-        const closeMod = (res) => { modal.classList.add('opacity-0'); card.classList.remove('scale-100'); card.classList.add('scale-95'); setTimeout(() => { modal.classList.add('hidden'); modal.style.display = 'none'; resolve(res); }, 300); };
-        if (isConfirm) { document.getElementById('dialogCancel').onclick = () => closeMod(false); document.getElementById('dialogConfirm').onclick = () => closeMod(true); } else document.getElementById('dialogOk').onclick = () => closeMod(true);
-      });
+    // ==========================================
+    // 🌟 ระบบประวัติการส่งผล (History)
+    // ==========================================
+    async function loadHistory(mode, keyword, isSilent = false) {
+      ADMIN_VIEW_MODE = mode;
+      let viewTitle = '';
+      if (mode === 'teacher' && keyword === CURRENT_TEACHER) viewTitle = '(งานของคุณ)';
+      else if (mode === 'teacher') viewTitle = `(ค้นหาครู: ${keyword})`;
+      else viewTitle = `(ข้อมูลนักเรียน: ${keyword})`;
+
+      const vName = document.getElementById('historyViewName');
+      if (vName) vName.innerText = viewTitle;
+      const mainTabs = document.getElementById('mainTabs');
+      if (mainTabs) mainTabs.classList.remove('hidden');
+
+      const cacheKey = `history_cache_${mode}_${keyword}`;
+      let hasCached = false;
+      try {
+        const cachedStr = sessionStorage.getItem(cacheKey);
+        if (cachedStr) {
+          const cachedData = JSON.parse(cachedStr);
+          if (Array.isArray(cachedData)) {
+            renderHistory(cachedData);
+            hasCached = true;
+          }
+        }
+      } catch(e) {}
+
+      if (!hasCached) {
+        renderHistorySkeleton();
+      }
+
+      try {
+        const data = await callBackend('history', { mode, keyword });
+        renderHistory(data);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(data || [])); } catch(e) {}
+      } catch (e) {
+        hideLoader();
+        if (!hasCached) {
+          showDialog('พบปัญหา', 'ไม่สามารถโหลดประวัติได้: ' + e.message, 'error');
+        }
+      }
     }
-    function showLoader(txt) { document.getElementById('loaderText').innerText = txt; document.getElementById('loader').classList.remove('hidden'); }
-    function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
-  </script>
+
+    function renderHistory(data) {
+      hideLoader();
+      ALL_HISTORY = data || [];
+      const countEl = document.getElementById('historyCount');
+      if (countEl) countEl.innerText = ALL_HISTORY.length;
+      filterHistory();
+    }
+
+    function filterHistory() {
+      const searchInput = document.getElementById('searchHistoryInput');
+      const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const statSelect = document.getElementById('statusFilter');
+      const stat = statSelect ? statSelect.value : '';
+
+      let filtered = ALL_HISTORY.filter(t => {
+        const matchSearch = String(t.stuId || '').toLowerCase().includes(term) ||
+                            String(t.stuName || '').toLowerCase().includes(term) ||
+                            String(t.subjName || '').toLowerCase().includes(term) ||
+                            String(t.subjCode || '').toLowerCase().includes(term);
+        const matchStat = stat === '' || String(t.status || '').includes(stat);
+        return matchSearch && matchStat;
+      });
+
+      const tbody = document.getElementById('historyTBody');
+      if (!tbody) return;
+
+      if (ALL_HISTORY.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-16 text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                <i class="material-icons-round text-3xl">history_toggle_off</i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-700">ไม่มีประวัติการส่งผล</h3>
+              <p class="text-slate-500 text-xs mt-1">ยังไม่มีรายการส่งผลการเรียนในหมวดหมู่นี้</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-16 text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                <i class="material-icons-round text-3xl">search_off</i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-700">ไม่พบข้อมูล</h3>
+              <p class="text-slate-500 text-xs mt-1">ลองเปลี่ยนคำค้นหาหรือตัวกรองสถานะ</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(t => {
+        let badgeColor = 'bg-slate-100 text-slate-600';
+        let icon = 'hourglass_empty';
+        const st = String(t.status || '');
+        if (st === 'รออนุมัติ') {
+          badgeColor = 'bg-amber-100 text-amber-600 border border-amber-200';
+          icon = 'hourglass_top';
+        } else if (st === 'พร้อมทำงาน' || st.includes('เสร็จ') || st.includes('ซิงค์')) {
+          badgeColor = 'bg-emerald-100 text-emerald-600 border border-emerald-200';
+          icon = 'check_circle';
+        } else if (st.includes('แก้ไข') || st.includes('ตีกลับ')) {
+          badgeColor = 'bg-rose-100 text-rose-600 border border-rose-200';
+          icon = 'replay';
+        }
+
+        let teacherBadge = ADMIN_VIEW_MODE === 'student' && t.teacherName ? `
+          <div class="text-[9px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100">
+            <i class="material-icons-round text-[10px] align-middle">person</i> ${escapeHtml(t.teacherName)}
+          </div>
+        ` : '';
+
+        html += `
+          <tr class="hover:bg-slate-50/50 transition-colors border-b border-slate-100">
+            <td class="px-4 py-4 text-center text-xs font-bold text-slate-500">${escapeHtml(t.date || '-')}</td>
+            <td class="px-4 py-4">
+              <div class="font-bold text-slate-800 text-sm">${escapeHtml(t.subjName || '')}</div>
+              <div class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-wider">${escapeHtml(t.subjCode || '')}</div>
+              ${teacherBadge}
+            </td>
+            <td class="px-4 py-4">
+              <div class="font-semibold text-slate-600 tracking-wider text-xs">${escapeHtml(t.stuId || '')}</div>
+              <div class="font-bold text-slate-800 text-sm">${escapeHtml(t.stuName || '')}</div>
+            </td>
+            <td class="px-4 py-4 text-center font-bold text-slate-500">${escapeHtml(t.gradeRoom || '')}</td>
+            <td class="px-4 py-4 text-center">
+              <span class="px-2 py-1 bg-rose-50 text-rose-500 rounded font-black text-xs">${escapeHtml(t.oldGrade || '')}</span>
+              <i class="material-icons-round text-xs text-slate-300 align-middle mx-1">arrow_forward</i>
+              <span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded font-black text-xs">${escapeHtml(t.newGrade || '')}</span>
+            </td>
+            <td class="px-4 py-4 text-center">
+              <span class="px-2.5 py-1.5 rounded-lg font-black text-xs shadow-sm flex items-center justify-center gap-1 mx-auto w-max ${badgeColor}">
+                <i class="material-icons-round text-[14px]">${icon}</i> ${escapeHtml(st)}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+</script>
 </body>
 </html>
