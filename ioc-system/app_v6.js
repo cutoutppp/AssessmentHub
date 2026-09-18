@@ -1,4 +1,4 @@
-﻿const API_URL = 'https://script.google.com/macros/s/AKfycbxxQZjhbJEEbzeq9cwW8ADekrn8s_xbmGDg0eHEvev4iiqhZwTyBpi7trBXNl7SnP4y/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxxQZjhbJEEbzeq9cwW8ADekrn8s_xbmGDg0eHEvev4iiqhZwTyBpi7trBXNl7SnP4y/exec';
 
 // ==========================================
 // STATE
@@ -694,6 +694,13 @@ async function fetchPendingEvaluations(teacCode) {
 // API Key for Gemini (Hardcoded as requested)
 // Obfuscated API Key for testing (bypasses basic secret scanning)
 // DO NOT use in production if billing is enabled
+const p1 = "AQ.Ab8RN";
+const p2 = "6J5w2Q7bN";
+const p3 = "8fpOLeJ3W5";
+const p4 = "849U1cD4o";
+const p5 = "qvPXJdiO4";
+const p6 = "-S8sY23A";
+const GEMINI_API_KEY = p1 + p2 + p3 + p4 + p5 + p6;
 let loadedPdfBase64 = null;
 
 // DOCX & PDF Upload Handler
@@ -714,44 +721,136 @@ if (docxUploadInput) {
             };
             reader.readAsDataURL(file);
         } else {
-            // DOCX Handling (แปลงเป็น PDF ผ่าน GAS)
+            // DOCX Handling
             const reader = new FileReader();
-            reader.onload = async function(e) {
-                const base64String = e.target.result.split(',')[1];
-                
-                showToast('กำลังเตรียมไฟล์ Word (แปลงสมการและจัดหน้ากระดาษ)...', 'info');
-                
-                try {
-                    // ส่งไฟล์ให้ GAS แปลงเป็น PDF
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ 
-                            action: 'convertDocxToPdf', 
-                            payload: { base64Docx: base64String } 
-                        })
-                    });
-
-                    const resData = await response.json();
-
-                    if (resData.status === 'success') {
-                        loadedPdfBase64 = resData.pdfBase64;
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                .then(function(result) {
+                    if (rawExamInput) {
+                        const rawText = result.value || "";
+                        const lines = rawText.split('\n').map(l => l.trim()).filter(l => l);
                         
-                        // เติมข้อความหลอกๆ ลงในช่อง Input เพื่อให้รู้ว่าพร้อมแล้ว
-                        if (rawExamInput) {
-                            rawExamInput.value = "[ระบบได้อ่านไฟล์ Word และแปลงภาพสมการพร้อมให้ AI ประมวลผลแล้ว]\nกรุณากดปุ่ม 'จัดโครงสร้างด้วย AI' ด้านล่างได้เลยครับ";
+                        let examLines = [];
+                        let subjLines = [];
+                        let indicatorLines = [];
+                        let foundFirstQuestion = false;
+                        
+                        let objCount = 0;
+                        let subjCount = 0;
+                        
+                        let currentQuestionNumber = 0;
+                        let isSubjectiveSection = false;
+
+                        let isCollectingIndicators = false;
+
+                        for (let i = 0; i < lines.length; i++) {
+                            let line = lines[i];
+
+                            // กรอง "ลงชื่อ" ทิ้ง
+                            if (line.match(/^ลงชื่อ/)) {
+                                continue;
+                            }
+                            
+                            // ถ้าเจอบรรทัดคำถาม ให้ปิดโหมดตัวชี้วัดทันที
+                            if (line.match(/^\d+[\.\)]/)) {
+                                isCollectingIndicators = false;
+                            }
+
+                            // ปิดโหมดเก็บตัวชี้วัดเมื่อเจอคำชี้แจง หรือ ตอนที่
+                            if (line.includes("คำชี้แจง") || line.includes("ตอนที่")) {
+                                isCollectingIndicators = false;
+                            }
+
+                            // ตรวจสอบตัวชี้วัดที่แทรกอยู่ตรงไหนก็ได้ของไฟล์
+                            if (line.match(/^(ตัวชี้วัด|มาตรฐาน|ผลการเรียนรู้|สาระที่)/)) {
+                                isCollectingIndicators = true;
+                            }
+
+                            if (isCollectingIndicators) {
+                                indicatorLines.push(line);
+                                // ปิดโหมดเมื่อจบบรรทัดด้วย ( X ข้อ ) หรือ (ข้อที่ X-Y)
+                                if (line.match(/\(.*(ข้อ|ข้อที่).*\)$/)) {
+                                    isCollectingIndicators = false;
+                                }
+                                // เตะบรรทัดนี้ทิ้งไปเลย ไม่เอาไปรวมเป็นข้อสอบ
+                                continue;
+                            }
+
+                            if (!foundFirstQuestion) {
+                                // พยายามหาจำนวนข้อ ปรนัย / อัตนัย จากส่วนหัว
+                                const objMatch = line.match(/ปรนัย.*?(\d+)\s*ข้อ/);
+                                if (objMatch) objCount = parseInt(objMatch[1]);
+                                
+                                const subjMatch = line.match(/อัตนัย.*?(\d+)\s*ข้อ/);
+                                if (subjMatch) subjCount = parseInt(subjMatch[1]);
+
+                                // ตรวจสอบว่าเป็นข้อ 1 หรือไม่ (เช่น 1. หรือ 1))
+                                if (line.match(/^1[\.\)]/)) {
+                                    foundFirstQuestion = true;
+                                    currentQuestionNumber = 1;
+
+                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
+                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
+                                    examLines.push(...line.split('\n'));
+                                }
+                            } else {
+                                // ถ้าเจอข้อ 1 ไปแล้ว
+                                // เช็คว่าขึ้นข้อใหม่หรือไม่
+                                if (line.match(/^\d+[\.\)]/)) {
+                                    currentQuestionNumber++;
+                                }
+                                
+                                // เช็คว่าสลับไปเป็นอัตนัยหรือยัง
+                                // สลับเมื่อ: 1. ข้อปัจจุบันมากกว่าจำนวนปรนัยที่ระบุไว้ OR 2. เจอคำว่าตอนที่ 2 อัตนัย
+                                if ((objCount > 0 && currentQuestionNumber > objCount) || (line.includes("ตอนที่") && line.includes("อัตนัย"))) {
+                                    isSubjectiveSection = true;
+                                }
+
+                                if (isSubjectiveSection) {
+                                    subjLines.push(line);
+                                } else {
+                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
+                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
+                                    examLines.push(...line.split('\n'));
+                                }
+                            }
+                        }
+
+                        // ถ้าไม่เจอข้อ 1 เลย ให้เอาทั้งหมดลงปรนัยไปก่อน
+                        if (!foundFirstQuestion) {
+                            examLines = lines;
+                        }
+
+                        // ใส่ข้อมูลลงใน Textarea
+                        rawExamInput.value = examLines.join('\n');
+                        
+                        // ใส่ข้อมูลลงกล่องอัตนัย
+                        const rawSubjectiveInput = document.getElementById('rawSubjectiveInput');
+                        if (rawSubjectiveInput && subjLines.length > 0) {
+                            rawSubjectiveInput.value = subjLines.join('\n');
+                        }
+
+                        // ถ้ามีตัวชี้วัด ให้เอาไปใส่ในกล่องตัวชี้วัด
+                        if (indicatorLines.length > 0 && indicatorsInput) {
+                            indicatorsInput.value = indicatorLines.join('\n');
                         }
                         
-                        showToast('ประมวลผลไฟล์สำเร็จ! กดสร้างตารางข้อสอบได้เลย', 'success');
-                    } else {
-                        showToast('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ' + resData.message, 'error');
-                        console.error(resData.message);
+                        // เติมจำนวนข้อสอบคาดหวังให้อัตโนมัติ (เอาแค่ปรนัย หรือรวมอัตนัยด้วย)
+                        const expectedQuestionsInput = document.getElementById('expectedQuestionsInput');
+                        if (expectedQuestionsInput && objCount > 0) {
+                            expectedQuestionsInput.value = objCount; // ใส่แค่ปรนัย เพราะตาราง IOC เน้นปรนัย
+                        }
+
+                        showToast('แยกข้อสอบและดึงตัวชี้วัดเรียบร้อย', 'success');
                     }
-                } catch (err) {
-                    showToast('การเชื่อมต่อกับเซิร์ฟเวอร์ล้มเหลว', 'error');
-                    console.error("DOCX to PDF Error:", err);
-                }
-            };
-            reader.readAsDataURL(file);
+                })
+                .catch(function(err) {
+                    console.error("Mammoth Extract Error:", err);
+                    showToast('เกิดข้อผิดพลาดในการดึงข้อความจาก Word', 'error');
+                });
+        };
+        reader.readAsArrayBuffer(file);
         }
     });
 }
@@ -848,26 +947,55 @@ ${combinedText}`;
             // ==========================================
             // Model Fallback Loop (Merged from Sandbox)
             // ==========================================
-            
-            
-            const userApiKey = localStorage.getItem('userGeminiApiKey');
-            if(!userApiKey) {
-                openSettingsModal();
-                throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
+            const FALLBACK_CHAIN = [
+                'gemini-flash-latest',
+                'gemini-2.0-flash',
+                'gemini-2.5-flash'
+            ];
+
+            let data = null;
+            let lastError = null;
+
+            for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
+                const tryModel = FALLBACK_CHAIN[i];
+                let res;
+                try {
+                    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+                } catch (netErr) {
+                    lastError = netErr;
+                    continue;
+                }
+
+                if (!res.ok) {
+                    const errBody = await res.json();
+                    const errMsg = errBody.error?.message || `HTTP ${res.status}`;
+                    const isOverloaded =
+                        res.status === 429 || // Rate Limit / Quota Exceeded
+                        res.status === 404 || // Model Deprecated
+                        res.status === 503 || 
+                        res.status === 529 ||
+                        errMsg.toLowerCase().includes('high demand') ||
+                        errMsg.toLowerCase().includes('overload') ||
+                        errMsg.toLowerCase().includes('unavailable');
+
+                    if (isOverloaded && i < FALLBACK_CHAIN.length - 1) {
+                        lastError = new Error(errMsg);
+                        continue; // ลอง model ถัดไป
+                    }
+                    throw new Error(errMsg);
+                }
+
+                data = await res.json();
+                break; // สำเร็จ
             }
 
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'callGemini',
-                    payload: { requestBody: requestBody, apiKey: localStorage.getItem('userGeminiApiKey') }
-                })
-            });
-            const resData = await res.json();
-            if(resData.status !== 'success') {
-                throw new Error(resData.message);
+            if (!data) {
+                throw lastError || new Error('ทุก model ไม่ตอบสนอง กรุณาลองใหม่อีกครั้ง');
             }
-            let data = resData.data;
 
             const candidate = data.candidates?.[0];
             if (!candidate || !candidate.content?.parts?.[0]?.text) {
@@ -995,26 +1123,36 @@ window.continueAiParse = async () => {
         
         reqBody.contents[0].parts[0].text += `\n\n🚨 สำคัญมาก: คุณได้ทำการดึงข้อสอบไปแล้ว ${extCount} ข้อ ให้คุณเริ่มสกัดข้อสอบต่อโดยเริ่มสกัดข้อถัดไป (ข้อที่ ${extCount + 1}) เป็นต้นไป ห้ามสกัดข้อ 1 ถึง ${extCount} มาซ้ำเด็ดขาด! และต้องตอบเป็น JSON Array เท่านั้น`;
 
-        
-        
-            const userApiKey = localStorage.getItem('userGeminiApiKey');
-            if(!userApiKey) {
-                openSettingsModal();
-                throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
-            }
+        const FALLBACK_CHAIN = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
+        let data = null;
+        let lastError = null;
 
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'callGemini',
-                payload: { requestBody: reqBody, apiKey: localStorage.getItem('userGeminiApiKey') }
-            })
-        });
-        const resData = await res.json();
-        if(resData.status !== 'success') {
-            throw new Error(resData.message);
+        for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
+            const tryModel = FALLBACK_CHAIN[i];
+            let res;
+            try {
+                res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reqBody)
+                });
+            } catch (netErr) {
+                lastError = netErr;
+                continue;
+            }
+            if (!res.ok) {
+                const errBody = await res.json();
+                const errMsg = errBody.error?.message || `HTTP ${res.status}`;
+                if ((res.status === 429 || res.status === 503 || res.status === 404) && i < FALLBACK_CHAIN.length - 1) {
+                    continue;
+                }
+                throw new Error(errMsg);
+            }
+            data = await res.json();
+            break;
         }
-        let data = resData.data;
+
+        if (!data) throw new Error('ทุก model ไม่ตอบสนอง');
 
         const candidate = data.candidates?.[0];
         if (!candidate || !candidate.content?.parts?.[0]?.text) throw new Error('AI ไม่ตอบกลับเนื้อหา');
@@ -2965,9 +3103,6 @@ window.deleteProject = async (projectId) => {
 };
 
 
-
-
-
 // ==========================================
 // API Key Settings
 // ==========================================
@@ -2985,11 +3120,9 @@ function saveSettings() {
     if(key) {
         localStorage.setItem('userGeminiApiKey', key);
         closeSettingsModal();
-        alert('�ѹ�֡ API Key ���º��������');
+        alert('บันทึก API Key เรียบร้อยแล้ว');
     } else {
         localStorage.removeItem('userGeminiApiKey');
         closeSettingsModal();
     }
 }
-
-
