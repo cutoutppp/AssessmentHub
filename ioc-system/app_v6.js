@@ -721,136 +721,44 @@ if (docxUploadInput) {
             };
             reader.readAsDataURL(file);
         } else {
-            // DOCX Handling
+            // DOCX Handling (แปลงเป็น PDF ผ่าน GAS)
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const arrayBuffer = e.target.result;
-                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
-                .then(function(result) {
-                    if (rawExamInput) {
-                        const rawText = result.value || "";
-                        const lines = rawText.split('\n').map(l => l.trim()).filter(l => l);
+            reader.onload = async function(e) {
+                const base64String = e.target.result.split(',')[1];
+                
+                showToast('กำลังเตรียมไฟล์ Word (แปลงสมการและจัดหน้ากระดาษ)...', 'info');
+                
+                try {
+                    // ส่งไฟล์ให้ GAS แปลงเป็น PDF
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            action: 'convertDocxToPdf', 
+                            payload: { base64Docx: base64String } 
+                        })
+                    });
+
+                    const resData = await response.json();
+
+                    if (resData.status === 'success') {
+                        loadedPdfBase64 = resData.pdfBase64;
                         
-                        let examLines = [];
-                        let subjLines = [];
-                        let indicatorLines = [];
-                        let foundFirstQuestion = false;
-                        
-                        let objCount = 0;
-                        let subjCount = 0;
-                        
-                        let currentQuestionNumber = 0;
-                        let isSubjectiveSection = false;
-
-                        let isCollectingIndicators = false;
-
-                        for (let i = 0; i < lines.length; i++) {
-                            let line = lines[i];
-
-                            // กรอง "ลงชื่อ" ทิ้ง
-                            if (line.match(/^ลงชื่อ/)) {
-                                continue;
-                            }
-                            
-                            // ถ้าเจอบรรทัดคำถาม ให้ปิดโหมดตัวชี้วัดทันที
-                            if (line.match(/^\d+[\.\)]/)) {
-                                isCollectingIndicators = false;
-                            }
-
-                            // ปิดโหมดเก็บตัวชี้วัดเมื่อเจอคำชี้แจง หรือ ตอนที่
-                            if (line.includes("คำชี้แจง") || line.includes("ตอนที่")) {
-                                isCollectingIndicators = false;
-                            }
-
-                            // ตรวจสอบตัวชี้วัดที่แทรกอยู่ตรงไหนก็ได้ของไฟล์
-                            if (line.match(/^(ตัวชี้วัด|มาตรฐาน|ผลการเรียนรู้|สาระที่)/)) {
-                                isCollectingIndicators = true;
-                            }
-
-                            if (isCollectingIndicators) {
-                                indicatorLines.push(line);
-                                // ปิดโหมดเมื่อจบบรรทัดด้วย ( X ข้อ ) หรือ (ข้อที่ X-Y)
-                                if (line.match(/\(.*(ข้อ|ข้อที่).*\)$/)) {
-                                    isCollectingIndicators = false;
-                                }
-                                // เตะบรรทัดนี้ทิ้งไปเลย ไม่เอาไปรวมเป็นข้อสอบ
-                                continue;
-                            }
-
-                            if (!foundFirstQuestion) {
-                                // พยายามหาจำนวนข้อ ปรนัย / อัตนัย จากส่วนหัว
-                                const objMatch = line.match(/ปรนัย.*?(\d+)\s*ข้อ/);
-                                if (objMatch) objCount = parseInt(objMatch[1]);
-                                
-                                const subjMatch = line.match(/อัตนัย.*?(\d+)\s*ข้อ/);
-                                if (subjMatch) subjCount = parseInt(subjMatch[1]);
-
-                                // ตรวจสอบว่าเป็นข้อ 1 หรือไม่ (เช่น 1. หรือ 1))
-                                if (line.match(/^1[\.\)]/)) {
-                                    foundFirstQuestion = true;
-                                    currentQuestionNumber = 1;
-
-                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
-                                    examLines.push(...line.split('\n'));
-                                }
-                            } else {
-                                // ถ้าเจอข้อ 1 ไปแล้ว
-                                // เช็คว่าขึ้นข้อใหม่หรือไม่
-                                if (line.match(/^\d+[\.\)]/)) {
-                                    currentQuestionNumber++;
-                                }
-                                
-                                // เช็คว่าสลับไปเป็นอัตนัยหรือยัง
-                                // สลับเมื่อ: 1. ข้อปัจจุบันมากกว่าจำนวนปรนัยที่ระบุไว้ OR 2. เจอคำว่าตอนที่ 2 อัตนัย
-                                if ((objCount > 0 && currentQuestionNumber > objCount) || (line.includes("ตอนที่") && line.includes("อัตนัย"))) {
-                                    isSubjectiveSection = true;
-                                }
-
-                                if (isSubjectiveSection) {
-                                    subjLines.push(line);
-                                } else {
-                                    // จัดบรรทัดให้ช้อยส์ที่อยู่บรรทัดเดียวกัน (เฉพาะปรนัย) แบบยืดหยุ่นขึ้น
-                                    line = line.replace(/(?:\s+)([*]*[ก-ฮa-dA-D1-5][\.\)]|[*]*[①-⑤❶-❺➀-➄➊-➎])/g, '\n$1');
-                                    examLines.push(...line.split('\n'));
-                                }
-                            }
-                        }
-
-                        // ถ้าไม่เจอข้อ 1 เลย ให้เอาทั้งหมดลงปรนัยไปก่อน
-                        if (!foundFirstQuestion) {
-                            examLines = lines;
-                        }
-
-                        // ใส่ข้อมูลลงใน Textarea
-                        rawExamInput.value = examLines.join('\n');
-                        
-                        // ใส่ข้อมูลลงกล่องอัตนัย
-                        const rawSubjectiveInput = document.getElementById('rawSubjectiveInput');
-                        if (rawSubjectiveInput && subjLines.length > 0) {
-                            rawSubjectiveInput.value = subjLines.join('\n');
-                        }
-
-                        // ถ้ามีตัวชี้วัด ให้เอาไปใส่ในกล่องตัวชี้วัด
-                        if (indicatorLines.length > 0 && indicatorsInput) {
-                            indicatorsInput.value = indicatorLines.join('\n');
+                        // เติมข้อความหลอกๆ ลงในช่อง Input เพื่อให้รู้ว่าพร้อมแล้ว
+                        if (rawExamInput) {
+                            rawExamInput.value = "[ระบบได้อ่านไฟล์ Word และแปลงภาพสมการพร้อมให้ AI ประมวลผลแล้ว]\nกรุณากดปุ่ม 'จัดโครงสร้างด้วย AI' ด้านล่างได้เลยครับ";
                         }
                         
-                        // เติมจำนวนข้อสอบคาดหวังให้อัตโนมัติ (เอาแค่ปรนัย หรือรวมอัตนัยด้วย)
-                        const expectedQuestionsInput = document.getElementById('expectedQuestionsInput');
-                        if (expectedQuestionsInput && objCount > 0) {
-                            expectedQuestionsInput.value = objCount; // ใส่แค่ปรนัย เพราะตาราง IOC เน้นปรนัย
-                        }
-
-                        showToast('แยกข้อสอบและดึงตัวชี้วัดเรียบร้อย', 'success');
+                        showToast('ประมวลผลไฟล์สำเร็จ! กดสร้างตารางข้อสอบได้เลย', 'success');
+                    } else {
+                        showToast('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ' + resData.message, 'error');
+                        console.error(resData.message);
                     }
-                })
-                .catch(function(err) {
-                    console.error("Mammoth Extract Error:", err);
-                    showToast('เกิดข้อผิดพลาดในการดึงข้อความจาก Word', 'error');
-                });
-        };
-        reader.readAsArrayBuffer(file);
+                } catch (err) {
+                    showToast('การเชื่อมต่อกับเซิร์ฟเวอร์ล้มเหลว', 'error');
+                    console.error("DOCX to PDF Error:", err);
+                }
+            };
+            reader.readAsDataURL(file);
         }
     });
 }
