@@ -849,11 +849,18 @@ ${combinedText}`;
             // Model Fallback Loop (Merged from Sandbox)
             // ==========================================
             
+            
+            const userApiKey = localStorage.getItem('userGeminiApiKey');
+            if(!userApiKey) {
+                openSettingsModal();
+                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
+            }
+
             const res = await fetch(API_URL, {
                 method: 'POST',
                 body: JSON.stringify({
                     action: 'callGemini',
-                    payload: { requestBody: requestBody }
+                    payload: { requestBody: requestBody, apiKey: localStorage.getItem('userGeminiApiKey') }
                 })
             });
             const resData = await res.json();
@@ -989,11 +996,18 @@ window.continueAiParse = async () => {
         reqBody.contents[0].parts[0].text += `\n\n🚨 สำคัญมาก: คุณได้ทำการดึงข้อสอบไปแล้ว ${extCount} ข้อ ให้คุณเริ่มสกัดข้อสอบต่อโดยเริ่มสกัดข้อถัดไป (ข้อที่ ${extCount + 1}) เป็นต้นไป ห้ามสกัดข้อ 1 ถึง ${extCount} มาซ้ำเด็ดขาด! และต้องตอบเป็น JSON Array เท่านั้น`;
 
         
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'callGemini',
-                payload: { requestBody: reqBody }
+        
+            const userApiKey = localStorage.getItem('userGeminiApiKey');
+            if(!userApiKey) {
+                openSettingsModal();
+                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
+            }
+
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'callGemini',
+                payload: { requestBody: reqBody, apiKey: localStorage.getItem('userGeminiApiKey') }
             })
         });
         const resData = await res.json();
@@ -2952,3 +2966,28 @@ window.deleteProject = async (projectId) => {
 
 
 
+
+
+// ==========================================
+// API Key Settings
+// ==========================================
+function openSettingsModal() {
+    document.getElementById('settingsModal').classList.remove('hidden');
+    document.getElementById('geminiApiKeyInput').value = localStorage.getItem('userGeminiApiKey') || '';
+}
+
+function closeSettingsModal() {
+    document.getElementById('settingsModal').classList.add('hidden');
+}
+
+function saveSettings() {
+    const key = document.getElementById('geminiApiKeyInput').value.trim();
+    if(key) {
+        localStorage.setItem('userGeminiApiKey', key);
+        closeSettingsModal();
+        alert('�ѹ�֡ API Key ���º��������');
+    } else {
+        localStorage.removeItem('userGeminiApiKey');
+        closeSettingsModal();
+    }
+}
