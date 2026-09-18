@@ -1327,6 +1327,72 @@ window.updateInd = (idx, val) => { parsedQuestions[idx].indicator = val; };
 window.updateQText = (idx, text) => { parsedQuestions[idx].question_text = text.trim(); };
 window.updateChoiceText = (idx, letter, text) => { parsedQuestions[idx]['choice_' + letter] = text.trim(); };
 
+function tryParseJsonExam(text) {
+    if (!text || typeof text !== 'string') return null;
+    let clean = text.trim();
+    // Strip markdown code blocks e.g. ```json ... ```
+    clean = clean.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+    
+    // Find first [ and last ]
+    const firstBracket = clean.indexOf('[');
+    const lastBracket = clean.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+        clean = clean.substring(firstBracket, lastBracket + 1);
+    } else {
+        return null;
+    }
+
+    // Clean common JSON trailing commas
+    clean = clean.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+
+    try {
+        let parsed = null;
+        try {
+            parsed = JSON.parse(clean);
+        } catch (e1) {
+            // Attempt loose parse fallback
+            const looseParse = new Function("return " + clean);
+            parsed = looseParse();
+        }
+
+        if (!Array.isArray(parsed) || parsed.length === 0) return null;
+
+        const results = [];
+        parsed.forEach((q, index) => {
+            let ansChar = (q.correct_answer || '').toString().toLowerCase().replace(/[\.\)\s]/g, '').trim();
+            if (ansChar === 'a' || ansChar === '1' || ansChar.includes('ก')) ansChar = 'ก';
+            else if (ansChar === 'b' || ansChar === '2' || ansChar.includes('ข')) ansChar = 'ข';
+            else if (ansChar === 'c' || ansChar === '3' || ansChar.includes('ค')) ansChar = 'ค';
+            else if (ansChar === 'd' || ansChar === '4' || ansChar.includes('ง')) ansChar = 'ง';
+            else if (ansChar === 'e' || ansChar === '5' || ansChar.includes('จ')) ansChar = 'จ';
+            else ansChar = '';
+
+            const choices = Array.isArray(q.choices) ? q.choices : [];
+            const isSubj = q.is_subjective === true || choices.length === 0;
+            const qNum = q.q_num || q.question_number || (index + 1);
+
+            results.push({
+                q_num: qNum,
+                question_text: (q.question_text || q.question || '').toString().trim(),
+                choice_a: choices[0] ? String(choices[0]).replace(/^[กขคจงABCDabcd1-5][\.\)]\s*/, '').trim() : '',
+                choice_b: choices[1] ? String(choices[1]).replace(/^[กขคจงABCDabcd1-5][\.\)]\s*/, '').trim() : '',
+                choice_c: choices[2] ? String(choices[2]).replace(/^[กขคจงABCDabcd1-5][\.\)]\s*/, '').trim() : '',
+                choice_d: choices[3] ? String(choices[3]).replace(/^[กขคจงABCDabcd1-5][\.\)]\s*/, '').trim() : '',
+                correct_answer: ansChar,
+                indicator: (q.indicator || '').toString().trim(),
+                is_subjective: isSubj,
+                image_url: (q.image_url || '').toString().trim(),
+                passage_text: (q.passage_text || '').toString().trim()
+            });
+        });
+
+        return results;
+    } catch (err) {
+        console.warn('tryParseJsonExam failed:', err);
+        return null;
+    }
+}
+
 window.startManualExam = () => {
     const indsText = document.getElementById('indicatorsInput') ? document.getElementById('indicatorsInput').value : '';
     parseIndicators(indsText);
@@ -1336,11 +1402,32 @@ window.startManualExam = () => {
     const rawSubj = document.getElementById('rawSubjectiveInput') ? document.getElementById('rawSubjectiveInput').value : '';
     
     if (rawExam.trim() || rawSubj.trim()) {
-        const parsed = fallbackRegexParse(rawExam, rawSubj);
-        if (parsed.length > 0) {
-            parsedQuestions = parsed;
+        // 1. Smart JSON Detection
+        const jsonQuestions = tryParseJsonExam(rawExam);
+        if (jsonQuestions && jsonQuestions.length > 0) {
+            parsedQuestions = jsonQuestions;
+
+            // Auto-collect unique indicators from JSON into indicatorOptions if present
+            parsedQuestions.forEach(q => {
+                if (q.indicator && !indicatorOptions.includes(q.indicator)) {
+                    indicatorOptions.push(q.indicator);
+                }
+            });
+            const indsInput = document.getElementById('indicatorsInput');
+            if (indsInput && !indsInput.value.trim() && indicatorOptions.length > 0) {
+                indsInput.value = indicatorOptions.join('\n');
+            }
+
+            showToast(`สกัดข้อสอบได้ ${parsedQuestions.length} ข้อจากสคริปต์ JSON สำเร็จ!`, 'success');
         } else {
-            addManualQuestion(false); // Add blank if regex fails entirely
+            // 2. Fallback to Regex parse
+            const parsed = fallbackRegexParse(rawExam, rawSubj);
+            if (parsed.length > 0) {
+                parsedQuestions = parsed;
+                showToast(`สกัดข้อสอบได้ ${parsedQuestions.length} ข้อ (ข้อความธรรมดา)`, 'success');
+            } else {
+                addManualQuestion(false); // Add blank if regex fails entirely
+            }
         }
     } else {
         addManualQuestion(false); // Add blank if inputs are empty
@@ -1350,6 +1437,7 @@ window.startManualExam = () => {
     if (tableContainer) {
         tableContainer.classList.remove('hidden');
         renderTable();
+        updateAnswerStats();
         // Smooth scroll to table
         setTimeout(() => {
             tableContainer.scrollIntoView({ behavior: 'smooth' });
