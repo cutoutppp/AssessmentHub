@@ -856,7 +856,7 @@ ${combinedText}`;
                 throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
-            const tryModels = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro', 'gemini-flash-latest'];
+            const tryModels = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
             let data = null;
             let lastError = null;
             
@@ -1018,7 +1018,7 @@ window.continueAiParse = async () => {
                 throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
-            const tryModels = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro', 'gemini-flash-latest'];
+            const tryModels = ['gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-flash-latest'];
             let data = null;
             let lastError = null;
             
