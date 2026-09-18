@@ -853,7 +853,7 @@ ${combinedText}`;
             const userApiKey = localStorage.getItem('userGeminiApiKey');
             if(!userApiKey) {
                 openSettingsModal();
-                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
+                throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
             const res = await fetch(API_URL, {
@@ -1000,7 +1000,7 @@ window.continueAiParse = async () => {
             const userApiKey = localStorage.getItem('userGeminiApiKey');
             if(!userApiKey) {
                 openSettingsModal();
-                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
+                throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
             const res = await fetch(API_URL, {
