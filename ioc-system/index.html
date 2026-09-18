@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <h1 class="text-base font-bold text-gray-800 leading-none">Tinder-IOC</h1>
-                    <button onclick="openSettingsModal()" class="ml-4 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-sm font-medium flex items-center gap-1">⚙️ ตั้งค่า API</button>
+                    
                 </div>
             </div>
 
@@ -290,11 +290,7 @@
 
             <!-- Parse Button -->
             <div class="flex flex-col sm:flex-row justify-center my-4 gap-4">
-                <button id="parseBtn" class="btn-secondary flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    <span>✨ ให้ AI สกัดข้อสอบลงตาราง (อัตโนมัติ)</span>
-                    <svg id="parseLoader" class="animate-spin h-4 w-4 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                </button>
+                
                 
                 <button onclick="startManualExam()" class="px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-lg shadow-sm border border-gray-200 transition-colors flex items-center justify-center gap-2" title="สร้างตารางทันทีจากข้อความที่วาง (เหมาะกับข้อสอบที่จัดเรียง ก ข ค ง มาเป็นระเบียบ)">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -593,7 +589,7 @@
     <link rel="stylesheet" href="style.css?v=20260621_2007">
     <script src="template_b64.js?v=1782966260385"></script>
     <script src="template_test_b64.js?v=1782966260384"></script>
-    <script src="app_v6.js?v=20260918_1201" defer></script>
+    <script src="app_v6.js?v=20260918_1220" defer></script>
     <!-- Edit Question Modal -->
     <div id="editQuestionModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -725,6 +721,16 @@
             </div>
         </div>
     </div>
+
+        function copyPromptToClipboard() {
+            const promptText = "ช่วยสกัดข้อสอบจากไฟล์ที่แนบมานี้ให้หน่อย โดยจัดรูปแบบให้เป็นข้อความธรรมดาตามรูปแบบด้านล่างนี้อย่างเคร่งครัด ห้ามมีข้อความอื่นเจือปน:\n\n1. [เนื้อหาคำถาม]\nก. [ตัวเลือกที่ 1]\nข. [ตัวเลือกที่ 2]\nค. [ตัวเลือกที่ 3]\nง. [ตัวเลือกที่ 4]\n\n2. [เนื้อหาคำถาม]\nก. [ตัวเลือกที่ 1]\n...";
+            navigator.clipboard.writeText(promptText).then(() => {
+                alert("คัดลอกคำสั่งเรียบร้อยแล้ว! นำไปวางใน ChatGPT หรือ Gemini ได้เลยครับ");
+            }).catch(err => {
+                alert("ไม่สามารถคัดลอกได้: " + err);
+            });
+        }
+
 </body>
 </html>
 
