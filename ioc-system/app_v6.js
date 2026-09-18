@@ -694,12 +694,6 @@ async function fetchPendingEvaluations(teacCode) {
 // API Key for Gemini (Hardcoded as requested)
 // Obfuscated API Key for testing (bypasses basic secret scanning)
 // DO NOT use in production if billing is enabled
-// Bypass Github Secret Scanner
-const p1 = "AQ.Ab8RN6Jbit";
-const p2 = "5lk654lVoyWQ2ew";
-const p3 = "3_BCdnMl6IxMb";
-const p4 = "Xl-o_YoYjjkA";
-const GEMINI_API_KEY = p1 + p2 + p3 + p4;
 let loadedPdfBase64 = null;
 
 // DOCX & PDF Upload Handler
@@ -854,55 +848,19 @@ ${combinedText}`;
             // ==========================================
             // Model Fallback Loop (Merged from Sandbox)
             // ==========================================
-            const FALLBACK_CHAIN = [
-                'gemini-flash-latest',
-                'gemini-2.0-flash',
-                'gemini-2.5-flash'
-            ];
-
-            let data = null;
-            let lastError = null;
-
-            for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
-                const tryModel = FALLBACK_CHAIN[i];
-                let res;
-                try {
-                    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(requestBody)
-                    });
-                } catch (netErr) {
-                    lastError = netErr;
-                    continue;
-                }
-
-                if (!res.ok) {
-                    const errBody = await res.json();
-                    const errMsg = errBody.error?.message || `HTTP ${res.status}`;
-                    const isOverloaded =
-                        res.status === 429 || // Rate Limit / Quota Exceeded
-                        res.status === 404 || // Model Deprecated
-                        res.status === 503 || 
-                        res.status === 529 ||
-                        errMsg.toLowerCase().includes('high demand') ||
-                        errMsg.toLowerCase().includes('overload') ||
-                        errMsg.toLowerCase().includes('unavailable');
-
-                    if (isOverloaded && i < FALLBACK_CHAIN.length - 1) {
-                        lastError = new Error(errMsg);
-                        continue; // ลอง model ถัดไป
-                    }
-                    throw new Error(errMsg);
-                }
-
-                data = await res.json();
-                break; // สำเร็จ
+            
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'callGemini',
+                    payload: { requestBody: requestBody }
+                })
+            });
+            const resData = await res.json();
+            if(resData.status !== 'success') {
+                throw new Error(resData.message);
             }
-
-            if (!data) {
-                throw lastError || new Error('ทุก model ไม่ตอบสนอง กรุณาลองใหม่อีกครั้ง');
-            }
+            let data = resData.data;
 
             const candidate = data.candidates?.[0];
             if (!candidate || !candidate.content?.parts?.[0]?.text) {
@@ -1030,36 +988,19 @@ window.continueAiParse = async () => {
         
         reqBody.contents[0].parts[0].text += `\n\n🚨 สำคัญมาก: คุณได้ทำการดึงข้อสอบไปแล้ว ${extCount} ข้อ ให้คุณเริ่มสกัดข้อสอบต่อโดยเริ่มสกัดข้อถัดไป (ข้อที่ ${extCount + 1}) เป็นต้นไป ห้ามสกัดข้อ 1 ถึง ${extCount} มาซ้ำเด็ดขาด! และต้องตอบเป็น JSON Array เท่านั้น`;
 
-        const FALLBACK_CHAIN = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
-        let data = null;
-        let lastError = null;
-
-        for (let i = 0; i < FALLBACK_CHAIN.length; i++) {
-            const tryModel = FALLBACK_CHAIN[i];
-            let res;
-            try {
-                res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(reqBody)
-                });
-            } catch (netErr) {
-                lastError = netErr;
-                continue;
-            }
-            if (!res.ok) {
-                const errBody = await res.json();
-                const errMsg = errBody.error?.message || `HTTP ${res.status}`;
-                if ((res.status === 429 || res.status === 503 || res.status === 404) && i < FALLBACK_CHAIN.length - 1) {
-                    continue;
-                }
-                throw new Error(errMsg);
-            }
-            data = await res.json();
-            break;
+        
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'callGemini',
+                payload: { requestBody: reqBody }
+            })
+        });
+        const resData = await res.json();
+        if(resData.status !== 'success') {
+            throw new Error(resData.message);
         }
-
-        if (!data) throw new Error('ทุก model ไม่ตอบสนอง');
+        let data = resData.data;
 
         const candidate = data.candidates?.[0];
         if (!candidate || !candidate.content?.parts?.[0]?.text) throw new Error('AI ไม่ตอบกลับเนื้อหา');
