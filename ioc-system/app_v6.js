@@ -853,7 +853,7 @@ ${combinedText}`;
             const userApiKey = localStorage.getItem('userGeminiApiKey');
             if(!userApiKey) {
                 openSettingsModal();
-                throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
+                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
             }
 
             const res = await fetch(API_URL, {
@@ -919,7 +919,88 @@ ${combinedText}`;
                             }
                         } catch (err4) {
                             if (rawExamInput) rawExamInput.value = responseText;
-                            throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
+                            throw new Error("AI ส่งข้อมูลผิดพลาด และไม่สามารถซ่อมแซมได้ (โปรดดูข้อความดิบในแท็บ)");
+                        }
+                    } else {
+                        if (rawExamInput) rawExamInput.value = responseText;
+                        throw new Error("AI ส่งข้อมูลพังเกินกว่าจะกู้คืนได้ กรุณาตรวจสอบข้อความดิบในแท็บ 'วางข้อความดิบด้วยตนเอง'");
+                    }
+                }
+            }
+
+            // Map AI output to parsedQuestions structure
+            aiQuestions.forEach((q, index) => {
+                let ansChar = q.correct_answer || '';
+                if (ansChar) {
+                    ansChar = ansChar.toLowerCase().replace(/[\.\)]/g, '').trim();
+                    if (ansChar === 'a' || ansChar === '1' || ansChar.includes('ก')) ansChar = 'ก';
+                    else if (ansChar === 'b' || ansChar === '2' || ansChar.includes('ข')) ansChar = 'ข';
+                    else if (ansChar === 'c' || ansChar === '3' || ansChar.includes('ค')) ansChar = 'ค';
+                    else if (ansChar === 'd' || ansChar === '4' || ansChar.includes('ง')) ansChar = 'ง';
+                    else if (ansChar === 'e' || ansChar === '5' || ansChar.includes('จ')) ansChar = 'จ';
+                    else ansChar = '';
+                }
+
+                parsedQuestions.push({
+                    q_num: index + 1,
+                    question_text: q.question_text || '',
+                    choice_a: q.choices && q.choices.length > 0 ? q.choices[0] : '',
+                    choice_b: q.choices && q.choices.length > 1 ? q.choices[1] : '',
+                    choice_c: q.choices && q.choices.length > 2 ? q.choices[2] : '',
+                    choice_d: q.choices && q.choices.length > 3 ? q.choices[3] : '',
+                    correct_answer: ansChar,
+                    indicator: q.indicator || '',
+                    is_subjective: q.is_subjective || false,
+                    image_url: '',
+                    passage_text: ''
+                });
+            });
+
+            renderTable();
+            renderTable();
+            const continueBtn = document.getElementById('continueAiBtn');
+            if (isTruncated) {
+                if(continueBtn) continueBtn.classList.remove('hidden');
+                showToast(`⚠️ ดึงข้อสอบได้ ${parsedQuestions.length} ข้อ (ข้อสอบยาวเกินโควต้า AI จึงถูกตัดจบ) สามารถกดปุ่ม "ให้ AI ดึงข้อที่เหลือต่อ" ด้านล่างตารางได้ครับ`, 'error', 10000);
+            } else {
+                if(continueBtn) continueBtn.classList.add('hidden');
+                showToast(`ดึงข้อสอบได้ ${parsedQuestions.length} ข้อ โดย AI`, 'success');
+            }
+
+        } catch (error) {
+            console.error("AI Parse Error:", error);
+            showToast('เกิดข้อผิดพลาด: ' + error.message, 'error');
+        } finally {
+            parseBtn.disabled = false;
+            if(parseLoader) parseLoader.classList.add('hidden');
+            parseBtn.querySelector('span').innerText = originalText;
+        }
+    });
+}
+
+window.continueAiParse = async () => {
+    if (!window.lastAiRequestBody || parsedQuestions.length === 0) return;
+    
+    const continueBtn = document.getElementById('continueAiBtn');
+    const continueText = document.getElementById('continueAiText');
+    const continueLoader = document.getElementById('continueLoader');
+    
+    continueBtn.disabled = true;
+    continueLoader.classList.remove('hidden');
+    continueText.innerText = "กำลังประมวลผล...";
+
+    try {
+        const reqBody = JSON.parse(JSON.stringify(window.lastAiRequestBody));
+        const extCount = parsedQuestions.length;
+        
+        reqBody.contents[0].parts[0].text += `\n\n🚨 สำคัญมาก: คุณได้ทำการดึงข้อสอบไปแล้ว ${extCount} ข้อ ให้คุณเริ่มสกัดข้อสอบต่อโดยเริ่มสกัดข้อถัดไป (ข้อที่ ${extCount + 1}) เป็นต้นไป ห้ามสกัดข้อ 1 ถึง ${extCount} มาซ้ำเด็ดขาด! และต้องตอบเป็น JSON Array เท่านั้น`;
+
+        
+        
+            const userApiKey = localStorage.getItem('userGeminiApiKey');
+            if(!userApiKey) {
+                openSettingsModal();
+                throw new Error("��سҵ�駤�� Gemini API Key ��͹��ҹ");
             }
 
             const res = await fetch(API_URL, {
@@ -2904,11 +2985,10 @@ function saveSettings() {
     if(key) {
         localStorage.setItem('userGeminiApiKey', key);
         closeSettingsModal();
-        alert('บันทึก API Key เรียบร้อยแล้ว');
+        alert('�ѹ�֡ API Key ���º��������');
     } else {
         localStorage.removeItem('userGeminiApiKey');
         closeSettingsModal();
     }
 }
-
 
