@@ -1,4 +1,4 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbxxQZjhbJEEbzeq9cwW8ADekrn8s_xbmGDg0eHEvev4iiqhZwTyBpi7trBXNl7SnP4y/exec';
+﻿const API_URL = 'https://script.google.com/macros/s/AKfycbxxQZjhbJEEbzeq9cwW8ADekrn8s_xbmGDg0eHEvev4iiqhZwTyBpi7trBXNl7SnP4y/exec';
 
 // ==========================================
 // STATE
@@ -2991,3 +2991,4 @@ function saveSettings() {
         closeSettingsModal();
     }
 }
+
