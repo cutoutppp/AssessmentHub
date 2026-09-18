@@ -856,18 +856,33 @@ ${combinedText}`;
                 throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'callGemini',
-                    payload: { requestBody: requestBody, apiKey: localStorage.getItem('userGeminiApiKey') }
-                })
-            });
-            const resData = await res.json();
-            if(resData.status !== 'success') {
-                throw new Error(resData.message);
+            const tryModels = ['gemini-3.6-flash', 'gemini-flash-latest'];
+            let data = null;
+            let lastError = null;
+            
+            for (let i = 0; i < tryModels.length; i++) {
+                const tryModel = tryModels[i];
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${userApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+                    
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        throw new Error(resData.error?.message || 'Unknown API Error');
+                    }
+                    data = resData;
+                    break;
+                } catch (err) {
+                    lastError = err;
+                }
             }
-            let data = resData.data;
+            
+            if (!data) {
+                throw new Error("เกิดข้อผิดพลาดในการดึงข้อมูลจาก AI: " + (lastError?.message || ''));
+            }
 
             const candidate = data.candidates?.[0];
             if (!candidate || !candidate.content?.parts?.[0]?.text) {
@@ -1003,18 +1018,33 @@ window.continueAiParse = async () => {
                 throw new Error("กรุณาตั้งค่า Gemini API Key ก่อนใช้งาน");
             }
 
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'callGemini',
-                payload: { requestBody: reqBody, apiKey: localStorage.getItem('userGeminiApiKey') }
-            })
-        });
-        const resData = await res.json();
-        if(resData.status !== 'success') {
-            throw new Error(resData.message);
-        }
-        let data = resData.data;
+            const tryModels = ['gemini-3.6-flash', 'gemini-flash-latest'];
+            let data = null;
+            let lastError = null;
+            
+            for (let i = 0; i < tryModels.length; i++) {
+                const tryModel = tryModels[i];
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${tryModel}:generateContent?key=${userApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reqBody)
+                    });
+                    
+                    const resData = await res.json();
+                    if (!res.ok) {
+                        throw new Error(resData.error?.message || 'Unknown API Error');
+                    }
+                    data = resData;
+                    break;
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+            
+            if (!data) {
+                throw new Error("เกิดข้อผิดพลาดในการดึงข้อมูลจาก AI: " + (lastError?.message || ''));
+            }
 
         const candidate = data.candidates?.[0];
         if (!candidate || !candidate.content?.parts?.[0]?.text) throw new Error('AI ไม่ตอบกลับเนื้อหา');
