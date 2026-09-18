@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -228,28 +228,28 @@
                     <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-5 mb-6">
                         <h4 class="text-indigo-800 font-bold mb-3 flex items-center gap-2 text-lg">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            💡 วิธีที่แนะนำ: ให้ AI ช่วยสกัดข้อสอบให้คุณ
+                            💡 วิธีที่แนะนำ: ให้ AI (ChatGPT / Gemini) สกัดเป็นสคริปต์ข้อสอบ
                         </h4>
-                        <ol class="list-decimal ml-6 text-indigo-700 space-y-2 mb-4">
-                            <li>กดปุ่ม <b>"คัดลอกคำสั่ง"</b> ด้านล่างนี้</li>
-                            <li>ไปที่หน้าเว็บ <b>ChatGPT</b> หรือ <b>Gemini</b> ของคุณ</li>
-                            <li><b>อัปโหลดไฟล์ข้อสอบ</b> (Word/PDF) และ <b>วางคำสั่ง</b> ที่คัดลอกมา</li>
-                            <li><b>คัดลอก</b> ข้อสอบที่ AI พิมพ์เสร็จแล้ว มาวางในช่องด้านล่างสุด แล้วกด <b>"สกัดลงตารางทันที"</b></li>
+                        <ol class="list-decimal ml-6 text-indigo-700 space-y-2 mb-4 text-sm">
+                            <li>กดปุ่ม <b>"คัดลอกคำสั่งสำหรับ AI (Prompt)"</b> ด้านล่างนี้</li>
+                            <li>เปิดเว็บ <b>ChatGPT</b> หรือ <b>Gemini</b> ของคุณ พร้อม <b>อัปโหลดไฟล์ข้อสอบ</b> (Word หรือ PDF)</li>
+                            <li><b>วางคำสั่ง</b> ที่คัดลอกไป และกดส่งให้ AI ประมวลผล</li>
+                            <li><b>คัดลอกโค้ดสคริปต์ JSON</b> ที่ AI ตอบกลับมา นำมาวางลงในช่องด้านล่าง แล้วกด <b>"สกัดลงตารางทันที"</b></li>
                         </ol>
                         <button onclick="copyPromptToClipboard()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            คัดลอกคำสั่งสำหรับ AI (Prompt)
+                            📋 คัดลอกคำสั่งสำหรับ AI (Prompt)
                         </button>
                     </div>
 
                     <div class="flex w-full flex-col gap-4">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">วางข้อสอบปรนัย (ที่ได้จาก AI หรือพิมพ์เอง)</label>
-                            <p class="text-xs text-gray-500 mb-2">ขึ้นต้นด้วยเลขข้อ เช่น 1. 2. และตัวเลือก ก. ข.</p>
-                            <textarea id="rawExamInput" class="w-full min-h-[160px] px-4 py-3 resize-y text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-shadow" placeholder="1. คำถามคืออะไร?&#10;ก. ตัวเลือก A&#10;ข. ตัวเลือก B"></textarea>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">วางสคริปต์ JSON จาก AI (หรือวางข้อสอบข้อความธรรมดาก็ได้)</label>
+                            <p class="text-xs text-gray-500 mb-2">✨ แนะนำ: วางโค้ด [ { ... } ] ที่ได้จาก AI ระบบจะดึงโจทย์ ช้อยส์ เฉลย และตัวชี้วัดเข้าตารางให้ทันที!</p>
+                            <textarea id="rawExamInput" class="w-full min-h-[180px] font-mono px-4 py-3 resize-y text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-shadow" placeholder="วางโค้ด JSON จาก AI ที่นี่ เช่น&#10;[&#10;  {&#10;    &quot;question_text&quot;: &quot;1. คำถาม...&quot;,&#10;    &quot;choices&quot;: [&quot;ก...&quot;, &quot;ข...&quot;, &quot;ค...&quot;, &quot;ง...&quot;],&#10;    &quot;correct_answer&quot;: &quot;ก&quot;&#10;  }&#10;]&#10;&#10;หรือวางข้อความธรรมดา เช่น&#10;1. คำถามคืออะไร?&#10;ก. ตัวเลือก A&#10;ข. ตัวเลือก B"></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">วางข้อสอบอัตนัย (ถ้ามี)</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">วางข้อสอบอัตนัยเพิ่มเติม (ถ้ามีข้อสอบเขียนตอบ)</label>
                             <textarea id="rawSubjectiveInput" class="w-full min-h-[80px] px-4 py-3 resize-y text-sm border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-shadow" placeholder="1. จงอธิบาย..."></textarea>
                         </div>
                     </div>
@@ -555,7 +555,7 @@
     <link rel="stylesheet" href="style.css?v=20260621_2007">
     <script src="template_b64.js?v=1782966260385"></script>
     <script src="template_test_b64.js?v=1782966260384"></script>
-    <script src="app_v6.js?v=20260918_1230" defer></script>
+    <script src="app_v6.js?v=20260918_1405" defer></script>
     <!-- Edit Question Modal -->
     <div id="editQuestionModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -689,9 +689,33 @@
     </div>
     <script>
         function copyPromptToClipboard() {
-            const promptText = "ช่วยสกัดข้อสอบจากไฟล์ที่แนบมานี้ให้หน่อย โดยจัดรูปแบบให้เป็นข้อความธรรมดาตามรูปแบบด้านล่างนี้อย่างเคร่งครัด ห้ามมีข้อความอื่นเจือปน:\n\n1. [เนื้อหาคำถาม]\nก. [ตัวเลือกที่ 1]\nข. [ตัวเลือกที่ 2]\nค. [ตัวเลือกที่ 3]\nง. [ตัวเลือกที่ 4]\n\n2. [เนื้อหาคำถาม]\nก. [ตัวเลือกที่ 1]\n...";
+            const promptText = `คุณคือผู้เชี่ยวชาญด้านการวัดและประเมินผลการศึกษา (IOC)
+หน้าที่ของคุณคือ สกัดข้อสอบจากไฟล์ที่แนบมานี้ (Word หรือ PDF) และตอบกลับมาเป็น JSON Array เท่านั้น ตามโครงสร้างที่กำหนดอย่างเคร่งครัด:
+
+[
+  {
+    "question_text": "เนื้อหาคำถาม (หากมีสมการคณิตศาสตร์หรือวิทยาศาสตร์ ให้แปลงเป็นรูปแบบ LaTeX โดยใส่เครื่องหมาย $ ครอบ เช่น $f(x) = \\\\frac{2}{5}$)",
+    "choices": [
+      "ตัวเลือกที่ 1 (ตัด ก. ข. 1. 2. ออก ให้เหลือเฉพาะข้อความ)",
+      "ตัวเลือกที่ 2",
+      "ตัวเลือกที่ 3",
+      "ตัวเลือกที่ 4"
+    ],
+    "correct_answer": "ก",
+    "indicator": "ตัวชี้วัดหรือผลการเรียนรู้ของข้อนี้ (ถ้ามีระบุในไฟล์ข้อสอบ)",
+    "is_subjective": false
+  }
+]
+
+กฎสำคัญมาก:
+1. ตอบกลับมาเป็น JSON Array เท่านั้น ห้ามใส่คำทักทาย ห้ามมีคำอธิบายเปิดหรือปิดท้ายใดๆ ทั้งสิ้น
+2. สกัดมาให้ครบทุกข้อตั้งแต่ข้อแรกจนถึงข้อสุดท้าย ห้ามย่อความ ห้ามตัดตอน
+3. ตัดเลขข้อ (เช่น 1., 2.) และตัดตัวอักษรหน้าตัวเลือก (เช่น ก., ข., A., B.) ออก ให้เหลือเฉพาะเนื้อหา
+4. หากข้อสอบมีเฉลย ให้ใส่ใน "correct_answer" เป็นตัวอักษร ก, ข, ค, หรือ ง เท่านั้น (หากไม่มีเฉลย ให้ใส่เป็น "")
+5. หากเป็นข้อสอบอัตนัย (เขียนตอบ) ให้ใส่ "is_subjective": true และกำหนด "choices": []
+6. ในการเขียน LaTeX หรือหากมีเครื่องหมาย Backslash ให้ใช้ Double Backslash (\\\\) เสมอ เพื่อป้องกัน JSON พัง`;
             
-            // Create a temporary textarea to safely copy text (works better across browsers)
+            // Create a temporary textarea to safely copy text
             const textArea = document.createElement("textarea");
             textArea.value = promptText;
             document.body.appendChild(textArea);
@@ -700,7 +724,7 @@
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    alert("คัดลอกคำสั่งเรียบร้อยแล้ว! นำไปวางใน ChatGPT หรือ Gemini ได้เลยครับ");
+                    alert("คัดลอกคำสั่งสำหรับ AI เรียบร้อยแล้ว!\n\nให้นำไปวางใน ChatGPT หรือ Gemini พร้อมแนบไฟล์ข้อสอบของคุณได้เลยครับ");
                 } else {
                     alert("ไม่สามารถคัดลอกได้ กรุณาคัดลอกด้วยตนเอง");
                 }
