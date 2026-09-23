@@ -4,7 +4,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ศูนย์มอนิเตอร์ 55 ห้องสอบ — โรงเรียนพัฒนานิคม</title>
+    <title>ระบบบันทึกการรับ - ส่งข้อสอบ (วันสอบจริง) — โรงเรียนพัฒนานิคม</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,10 +54,10 @@
 
             <!-- 3 Standalone System Switchers with Dedicated URLs -->
             <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <a href="monitor.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
+                <a href="monitor.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
                     🖥️ มอนิเตอร์ 55 ห้อง
                 </a>
-                <a href="record.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+                <a href="record.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
                     📋 บันทึกรับ-ส่ง (วันสอบ)
                 </a>
                 <a href="round0.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
@@ -78,229 +78,146 @@
     </header>
     
 
-    <!-- CONTROL & RADAR BAR -->
-    <div id="centralControlBar" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xs no-print">
-        <div class="max-w-[1720px] mx-auto px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-            
-            <!-- Day Selectors -->
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-wider">วันสอบ:</span>
-                <button onclick="setDay('28')" id="btnDay28" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
+    <!-- Top Action & Day Bar -->
+    <div class="bg-white border-b border-slate-200 no-print">
+        <div class="max-w-[1720px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div>
+                <h1 class="text-lg sm:text-xl font-bold font-prompt text-slate-900 flex items-center gap-2">
+                    <span>📋 บันทึกการรับ - ส่งข้อสอบ (วันสอบจริง)</span>
+                    <span id="printGradeBadge" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">มัธยมศึกษาปีที่ 1</span>
+                </h1>
+                <p class="text-xs text-slate-500">ลงนามและบันทึกเวลาการรับข้อสอบของกรรมการคุมสอบ (เฟส 1) และการส่งคืนข้อสอบ ณ ห้องวัดผล (เฟส 2)</p>
+            </div>
+
+            <!-- Day & Print Controls -->
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-400 uppercase">วันสอบ:</span>
+                <button onclick="setDay('28')" id="btnDay28" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
                     28 ก.ย.
                 </button>
-                <button onclick="setDay('29')" id="btnDay29" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-white/10 text-slate-300 hover:bg-white/20">
+                <button onclick="setDay('29')" id="btnDay29" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
                     29 ก.ย.
                 </button>
-                <button onclick="setDay('30')" id="btnDay30" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-white/10 text-slate-300 hover:bg-white/20">
+                <button onclick="setDay('30')" id="btnDay30" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
                     30 ก.ย.
                 </button>
+                <div class="h-5 w-px bg-slate-200 mx-1"></div>
+                <button onclick="window.print()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    พิมพ์เอกสารหน้านี้
+                </button>
             </div>
-
-            <!-- Center: Master Digital Clock & Wave Radar -->
-            <div class="flex items-center gap-3 bg-white/10 px-3 py-1 rounded-xl border border-white/10">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span id="clockDisplay" class="font-mono text-xs sm:text-sm font-bold text-white tracking-wider">08:00:00 น.</span>
-                </div>
-                <div class="h-3 w-px bg-white/20"></div>
-                <div id="waveRadarBox" class="flex items-center gap-1.5">
-                    <span id="waveRadarBadge" class="px-2 py-0.2 rounded font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[11px]">
-                        ระลอกถัดไป: 09:10 น.
-                    </span>
-                    <span id="waveCountdownText" class="font-bold text-emerald-300 font-mono text-[11px]">เหลือ 10:00 นาที</span>
-                </div>
-            </div>
-
-            <!-- Simulation Dropdown -->
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] text-indigo-300 font-medium">จำลองเวลา:</span>
-                <select id="simTimeSelect" onchange="changeSimTime(this.value)" class="bg-white/10 text-white text-xs rounded-lg px-2 py-1 border border-white/20 outline-none hover:bg-white/20 transition-colors">
-                    <option value="real" class="bg-slate-900 text-white">⏱️ เวลาจริง</option>
-                    <option value="08:15" class="bg-slate-900 text-white">🌅 08:15 (เช้าก่อนสอบ - เช็คการรับซอง)</option>
-                    <option value="09:05" class="bg-slate-900 text-white">⚠️ 09:05 (ม.5 ใกล้หมด 09.10 น. [40 นาที])</option>
-                    <option value="09:12" class="bg-slate-900 text-white">🔔 09:12 (ม.5 หมดเวลาแล้ว / ชั้นอื่นยังสอบ)</option>
-                    <option value="09:25" class="bg-slate-900 text-white">⚠️ 09:25 (ม.1, 2, 4, 6 ใกล้หมด 09.30 น.)</option>
-                    <option value="09:35" class="bg-slate-900 text-white">🔔 09:35 (ม.1-4, 6 หมดเวลาคาบ 1)</option>
-                    <option value="11:35" class="bg-slate-900 text-white">🍱 11:35 (ก่อนเที่ยง - เคลียร์ซองเช้า)</option>
-                    <option value="12:50" class="bg-slate-900 text-white">☀️ 12:50 (หลังพักเที่ยง - เริ่มคาบบ่าย)</option>
-                    <option value="15:15" class="bg-slate-900 text-white">🌆 15:15 (เย็นปิดวัน)</option>
-                </select>
-            </div>
-
         </div>
     </div>
 
-    <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN!) -->
-    <main class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2 flex-1 w-full flex flex-col gap-2">
+    <!-- MAIN WORKSPACE -->
+    <main class="max-w-[1720px] mx-auto px-4 sm:px-6 py-4 flex-1 w-full flex flex-col gap-4">
 
-        <!-- SMART RUNNER DISPATCH RECOMMENDATION STRIP -->
-        <div id="dispatchRecommenderBox" class="bg-white rounded-xl p-2 border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
-            <div class="flex items-center gap-2 shrink-0">
-                <div class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-xs">
-                    <span>🚶‍♂️ แนะนำสายเดิน:</span>
-                </div>
-                <span class="text-[11px] text-slate-500 hidden lg:inline">
-                    รวมวิชาตึกเดียวกัน/เวลาใกล้กันเป็น 1 สายเดิน (ชี้เพื่อไฮไลต์ห้องบนผัง)
-                </span>
-            </div>
-
-            <!-- Dynamic Dispatch Batch Chips -->
-            <div id="dispatchCardsContainer" class="flex items-center gap-2 overflow-x-auto pb-0.5 flex-1 justify-start md:justify-end"></div>
-        </div>
-
-        <!-- QUICK STATUS FILTER & COLOR LEGEND -->
-        <div class="bg-white rounded-xl px-3 py-1.5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1 overflow-x-auto">
-                <button onclick="setGridFilter('all')" id="btnGFilterAll" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs whitespace-nowrap">
-                    ทั้งหมด (55)
-                </button>
-                <button onclick="setGridFilter('attention')" id="btnGFilterAttention" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🔴 ต้องติดตาม (<span id="countAttention">0</span>)
-                </button>
-                <button onclick="setGridFilter('warning')" id="btnGFilterWarning" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🟡 5 นาทีสุดท้าย (<span id="countWarning">0</span>)
-                </button>
-                <button onclick="setGridFilter('active')" id="btnGFilterActive" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🔵 กำลังสอบ (<span id="countActive">0</span>)
-                </button>
-                <button onclick="setGridFilter('done')" id="btnGFilterDone" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🟢 ส่งแล้ว (<span id="countDone">0</span>)
-                </button>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <div class="hidden xl:flex items-center gap-3 text-[11px] font-semibold text-slate-500">
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ส่งคืนแล้ว</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> กำลังสอบ</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> เตรียมสายส่ง (5น.)</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> ค้างส่ง/หมดเวลา</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span> รอเริ่ม</span>
-                </div>
-                <div class="relative w-44 sm:w-56">
-                    <input type="text" id="gridRoomSearch" oninput="renderGrid()" placeholder="🔍 ค้นหาห้อง (เช่น 1101, 3208)..." class="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 transition-all">
-                </div>
+        <!-- Grade Tabs Selector (M.1 - M.6) -->
+        <div class="flex items-center justify-between gap-3 overflow-x-auto pb-1 no-print">
+            <div class="flex items-center gap-1.5">
+                <button onclick="setSheetGrade('ม.1')" id="btnGradeM1" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-xs">มัธยมศึกษาปีที่ 1</button>
+                <button onclick="setSheetGrade('ม.2')" id="btnGradeM2" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200">มัธยมศึกษาปีที่ 2</button>
+                <button onclick="setSheetGrade('ม.3')" id="btnGradeM3" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200">มัธยมศึกษาปีที่ 3</button>
+                <button onclick="setSheetGrade('ม.4')" id="btnGradeM4" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200">มัธยมศึกษาปีที่ 4</button>
+                <button onclick="setSheetGrade('ม.5')" id="btnGradeM5" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200">มัธยมศึกษาปีที่ 5</button>
+                <button onclick="setSheetGrade('ม.6')" id="btnGradeM6" class="sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200">มัธยมศึกษาปีที่ 6</button>
             </div>
         </div>
 
-        <!-- MISSING BANNER -->
-        <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
-            <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
-                <div class="flex items-center gap-2 text-rose-900 font-bold">
-                    <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <span id="gridMissingBannerText">มี 0 ห้องสอบที่ต้องติดตาม</span>
+        <!-- KPI Summary Cards for Current Grade & Day -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 no-print">
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase">ห้องสอบทั้งหมดวันนี้</div>
+                    <div id="statTotalExams" class="text-xl font-extrabold text-slate-900 mt-0.5">0</div>
                 </div>
-                <span class="text-[11px] font-semibold text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded-md">
-                    คลิกการ์ดห้องสีแดงเพื่อโทรประสานครูผู้คุมสอบ
-                </span>
+                <span class="p-2 bg-slate-100 rounded-xl text-slate-600 text-lg">🏫</span>
+            </div>
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase">1. รับข้อสอบแล้ว (เฟส 1)</div>
+                    <div id="statPickedCount" class="text-xl font-extrabold text-indigo-600 mt-0.5">0</div>
+                </div>
+                <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-lg">📤</span>
+            </div>
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase">2. ส่งคืนข้อสอบแล้ว (เฟส 2)</div>
+                    <div id="statReceivedCount" class="text-xl font-extrabold text-emerald-600 mt-0.5">0</div>
+                </div>
+                <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl text-lg">📥</span>
+            </div>
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex justify-between items-center">
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400 uppercase">ยังค้างส่งคืน</div>
+                    <div id="statPendingCount" class="text-xl font-extrabold text-rose-600 mt-0.5">0</div>
+                </div>
+                <span class="p-2 bg-rose-50 text-rose-600 rounded-xl text-lg">⏳</span>
             </div>
         </div>
 
-        <!-- 55 ROOMS UNIFIED DASHBOARD (2 TIERS - ALL 55 ROOMS VISIBLE IN ONE SCREEN!) -->
-        <div id="roomsUnifiedDashboard" class="flex flex-col gap-2.5 select-none">
-            <!-- TIER 1: อาคาร 1 (8) + อาคาร 2 (13) + ห้องพิเศษ (4) = 25 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
-                
-                <!-- อาคาร 1 (8 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 1</span>
-                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">8 ห้อง (ชั้น 1-2)</span>
-                        </div>
-                        <span id="bld1CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
-                    </div>
-                    <div id="bldRooms-1" class="grid grid-cols-4 gap-1.5"></div>
-                </div>
-
-                <!-- อาคาร 2 (13 ห้อง) -->
-                <div class="lg:col-span-6 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 2</span>
-                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">13 ห้อง (ชั้น 1-2)</span>
-                        </div>
-                        <span id="bld2CountBadge" class="text-[10px] font-bold text-slate-500">0/13 เสร็จสิ้น</span>
-                    </div>
-                    <div id="bldRooms-2" class="grid grid-cols-4 sm:grid-cols-7 gap-1.5"></div>
-                </div>
-
-                <!-- ห้องพิเศษ (4 ห้อง) -->
-                <div class="lg:col-span-2 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-xs text-slate-900">🏢 พิเศษ</span>
-                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">4 ห้อง</span>
-                        </div>
-                        <span id="bldSpecialCountBadge" class="text-[10px] font-bold text-slate-500">0/4 เสร็จสิ้น</span>
-                    </div>
-                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-1.5"></div>
-                </div>
-
+        <!-- Filter & Search Toolbar -->
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 no-print">
+            <div class="flex items-center gap-1.5 overflow-x-auto">
+                <span class="text-xs font-bold text-slate-400 uppercase mr-1">กรองสถานะ:</span>
+                <button onclick="setTableFilter('all')" id="btnFilterAll" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white">ทั้งหมด</button>
+                <button onclick="setTableFilter('missing_p1')" id="btnFilterMissingP1" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">⚠️ ยังไม่มารับ</button>
+                <button onclick="setTableFilter('missing_p2')" id="btnFilterMissingP2" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🔔 ยังไม่ส่งคืน</button>
+                <button onclick="setTableFilter('done')" id="btnFilterDone" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">✓ ส่งคืนแล้ว</button>
             </div>
 
-            <!-- TIER 2: อาคาร 3 (19) + อาคาร 4 (11) = 30 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
-                
-                <!-- อาคาร 3 (19 ห้อง) -->
-                <div class="lg:col-span-8 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 3</span>
-                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">19 ห้อง (ชั้น 2, 3, 4)</span>
-                        </div>
-                        <span id="bld3CountBadge" class="text-[10px] font-bold text-slate-500">0/19 เสร็จสิ้น</span>
-                    </div>
-                    <div id="bldRooms-3" class="grid grid-cols-5 sm:grid-cols-7 lg:grid-cols-10 gap-1.5"></div>
-                </div>
+            <div class="relative w-64">
+                <input type="text" id="recordSearchInput" oninput="renderTable()" placeholder="🔍 ค้นหาห้อง, วิชา, ครูคุมสอบ..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-indigo-500">
+            </div>
+        </div>
 
-                <!-- อาคาร 4 (11 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 4</span>
-                            <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ชั้น 2-3)</span>
-                        </div>
-                        <span id="bld4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
-                    </div>
-                    <div id="bldRooms-4" class="grid grid-cols-4 sm:grid-cols-6 gap-1.5"></div>
-                </div>
+        <!-- Official Printable Table Container -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+            <!-- Print Header (Visible only when printed) -->
+            <div class="p-6 pb-2 text-center hidden print-only">
+                <h2 class="text-lg font-bold">แบบบันทึกการรับ - ส่งซองข้อสอบและกระดาษคำตอบ</h2>
+                <h3 id="printReportTitle" class="text-sm font-semibold mt-1">ระดับชั้นมัธยมศึกษาปีที่ 1 — การสอบวัดผลกลางภาคเรียนที่ 1/2569</h3>
+                <p class="text-xs text-slate-600 mt-1">โรงเรียนพัฒนานิคม อำเภอพัฒนานิคม จังหวัดลพบุรี</p>
+            </div>
 
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-700 text-xs uppercase font-extrabold border-b border-slate-200">
+                            <th class="p-3 text-center w-12">ที่</th>
+                            <th class="p-3 w-20">วันที่</th>
+                            <th class="p-3 w-28">เวลาสอบ</th>
+                            <th class="p-3 w-24">รหัสวิชา</th>
+                            <th class="p-3">ชื่อรายวิชา</th>
+                            <th class="p-3 w-20">ชั้น/ห้อง</th>
+                            <th class="p-3 w-16 text-center">ห้องสอบ</th>
+                            <th class="p-3">ครูผู้คุมสอบ</th>
+                            <th class="p-3 text-center w-36">1. กรรมการรับข้อสอบ</th>
+                            <th class="p-3 text-center w-36">2. ส่งคืนห้องวัดผล</th>
+                            <th class="p-3 w-32 no-print">หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordTableBody" class="divide-y divide-slate-100 text-xs">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Print Signatures Footer (Visible only when printed) -->
+            <div class="p-8 pt-10 grid grid-cols-2 gap-12 text-center text-xs hidden print-only">
+                <div>
+                    <p class="mb-12">ลงชื่อ................................................................. เจ้าหน้าที่สายส่ง</p>
+                    <p>(.................................................................)</p>
+                </div>
+                <div>
+                    <p class="mb-12">ลงชื่อ................................................................. เจ้าหน้าที่ห้องวัดผลผู้ตรวจรับ</p>
+                    <p>(.................................................................)</p>
+                </div>
             </div>
         </div>
 
     </main>
-
-    <!-- ROOM DETAIL MODAL -->
-    <div id="roomDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden no-print">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
-            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                    <span class="p-2 bg-indigo-50 text-indigo-700 rounded-xl">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                    </span>
-                    <div>
-                        <h3 id="modalRoomTitle" class="font-extrabold text-lg text-slate-900">ห้อง 1101</h3>
-                        <p id="modalRoomSub" class="text-xs text-slate-500">มัธยมศึกษาปีที่ 1 | อาคาร 1 ชั้น 1</p>
-                    </div>
-                </div>
-                <button onclick="closeRoomModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div class="my-4 space-y-3">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">วิชาที่สอบในห้องนี้สำหรับวันนี้:</h4>
-                <div id="modalSubjectList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-            </div>
-            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
-                <a href="record.html" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">
-                    📋 ไปที่หน้าบันทึกรับ-ส่ง
-                </a>
-                <button onclick="closeRoomModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
-                    ปิด
-                </button>
-            </div>
-        </div>
-    </div>
 
     
     <!-- AUDIT LOG MODAL -->
@@ -447,350 +364,11 @@
     
 
         let currentDay = '28';
-        let simTime = 'real';
-        let currentGridFilter = 'all';
+        let currentGrade = 'ม.1';
+        let currentFilter = 'all';
 
         function onStateDataChanged() {
-            renderGrid();
-            updateClock();
-        }
-
-        function getEffectiveTime() {
-            if (simTime === 'real') return new Date();
-            const [h, m] = simTime.split(':').map(Number);
-            const d = new Date();
-            d.setHours(h, m, 0, 0);
-            return d;
-        }
-
-        function getRoomLiveStatus(roomNo, day, now, state) {
-            const todayExams = examDb.filter(e => e.room === roomNo && e.date_d === day);
-            if (todayExams.length === 0) {
-                return {
-                    type: 'none',
-                    filterCategory: 'done',
-                    label: 'ไม่มีสอบ',
-                    subject: 'ไม่มีสอบ',
-                    timeSlot: '-',
-                    duration: 0,
-                    timeText: '-',
-                    percent: 0,
-                    bgClass: 'bg-slate-50 border-slate-200 text-slate-400',
-                    dotClass: 'bg-slate-300',
-                    barColor: 'bg-slate-200'
-                };
-            }
-
-            const nowH = now.getHours();
-            const nowM = now.getMinutes();
-            const nowS = now.getSeconds();
-            const nowTotalSec = nowH * 3600 + nowM * 60 + nowS;
-
-            const pendingExam = todayExams.find(e => {
-                const st = state[e.row_id];
-                return !(st && st.p2_received === true);
-            });
-
-            if (!pendingExam) {
-                return {
-                    type: 'all_done',
-                    filterCategory: 'done',
-                    label: 'ส่งแล้ว',
-                    subject: 'ส่งครบทุกวิชาแล้ว',
-                    timeSlot: 'เสร็จสิ้น',
-                    duration: 0,
-                    timeText: '✓ ครบถ้วน',
-                    percent: 100,
-                    bgClass: 'bg-emerald-50 border-emerald-300 text-emerald-950',
-                    dotClass: 'bg-emerald-500',
-                    barColor: 'bg-emerald-500'
-                };
-            }
-
-            const sSec = pendingExam.start_min * 60;
-            const eSec = pendingExam.end_min * 60;
-            const durationMins = pendingExam.duration_mins;
-            const totalDurationSec = durationMins * 60;
-
-            if (nowTotalSec < sSec) {
-                const waitSec = sSec - nowTotalSec;
-                const waitM = Math.floor(waitSec / 60);
-                const waitS = waitSec % 60;
-                let timeText = `เริ่มใน ${waitM}:${waitS < 10 ? '0' : ''}${waitS}`;
-                if (waitM > 60) {
-                    timeText = `เริ่มใน ${Math.floor(waitM / 60)}ชม.${waitM % 60}น.`;
-                }
-                return {
-                    type: 'standby',
-                    filterCategory: 'active',
-                    label: 'รอเริ่มสอบ',
-                    subject: pendingExam.subj_code,
-                    timeSlot: `${pendingExam.time} น.`,
-                    duration: durationMins,
-                    timeText: timeText,
-                    percent: 0,
-                    bgClass: 'bg-slate-50 border-slate-200 text-slate-700',
-                    dotClass: 'bg-slate-400',
-                    barColor: 'bg-slate-300'
-                };
-            }
-
-            if (nowTotalSec >= sSec && nowTotalSec <= eSec) {
-                const remainSec = eSec - nowTotalSec;
-                const remM = Math.floor(remainSec / 60);
-                const remS = remainSec % 60;
-                const timeFormatted = `${remM < 10 ? '0' : ''}${remM}:${remS < 10 ? '0' : ''}${remS}`;
-                const percent = Math.min(100, Math.max(0, Math.round(((nowTotalSec - sSec) / totalDurationSec) * 100)));
-
-                if (remainSec <= 300) {
-                    return {
-                        type: 'warning_runner',
-                        filterCategory: 'warning',
-                        label: '5 นาทีสุดท้าย',
-                        subject: pendingExam.subj_code,
-                        timeSlot: `${pendingExam.time} น.`,
-                        duration: durationMins,
-                        timeText: `⏳ ${timeFormatted}`,
-                        percent: percent,
-                        bgClass: 'bg-amber-50 border-amber-300 text-amber-950',
-                        dotClass: 'bg-amber-500',
-                        barColor: 'bg-amber-500'
-                    };
-                } else {
-                    return {
-                        type: 'active',
-                        filterCategory: 'active',
-                        label: 'กำลังสอบ',
-                        subject: pendingExam.subj_code,
-                        timeSlot: `${pendingExam.time} น.`,
-                        duration: durationMins,
-                        timeText: `⏳ ${timeFormatted}`,
-                        percent: percent,
-                        bgClass: 'bg-indigo-50/50 border-indigo-200 text-indigo-950',
-                        dotClass: 'bg-indigo-500',
-                        barColor: 'bg-indigo-600'
-                    };
-                }
-            }
-
-            const overSec = nowTotalSec - eSec;
-            const overM = Math.floor(overSec / 60);
-            const overS = overSec % 60;
-            return {
-                type: 'overdue',
-                filterCategory: 'attention',
-                label: 'หมดเวลา (รอส่ง)',
-                subject: pendingExam.subj_code,
-                timeSlot: `${pendingExam.time} น.`,
-                duration: durationMins,
-                timeText: `🔔 +${overM}:${overS < 10 ? '0' : ''}${overS}`,
-                percent: 100,
-                bgClass: 'bg-rose-50 border-rose-300 text-rose-950',
-                dotClass: 'bg-rose-500',
-                barColor: 'bg-rose-500'
-            };
-        }
-
-        function updateDispatchRecommendations(now) {
-            const curH = now.getHours();
-            const curM = now.getMinutes();
-            const curS = now.getSeconds();
-            const nowMin = curH * 60 + curM + curS / 60;
-
-            const dayExams = examDb.filter(e => e.date_d === currentDay);
-            const container = document.getElementById('dispatchCardsContainer');
-            if (!container) return;
-
-            const bldMap = new Map();
-            dayExams.forEach(e => {
-                const b = e.building || 'พิเศษ';
-                if (!bldMap.has(b)) bldMap.set(b, []);
-                bldMap.get(b).push(e);
-            });
-
-            let cardsHtml = '';
-            const bldOrder = ['1', '2', '3', '4', 'พิเศษ'];
-
-            bldOrder.forEach(bId => {
-                const exams = bldMap.get(bId) || [];
-                if (exams.length === 0) return;
-
-                const sortedExams = [...exams].sort((a,b) => a.end_min - b.end_min);
-                const clusters = [];
-                let currentCluster = [];
-
-                sortedExams.forEach(e => {
-                    if (currentCluster.length === 0) {
-                        currentCluster.push(e);
-                    } else {
-                        const last = currentCluster[currentCluster.length - 1];
-                        if (e.end_min - last.end_min <= 15) {
-                            currentCluster.push(e);
-                        } else {
-                            clusters.push(currentCluster);
-                            currentCluster = [e];
-                        }
-                    }
-                });
-                if (currentCluster.length > 0) clusters.push(currentCluster);
-
-                clusters.forEach(cl => {
-                    const unreturned = cl.filter(e => !(stateData[e.row_id] && stateData[e.row_id].p2_received === true));
-                    if (unreturned.length === 0) return;
-
-                    const minEnd = Math.min(...cl.map(e => e.end_min));
-                    const maxEnd = Math.max(...cl.map(e => e.end_min));
-                    const rooms = Array.from(new Set(unreturned.map(e => e.room)));
-                    const grades = Array.from(new Set(unreturned.map(e => e.grade_group))).sort();
-
-                    let status = null;
-                    let cardStyle = '';
-                    let statusBadge = '';
-                    let adviceText = '';
-
-                    if (nowMin > maxEnd && (nowMin - maxEnd) <= 25) {
-                        status = 'overdue';
-                        cardStyle = 'bg-rose-50 border-rose-300 text-rose-950 hover:bg-rose-100';
-                        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-rose-200/80 text-rose-900 font-extrabold text-[10px]">🔴 ควรรีบไปรับซอง</span>`;
-                    } else if ((minEnd - nowMin) <= 5 && nowMin <= (maxEnd + 3)) {
-                        status = 'departing';
-                        cardStyle = 'bg-amber-50 border-amber-300 text-amber-950 hover:bg-amber-100';
-                        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-amber-200/80 text-amber-900 font-extrabold text-[10px]">🟡 ถึงเวลาออกเดิน</span>`;
-                    } else if ((minEnd - nowMin) <= 15 && (minEnd - nowMin) > 5) {
-                        status = 'standby';
-                        cardStyle = 'bg-indigo-50 border-indigo-200 text-indigo-950 hover:bg-indigo-100';
-                        statusBadge = `<span class="px-1.5 py-0.5 rounded bg-indigo-200/80 text-indigo-900 font-extrabold text-[10px]">🔵 เตรียมพร้อม</span>`;
-                    }
-
-                    if (!status) return;
-
-                    const minH = Math.floor(minEnd / 60);
-                    const minM = minEnd % 60;
-                    const maxH = Math.floor(maxEnd / 60);
-                    const maxM = maxEnd % 60;
-                    const timeStr = (minEnd === maxEnd) 
-                        ? `${minH < 10 ? '0' : ''}${minH}:${minM < 10 ? '0' : ''}${minM} น.` 
-                        : `${minH < 10 ? '0' : ''}${minH}:${minM < 10 ? '0' : ''}${minM} - ${maxH < 10 ? '0' : ''}${maxH}:${maxM < 10 ? '0' : ''}${maxM} น.`;
-
-                    if (grades.length > 1) {
-                        adviceText = `รวม ${grades.length} ชั้น (${grades.join(', ')}) เดินรอบเดียว`;
-                    } else if (grades.length === 1 && minEnd < 570) {
-                        adviceText = `ม.5 สอบ ${cl[0].duration_mins} น. หมดก่อน เดินเฉพาะอาคารนี้`;
-                    } else {
-                        adviceText = `เดินเก็บซองตามชั้น ${rooms.length} ห้อง`;
-                    }
-
-                    const roomsJson = JSON.stringify(rooms).replace(/"/g, '&quot;');
-
-                    cardsHtml += `
-                        <div onmouseenter="highlightRooms(${roomsJson})" onmouseleave="clearHighlightRooms()" onclick="highlightRooms(${roomsJson})" 
-                             class="${cardStyle} border rounded-xl px-2.5 py-1 flex items-center gap-2 cursor-pointer transition-all shadow-2xs whitespace-nowrap" 
-                             title="คลิกหรือชี้เพื่อไฮไลต์ห้องเหล่านี้บนผัง">
-                            <span class="font-extrabold text-xs">🏢 อาคาร ${bId}</span>
-                            <span class="text-[11px] font-bold">(${rooms.length} ห้อง)</span>
-                            <span class="text-xs font-mono font-bold">${timeStr}</span>
-                            ${statusBadge}
-                            <span class="text-[11px] opacity-80 hidden xl:inline">💡 ${adviceText}</span>
-                        </div>
-                    `;
-                });
-            });
-
-            if (cardsHtml === '') {
-                const future = dayExams.filter(e => e.end_min > nowMin);
-                if (future.length > 0) {
-                    const nextEnd = Math.min(...future.map(e => e.end_min));
-                    const nextH = Math.floor(nextEnd / 60);
-                    const nextM = nextEnd % 60;
-                    const diff = Math.round(nextEnd - nowMin);
-                    container.innerHTML = `
-                        <div class="px-3 py-1 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <span>✅ ช่วงเวลานี้การสอบดำเนินไปด้วยความเรียบร้อย</span>
-                            <span class="text-slate-400">|</span>
-                            <span class="text-indigo-700 font-bold">รอบสายเดินถัดไป: ${nextH < 10 ? '0' : ''}${nextH}:${nextM < 10 ? '0' : ''}${nextM} น. (อีก ${diff} นาที)</span>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="px-3 py-1 bg-emerald-50 text-emerald-800 rounded-lg text-xs font-bold border border-emerald-200">
-                            🎉 สิ้นสุดการสอบและรับส่งข้อสอบประจำวันครบถ้วนแล้ว
-                        </div>
-                    `;
-                }
-            } else {
-                container.innerHTML = cardsHtml;
-            }
-        }
-
-        function highlightRooms(roomArr) {
-            clearHighlightRooms();
-            roomArr.forEach(r => {
-                const el = document.getElementById('rm-card-' + r);
-                if (el) el.classList.add('route-highlight');
-            });
-        }
-
-        function clearHighlightRooms() {
-            document.querySelectorAll('.route-highlight').forEach(el => el.classList.remove('route-highlight'));
-        }
-
-        function updateWaveRadar(now) {
-            const curH = now.getHours();
-            const curM = now.getMinutes();
-            const curS = now.getSeconds();
-            const nowMin = curH * 60 + curM + curS / 60;
-
-            const dayExams = examDb.filter(e => e.date_d === currentDay);
-            const wavesMap = new Map();
-            dayExams.forEach(e => {
-                if (!wavesMap.has(e.end_time)) {
-                    wavesMap.set(e.end_time, { endTime: e.end_time, endMin: e.end_min, rooms: new Set(), grades: new Set() });
-                }
-                wavesMap.get(e.end_time).rooms.add(e.room);
-                wavesMap.get(e.end_time).grades.add(e.grade_group);
-            });
-
-            const allWaves = Array.from(wavesMap.values()).sort((a,b) => a.endMin - b.endMin);
-            const nextWave = allWaves.find(w => w.endMin > nowMin);
-
-            const radarBadge = document.getElementById('waveRadarBadge');
-            const countdownText = document.getElementById('waveCountdownText');
-
-            if (nextWave) {
-                const remainMin = nextWave.endMin - nowMin;
-                const remainSec = Math.floor(remainMin * 60);
-                const remM = Math.floor(remainSec / 60);
-                const remS = remainSec % 60;
-                const gradesStr = Array.from(nextWave.grades).sort().join(', ');
-
-                radarBadge.textContent = `🎯 ระลอกถัดไป: ${nextWave.endTime} น. (${gradesStr} — ${nextWave.rooms.size} ห้อง)`;
-                if (remainSec <= 300) {
-                    countdownText.className = 'font-bold text-amber-300 font-mono text-[11px]';
-                    countdownText.textContent = `⚠️ เหลือ ${remM}:${remS < 10 ? '0' : ''}${remS} น.`;
-                } else {
-                    countdownText.className = 'font-bold text-emerald-300 font-mono text-[11px]';
-                    countdownText.textContent = `เหลือ ${remM}:${remS < 10 ? '0' : ''}${remS} น.`;
-                }
-            } else {
-                radarBadge.textContent = '🌆 สิ้นสุดการสอบประจำวัน';
-                countdownText.textContent = 'ทุกวิชาสิ้นสุดแล้ว';
-            }
-        }
-
-        function updateClock() {
-            const now = getEffectiveTime();
-            document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('th-TH', { hour12: false }) + ' น.';
-            updateWaveRadar(now);
-            updateDispatchRecommendations(now);
-            updateAllRoomCards(now);
-        }
-
-        setInterval(updateClock, 1000);
-
-        function changeSimTime(val) {
-            simTime = val;
-            updateClock();
-            renderGrid();
+            renderTable();
         }
 
         function setDay(day) {
@@ -798,233 +376,182 @@
             ['28', '29', '30'].forEach(d => {
                 const btn = document.getElementById('btnDay' + d);
                 btn.className = (d === day) 
-                    ? 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs' 
-                    : 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-white/10 text-slate-300 hover:bg-white/20';
+                    ? 'px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs' 
+                    : 'px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
             });
-            renderGrid();
-            updateClock();
+            renderTable();
         }
 
-        function setGridFilter(filter) {
-            currentGridFilter = filter;
-            ['all', 'attention', 'warning', 'active', 'done'].forEach(f => {
-                const btn = document.getElementById('btnGFilter' + (f.charAt(0).toUpperCase() + f.slice(1)));
-                if (btn) {
-                    btn.className = (f === filter) 
-                        ? 'grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs whitespace-nowrap' 
-                        : 'grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap';
+        function setSheetGrade(grade) {
+            currentGrade = grade;
+            ['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'].forEach((g, idx) => {
+                const b = document.getElementById(`btnGradeM${idx+1}`);
+                if (b) {
+                    b.className = (g === grade)
+                        ? 'sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 text-white shadow-xs'
+                        : 'sheet-grade-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 border border-slate-200';
                 }
             });
-            renderGrid();
+            const printBadge = document.getElementById('printGradeBadge');
+            if (printBadge) printBadge.textContent = `มัธยมศึกษาปีที่ ${grade.replace('ม.', '')}`;
+            const reportTitle = document.getElementById('printReportTitle');
+            if (reportTitle) reportTitle.textContent = `ระดับชั้นมัธยมศึกษาปีที่ ${grade.replace('ม.', '')} — การสอบวัดผลกลางภาคเรียนที่ 1/2569 (วันที่ ${currentDay} ก.ย. 2569)`;
+            renderTable();
         }
 
-        function renderGrid() {
-            const now = getEffectiveTime();
-            const search = (document.getElementById('gridRoomSearch')?.value || '').trim().toLowerCase();
-
-            const bldRoomContainers = {
-                '1': document.getElementById('bldRooms-1'),
-                '2': document.getElementById('bldRooms-2'),
-                '3': document.getElementById('bldRooms-3'),
-                '4': document.getElementById('bldRooms-4'),
-                'พิเศษ': document.getElementById('bldRooms-พิเศษ')
-            };
-
-            Object.values(bldRoomContainers).forEach(c => { if (c) c.innerHTML = ''; });
-
-            let countAttention = 0;
-            let countWarning = 0;
-            let countActive = 0;
-            let countDone = 0;
-
-            const bldCounts = { '1': 0, '2': 0, '3': 0, '4': 0, 'พิเศษ': 0 };
-            const bldTotals = { '1': 0, '2': 0, '3': 0, '4': 0, 'พิเศษ': 0 };
-
-            const sortedRooms = [...roomsList].sort((a,b) => a.room.localeCompare(b.room, undefined, { numeric: true }));
-
-            sortedRooms.forEach(rm => {
-                const bld = rm.building || 'พิเศษ';
-                bldTotals[bld] = (bldTotals[bld] || 0) + 1;
-
-                const st = getRoomLiveStatus(rm.room, currentDay, now, stateData);
-                if (st.filterCategory === 'attention') countAttention++;
-                else if (st.filterCategory === 'warning') countWarning++;
-                else if (st.filterCategory === 'active') countActive++;
-                else if (st.filterCategory === 'done') {
-                    countDone++;
-                    bldCounts[bld] = (bldCounts[bld] || 0) + 1;
+        function setTableFilter(f) {
+            currentFilter = f;
+            ['all', 'missing_p1', 'missing_p2', 'done'].forEach(item => {
+                const b = document.getElementById('btnFilter' + item.charAt(0).toUpperCase() + item.slice(1).replace('_p', 'P'));
+                if (b) {
+                    b.className = (item === f)
+                        ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white'
+                        : 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
                 }
+            });
+            renderTable();
+        }
 
-                if (search && !rm.room.toLowerCase().includes(search) && !st.subject.toLowerCase().includes(search)) return;
-                if (currentGridFilter !== 'all' && st.filterCategory !== currentGridFilter) return;
+        function renderTable() {
+            const tbody = document.getElementById('recordTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
 
-                const targetContainer = bldRoomContainers[bld];
-                if (!targetContainer) return;
+            const search = (document.getElementById('recordSearchInput')?.value || '').trim().toLowerCase();
 
-                const durBadge = st.duration > 0 ? `<span id="rm-dur-${rm.room}" class="text-[9px] font-bold text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200">${st.duration}น.</span>` : '';
+            // Filter exams by currentDay and currentGrade
+            const dayExams = examDb.filter(e => e.date_d === currentDay && e.grade_group === currentGrade);
+            dayExams.sort((a,b) => {
+                if (a.start_min !== b.start_min) return a.start_min - b.start_min;
+                return a.room.localeCompare(b.room, undefined, { numeric: true });
+            });
 
-                const cardHtml = `
-                    <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-1.5 flex flex-col justify-between min-h-[58px] relative group cursor-pointer">
-                        <div class="flex items-center justify-between">
-                            <span class="font-extrabold text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
-                        </div>
-                        <div class="flex items-center justify-between text-[11px] font-semibold text-slate-800 truncate my-0.5">
-                            <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
-                            ${durBadge}
-                        </div>
-                        <div class="flex items-center justify-between text-[10px]">
-                            <div class="flex items-center gap-1">
-                                <span id="rm-dot-${rm.room}" class="w-1.5 h-1.5 rounded-full shrink-0 ${st.dotClass}"></span>
-                                <span id="rm-status-${rm.room}" class="font-bold text-slate-600 truncate max-w-[50px]">${st.label}</span>
-                            </div>
-                            <span id="rm-timer-${rm.room}" class="font-mono text-[10px] sm:text-[11px] font-extrabold ${st.clockColor || 'text-slate-700'}">${st.timeText}</span>
-                        </div>
-                        <div class="w-full bg-slate-200/80 rounded-full h-1 overflow-hidden mt-0.5">
-                            <div id="rm-prog-${rm.room}" class="${st.barColor} h-full rounded-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
-                        </div>
-                    </div>
+            let countTotal = dayExams.length;
+            let countPicked = 0;
+            let countReceived = 0;
+
+            dayExams.forEach(e => {
+                const st = stateData[e.row_id] || {};
+                if (st.p1_picked) countPicked++;
+                if (st.p2_received) countReceived++;
+            });
+
+            document.getElementById('statTotalExams').textContent = countTotal;
+            document.getElementById('statPickedCount').textContent = countPicked;
+            document.getElementById('statReceivedCount').textContent = countReceived;
+            document.getElementById('statPendingCount').textContent = (countTotal - countReceived);
+
+            let filtered = dayExams;
+            if (currentFilter === 'missing_p1') {
+                filtered = filtered.filter(e => !(stateData[e.row_id]?.p1_picked));
+            } else if (currentFilter === 'missing_p2') {
+                filtered = filtered.filter(e => !(stateData[e.row_id]?.p2_received));
+            } else if (currentFilter === 'done') {
+                filtered = filtered.filter(e => stateData[e.row_id]?.p2_received);
+            }
+
+            if (search) {
+                filtered = filtered.filter(e => 
+                    e.room.toLowerCase().includes(search) ||
+                    e.subj_code.toLowerCase().includes(search) ||
+                    e.subj_name.toLowerCase().includes(search) ||
+                    (e.teacher_name && e.teacher_name.toLowerCase().includes(search))
+                );
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-slate-400">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                const st = stateData[item.row_id] || {};
+                const p1Checked = st.p1_picked === true;
+                const p2Checked = st.p2_received === true;
+
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-slate-50 transition-colors ${p2Checked ? 'bg-emerald-50/20' : ''}`;
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
+                    <td class="p-3 text-slate-600 font-semibold whitespace-nowrap">${item.date_d} ก.ย.</td>
+                    <td class="p-3 whitespace-nowrap">
+                        <div class="font-bold text-slate-900">${item.time} น.</div>
+                        <div class="text-[10px] text-slate-500 font-medium">⏱️ ${item.duration_mins} นาที</div>
+                    </td>
+                    <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${item.subj_code}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-800">${item.subj_name}</div>
+                    </td>
+                    <td class="p-3 font-bold text-indigo-700 whitespace-nowrap">${item.class_name}</td>
+                    <td class="p-3 font-mono font-black text-center text-slate-900 whitespace-nowrap">${item.room}</td>
+                    <td class="p-3 text-slate-700">${item.teacher_name || '-'}</td>
+
+                    <!-- 1. มอบข้อสอบ (กรรมการรับ) -->
+                    <td class="p-2 text-center">
+                        <button onclick="toggleRecordP1('${item.row_id}')" 
+                                class="w-full py-1.5 px-2 rounded-xl text-xs font-bold transition-all border ${p1Checked ? 'bg-indigo-50 border-indigo-300 text-indigo-800' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}">
+                            ${p1Checked ? '✓ รับแล้ว (' + st.p1_time + ')' : '⬜ รอรับซอง'}
+                        </button>
+                    </td>
+
+                    <!-- 2. ส่งคืนห้องวัดผล (รับซองคืน) -->
+                    <td class="p-2 text-center">
+                        <button onclick="toggleRecordP2('${item.row_id}')" 
+                                class="w-full py-1.5 px-2 rounded-xl text-xs font-bold transition-all border ${p2Checked ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}">
+                            ${p2Checked ? '✓ ส่งแล้ว (' + st.p2_time + ')' : '⬜ รอส่งคืน'}
+                        </button>
+                    </td>
+
+                    <!-- หมายเหตุ -->
+                    <td class="p-2 no-print">
+                        <input type="text" onblur="saveNote('${item.row_id}', this.value)" value="${st.p2_note || ''}" placeholder="บันทึกย่อ..." class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-indigo-400">
+                    </td>
                 `;
-                targetContainer.insertAdjacentHTML('beforeend', cardHtml);
-            });
 
-            document.getElementById('countAttention').textContent = countAttention;
-            document.getElementById('countWarning').textContent = countWarning;
-            document.getElementById('countActive').textContent = countActive;
-            document.getElementById('countDone').textContent = countDone;
-
-            const b1 = document.getElementById('bld1CountBadge'); if (b1) b1.textContent = `${bldCounts['1']}/${bldTotals['1']} เสร็จสิ้น`;
-            const b2 = document.getElementById('bld2CountBadge'); if (b2) b2.textContent = `${bldCounts['2']}/${bldTotals['2']} เสร็จสิ้น`;
-            const b3 = document.getElementById('bld3CountBadge'); if (b3) b3.textContent = `${bldCounts['3']}/${bldTotals['3']} เสร็จสิ้น`;
-            const b4 = document.getElementById('bld4CountBadge'); if (b4) b4.textContent = `${bldCounts['4']}/${bldTotals['4']} เสร็จสิ้น`;
-            const bS = document.getElementById('bldSpecialCountBadge'); if (bS) bS.textContent = `${bldCounts['พิเศษ']}/${bldTotals['พิเศษ']} เสร็จสิ้น`;
-
-            const banner = document.getElementById('gridMissingBanner');
-            const bannerText = document.getElementById('gridMissingBannerText');
-            if (countAttention > 0) {
-                banner.classList.remove('hidden');
-                bannerText.textContent = `⚠️ มี ${countAttention} ห้องสอบที่ต้องติดตามเร่งด่วน (ยังไม่มารับข้อสอบ หรือสอบเสร็จแล้วยังไม่ส่งคืน)`;
-            } else {
-                banner.classList.add('hidden');
-            }
-        }
-
-        function updateAllRoomCards(now) {
-            roomsList.forEach(rm => {
-                const st = getRoomLiveStatus(rm.room, currentDay, now, stateData);
-                const timerEl = document.getElementById('rm-timer-' + rm.room);
-                const statusEl = document.getElementById('rm-status-' + rm.room);
-                const subjEl = document.getElementById('rm-subj-' + rm.room);
-                const progEl = document.getElementById('rm-prog-' + rm.room);
-                const dotEl = document.getElementById('rm-dot-' + rm.room);
-                const cardEl = document.getElementById('rm-card-' + rm.room);
-                const durEl = document.getElementById('rm-dur-' + rm.room);
-
-                if (timerEl) timerEl.textContent = st.timeText;
-                if (statusEl) statusEl.textContent = st.label;
-                if (subjEl) subjEl.textContent = st.subject;
-                if (durEl && st.duration > 0) durEl.textContent = `${st.duration}น.`;
-                if (progEl && progEl.style) {
-                    progEl.style.width = st.percent + '%';
-                    progEl.className = st.barColor + ' h-full rounded-full transition-all duration-1000';
-                }
-                if (dotEl) dotEl.className = 'w-1.5 h-1.5 rounded-full shrink-0 ' + st.dotClass;
-                if (cardEl && typeof cardEl.className === 'string' && !cardEl.className.includes(st.bgClass)) {
-                    cardEl.className = `${st.bgClass} rounded-xl border transition-all hover:shadow-md p-1.5 flex flex-col justify-between min-h-[58px] relative group cursor-pointer`;
-                }
+                tbody.appendChild(tr);
             });
         }
 
-        function openRoomModal(roomNo) {
-            const rm = roomsList.find(r => r.room === roomNo);
-            if (!rm) return;
-
-            document.getElementById('modalRoomTitle').textContent = `ห้องสอบ ${rm.room}`;
-            document.getElementById('modalRoomSub').textContent = `${rm.grade} | อาคาร ${rm.building} ชั้น ${rm.floor}`;
-
-            const list = document.getElementById('modalSubjectList');
-            list.innerHTML = '';
-
-            const todayExams = examDb.filter(e => e.room === roomNo && e.date_d === currentDay);
-            if (todayExams.length === 0) {
-                list.innerHTML = '<div class="text-xs text-slate-400 p-3 bg-slate-50 rounded-xl text-center">ไม่มีการสอบในห้องนี้สำหรับวันนี้</div>';
-            } else {
-                todayExams.forEach(item => {
-                    const st = stateData[item.row_id] || {};
-                    const isP1 = st.p1_picked === true;
-                    const isP2 = st.p2_received === true;
-
-                    const div = document.createElement('div');
-                    div.className = 'p-3 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-2';
-                    div.innerHTML = `
-                        <div>
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="font-bold text-slate-900 text-xs sm:text-sm">${item.subj_code} ${item.subj_name}</span>
-                                <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded border border-indigo-200">⏱️ ${item.duration_mins} นาที</span>
-                            </div>
-                            <div class="text-slate-500 text-xs mt-1">เวลาสอบ: <strong class="text-indigo-700">${item.time} น.</strong> | ครูผู้สอน: ${item.teacher_name}</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-xs">
-                            <label class="flex items-center gap-2 p-2 rounded-xl border ${isP1 ? 'bg-indigo-50/50 border-indigo-200 text-indigo-900' : 'bg-white border-slate-200 text-slate-600'} cursor-pointer">
-                                <input type="checkbox" onchange="toggleP1('${item.row_id}', this.checked)" ${isP1 ? 'checked' : ''} class="rounded text-indigo-600 w-4 h-4">
-                                <div class="truncate">
-                                    <div class="font-bold text-[11px]">1. มอบซองให้กรรมการ</div>
-                                    <div class="text-[10px] opacity-75">${st.p1_time || 'ยังไม่มารับ'}</div>
-                                </div>
-                            </label>
-                            <label class="flex items-center gap-2 p-2 rounded-xl border ${isP2 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-white border-slate-200 text-slate-600'} cursor-pointer">
-                                <input type="checkbox" onchange="toggleP2('${item.row_id}', this.checked)" ${isP2 ? 'checked' : ''} class="rounded text-emerald-600 w-4 h-4">
-                                <div class="truncate">
-                                    <div class="font-bold text-[11px]">2. รับซองคืนห้องวัดผล</div>
-                                    <div class="text-[10px] opacity-75">${st.p2_time || 'ยังไม่ส่งคืน'}</div>
-                                </div>
-                            </label>
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            }
-
-            document.getElementById('roomDetailModal').classList.remove('hidden');
-        }
-
-        function closeRoomModal() {
-            document.getElementById('roomDetailModal').classList.add('hidden');
-        }
-
-        function toggleP1(rowId, checked) {
+        function toggleRecordP1(rowId) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
             if (!stateData[rowId]) stateData[rowId] = {};
-            stateData[rowId].p1_picked = checked;
-            stateData[rowId].p1_time = checked ? timeStr : null;
+            const currentVal = stateData[rowId].p1_picked === true;
+            stateData[rowId].p1_picked = !currentVal;
+            stateData[rowId].p1_time = !currentVal ? timeStr : null;
 
             const exam = examDb.find(e => e.row_id === rowId);
             const title = exam ? `${exam.room} (${exam.subj_code})` : rowId;
-            addLog('มอบซองข้อสอบ (เฟส 1)', checked ? `ส่งมอบห้อง ${title} เรียบร้อย` : `ยกเลิกการส่งมอบห้อง ${title}`, currentDay);
+            addLog('มอบข้อสอบ (เฟส 1)', !currentVal ? `ส่งมอบห้อง ${title} เรียบร้อย` : `ยกเลิกการส่งมอบห้อง ${title}`, currentDay);
             saveStorage();
-            renderGrid();
+            renderTable();
         }
 
-        function toggleP2(rowId, checked) {
+        function toggleRecordP2(rowId) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
             if (!stateData[rowId]) stateData[rowId] = {};
-            stateData[rowId].p2_received = checked;
-            stateData[rowId].p2_time = checked ? timeStr : null;
+            const currentVal = stateData[rowId].p2_received === true;
+            stateData[rowId].p2_received = !currentVal;
+            stateData[rowId].p2_time = !currentVal ? timeStr : null;
 
             const exam = examDb.find(e => e.row_id === rowId);
             const title = exam ? `${exam.room} (${exam.subj_code})` : rowId;
-            addLog('รับซองข้อสอบคืน (เฟส 2)', checked ? `รับซองคืนจากห้อง ${title} ครบถ้วน` : `ยกเลิกการรับซองห้อง ${title}`, currentDay);
+            addLog('รับซองคืน (เฟส 2)', !currentVal ? `รับซองคืนจากห้อง ${title} เรียบร้อย` : `ยกเลิกการรับซองห้อง ${title}`, currentDay);
             saveStorage();
-            renderGrid();
+            renderTable();
+        }
+
+        function saveNote(rowId, val) {
+            if (!stateData[rowId]) stateData[rowId] = {};
+            stateData[rowId].p2_note = val;
+            saveStorage();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             loadStorage();
-            renderGrid();
-            updateClock();
+            setSheetGrade('ม.1');
         });
     </script>
 </body>
