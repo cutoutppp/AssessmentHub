@@ -57,6 +57,9 @@
                 <a href="round0.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
                     📦 ตรวจรับรอบ 0 & ติดตามกลุ่มสาระฯ
                 </a>
+                <a href="teacher.html" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-indigo-700 hover:bg-indigo-50 border border-indigo-200" title="เปิดหน้าเช็คสำหรับคุณครู & สแกน QR">
+                    📱 หน้าคุณครู (QR)
+                </a>
             </div>
 
             <div class="flex items-center gap-1.5">
@@ -1142,6 +1145,7 @@
             });
 
             msg += `\n━━━━━━━━━━━━━━━━━━━━━\n`;
+            msg += `👉 คุณครูสามารถตรวจสอบสถานะการส่งข้อสอบของตนเองได้ที่:\nhttps://cutoutppp.github.io/AssessmentHub/exam-tracker/teacher.html\n\n`;
             msg += `รบกวนคุณครูนำส่งมัดข้อสอบ ณ ห้องวัดผล ขอบพระคุณครับ 🙏`;
 
             navigator.clipboard.writeText(msg).then(() => {
