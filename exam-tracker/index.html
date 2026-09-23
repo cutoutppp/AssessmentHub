@@ -12,12 +12,6 @@
     <style>
         body { font-family: 'Sarabun', sans-serif; }
         .font-prompt { font-family: 'Prompt', sans-serif; }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.96); opacity: 0.9; }
-            50% { transform: scale(1.04); opacity: 0.5; }
-            100% { transform: scale(0.96); opacity: 0.9; }
-        }
-        .pulse-box { animation: pulse-ring 2s infinite ease-in-out; }
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
@@ -27,7 +21,7 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Top Navigation Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
@@ -50,7 +44,7 @@
             <!-- 3-Way Mode Switcher: 55 Rooms Grid vs Phase 0 vs Sign-off Sheets (M.1 - M.6) -->
             <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
                 <button onclick="setMainView('grid')" id="viewBtnGrid" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-indigo-700 shadow-sm">
-                    🖥️ แดชบอร์ด 55 ห้องสอบ
+                    🖥️ มอนิเตอร์ 55 ห้องสอบ
                 </button>
                 <button onclick="setMainView('phase0')" id="viewBtnPhase0" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
                     📦 เฟส 0: ตรวจรับข้อสอบเย็บชุด
@@ -94,7 +88,7 @@
                 <!-- Central Live Timer Display -->
                 <div class="flex flex-wrap items-center justify-center gap-4 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 w-full lg:w-auto">
                     <div class="flex items-center gap-2">
-                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                         <span id="clockDisplay" class="font-mono text-sm sm:text-base font-bold text-white tracking-wider">08:00:00 น.</span>
                     </div>
 
@@ -102,7 +96,7 @@
 
                     <!-- Period Info & Countdown -->
                     <div class="flex items-center gap-2">
-                        <span id="periodBadge" class="px-2 py-0.5 rounded-md text-xs font-bold bg-indigo-500/40 text-indigo-200 border border-indigo-400/30">
+                        <span id="periodBadge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-500/40 text-indigo-200 border border-indigo-400/30">
                             คาบที่ 1 (08.30-09.30)
                         </span>
                         <div id="countdownBox" class="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
@@ -135,46 +129,59 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- MAIN VIEW 1: แดชบอร์ด 55 ห้องสอบ (วันสอบจริง)                              -->
+    <!-- MAIN VIEW 1: มอนิเตอร์ 55 ห้องสอบ (วันสอบจริง พร้อมนาฬิกาทุกห้อง)           -->
     <!-- ========================================================================= -->
     <main id="mainViewGrid" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full block">
         
-        <!-- Phase Tabs Bar for Exam Day -->
-        <div class="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                <span class="text-xs font-bold text-slate-500 mr-1 whitespace-nowrap">เฟสของวันสอบ:</span>
-                <button onclick="setGridPhase('p1')" id="btnPhaseP1" class="phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm whitespace-nowrap">
-                    1. เช้าวิชาแรก (รับข้อสอบ)
-                </button>
-                <button onclick="setGridPhase('p2')" id="btnPhaseP2" class="phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100 whitespace-nowrap">
-                    2. สายส่ง & สลับคาบ
-                </button>
-                <button onclick="setGridPhase('p3')" id="btnPhaseP3" class="phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100 whitespace-nowrap">
-                    3. เคลียร์ก่อน/หลังพักเที่ยง
-                </button>
-                <button onclick="setGridPhase('p4')" id="btnPhaseP4" class="phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100 whitespace-nowrap">
-                    4. สรุปปิดวัน
-                </button>
+        <!-- Filter & Control Bar for 55 Rooms Grid -->
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm mb-6 space-y-3">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                
+                <!-- Quick Filter Chips -->
+                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+                    <span class="text-xs font-bold text-slate-500 mr-1 whitespace-nowrap">ตัวกรองห้อง:</span>
+                    <button onclick="setGridFilter('all')" id="btnGFilterAll" class="grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm whitespace-nowrap">
+                        ทั้งหมด (55 ห้อง)
+                    </button>
+                    <button onclick="setGridFilter('attention')" id="btnGFilterAttention" class="grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
+                        🔴 ต้องติดตาม (<span id="countAttention">0</span>)
+                    </button>
+                    <button onclick="setGridFilter('warning')" id="btnGFilterWarning" class="grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
+                        🟡 เตรียมสายส่ง (<span id="countWarning">0</span>)
+                    </button>
+                    <button onclick="setGridFilter('active')" id="btnGFilterActive" class="grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
+                        🔵 กำลังสอบ (<span id="countActive">0</span>)
+                    </button>
+                    <button onclick="setGridFilter('done')" id="btnGFilterDone" class="grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
+                        🟢 เสร็จสิ้น (<span id="countDone">0</span>)
+                    </button>
+                </div>
+
+                <!-- Room Quick Search Input -->
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="gridRoomSearch" oninput="renderGrid()" placeholder="🔍 ค้นหาเลขห้อง (เช่น 1101, 3208)..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-indigo-500 transition-all">
+                </div>
             </div>
 
-            <!-- Color Legend -->
-            <div class="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ปกติ/รับแล้ว</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> ดำเนินการ/ใกล้หมดเวลา</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span> ตกค้าง/ยังไม่ส่ง</span>
-                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span> ยังไม่ถึงเวลา</span>
+            <!-- Color Legend (Calm, Solid, No Blinking) -->
+            <div class="flex items-center gap-4 text-[11px] font-semibold text-slate-600 pt-2 border-t border-slate-100 flex-wrap">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ปกติ/เสร็จสิ้น</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> กำลังสอบตามเวลา</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 5 นาทีสุดท้าย (เตรียมสายส่ง)</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> ตกค้าง / หมดเวลา / ยังไม่มารับ</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> รอเริ่ม / ไม่มีสอบ</span>
             </div>
         </div>
 
-        <!-- Missing Alert Banner (Dynamic) -->
-        <div id="gridMissingBanner" class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 mb-6 shadow-sm hidden">
+        <!-- Missing Alert Banner (Dynamic - Solid, No Bouncing) -->
+        <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-2xl p-4 mb-6 shadow-sm hidden">
             <div class="flex items-center justify-between flex-wrap gap-2">
                 <div class="flex items-center gap-2 text-rose-900 font-bold text-sm">
-                    <svg class="w-5 h-5 text-rose-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <span id="gridMissingBannerText">มี 0 ห้องสอบที่ยังไม่มารับข้อสอบ</span>
+                    <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span id="gridMissingBannerText">มี 0 ห้องสอบที่ต้องติดตาม</span>
                 </div>
-                <span class="text-xs font-semibold text-rose-700 bg-rose-100 px-2.5 py-0.5 rounded-full">
-                    คลิกที่กล่องห้องสีแดงเพื่อดูเบอร์โทรและโทรประสานงานได้ทันที
+                <span class="text-xs font-semibold text-rose-700 bg-rose-100/80 px-2.5 py-1 rounded-xl">
+                    คลิกที่การ์ดห้องสีแดงเพื่อดูเบอร์โทรและโทรประสานงานได้ทันที
                 </span>
             </div>
         </div>
@@ -468,7 +475,7 @@
 
         let currentMainView = 'grid'; // 'grid', 'phase0', or 'sheets'
         let currentDay = '28';
-        let currentGridPhase = 'p1'; // 'p1', 'p2', 'p3', 'p4'
+        let currentGridFilter = 'all'; // 'all', 'attention', 'warning', 'active', 'done'
         let currentSheetGrade = 'ม.1';
         let p0GradeFilter = 'all';
         let p0StatusFilter = 'all';
@@ -476,6 +483,14 @@
         
         let stateData = {};
         let auditLogs = [];
+
+        function parseTimeToMins(tStr) {
+            if (!tStr) return 0;
+            const parts = tStr.split('.');
+            const h = parseInt(parts[0], 10) || 0;
+            const m = parseInt(parts[1], 10) || 0;
+            return h * 60 + m;
+        }
 
         function loadStorage() {
             try {
@@ -518,7 +533,6 @@
             if (b) b.textContent = auditLogs.length;
         }
 
-        // Clock & Period Detection
         function getEffectiveTime() {
             if (simTime !== 'real') {
                 const [h, m] = simTime.split(':').map(Number);
@@ -529,6 +543,188 @@
             return new Date();
         }
 
+        // =========================================================================
+        // ROOM LIVE STATUS & INDIVIDUAL DIGITAL CLOCK ENGINE
+        // =========================================================================
+        function getRoomLiveStatus(roomNum, day, now, stData) {
+            const dayExams = examDb.filter(e => e.date_d === day && e.room === roomNum);
+            if (!dayExams || dayExams.length === 0) {
+                return {
+                    type: 'no_exam',
+                    filterCategory: 'done',
+                    label: 'ไม่มีสอบวันนี้',
+                    subject: 'ไม่มีตารางสอบ',
+                    timeSlot: '-',
+                    timeText: '--:--',
+                    percent: 0,
+                    bgClass: 'bg-slate-100/70 border-slate-200 text-slate-400',
+                    dotClass: 'bg-slate-400',
+                    clockColor: 'text-slate-500',
+                    barColor: 'bg-slate-300'
+                };
+            }
+
+            const examsWithTimes = dayExams.map(e => {
+                const parts = e.time.split('-');
+                return {
+                    ...e,
+                    startMin: parseTimeToMins(parts[0]),
+                    endMin: parseTimeToMins(parts[1]),
+                    isRecv: !!stData['p1_recv_' + e.id],
+                    isRet: !!stData['p2_ret_' + e.id],
+                    isCnt: !!stData['p2_cnt_' + e.id]
+                };
+            }).sort((a,b) => a.startMin - b.startMin);
+
+            const curH = now.getHours();
+            const curM = now.getMinutes();
+            const curS = now.getSeconds();
+            const nowTotalSec = curH * 3600 + curM * 60 + curS;
+
+            // Find first pending exam that has NOT been returned yet
+            const pendingExam = examsWithTimes.find(e => !e.isRet);
+
+            if (!pendingExam) {
+                // All exams for today in this room are completed & returned!
+                return {
+                    type: 'all_done',
+                    filterCategory: 'done',
+                    label: 'เสร็จสิ้นทุกวิชา',
+                    subject: `ครบทั้งหมด ${examsWithTimes.length} วิชา`,
+                    timeSlot: 'เสร็จสิ้น',
+                    timeText: '✓ ส่งคืนครบ 100%',
+                    percent: 100,
+                    bgClass: 'bg-emerald-50/50 border-emerald-300 text-emerald-950',
+                    dotClass: 'bg-emerald-500',
+                    clockColor: 'text-emerald-700 font-extrabold',
+                    barColor: 'bg-emerald-500'
+                };
+            }
+
+            const sSec = pendingExam.startMin * 60;
+            const eSec = pendingExam.endMin * 60;
+            const totalDurationSec = eSec - sSec;
+
+            // Scenario 1: Before exam begins
+            if (nowTotalSec < sSec) {
+                const diffSec = sSec - nowTotalSec;
+                const diffM = Math.floor(diffSec / 60);
+                const diffS = diffSec % 60;
+                const timeText = diffM >= 60 ? `เริ่ม ${pendingExam.time.split('-')[0]} น.` : `เริ่มใน ${diffM}:${diffS < 10 ? '0' : ''}${diffS}`;
+
+                // If morning exam (first exam around 08.30)
+                if (pendingExam.time.startsWith('08.30')) {
+                    if (pendingExam.isRecv) {
+                        return {
+                            type: 'ready',
+                            filterCategory: 'active',
+                            label: 'รับข้อสอบแล้ว (รอสอบ)',
+                            subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                            timeSlot: pendingExam.time + ' น.',
+                            timeText: timeText,
+                            percent: 0,
+                            bgClass: 'bg-indigo-50/40 border-indigo-200 text-indigo-950',
+                            dotClass: 'bg-indigo-500',
+                            clockColor: 'text-indigo-700 font-bold',
+                            barColor: 'bg-indigo-300'
+                        };
+                    } else {
+                        return {
+                            type: 'missing_pickup',
+                            filterCategory: 'attention',
+                            label: 'ยังไม่มารับข้อสอบ!',
+                            subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                            timeSlot: pendingExam.time + ' น.',
+                            timeText: timeText,
+                            percent: 0,
+                            // Solid calm red - NO blinking
+                            bgClass: 'bg-rose-50 border-rose-300 text-rose-900',
+                            dotClass: 'bg-rose-500',
+                            clockColor: 'text-rose-700 font-extrabold',
+                            barColor: 'bg-rose-400'
+                        };
+                    }
+                }
+
+                return {
+                    type: 'waiting',
+                    filterCategory: 'active',
+                    label: 'รอเริ่มสอบ',
+                    subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                    timeSlot: pendingExam.time + ' น.',
+                    timeText: timeText,
+                    percent: 0,
+                    bgClass: 'bg-slate-50 border-slate-200 text-slate-800',
+                    dotClass: 'bg-slate-400',
+                    clockColor: 'text-slate-600 font-bold',
+                    barColor: 'bg-slate-300'
+                };
+            }
+
+            // Scenario 2: Exam in progress (nowTotalSec >= sSec && nowTotalSec <= eSec)
+            if (nowTotalSec >= sSec && nowTotalSec <= eSec) {
+                const remainSec = eSec - nowTotalSec;
+                const remM = Math.floor(remainSec / 60);
+                const remS = remainSec % 60;
+                const timeFormatted = `${remM < 10 ? '0' : ''}${remM}:${remS < 10 ? '0' : ''}${remS}`;
+                const percent = Math.min(100, Math.max(0, Math.round(((nowTotalSec - sSec) / totalDurationSec) * 100)));
+
+                if (remainSec <= 300) {
+                    // Last 5 minutes: Standby runner! Solid Amber
+                    return {
+                        type: 'warning_runner',
+                        filterCategory: 'warning',
+                        label: 'เตรียมสายส่ง (ใกล้หมดเวลา)',
+                        subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                        timeSlot: pendingExam.time + ' น.',
+                        timeText: `⏳ ${timeFormatted}`,
+                        percent: percent,
+                        bgClass: 'bg-amber-50/80 border-amber-300 text-amber-950',
+                        dotClass: 'bg-amber-500',
+                        clockColor: 'text-amber-800 font-extrabold',
+                        barColor: 'bg-amber-500'
+                    };
+                } else {
+                    // Normal active exam: Indigo / Blue
+                    return {
+                        type: 'active',
+                        filterCategory: 'active',
+                        label: 'กำลังสอบ',
+                        subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                        timeSlot: pendingExam.time + ' น.',
+                        timeText: `⏳ ${timeFormatted}`,
+                        percent: percent,
+                        bgClass: 'bg-indigo-50/40 border-indigo-200 text-indigo-950',
+                        dotClass: 'bg-indigo-500',
+                        clockColor: 'text-indigo-700 font-extrabold',
+                        barColor: 'bg-indigo-600'
+                    };
+                }
+            }
+
+            // Scenario 3: Overdue! Exam ended but has not been returned yet
+            const overSec = nowTotalSec - eSec;
+            const overM = Math.floor(overSec / 60);
+            const overS = overSec % 60;
+            const overFormatted = `+${overM}:${overS < 10 ? '0' : ''}${overS}`;
+
+            return {
+                type: 'overdue',
+                filterCategory: 'attention',
+                label: 'หมดเวลาสอบ (รอส่งคืน)',
+                subject: `${pendingExam.subj_code} ${pendingExam.subj_name}`,
+                timeSlot: pendingExam.time + ' น.',
+                timeText: `🔔 ${overFormatted}`,
+                percent: 100,
+                // Solid calm red - NO blinking
+                bgClass: 'bg-rose-50 border-rose-400 text-rose-950',
+                dotClass: 'bg-rose-500',
+                clockColor: 'text-rose-700 font-extrabold',
+                barColor: 'bg-rose-500'
+            };
+        }
+
+        // Main Clock & Central Controller
         function updateClock() {
             const now = getEffectiveTime();
             document.getElementById('clockDisplay').textContent = now.toLocaleTimeString('th-TH', { hour12: false }) + ' น.';
@@ -570,11 +766,11 @@
                 pBar.style.width = percent + '%';
 
                 if (remainSec <= 300 && remainSec > 0) {
-                    countdownBox.className = 'flex items-center gap-1.5 text-xs font-bold text-amber-300 animate-pulse';
+                    countdownBox.className = 'flex items-center gap-1.5 text-xs font-bold text-amber-300';
                     countdownText.textContent = `⚠️ เหลือ ${Math.floor(remainSec/60)}:${remainSec%60 < 10 ? '0':''}${remainSec%60} นาที (เตรียมสายส่ง)`;
                     pBar.className = 'bg-amber-400 h-full transition-all duration-1000';
                 } else if (remainSec <= 0) {
-                    countdownBox.className = 'flex items-center gap-1.5 text-xs font-bold text-rose-300 animate-pulse';
+                    countdownBox.className = 'flex items-center gap-1.5 text-xs font-bold text-rose-300';
                     countdownText.textContent = `🔔 หมดเวลาสอบ (+${Math.floor(Math.abs(remainSec)/60)} นาที)`;
                     pBar.className = 'bg-rose-500 h-full transition-all duration-1000';
                 } else {
@@ -594,6 +790,11 @@
                     countdownText.textContent = 'เตรียมจัดของพรุ่งนี้';
                     pBar.style.width = '100%';
                 }
+            }
+
+            // Update all 55 Room Individual Clocks
+            if (currentMainView === 'grid') {
+                updateAllRoomCards(now);
             }
         }
 
@@ -649,14 +850,12 @@
             }
         }
 
-        function setGridPhase(phase) {
-            currentGridPhase = phase;
-            ['p1', 'p2', 'p3', 'p4'].forEach(p => {
-                const b = document.getElementById('btnPhase' + p.toUpperCase());
-                if (p === phase) {
-                    b.className = 'phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm whitespace-nowrap';
-                } else {
-                    b.className = 'phase-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100 whitespace-nowrap';
+        function setGridFilter(filter) {
+            currentGridFilter = filter;
+            ['all', 'attention', 'warning', 'active', 'done'].forEach(f => {
+                const btn = document.getElementById('btnGFilter' + (f.charAt(0).toUpperCase() + f.slice(1)));
+                if (btn) {
+                    btn.className = (f === filter) ? 'grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-indigo-600 text-white shadow-sm whitespace-nowrap' : 'grid-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap';
                 }
             });
             renderGrid();
@@ -683,57 +882,15 @@
             else renderSheetView();
         }
 
-        // ==========================================
-        // SYSTEM 1: 55 ROOMS GRID DASHBOARD
-        // ==========================================
-        function getRoomStatus(roomObj) {
-            const roomNum = roomObj.room;
-            const dayExams = examDb.filter(e => e.date_d === currentDay && e.room === roomNum);
-            
-            if (currentGridPhase === 'p1') {
-                // Phase 1: First morning exam
-                const firstExam = dayExams.find(e => e.time.startsWith('08.30'));
-                if (!firstExam) return { code: 'none', label: 'ไม่มีสอบเช้า', bg: 'bg-slate-100 border-slate-200 text-slate-500' };
-                const isRecv = !!stateData['p1_recv_' + firstExam.id];
-                if (isRecv) return { code: 'done', label: 'รับข้อสอบแล้ว', bg: 'bg-emerald-50 border-emerald-300 text-emerald-800' };
-                return { code: 'missing', label: 'ยังไม่มารับ!', bg: 'bg-rose-50 border-rose-400 text-rose-800 pulse-box' };
-            }
-
-            if (currentGridPhase === 'p2') {
-                // Phase 2: Active period / runner returns
-                const firstExam = dayExams.find(e => e.time.startsWith('08.30'));
-                if (!firstExam) return { code: 'none', label: 'ไม่มีสอบ', bg: 'bg-slate-100 border-slate-200 text-slate-400' };
-                const isRet = !!stateData['p2_ret_' + firstExam.id];
-                const isCnt = !!stateData['p2_cnt_' + firstExam.id];
-                if (isCnt) return { code: 'done', label: 'ส่ง กก.กลางแล้ว', bg: 'bg-indigo-50 border-indigo-300 text-indigo-800' };
-                if (isRet) return { code: 'ret', label: 'ซองถึงวัดผลแล้ว', bg: 'bg-emerald-50 border-emerald-300 text-emerald-800' };
-                return { code: 'pending', label: 'กำลังสอบ/รอคืน', bg: 'bg-amber-50 border-amber-300 text-amber-800' };
-            }
-
-            if (currentGridPhase === 'p3') {
-                // Phase 3: Pre-lunch rush
-                const morningLast = dayExams.filter(e => e.session === 'morning').pop();
-                if (!morningLast) return { code: 'none', label: 'ไม่มีสอบ', bg: 'bg-slate-100 border-slate-200 text-slate-400' };
-                const isRet = !!stateData['p2_ret_' + morningLast.id];
-                if (isRet) return { code: 'done', label: 'ส่งคืนแล้ว', bg: 'bg-emerald-50 border-emerald-300 text-emerald-800' };
-                return { code: 'missing', label: 'ยังไม่ส่งคืน!', bg: 'bg-rose-50 border-rose-400 text-rose-800 pulse-box' };
-            }
-
-            if (currentGridPhase === 'p4') {
-                // Phase 4: End of day
-                const allDone = dayExams.every(e => !!stateData['p2_ret_' + e.id]);
-                if (allDone && dayExams.length > 0) return { code: 'done', label: 'เคลียร์ครบ 100%', bg: 'bg-emerald-50 border-emerald-300 text-emerald-800' };
-                return { code: 'pending', label: 'รอดำเนินการ', bg: 'bg-amber-50 border-amber-300 text-amber-800' };
-            }
-
-            return { code: 'none', label: 'ปกติ', bg: 'bg-white border-slate-200 text-slate-700' };
-        }
-
+        // =========================================================================
+        // SYSTEM 1: 55 ROOMS GRID DASHBOARD (WITH LIVE CLOCK ON EVERY ROOM)
+        // =========================================================================
         function renderGrid() {
+            const now = getEffectiveTime();
+            const search = (document.getElementById('gridRoomSearch')?.value || '').trim().toLowerCase();
             const container = document.getElementById('roomsGridContainer');
             container.innerHTML = '';
 
-            // Group 55 rooms by building
             const buildings = [
                 { id: '1', title: 'อาคาร 1' },
                 { id: '2', title: 'อาคาร 2' },
@@ -742,10 +899,50 @@
                 { id: 'พิเศษ', title: 'ห้องพิเศษ / ห้องรวม' }
             ];
 
-            let totalMissing = 0;
+            let countAttention = 0;
+            let countWarning = 0;
+            let countActive = 0;
+            let countDone = 0;
+
+            // Calculate overall counts
+            roomsList.forEach(rm => {
+                const st = getRoomLiveStatus(rm.room, currentDay, now, stateData);
+                if (st.filterCategory === 'attention') countAttention++;
+                else if (st.filterCategory === 'warning') countWarning++;
+                else if (st.filterCategory === 'active') countActive++;
+                else if (st.filterCategory === 'done') countDone++;
+            });
+
+            document.getElementById('countAttention').textContent = countAttention;
+            document.getElementById('countWarning').textContent = countWarning;
+            document.getElementById('countActive').textContent = countActive;
+            document.getElementById('countDone').textContent = countDone;
+
+            // Missing Banner
+            const banner = document.getElementById('gridMissingBanner');
+            const bannerText = document.getElementById('gridMissingBannerText');
+            if (countAttention > 0) {
+                banner.classList.remove('hidden');
+                bannerText.textContent = `⚠️ มี ${countAttention} ห้องสอบที่ต้องติดตามเร่งด่วน (ยังไม่มารับข้อสอบ หรือสอบเสร็จแล้วยังไม่ส่งคืน)`;
+            } else {
+                banner.classList.add('hidden');
+            }
 
             buildings.forEach(bldg => {
-                const bldgRooms = roomsList.filter(r => r.building === bldg.id);
+                let bldgRooms = roomsList.filter(r => r.building === bldg.id);
+                if (bldgRooms.length === 0) return;
+
+                if (search) {
+                    bldgRooms = bldgRooms.filter(r => r.room.toLowerCase().includes(search) || r.grade.toLowerCase().includes(search));
+                }
+
+                if (currentGridFilter !== 'all') {
+                    bldgRooms = bldgRooms.filter(r => {
+                        const st = getRoomLiveStatus(r.room, currentDay, now, stateData);
+                        return st.filterCategory === currentGridFilter;
+                    });
+                }
+
                 if (bldgRooms.length === 0) return;
 
                 const bldgSection = document.createElement('div');
@@ -753,50 +950,99 @@
 
                 let roomBoxesHtml = '';
                 bldgRooms.forEach(rm => {
-                    const st = getRoomStatus(rm);
-                    if (st.code === 'missing') totalMissing++;
+                    const st = getRoomLiveStatus(rm.room, currentDay, now, stateData);
 
                     roomBoxesHtml += `
-                        <div onclick="openRoomModal('${rm.room}')" class="${st.bg} p-3 rounded-xl border cursor-pointer hover:shadow-md transition-all flex flex-col justify-between h-28 relative overflow-hidden group">
-                            <div class="flex justify-between items-start">
-                                <span class="font-extrabold text-base sm:text-lg font-mono">${rm.room}</span>
-                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/70">${rm.grade}</span>
+                        <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" class="${st.bgClass} rounded-2xl border transition-all hover:shadow-lg p-3.5 flex flex-col justify-between min-h-[148px] relative group cursor-pointer">
+                            <!-- Top: Room & Grade -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-extrabold text-base sm:text-lg font-mono tracking-tight text-slate-900">ห้อง ${rm.room}</span>
+                                </div>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-white/90 border border-slate-200/80 text-slate-700 shadow-xs">
+                                    ${rm.grade}
+                                </span>
                             </div>
-                            <div class="text-[11px] font-semibold truncate text-slate-600" title="${rm.p1}">
-                                👤 ${rm.p1 || '-'}
+
+                            <!-- Subject & Proctor Info -->
+                            <div class="my-1.5">
+                                <div id="rm-subj-${rm.room}" class="text-[11px] font-bold text-slate-800 truncate" title="${st.subject}">
+                                    ${st.subject}
+                                </div>
+                                <div class="text-[10px] text-slate-500 truncate mt-0.5" title="${rm.p1}">
+                                    👤 ${rm.p1 || 'ไม่ระบุกรรมการ'}
+                                </div>
                             </div>
-                            <div class="flex items-center justify-between text-[11px] pt-1 border-t border-black/5">
-                                <span class="font-bold truncate">${st.label}</span>
-                                <span class="text-[10px] text-slate-400 group-hover:text-indigo-600">คลิก ➔</span>
+
+                            <!-- Digital Monitor Box: Live Room Clock & Status -->
+                            <div class="bg-white/80 backdrop-blur-xs rounded-xl p-2 border border-slate-200/80 shadow-xs">
+                                <div class="flex items-center justify-between text-[11px] mb-1">
+                                    <span class="font-bold flex items-center gap-1 truncate mr-1">
+                                        <span id="rm-dot-${rm.room}" class="w-2 h-2 rounded-full ${st.dotClass} shrink-0"></span>
+                                        <span id="rm-status-${rm.room}" class="truncate">${st.label}</span>
+                                    </span>
+                                    <span id="rm-timer-${rm.room}" class="font-mono ${st.clockColor} whitespace-nowrap shrink-0">
+                                        ${st.timeText}
+                                    </span>
+                                </div>
+                                <!-- Progress bar for this room -->
+                                <div class="w-full bg-slate-200 rounded-full h-1 overflow-hidden">
+                                    <div id="rm-prog-${rm.room}" class="${st.barColor} h-full rounded-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Bottom Row: Time slot & Click Link -->
+                            <div class="flex items-center justify-between text-[10px] pt-1.5 text-slate-500 border-t border-black/5 mt-1">
+                                <span id="rm-time-${rm.room}" class="font-semibold text-slate-600 truncate">${st.timeSlot}</span>
+                                <span class="text-indigo-600 group-hover:translate-x-0.5 transition-transform font-bold whitespace-nowrap">ดูห้อง ➔</span>
                             </div>
                         </div>
                     `;
                 });
 
                 bldgSection.innerHTML = `
-                    <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center justify-between mb-3.5">
                         <h3 class="font-bold text-slate-900 font-prompt text-sm sm:text-base flex items-center gap-2">
                             <span>🏛️ ${bldg.title}</span>
-                            <span class="text-xs text-slate-400 font-normal">(${bldgRooms.length} ห้องสอบ)</span>
+                            <span class="text-xs text-slate-400 font-normal">(${bldgRooms.length} ห้อง)</span>
                         </h3>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
                         ${roomBoxesHtml}
                     </div>
                 `;
 
                 container.appendChild(bldgSection);
             });
+        }
 
-            // Update Missing Banner
-            const banner = document.getElementById('gridMissingBanner');
-            const bannerText = document.getElementById('gridMissingBannerText');
-            if (totalMissing > 0 && (currentGridPhase === 'p1' || currentGridPhase === 'p3')) {
-                banner.classList.remove('hidden');
-                bannerText.textContent = currentGridPhase === 'p1' ? `⚠️ มี ${totalMissing} ห้องสอบที่ยังไม่มารับข้อสอบวิชาแรก!` : `🍱 มี ${totalMissing} ห้องสอบที่ยังไม่มาส่งคืนข้อสอบวิชาสุดท้ายก่อนพักเที่ยง!`;
-            } else {
-                banner.classList.add('hidden');
-            }
+        // Seamless 1-second update for all 55 room monitor cards without full DOM reload
+        function updateAllRoomCards(now) {
+            roomsList.forEach(rm => {
+                const timerEl = document.getElementById('rm-timer-' + rm.room);
+                if (!timerEl) return;
+
+                const st = getRoomLiveStatus(rm.room, currentDay, now, stateData);
+                const subjEl = document.getElementById('rm-subj-' + rm.room);
+                const statusEl = document.getElementById('rm-status-' + rm.room);
+                const dotEl = document.getElementById('rm-dot-' + rm.room);
+                const timeEl = document.getElementById('rm-time-' + rm.room);
+                const progEl = document.getElementById('rm-prog-' + rm.room);
+                const cardEl = document.getElementById('rm-card-' + rm.room);
+
+                if (timerEl) timerEl.textContent = st.timeText;
+                if (statusEl) statusEl.textContent = st.label;
+                if (subjEl) subjEl.textContent = st.subject;
+                if (timeEl) timeEl.textContent = st.timeSlot;
+                if (progEl) {
+                    progEl.style.width = st.percent + '%';
+                    progEl.className = st.barColor + ' h-full rounded-full transition-all duration-1000';
+                }
+                if (dotEl) dotEl.className = 'w-2 h-2 rounded-full shrink-0 ' + st.dotClass;
+                if (cardEl && typeof cardEl.className === 'string' && !cardEl.className.includes(st.bgClass)) {
+                    cardEl.className = `${st.bgClass} rounded-2xl border transition-all hover:shadow-lg p-3.5 flex flex-col justify-between min-h-[148px] relative group cursor-pointer`;
+                }
+            });
         }
 
         // Room Detail Drawer / Modal
@@ -900,9 +1146,9 @@
             openRoomModal(document.getElementById('modalRoomNum').textContent.replace('ห้อง ', ''));
         }
 
-        // ==========================================
+        // =========================================================================
         // SYSTEM 2: PHASE 0 (PRE-EXAM SUBMISSION)
-        // ==========================================
+        // =========================================================================
         function setP0StatusFilter(status) {
             p0StatusFilter = status;
             ['all', 'pending', 'done'].forEach(st => {
@@ -927,11 +1173,10 @@
         }
 
         function renderPhase0() {
-            const search = (document.getElementById('p0SearchInput').value || '').trim().toLowerCase();
+            const search = (document.getElementById('p0SearchInput')?.value || '').trim().toLowerCase();
             const container = document.getElementById('p0SubjectsContainer');
             container.innerHTML = '';
 
-            // Group examDb by unique subject: subj_code + subj_name + teacher_name
             const subjectMap = new Map();
             let totalPackets = examDb.length;
             let totalSubmittedPackets = 0;
@@ -1078,11 +1323,11 @@
             renderPhase0();
         }
 
-        // ==========================================
+        // =========================================================================
         // SYSTEM 3: SIGN-OFF SHEETS (M.1 - M.6)
-        // ==========================================
+        // =========================================================================
         function renderSheetView() {
-            const search = (document.getElementById('sheetSearchInput').value || '').trim().toLowerCase();
+            const search = (document.getElementById('sheetSearchInput')?.value || '').trim().toLowerCase();
             const tbody = document.getElementById('sheetTableBody');
             tbody.innerHTML = '';
 
@@ -1177,9 +1422,9 @@
             else renderSheetView();
         }
 
-        // ==========================================
-        // Log & Audit Modal Logic
-        // ==========================================
+        // =========================================================================
+        // LOG & AUDIT MODAL LOGIC
+        // =========================================================================
         function openLogModal() {
             const modal = document.getElementById('logModal');
             const container = document.getElementById('logListContainer');
