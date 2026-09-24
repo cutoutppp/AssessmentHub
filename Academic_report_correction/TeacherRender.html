@@ -59,7 +59,7 @@
         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 border-2 border-white"><i class="material-icons-round text-3xl">school</i></div>
         <div><p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1" id="roleBadge">Teacher Workspace</p><h1 class="text-2xl md:text-3xl font-black text-slate-800" id="teacherNameDisplay">ยินดีต้อนรับ</h1></div>
       </div>
-      
+      <div class="flex gap-2">
         <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?openExternalBrowser=1' : 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec?openExternalBrowser=1' ?>" target="_top" onclick="goToIndex(event)" id="backToDashboardBtn" class="w-auto px-4 h-12 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm border border-blue-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">dashboard</i> <span class="text-sm">หน้าแดชบอร์ด</span></a>
         <button onclick="logout()" class="w-auto px-4 h-12 bg-slate-50 text-slate-600 font-bold rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm border border-slate-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">logout</i> <span class="text-sm">ออกจากระบบ</span></button>
       </div>
@@ -665,44 +665,6 @@
     }
     let API_BASE_URL = localStorage.getItem('custom_gas_url') || ACTIVE_DEPLOY_URL;
 
-    if (typeof google !== 'undefined' && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(url => {
-        if (url) {
-          API_BASE_URL = url;
-          const bBtn = document.getElementById('backToDashboardBtn');
-          if (bBtn) { bBtn.href = url + '?openExternalBrowser=1'; bBtn.target = '_top'; }
-        }
-      }).getAppUrl();
-    } else {
-      const bBtn = document.getElementById('backToDashboardBtn');
-      if (bBtn) { bBtn.href = 'Index.html'; bBtn.target = '_self'; }
-    }
-
-    function goToIndex(e) {
-      const btn = document.getElementById('backToDashboardBtn');
-      if (btn && btn.href && btn.href.startsWith('http')) {
-        btn.target = '_top';
-        return true;
-      }
-      if (e && e.preventDefault) e.preventDefault();
-      let targetUrl = '';
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
-      } else {
-        targetUrl = 'Index.html';
-      }
-      try {
-        const a = document.createElement('a');
-        a.href = targetUrl;
-        a.target = '_top';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => a.remove(), 100);
-      } catch (err) {
-        window.location.href = targetUrl;
-      }
-    }
-
     // 🚀 ฟังก์ชันตัวกลางเรียก API: ใช้ google.script.run เมื่ออยู่ใน GAS หรือ fetch เมื่อเป็น Standalone
     function callBackend(action, params = {}, method = 'GET') {
       return new Promise(async (resolve, reject) => {
@@ -854,24 +816,43 @@
     let CURRENT_TASK_FILTER = 'all'; // 'all', 'no_task', 'unregistered', 'registered'
     let ACTIVE_TASK_ROW_ID = null; 
 
-        function goToIndex() {
+    function goToIndex(e) {
+      const btn = document.getElementById('backToDashboardBtn');
+      if (btn && btn.href && btn.href.startsWith('http')) {
+        btn.target = '_top';
+        return true;
+      }
+      if (e && e.preventDefault) e.preventDefault();
+      let targetUrl = '';
       if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run.withSuccessHandler(url => {
-          if (url) window.top.location.href = url + '?openExternalBrowser=1';
-          else window.top.location.search = '';
-        }).withFailureHandler(() => {
-          window.top.location.search = '';
-        }).getAppUrl();
+        targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
       } else {
-        window.location.href = 'index.html';
+        targetUrl = 'index.html';
+      }
+      try {
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.target = '_top';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
+      } catch (err) {
+        window.location.href = targetUrl;
       }
     }
 
     window.onload = async function() {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run.withSuccessHandler(url => {
-          if (url) API_BASE_URL = url;
+          if (url) {
+            API_BASE_URL = url;
+            const bBtn = document.getElementById('backToDashboardBtn');
+            if (bBtn) { bBtn.href = url + '?openExternalBrowser=1'; bBtn.target = '_top'; }
+          }
         }).getAppUrl();
+      } else {
+        const bBtn = document.getElementById('backToDashboardBtn');
+        if (bBtn) { bBtn.href = 'index.html'; bBtn.target = '_self'; }
       }
 
       const urlParams = new URLSearchParams(window.location.search);
