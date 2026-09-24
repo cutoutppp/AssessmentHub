@@ -1341,7 +1341,7 @@
         }
 
         let selectClass = selectedVal ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-slate-200 bg-white text-slate-800';
-        let teacherBadge = ADMIN_VIEW_MODE === 'student' ? `<div class="text-[9px] md:text-[10px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100"><i class="material-icons-round text-[10px] align-middle">person</i> ${escapeHtml(t.teacherName)}</div>` : '';
+        let teacherBadge = `<div class="text-[9px] md:text-[10px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100"><i class="material-icons-round text-[10px] align-middle">person</i> ${escapeHtml(t.teacherName)}</div>`;
 
         // Registration button (1-click interactive toggle)
         let interactiveRegBadge = '';
@@ -2366,7 +2366,7 @@
           icon = 'replay';
         }
 
-        let teacherBadge = ADMIN_VIEW_MODE === 'student' && t.teacherName ? `
+        let teacherBadge = t.teacherName ? `
           <div class="text-[9px] bg-indigo-50 text-indigo-600 font-bold px-1.5 py-0.5 rounded-md mt-1 inline-block border border-indigo-100">
             <i class="material-icons-round text-[10px] align-middle">person</i> ${escapeHtml(t.teacherName)}
           </div>
