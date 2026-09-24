@@ -255,7 +255,6 @@
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">ชั้น/ห้อง</th>
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">วิชาที่สอบ</th>
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">ครูผู้สอน</th>
-                            <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">กรรมการคุมสอบ</th>
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-40">วันและเวลาสอบ</th>
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-28 text-center">จำนวนชุด</th>
                             <th class="py-4 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-40">เบอร์ติดต่อ</th>
@@ -402,7 +401,7 @@
             if (groupKeys.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="py-16 text-center">
+                        <td colspan="7" class="py-16 text-center">
                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
                                 <i class="ri-search-eye-line text-3xl"></i>
                             </div>
@@ -486,11 +485,6 @@
                                 </td>
                                 <td class="py-2.5 px-4">
                                     <div class="text-[14px] text-slate-700 font-sarabun">${item.teacher_name || '-'}</div>
-                                </td>
-                                <td class="py-2.5 px-4">
-                                    <input type="text" placeholder="ผู้คุมสอบ..." value="${invigVal}" 
-                                           class="table-input text-[13px] bg-white h-8"
-                                           oninput="updateRowInput('${item.id}', 'invigilator', this.value)">
                                 </td>
                                 <td class="py-2.5 px-4">
                                     <div class="text-[13px] text-slate-700 font-sarabun">${item.date_d} ${item.date_m} ${item.date_y}</div>
