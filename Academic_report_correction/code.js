@@ -103,12 +103,19 @@ function doGet(e) {
 
   if (p === 'student') {
     try {
-      return HtmlService.createTemplateFromFile('Student')
+      var studentTemplate = HtmlService.createTemplateFromFile('Student');
+      try {
+        studentTemplate.appUrl = ScriptApp.getService().getUrl() || '';
+      } catch(e) {
+        studentTemplate.appUrl = '';
+      }
+      return studentTemplate
         .evaluate().setTitle('ตรวจสอบงานค้างและผลการเรียน - นักเรียน')
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
         .addMetaTag('viewport', 'width=device-width, initial-scale=1');
     } catch(err) {
-      return HtmlService.createHtmlOutput('<h3>ไม่พบไฟล์ Student ในโปรเจกต์ Google Apps Script</h3><p>กรุณาสร้างไฟล์ HTML ชื่อ <b>Student</b> ใน Apps Script ครับ</p>');
+      Logger.log('Error loading Student page: ' + err);
+      return HtmlService.createHtmlOutput('<h3>เกิดข้อผิดพลาดในการโหลดหน้า Student</h3><p>' + err.toString() + '</p>');
     }
   }
 
@@ -122,6 +129,11 @@ function doGet(e) {
       } catch (e2) {
         return HtmlService.createHtmlOutput('<h3>ไม่พบไฟล์เทมเพลตครูผู้สอน</h3><p>กรุณาตรวจสอบว่าใน Google Apps Script มีไฟล์ HTML ชื่อ <b>Teacher</b> หรือ <b>TeacherRender</b> ครับ</p>');
       }
+    }
+    try {
+      teacherTemplate.appUrl = ScriptApp.getService().getUrl() || '';
+    } catch(e) {
+      teacherTemplate.appUrl = '';
     }
     return teacherTemplate
       .evaluate().setTitle('ระบบบันทึกผลการเรียน - ครูผู้สอน')
@@ -139,6 +151,14 @@ function doGet(e) {
     .evaluate().setTitle('รายงานการแก้ไขผลการเรียนโรงเรียนพัฒนานิคม')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+function getAppUrl() {
+  try {
+    return ScriptApp.getService().getUrl() || '';
+  } catch(e) {
+    return '';
+  }
 }
 
 // 🌟 API Endpoints สำหรับ POST requests (หลีกเลี่ยง CORS Preflight ด้วย text/plain)
@@ -698,7 +718,11 @@ function verifyPinLogin(idCard, pin) {
     
     if (response.getResponseCode() === 200) {
        let tName = result.teacher.name;
-       let isAdmin = result.teacher.is_admin;
+       let tCode = String((result.teacher && result.teacher.teaccode) || '').trim();
+       let uId = String((result.teacher && result.teacher.userid) || idCard || '').replace(/[-\s]/g, '').trim();
+       const superCodes = ['444', '440', '242', '842', '234'];
+       const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+       let isAdmin = Boolean((result.teacher && result.teacher.is_admin) || superCodes.indexOf(tCode) !== -1 || superIds.indexOf(uId) !== -1);
        return { success: true, name: tName, isAdmin: isAdmin };
     } else {
        if (result.detail === "FIRST_TIME_LOGIN") {

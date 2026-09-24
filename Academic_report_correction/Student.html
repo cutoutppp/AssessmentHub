@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="utf-8">
@@ -96,6 +96,12 @@
             <span>ติดต่อครูผู้สอน ส่งงาน และรอการอนุมัติผลการเรียนใหม่</span>
           </li>
         </ol>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center">
+        <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?openExternalBrowser=1' : 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec?openExternalBrowser=1' ?>" target="_top" onclick="goToIndex(event)" id="backToIndexBtn" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-600 font-bold transition cursor-pointer">
+          <i class="material-icons-round text-base">arrow_back</i> กลับหน้ารายงานภาพรวม
+        </a>
       </div>
     </div>
   </div>
@@ -211,6 +217,19 @@
     let STUDENT_DATA = null;
 
     window.onload = function() {
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(url => {
+          if (url) {
+            API_BASE_URL = url;
+            const bBtn = document.getElementById('backToIndexBtn');
+            if (bBtn) { bBtn.href = url + '?openExternalBrowser=1'; bBtn.target = '_top'; }
+          }
+        }).getAppUrl();
+      } else {
+        const bBtn = document.getElementById('backToIndexBtn');
+        if (bBtn) { bBtn.href = 'Index.html'; bBtn.target = '_self'; }
+      }
+
       const urlParams = new URLSearchParams(window.location.search);
       const paramId = urlParams.get('studentId') || urlParams.get('id');
       const savedId = paramId || localStorage.getItem('last_student_id') || '';
@@ -232,6 +251,35 @@
       document.getElementById('loader').classList.add('hidden');
     }
 
+    function renderStudentSkeleton() {
+      showLoader('กำลังค้นหาข้อมูลนักเรียน...');
+    }
+
+    function goToIndex(e) {
+      const btn = document.getElementById('backToIndexBtn');
+      if (btn && btn.href && btn.href.startsWith('http')) {
+        btn.target = '_top';
+        return true;
+      }
+      if (e && e.preventDefault) e.preventDefault();
+      let targetUrl = '';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
+      } else {
+        targetUrl = 'Index.html';
+      }
+      try {
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.target = '_top';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
+      } catch (err) {
+        window.location.href = targetUrl;
+      }
+    }
+
     async function checkStudentLogin() {
       const input = document.getElementById('studentIdInput');
       const stuId = input.value.trim();
@@ -242,7 +290,7 @@
         return;
       }
 
-      renderStudentSkeleton();
+      showLoader('กำลังค้นหาข้อมูลนักเรียน...');
       CURRENT_STUDENT_ID = stuId;
       localStorage.setItem('last_student_id', stuId);
 
