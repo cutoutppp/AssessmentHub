@@ -534,7 +534,10 @@
                     </td>
                     <td class="p-3 font-bold text-indigo-700 whitespace-nowrap">${item.class_name}</td>
                     <td class="p-3 font-mono font-black text-center text-slate-900 whitespace-nowrap">${item.room}</td>
-                    <td class="p-3 text-slate-700">${item.teacher_name || '-'}</td>
+                    <td class="p-3 text-slate-700 leading-tight">
+                        <div class="font-bold text-slate-800">${[item.proctor1, item.proctor2].filter(Boolean).join("<br>") || "-"}</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">ผู้สอน: ${item.teacher_name || "-"}</div>
+                    </td>
 
                     <!-- 1. มอบข้อสอบ (กรรมการรับ) -->
                     <td class="p-2 text-center">
