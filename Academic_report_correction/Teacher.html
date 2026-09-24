@@ -736,11 +736,22 @@
             if (val === undefined || val === null) continue;
             urlParams.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
           }
-          const fetchUrl = `${API_BASE_URL}?${urlParams.toString()}`;
+                      let fetchUrl = API_BASE_URL;
+            let fetchOptions = { method: method || 'GET' };
+            
+            if (fetchOptions.method === 'POST' || isWriteAction) {
+                fetchOptions.method = 'POST'; // Force POST for write actions to avoid URL length limits
+                const postPayload = { action, ...params };
+                fetchOptions.body = JSON.stringify(postPayload);
+                // Use text/plain to avoid preflight OPTIONS request
+                fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+            } else {
+                fetchUrl = `${API_BASE_URL}?${urlParams.toString()}`;
+            }
 
-          async function attemptFetch(attempt) {
-            try {
-              const res = await fetch(fetchUrl);
+            async function attemptFetch(attempt) {
+              try {
+                const res = await fetch(fetchUrl, fetchOptions);
               const text = await res.text();
               try {
                 const data = JSON.parse(text);
@@ -1441,7 +1452,7 @@
       let payload = Object.keys(PENDING_DATA).map(rowId => ({ rowId: parseInt(rowId), newGrade: PENDING_DATA[rowId] }));
       
       try {
-        const res = await callBackend('submit-grades', { payload }, 'GET');
+        const res = await callBackend('submit-grades', { payload }, 'POST');
         hideLoader();
         if(res && res.success !== false) {
           // ⚡ Optimistic Update: นำรายการที่ส่งแล้วออกจากหน้างานทันทีใน 0 วินาที
@@ -2197,7 +2208,7 @@
       const count = APPROVAL_LIST.length;
       showLoader(`กำลังอนุมัติผลการเรียนที่เลือก ${count} รายการ... (กรุณารอสักครู่)`);
       try {
-        const res = await callBackend('approve', { rowIds: APPROVAL_LIST }, 'GET');
+        const res = await callBackend('approve', { rowIds: APPROVAL_LIST }, 'POST');
         hideLoader();
         if (res && res.success !== false) {
           // ⚡ Optimistic in-memory update
@@ -2231,7 +2242,7 @@
       const count = APPROVAL_LIST.length;
       showLoader(`กำลังส่งกลับให้ครูแก้ไข ${count} รายการ... (กรุณารอสักครู่)`);
       try {
-        const res = await callBackend('reject', { rowIds: APPROVAL_LIST }, 'GET');
+        const res = await callBackend('reject', { rowIds: APPROVAL_LIST }, 'POST');
         hideLoader();
         if (res && res.success !== false) {
           // ⚡ Optimistic in-memory update
