@@ -218,6 +218,10 @@
                 </div>
                 
                 <div class="flex gap-3">
+                    
+                    <button onclick="toggleShowSelected()" id="showSelectedBtn" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors flex items-center gap-2 hidden">
+                        <i class="ri-eye-line"></i> ดูที่เลือกไว้
+                    </button>
                     <button onclick="clearSelection()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-2">
                         <i class="ri-eraser-line"></i> ล้างการเลือก
                     </button>
@@ -269,6 +273,7 @@
         const termYear = "1/2569"; 
         let filteredData = [];
         let selectedIds = new Set();
+        let showSelectedOnly = false;
         let rowInputs = {}; 
 
         function init() {
@@ -284,6 +289,9 @@
             const grade = document.getElementById('gradeFilter').value;
             
             filteredData = db.filter(item => {
+                if (showSelectedOnly) {
+                    return selectedIds.has(item.id);
+                }
                 const matchGrade = !grade || item.grade_group === grade;
                 const matchTerm = !term || 
                     (item.subj_name || '').toLowerCase().includes(term) ||
@@ -409,6 +417,39 @@
             updateCounts();
         }
 
+        
+        function toggleShowSelected() {
+            showSelectedOnly = !showSelectedOnly;
+            const btn = document.getElementById('showSelectedBtn');
+            const searchInput = document.getElementById('searchInput');
+            const gradeFilter = document.getElementById('gradeFilter');
+            
+            if (showSelectedOnly) {
+                btn.innerHTML = '<i class="ri-eye-off-line"></i> กลับไปดูทั้งหมด';
+                btn.classList.replace('text-indigo-600', 'text-slate-600');
+                btn.classList.replace('bg-indigo-50', 'bg-slate-100');
+                btn.classList.replace('hover:bg-indigo-100', 'hover:bg-slate-200');
+                
+                // Disable search/filters while viewing selected
+                searchInput.disabled = true;
+                gradeFilter.disabled = true;
+                searchInput.classList.add('bg-slate-50', 'text-slate-400');
+                gradeFilter.classList.add('bg-slate-50', 'text-slate-400');
+            } else {
+                btn.innerHTML = '<i class="ri-eye-line"></i> ดูที่เลือกไว้';
+                btn.classList.replace('text-slate-600', 'text-indigo-600');
+                btn.classList.replace('bg-slate-100', 'bg-indigo-50');
+                btn.classList.replace('hover:bg-slate-200', 'hover:bg-indigo-100');
+                
+                // Re-enable search/filters
+                searchInput.disabled = false;
+                gradeFilter.disabled = false;
+                searchInput.classList.remove('bg-slate-50', 'text-slate-400');
+                gradeFilter.classList.remove('bg-slate-50', 'text-slate-400');
+            }
+            filterData();
+        }
+
         function clearSelection() {
             selectedIds.clear();
             renderTable();
@@ -433,12 +474,21 @@
             const selCount = document.getElementById('selectedCount');
             selCount.innerText = selectedIds.size;
             
+            const showSelBtn = document.getElementById('showSelectedBtn');
+            
             if(selectedIds.size > 0) {
+                showSelBtn.classList.remove('hidden');
                 selCount.classList.add('text-indigo-600');
                 selCount.classList.remove('text-slate-400');
             } else {
                 selCount.classList.remove('text-indigo-600');
                 selCount.classList.add('text-slate-400');
+                
+                // If nothing is selected, force showSelectedOnly to false and hide the button
+                if (showSelectedOnly) {
+                    toggleShowSelected();
+                }
+                showSelBtn.classList.add('hidden');
             }
             
             const btn = document.getElementById('printBtn');
