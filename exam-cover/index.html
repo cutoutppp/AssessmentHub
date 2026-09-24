@@ -136,6 +136,7 @@
             box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden">
 
@@ -504,78 +505,111 @@
             }
         }
 
-        function exportToWord() {
+                async function exportToWord() {
             if (selectedIds.size === 0) return;
             
+            const btn = document.getElementById('printBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ri-loader-4-line animate-spin text-xl"></i><span>กำลังสร้างไฟล์ Word...</span>';
+            btn.disabled = true;
+
             const itemsToPrint = db.filter(item => selectedIds.has(item.id));
             const gPhone = document.getElementById('globalPhone').value;
             
-            let content = '<table style="width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0;">';
+            let content = '';
             
-            for (let i = 0; i < itemsToPrint.length; i += 2) {
-                content += '<tr>';
-                for (let j = 0; j < 2; j++) {
-                    let idx = i + j;
-                    content += '<td style="width: 50%; border: 1px solid black; padding: 0.3cm 0.5cm; vertical-align: top;">';
-                    
-                    if (idx < itemsToPrint.length) {
-                        const cls = itemsToPrint[idx];
+            // Helper to generate Base64 QR Code
+            const generateQRBase64 = (text) => {
+                return new Promise((resolve) => {
+                    const tempDiv = document.createElement('div');
+                    new QRCode(tempDiv, {
+                        text: text,
+                        width: 80,
+                        height: 80,
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+                    // Wait a tiny bit for the canvas to render
+                    setTimeout(() => {
+                        const canvas = tempDiv.querySelector('canvas');
+                        if (canvas) {
+                            resolve(canvas.toDataURL('image/png'));
+                        } else {
+                            // Fallback to URL if canvas fails
+                            resolve(`https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${text}`);
+                        }
+                    }, 50);
+                });
+            };
+            
+            for (let i = 0; i < itemsToPrint.length; i += 4) {
+                content += '<table style="width: 100%; border-collapse: collapse; margin-bottom: 0; border: none; table-layout: fixed;">';
+                for (let row = 0; row < 2; row++) {
+                    content += '<tr style="height: 11.5cm;">';
+                    for (let col = 0; col < 2; col++) {
+                        let idx = i + (row * 2) + col;
+                        content += '<td style="width: 50%; border: 1px solid black; padding: 0.3cm 0.5cm; vertical-align: top;">';
                         
-                        const countText = rowInputs[cls.id].count ? rowInputs[cls.id].count : '........................';
-                        const phoneText = rowInputs[cls.id].phone ? rowInputs[cls.id].phone : (gPhone || '..................................................');
-                        
-                        const invigText = cls.invigilator_name ? cls.invigilator_name : '........................................................';
-                        const teacherText = cls.teacher_name ? cls.teacher_name : '........................................................';
-                        
-                        const bldg = cls.building ? cls.building : '........';
-                        const room = cls.room ? cls.room : '...................';
-                        const subjCode = cls.subj_code ? cls.subj_code : '...................';
-                        const subjName = cls.subj_name ? cls.subj_name : '.......................................';
-                        const gradeLvl = cls.grade_lvl ? cls.grade_lvl : '.......';
-                        const classNum = cls.class_num ? cls.class_num : '.......';
-                        const d = cls.date_d ? cls.date_d : '.......';
-                        const m = cls.date_m ? cls.date_m : '............';
-                        const y = cls.date_y ? cls.date_y : '..........';
-                        const time = cls.time ? cls.time : '...................';
+                        if (idx < itemsToPrint.length) {
+                            const cls = itemsToPrint[idx];
+                            
+                            const countText = rowInputs[cls.id].count ? rowInputs[cls.id].count : '........................';
+                            const phoneText = rowInputs[cls.id].phone ? rowInputs[cls.id].phone : (gPhone || '..................................................');
+                            
+                            const invigText = cls.invigilator_name ? cls.invigilator_name : '........................................................';
+                            const teacherText = cls.teacher_name ? cls.teacher_name : '........................................................';
+                            
+                            const bldg = cls.building ? cls.building : '........';
+                            const room = cls.room ? cls.room : '...................';
+                            const subjCode = cls.subj_code ? cls.subj_code : '...................';
+                            const subjName = cls.subj_name ? cls.subj_name : '.......................................';
+                            const gradeLvl = cls.grade_lvl ? cls.grade_lvl : '.......';
+                            const classNum = cls.class_num ? cls.class_num : '.......';
+                            const d = cls.date_d ? cls.date_d : '.......';
+                            const m = cls.date_m ? cls.date_m : '............';
+                            const y = cls.date_y ? cls.date_y : '..........';
+                            const time = cls.time ? cls.time : '...................';
 
-                        const classCode = (cls.grade_lvl || 'X') + (cls.class_num ? cls.class_num.replace(/[^0-9]/g, '') : 'X');
-                        const trackingId = `${termYear}-${classCode}-${cls.subj_code || 'XXXXX'}`;
-                        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${trackingId}`;
+                            const classCode = (cls.grade_lvl || 'X') + (cls.class_num ? cls.class_num.replace(/[^0-9]/g, '') : 'X');
+                            const trackingId = `${termYear}-${classCode}-${cls.subj_code || 'XXXXX'}`;
+                            
+                            // Generate Base64 QR code image
+                            const qrBase64 = await generateQRBase64(trackingId);
 
-                        content += `
-                            <table style="width: 100%; border: none; margin-bottom: 6pt; border-collapse: collapse;">
-                                <tr>
-                                    <td style="border: none; text-align: left; vertical-align: middle; padding: 0;">
-                                        <div style="font-size: 18pt; font-weight: bold; font-family: 'TH SarabunPSK';">โรงเรียนพัฒนานิคม จังหวัดลพบุรี</div>
-                                    </td>
-                                    <td style="border: none; text-align: right; vertical-align: top; width: 80px; padding: 0;">
-                                        <img src="${qrUrl}" width="65" height="65" alt="QR" />
-                                        <div style="font-size: 9pt; margin-top: 2pt;">${trackingId}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div style="text-align: center; font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">อาคาร &nbsp;&nbsp;${bldg}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ห้องสอบ &nbsp;&nbsp;${room}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">รหัสวิชา &nbsp;&nbsp;${subjCode}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">วิชา &nbsp;&nbsp;${subjName}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ชั้นมัธยมศึกษาปีที่ &nbsp;&nbsp;${gradeLvl}&nbsp;&nbsp; / &nbsp;&nbsp;${classNum}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">จำนวนข้อสอบ &nbsp;&nbsp;${countText}&nbsp;&nbsp; ชุด</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">วันที่สอบ &nbsp;&nbsp;${d}&nbsp;&nbsp; / &nbsp;&nbsp;${m}&nbsp;&nbsp; / &nbsp;&nbsp;${y}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">เวลาสอบ &nbsp;&nbsp;${time}&nbsp;&nbsp; น.</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">กรรมการคุมสอบ &nbsp;&nbsp;${invigText}</div>
-                            <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ผู้สอน &nbsp;&nbsp;${teacherText}</div>
-                            <div style="font-size: 16pt; margin-bottom: 0; font-family: 'TH SarabunPSK';">เบอร์โทรผู้สอน &nbsp;&nbsp;${phoneText}</div>
-                        `;
+                            content += `
+                                <table style="width: 100%; border: none; margin-bottom: 6pt; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="border: none; text-align: left; vertical-align: middle; padding: 0;">
+                                            <div style="font-size: 18pt; font-weight: bold; font-family: 'TH SarabunPSK';">โรงเรียนพัฒนานิคม จังหวัดลพบุรี</div>
+                                        </td>
+                                        <td style="border: none; text-align: right; vertical-align: top; width: 80px; padding: 0;">
+                                            <img src="${qrBase64}" width="65" height="65" alt="QR" />
+                                            <div style="font-size: 9pt; margin-top: 2pt;">${trackingId}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="text-align: center; font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">อาคาร &nbsp;&nbsp;${bldg}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ห้องสอบ &nbsp;&nbsp;${room}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">รหัสวิชา &nbsp;&nbsp;${subjCode}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">วิชา &nbsp;&nbsp;${subjName}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ชั้นมัธยมศึกษาปีที่ &nbsp;&nbsp;${gradeLvl}&nbsp;&nbsp; / &nbsp;&nbsp;${classNum}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">จำนวนข้อสอบ &nbsp;&nbsp;${countText}&nbsp;&nbsp; ชุด</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">วันที่สอบ &nbsp;&nbsp;${d}&nbsp;&nbsp; / &nbsp;&nbsp;${m}&nbsp;&nbsp; / &nbsp;&nbsp;${y}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">เวลาสอบ &nbsp;&nbsp;${time}&nbsp;&nbsp; น.</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">กรรมการคุมสอบ &nbsp;&nbsp;${invigText}</div>
+                                <div style="font-size: 16pt; margin-bottom: 4pt; font-family: 'TH SarabunPSK';">ผู้สอน &nbsp;&nbsp;${teacherText}</div>
+                                <div style="font-size: 16pt; margin-bottom: 0; font-family: 'TH SarabunPSK';">เบอร์โทรผู้สอน &nbsp;&nbsp;${phoneText}</div>
+                            `;
+                        }
+                        content += '</td>';
                     }
-                    content += '</td>';
+                    content += '</tr>';
                 }
-                content += '</tr>';
+                content += '</table>';
                 
-                if (i + 2 < itemsToPrint.length) {
+                if (i + 4 < itemsToPrint.length) {
                     content += "<br clear=all style='mso-special-character:line-break;page-break-before:always'>";
                 }
             }
-            content += '</table>';
 
             const htmlContent = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -604,6 +638,10 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            // Restore button
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
 
         window.onload = init;
