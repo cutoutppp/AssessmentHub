@@ -1,0 +1,7 @@
+# Ignore duplicates and non-AppsScript files
+code.js
+*.zip
+*.py
+*.pyc
+*.log
+.git*

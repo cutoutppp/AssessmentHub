@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="utf-8">
@@ -60,8 +60,7 @@
         <div><p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1" id="roleBadge">Teacher Workspace</p><h1 class="text-2xl md:text-3xl font-black text-slate-800" id="teacherNameDisplay">ยินดีต้อนรับ</h1></div>
       </div>
       
-      <div class="flex gap-2">
-        <a href="javascript:void(0)" onclick="goToIndex()" class="w-auto px-4 h-12 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm border border-blue-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">dashboard</i> <span class="text-sm">หน้าแดชบอร์ด</span></a>
+        <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?openExternalBrowser=1' : 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec?openExternalBrowser=1' ?>" target="_top" onclick="goToIndex(event)" id="backToDashboardBtn" class="w-auto px-4 h-12 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm border border-blue-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">dashboard</i> <span class="text-sm">หน้าแดชบอร์ด</span></a>
         <button onclick="logout()" class="w-auto px-4 h-12 bg-slate-50 text-slate-600 font-bold rounded-2xl flex items-center justify-center hover:bg-rose-50 hover:text-rose-600 transition-colors shadow-sm border border-slate-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">logout</i> <span class="text-sm">ออกจากระบบ</span></button>
       </div>
     </header>
@@ -666,6 +665,44 @@
     }
     let API_BASE_URL = localStorage.getItem('custom_gas_url') || ACTIVE_DEPLOY_URL;
 
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run.withSuccessHandler(url => {
+        if (url) {
+          API_BASE_URL = url;
+          const bBtn = document.getElementById('backToDashboardBtn');
+          if (bBtn) { bBtn.href = url + '?openExternalBrowser=1'; bBtn.target = '_top'; }
+        }
+      }).getAppUrl();
+    } else {
+      const bBtn = document.getElementById('backToDashboardBtn');
+      if (bBtn) { bBtn.href = 'Index.html'; bBtn.target = '_self'; }
+    }
+
+    function goToIndex(e) {
+      const btn = document.getElementById('backToDashboardBtn');
+      if (btn && btn.href && btn.href.startsWith('http')) {
+        btn.target = '_top';
+        return true;
+      }
+      if (e && e.preventDefault) e.preventDefault();
+      let targetUrl = '';
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
+      } else {
+        targetUrl = 'Index.html';
+      }
+      try {
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.target = '_top';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
+      } catch (err) {
+        window.location.href = targetUrl;
+      }
+    }
+
     // 🚀 ฟังก์ชันตัวกลางเรียก API: ใช้ google.script.run เมื่ออยู่ใน GAS หรือ fetch เมื่อเป็น Standalone
     function callBackend(action, params = {}, method = 'GET') {
       return new Promise(async (resolve, reject) => {
@@ -798,6 +835,15 @@
 
     let CURRENT_TEACHER = '';
     let IS_ADMIN = false;
+    const SUPERUSER_TEACCODES = ['444', '440', '242', '842', '234'];
+    const SUPERUSER_USERIDS = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+    function checkIsSuperuser(userObj, idCard) {
+      const cleanId = String(idCard || (userObj && (userObj.userid || userObj.idCard)) || '').replace(/[-\s]/g, '');
+      const cleanCode = String((userObj && userObj.teaccode) || '').trim();
+      return Boolean((userObj && (userObj.is_admin || userObj.role === 'admin' || userObj.isSuperuser || userObj.isAdmin)) ||
+             SUPERUSER_USERIDS.includes(cleanId) ||
+             SUPERUSER_TEACCODES.includes(cleanCode));
+    }
     let ADMIN_VIEW_MODE = 'teacher'; 
     let ALL_TASKS = []; 
     let ALL_HISTORY = []; 
@@ -847,7 +893,7 @@
       if (urlId && urlName) {
         TEMP_IDCARD = urlId;
         CURRENT_TEACHER = decodeURIComponent(urlName);
-        IS_ADMIN = urlAdmin === '1' || urlAdmin === 'true';
+        IS_ADMIN = urlAdmin === '1' || urlAdmin === 'true' || checkIsSuperuser(null, urlId);
         window.history.replaceState({}, document.title, window.location.pathname);
         document.getElementById('loginScreen').classList.add('hidden');
         setupDashboard();
@@ -862,7 +908,7 @@
           if (user && (user.userid || user.idCard)) {
             TEMP_IDCARD = user.userid || user.idCard;
             CURRENT_TEACHER = user.name || ((user.prefix || '') + (user.firstname || '') + ' ' + (user.lastname || '')).trim();
-            IS_ADMIN = !!user.is_admin || user.role === 'admin' || !!user.isSuperuser || !!user.isAdmin;
+            IS_ADMIN = checkIsSuperuser(user, TEMP_IDCARD);
             document.getElementById('loginScreen').classList.add('hidden');
             setupDashboard();
             return;
@@ -911,7 +957,7 @@
       if (cachedName) {
         // ⚡ เข้าสู่แดชบอร์ดทันทีใน 0.001 วินาที พร้อมแสดง Skeleton Loader
         CURRENT_TEACHER = cachedName;
-        IS_ADMIN = cachedAdmin;
+        IS_ADMIN = cachedAdmin || checkIsSuperuser(null, cred.id);
         document.getElementById('loginScreen').classList.add('hidden');
         setupDashboard();
       } else {
@@ -922,9 +968,9 @@
         const res = await callBackend('verify-pin', { idCard: cred.id, pin: cred.pin });
         if (res.success) {
           CURRENT_TEACHER = res.name;
-          IS_ADMIN = res.isAdmin;
+          IS_ADMIN = res.isAdmin || checkIsSuperuser(null, cred.id);
           localStorage.setItem('last_teacher_name', res.name);
-          localStorage.setItem('last_teacher_is_admin', res.isAdmin ? 'true' : 'false');
+          localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
           document.getElementById('teacherNameDisplay').innerText = res.name;
           if (!cachedName) {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -983,7 +1029,8 @@
         if(res.success) {
           localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin }));
           CURRENT_TEACHER = res.name; 
-          IS_ADMIN = res.isAdmin; 
+          IS_ADMIN = res.isAdmin || checkIsSuperuser(null, TEMP_IDCARD); 
+          localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
           document.getElementById('loginScreen').classList.add('hidden'); 
           setupDashboard();
         } else { 
