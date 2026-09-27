@@ -437,7 +437,8 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
                                   📄 วผ.16 (ปลายภาค)
                                 </button>
 
-                                {/* WP17 (Final) */}
+                                {/* WP17 (Final) - ปิดการใช้งานปุ่มดาวน์โหลดชั่วคราว */}
+                                {/*
                                 <button 
                                   onClick={() => (t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต')) && downloadSavedDoc('wp17', t.teacher_name, { mock_subjects: teacherData.filter((td: any) => td.teacher_name === t.teacher_name) })} 
                                   disabled={!(t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต'))}
@@ -446,6 +447,7 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
                                 >
                                   📄 วผ.17 (ปลายภาค)
                                 </button>
+                                */}
                               </div>
                             )}
                           </td>

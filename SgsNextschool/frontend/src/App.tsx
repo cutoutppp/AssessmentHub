@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import NextSchoolExcelViewer from './NextSchoolExcelViewer'
 import Swal from 'sweetalert2'
 import Dashboard from './Dashboard'
+import AssistantChatbot from './AssistantChatbot'
 
 const StudentErrorRow = ({ studentId, errors }: { studentId: string, errors: any[] }) => {
   const [expanded, setExpanded] = useState(false);
@@ -1175,6 +1176,14 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* ระบบผู้ช่วยแนะนำการใช้งาน (Chatbot & Guide) */}
+      <AssistantChatbot 
+        roundType={roundType}
+        viewMode={viewMode}
+        hasErrors={results ? results.some((r: any) => r.errors && r.errors.length > 0) : false}
+        hasResults={!!results}
+      />
 
     </div>
   )
