@@ -182,6 +182,78 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
         { label: "📄 เอกสาร วผ.25 (กลางภาค)", topicId: "wp25" }
       ]
+    },
+
+    grey_buttons: {
+      title: "🔘 ทำไมปุ่มดาวน์โหลดเอกสาร (วผ.16 / วผ.25) ถึงเป็นสีเทาและกดไม่ได้?",
+      content: `🔒 **สาเหตุที่ปุ่มดาวน์โหลดเป็นสีเทา (Disabled):**
+• ระบบแดชบอร์ดมีระบบ **"ตรวจสอบความสมบูรณ์ 100% ก่อนออกเอกสารราชการ"** เพื่อป้องกันเอกสารตกหล่น
+• หากคุณครูท่านนั้น:
+  1. ยังส่งคะแนนไม่ครบทุกห้อง/วิชาที่สอน (เช่น สอน 4 ห้อง แต่ส่งไปแค่ 2 ห้อง หรือขึ้นสถานะ \`⏳ ส่งแล้ว X/Y\` หรือ \`❌ รอส่งทั้งหมด\`)
+  2. หรือยังมีวิชาที่มีข้อผิดพลาด / การ์ดสีแดง (\`⚠️ มีจุดต้องแก้ไข\`)
+  ➡️ **ปุ่มจะถูกล็อกเป็นสีเทาโดยอัตโนมัติ**
+
+✨ **วิธีปลดล็อกปุ่มให้เป็นสีฟ้า/คราม (ดาวน์โหลดได้):**
+1. คุณครูต้องนำไฟล์คะแนนมาตรวจสอบและ **กดส่งข้อมูลเข้า Google Sheets ให้ครบทุกห้อง/รายวิชาที่ตนเองสอน**
+2. เมื่อทุกวิชาผ่านการตรวจสอบจนสถานะรวมของคุณครูขึ้นว่า:
+   • **"✅ ส่งครบสมบูรณ์"** หรือ 
+   • **"🟡 มีจุดสังเกต"**
+3. **ปุ่มจะปลดล็อกทันที!** กลายเป็นปุ่มสีฟ้าสดใส **[ 📄 วผ.16 (ปลายภาค) ]** หรือสีคราม **[ 📄 วผ.25 (กลางภาค) ]** ให้คลิกดาวน์โหลดไฟล์ Word (.docx) ได้ทันทีครับ!`,
+      actions: [
+        { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
+        { label: "🛑 ปัญหากดส่งข้อมูลไม่ได้", topicId: "cannot_submit" },
+        { label: "🔍 หาชื่อ/วิชา/ปุ่มไม่เจอ", topicId: "cant_find" }
+      ]
+    },
+
+    cannot_submit: {
+      title: "🛑 ทำไมปุ่ม 'ส่งข้อมูลเข้า Google Sheets' ถึงกดไม่ได้ / เป็นสีเทา?",
+      content: `⚠️ **สาเหตุที่ปุ่มส่งข้อมูลกดไม่ได้ หรือเป็นสีเทา:**
+
+🔴 **สาเหตุที่ 1 (พบบ่อยที่สุด 99%): มีการ์ดสีแดง (คะแนนขัดแย้ง)**
+• ระบบมี Safety Check ป้องกันข้อมูลคลาดเคลื่อน **หากยังมีวิชาใดวิชาหนึ่งขึ้นการ์ดสีแดง แม้แต่คนเดียว ระบบจะระงับการส่งข้อมูลทันที!**
+• **วิธีแก้:** เลื่อนดูการ์ดสีแดง กดดูตารางเปรียบเทียบคะแนนว่า SGS หรือ NextSchool ผิด แล้วแก้คะแนนในระบบต้นทาง โหลดไฟล์ใหม่มาตรวจซ้ำให้ผ่านเป็นการ์ดสีเขียวครับ
+
+⏳ **สาเหตุที่ 2: ยังไม่ได้กดปุ่มเริ่มตรวจสอบ**
+• หลังลากไฟล์ PDF และ Excel มาวาง ต้องกดปุ่มสีน้ำเงิน **[ 🔍 เริ่มตรวจสอบคะแนน ]** ให้ระบบประมวลผลก่อน ปุ่มส่งจึงจะเปิดใช้งาน
+
+📑 **สาเหตุที่ 3: ยังไม่ได้เลือกประเภทการสอบ**
+• ตรวจสอบด้านบนสุดว่าเลือก **"กลางภาค (Midterm)"** หรือ **"ปลายภาค (Final)"** แล้วหรือยัง
+
+🌐 **สาเหตุที่ 4: สถานะฐานข้อมูลไม่เชื่อมต่อ (DB Disconnected)**
+• สังเกตสถานะมุมบนขวา หากขึ้นเตือนสีส้ม ให้ลองกดรีเฟรชหน้าเว็บ หรือตรวจสอบการเชื่อมต่ออินเทอร์เน็ตครับ`,
+      actions: [
+        { label: "🔴 แก้ปัญหาการ์ดสีแดง", topicId: "red_card" },
+        { label: "🟡 การ์ดสีส้ม/เหลือง บันทึกได้ไหม?", topicId: "orange_card" },
+        { label: "🔘 ทำไมปุ่มดาวน์โหลดเป็นสีเทา", topicId: "grey_buttons" }
+      ]
+    },
+
+    cant_find: {
+      title: "🔍 หาข้อมูลไม่เจอ (หาชื่อครู / หารายวิชา / หาปุ่มดาวน์โหลดไม่เจอ)",
+      content: `💡 **แนวทางแก้ไขเมื่อหาข้อมูลไม่เจอในระบบ:**
+
+👤 **1. หาชื่อคุณครูไม่เจอในแดชบอร์ด:**
+• **ใช้ช่องค้นหา (Search):** พิมพ์ชื่อหรือนามสกุลในช่องค้นหาด้านบนของแดชบอร์ด
+• **คลี่กลุ่มสาระฯ ออกมาดู:** แดชบอร์ดจะยุบหมวดหมู่อยู่ ให้คลิกที่หัวข้อกลุ่มสาระฯ ของตนเองเพื่อเปิดดูรายชื่อ
+• **ตรวจปีการศึกษาและภาคเรียน:** ดูที่มุมบนขวาว่าเลือกปีการศึกษาและเทอมตรงกับปัจจุบันหรือไม่
+
+📚 **2. หารายวิชา / ห้องเรียนที่สอนไม่เจอ:**
+• ให้ **คลิกที่แถบชื่อของคุณครู** ระบบจะคลี่รายวิชาทั้งหมดที่สอนออกมาให้เห็นเป็นตาราง
+• หากมีวิชาที่สอนจริงแต่ไม่ปรากฏในระบบ ให้ติดต่อฝ่ายวัดผลเพื่อเพิ่มข้อมูลตารางสอนในฐานข้อมูล
+
+📥 **3. หาปุ่มดาวน์โหลดเอกสาร (วผ.16 / วผ.25) ไม่เจอ:**
+• ปุ่มดาวน์โหลดจะอยู่ **ใต้ชื่อของคุณครูแต่ละท่านในหน้า แดชบอร์ด** (ไม่ใช่ในหน้าตรวจสอบไฟล์)
+• คลิกแท็บด้านบนเพื่อสลับไปที่ **"📊 แดชบอร์ดติดตามการส่งเกรด"**
+• มองหาแถบชื่อของท่าน จะพบคอลัมน์ดาวน์โหลดเอกสารอยู่ใต้ชื่อทันที
+
+🔒 **4. หาปุ่ม วผ.17 ไม่เจอ:**
+• ขณะนี้ฝ่ายวัดผลได้ปิดปุ่มดาวน์โหลด วผ.17 ชั่วคราวเพื่อปรับปรุงแบบฟอร์มครับ`,
+      actions: [
+        { label: "🔘 ทำไมปุ่มดาวน์โหลดเป็นสีเทา", topicId: "grey_buttons" },
+        { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
+        { label: "🛑 ปัญหากดส่งข้อมูลไม่ได้", topicId: "cannot_submit" }
+      ]
     }
   };
 
@@ -199,11 +271,11 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
           time: getNowTime(),
           actions: [
             { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
-            { label: "🚀 วิธีใช้งาน 5 ขั้นตอน", topicId: "steps" },
-            { label: "📥 วิธีดาวน์โหลดไฟล์", topicId: "download_files" },
-            { label: "🔴 แก้การ์ดสีแดง", topicId: "red_card" },
-            { label: "🟡 การ์ดสีส้ม/เหลือง", topicId: "orange_card" },
-            { label: "📄 เอกสาร วผ.25", topicId: "wp25" }
+            { label: "🔘 ทำไมปุ่มเป็นสีเทา (ล็อก)?", topicId: "grey_buttons" },
+            { label: "🛑 กดปุ่มส่งข้อมูลไม่ได้?", topicId: "cannot_submit" },
+            { label: "🔍 หาชื่อ/วิชา/ปุ่มไม่เจอ?", topicId: "cant_find" },
+            { label: "🔴 แก้ปัญหาการ์ดสีแดง", topicId: "red_card" },
+            { label: "🚀 ขั้นตอนเริ่มจนจบ 5 สเต็ป", topicId: "steps" }
           ]
         }
       ]);
@@ -259,7 +331,13 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
       const q = query.toLowerCase();
       let matchedTopicId = '';
 
-      if (q.includes('16') || q.includes('วผ16') || q.includes('วผ.16') || q.includes('0 ร') || q.includes('มส') || q.includes('มผ') || q.includes('แก้เกรด') || q.includes('ปลายภาค')) {
+      if (q.includes('เทา') || q.includes('ปุ่มเทา') || q.includes('ล็อก') || q.includes('lock') || q.includes('disabled') || q.includes('โหลดไม่ได้') || q.includes('ทำไมโหลดไม่ได้') || q.includes('ทำไมกดไม่ได้') || q.includes('กดไม่ได้')) {
+        matchedTopicId = 'grey_buttons';
+      } else if (q.includes('ส่งไม่ได้') || q.includes('กดส่งไม่ได้') || q.includes('ส่งข้อมูลไม่ได้') || q.includes('บันทึกไม่ได้') || q.includes('ปุ่มส่ง') || q.includes('ปุ่มบันทึก') || q.includes('ทำไมส่งไม่ได้') || q.includes('กดปุ่มส่ง')) {
+        matchedTopicId = 'cannot_submit';
+      } else if (q.includes('หาไม่เจอ') || q.includes('ไม่เจอ') || q.includes('หาชื่อ') || q.includes('หาวิชา') || q.includes('หาห้อง') || q.includes('หาปุ่ม') || q.includes('อยู่ตรงไหน') || q.includes('ดูตรงไหน') || q.includes('ค้นหา')) {
+        matchedTopicId = 'cant_find';
+      } else if (q.includes('16') || q.includes('วผ16') || q.includes('วผ.16') || q.includes('0 ร') || q.includes('มส') || q.includes('มผ') || q.includes('แก้เกรด') || q.includes('ปลายภาค')) {
         matchedTopicId = 'wp16';
       } else if (q.includes('17') || q.includes('วผ17') || q.includes('วผ.17') || q.includes('กิจกรรม')) {
         matchedTopicId = 'wp17_notice';
@@ -289,15 +367,17 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         const botFallbackMsg: Message = {
           id: 'bot_' + Date.now(),
           sender: 'bot',
-          text: `ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างถ่องแท้ 
+          text: `ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างชัดเจน 
 
-คุณครูสามารถคลิกเลือกหัวข้อที่ใกล้เคียงจากด้านล่างนี้ หรือพิมพ์คำค้นหาสั้นๆ เช่น **"วผ.16"**, **"การ์ดสีแดง"**, **"วิธีโหลดไฟล์"** ได้เลยครับ:`,
+คุณครูสามารถคลิกเลือกหัวข้อที่พบบ่อยจากด้านล่างนี้ได้เลยครับ:`,
           time: getNowTime(),
           actions: [
+            { label: "🔘 ทำไมปุ่มเป็นสีเทา (ล็อก)?", topicId: "grey_buttons" },
+            { label: "🛑 กดปุ่มส่งข้อมูลไม่ได้?", topicId: "cannot_submit" },
+            { label: "🔍 หาชื่อ/วิชา/ปุ่มไม่เจอ?", topicId: "cant_find" },
             { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
-            { label: "🚀 วิธีใช้งาน 5 ขั้นตอน", topicId: "steps" },
             { label: "🔴 แก้การ์ดสีแดง", topicId: "red_card" },
-            { label: "📥 วิธีโหลดไฟล์", topicId: "download_files" }
+            { label: "🚀 วิธีใช้งาน 5 ขั้นตอน", topicId: "steps" }
           ]
         };
         setMessages(prev => [...prev, botFallbackMsg]);
@@ -314,9 +394,10 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         time: getNowTime(),
         actions: [
           { label: "📘 แนะนำการใช้ระบบ วผ.16", topicId: "wp16" },
-          { label: "🚀 วิธีใช้งาน 5 ขั้นตอน", topicId: "steps" },
-          { label: "🔴 แก้การ์ดสีแดง", topicId: "red_card" },
-          { label: "📄 เอกสาร วผ.25", topicId: "wp25" }
+          { label: "🔘 ทำไมปุ่มเป็นสีเทา (ล็อก)?", topicId: "grey_buttons" },
+          { label: "🛑 กดปุ่มส่งข้อมูลไม่ได้?", topicId: "cannot_submit" },
+          { label: "🔍 หาชื่อ/วิชา/ปุ่มไม่เจอ?", topicId: "cant_find" },
+          { label: "🔴 แก้การ์ดสีแดง", topicId: "red_card" }
         ]
       }
     ]);
@@ -465,27 +546,39 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
             <span className="text-slate-400 text-[10px] shrink-0 font-bold">แนะนำ:</span>
             <button 
               onClick={() => handleSelectTopic('wp16')}
-              className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-bold shrink-0 transition-colors border border-indigo-200/80"
+              className="px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg font-bold shrink-0 transition-colors border border-indigo-200/80 cursor-pointer"
             >
               📘 แนะนำ วผ.16
             </button>
             <button 
-              onClick={() => handleSelectTopic('steps')}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium shrink-0 transition-colors"
+              onClick={() => handleSelectTopic('grey_buttons')}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium shrink-0 transition-colors border border-slate-200/60 cursor-pointer"
             >
-              🚀 วิธีใช้งาน 5 ขั้นตอน
+              🔘 ปุ่มสีเทา/ล็อก?
+            </button>
+            <button 
+              onClick={() => handleSelectTopic('cannot_submit')}
+              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg font-medium shrink-0 transition-colors border border-rose-200/60 cursor-pointer"
+            >
+              🛑 กดส่งไม่ได้?
+            </button>
+            <button 
+              onClick={() => handleSelectTopic('cant_find')}
+              className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 rounded-lg font-medium shrink-0 transition-colors border border-amber-200/60 cursor-pointer"
+            >
+              🔍 หาข้อมูลไม่เจอ?
             </button>
             <button 
               onClick={() => handleSelectTopic('red_card')}
-              className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg font-medium shrink-0 transition-colors border border-rose-200/60"
+              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium shrink-0 transition-colors cursor-pointer"
             >
               🔴 แก้การ์ดสีแดง
             </button>
             <button 
-              onClick={() => handleSelectTopic('download_files')}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium shrink-0 transition-colors"
+              onClick={() => handleSelectTopic('steps')}
+              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium shrink-0 transition-colors cursor-pointer"
             >
-              📥 วิธีดาวน์โหลดไฟล์
+              🚀 วิธีใช้งาน 5 ขั้นตอน
             </button>
           </div>
 
