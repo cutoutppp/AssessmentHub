@@ -517,7 +517,7 @@ function App() {
               className="text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1 rounded-full transition shadow-sm cursor-pointer flex items-center gap-1.5 align-middle"
               title="คลิกเพื่อดูบันทึกการอัปเดตระบบ (Patch Notes)"
             >
-              <span>v1.2.5</span>
+              <span>v1.3.0</span>
             </button>
           </h1>
           <p className="text-slate-500 text-lg">อัปโหลดไฟล์ PDF (SGS) และไฟล์ Excel (NextSchool) พร้อมกันหลายไฟล์</p>
@@ -1067,7 +1067,7 @@ function App() {
                 <span className="text-3xl">📋</span>
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">บันทึกการอัปเดตระบบ (Patch Notes)</h3>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">เวอร์ชันปัจจุบัน: <span className="text-blue-600 font-bold">v1.2.5</span> (5 สิงหาคม 2569)</p>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">เวอร์ชันปัจจุบัน: <span className="text-blue-600 font-bold">v1.3.0</span> (27 กันยายน 2569)</p>
                 </div>
               </div>
               <button 
@@ -1080,13 +1080,40 @@ function App() {
 
             
               <div className="space-y-6 text-sm text-slate-700">
+                {/* Version 1.3.0 */}
+                <div className="bg-indigo-50/70 p-4 rounded-xl border border-indigo-100 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-indigo-950 text-base">✨ เวอร์ชัน v1.3.0</span>
+                    <span className="text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-semibold">ล่าสุด</span>
+                  </div>
+                  <ul className="space-y-2 text-indigo-900/90 pl-4 list-disc text-sm">
+                    <li>
+                      <strong className="text-indigo-950">🤖 ระบบผู้ช่วยอัจฉริยะ (Assistant Chatbot):</strong> เพิ่มผู้ช่วยแนะนำการใช้งานระบบตลอด 24 ชม. ที่มุมขวาล่างหน้าจอ พร้อมตอบคำถามที่พบบ่อยอัตโนมัติ
+                    </li>
+                    <li>
+                      <strong className="text-indigo-950">📘 คู่มือระบบเอกสาร วผ.16:</strong> แนะนำขั้นตอนการสร้างและดาวน์โหลดแบบบันทึกข้อความรายงานผลการเรียน 0, ร, มส, มผ (ปลายภาค) 7 สเต็ปง่าย ๆ ผ่านผู้ช่วย
+                    </li>
+                    <li>
+                      <strong className="text-indigo-950">🔘 ทำไมปุ่มดาวน์โหลดเป็นสีเทา (Disabled):</strong> อธิบายเงื่อนไขระบบที่ล็อกปุ่มไว้จนกว่าครูจะส่งคะแนนครบทุกวิชา/ห้อง และสถานะผ่านสมบูรณ์ 100%
+                    </li>
+                    <li>
+                      <strong className="text-indigo-950">🛑 แก้ปัญหากดปุ่มส่งข้อมูลไม่ได้:</strong> แนะนำวิธีตรวจสอบกรณีติดการ์ดสีแดง (คะแนนขัดแย้ง) ซึ่งระบบจะระงับการส่งเพื่อป้องกันข้อมูลในฐานข้อมูลผิดพลาด
+                    </li>
+                    <li>
+                      <strong className="text-indigo-950">🔍 วิธีแก้ไขเมื่อหาข้อมูลไม่เจอ:</strong> เพิ่มคำแนะนำในการค้นหาชื่อครู, ตารางรายวิชา และตำแหน่งปุ่มดาวน์โหลดในแดชบอร์ด
+                    </li>
+                    <li>
+                      <strong className="text-indigo-950">🔒 ปิดปุ่ม วผ.17 ชั่วคราว:</strong> ซ่อนปุ่มดาวน์โหลด วผ.17 (ปลายภาค) ชั่วคราวตามนโยบายปรับปรุงฟอร์มใหม่ของฝ่ายวัดผล
+                    </li>
+                  </ul>
+                </div>
+
                 {/* Version 1.2.4 */}
-                <div className="bg-blue-50/60 p-4 rounded-xl border border-blue-100 space-y-3">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 opacity-80">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-blue-900 text-base">✨ เวอร์ชัน v1.2.4</span>
-                      <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-semibold">ล่าสุด</span>
+                      <span className="font-bold text-slate-800 text-base">📌 เวอร์ชัน v1.2.4</span>
                     </div>
-                    <ul className="space-y-1.5 text-blue-800/80 pl-4 list-disc text-sm">
+                    <ul className="space-y-1.5 text-slate-700 pl-4 list-disc text-sm">
                       <li><strong className="text-blue-900">จัดกลุ่มห้องใน วผ.25:</strong> ระบบจะจัดกลุ่มห้องที่สอนวิชาเดียวกันให้อัตโนมัติ (เช่น ห้อง 1-11) เพื่อให้ง่ายต่อการอ่าน</li>
                       <li><strong className="text-blue-900">ปรับปรุงระยะเว้นวรรค:</strong> ปรับระยะเว้นวรรคในรายวิชาให้สวยงามพอดีกับหน้ากระดาษและไม่ซ้อนกับเลขข้อ</li>
                       <li><strong className="text-blue-900">ปุ่มดาวน์โหลดเอกสารสรุป:</strong> ปรับโฉมปุ่มดาวน์โหลดบันทึกข้อความสรุปกลุ่มสาระฯ ให้โดดเด่นและชัดเจนขึ้น</li>
