@@ -167,13 +167,31 @@
                 <button onclick="setTableFilter('done')" id="btnFilterDone" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">✓ ส่งคืนแล้ว</button>
             </div>
 
-            <div class="relative w-64">
-                <input type="text" id="recordSearchInput" oninput="renderTable()" placeholder="🔍 ค้นหาห้อง, วิชา, ครูคุมสอบ..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-indigo-500">
+            <!-- Search & View Toggle -->
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <input type="text" id="recordSearchInput" oninput="renderTable()" placeholder="🔍 ค้นหาห้อง, วิชา, กรรมการ..." class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-indigo-500 shadow-2xs">
+                </div>
+                
+                <!-- View Switcher -->
+                <div class="flex items-center gap-0.5 bg-slate-200/80 p-0.5 rounded-xl border border-slate-300/60 no-print shrink-0">
+                    <button onclick="setViewMode('cards')" id="btnViewCards" class="px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 bg-white text-indigo-700 shadow-xs" title="มุมมองการ์ด (เหมาะกับมือถือ)">
+                        📱 การ์ด
+                    </button>
+                    <button onclick="setViewMode('table')" id="btnViewTable" class="px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900" title="มุมมองตารางเต็ม">
+                        📋 ตาราง
+                    </button>
+                </div>
             </div>
         </div>
 
+        <!-- Mobile Card View Container -->
+        <div id="recordCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 no-print">
+            <!-- Populated by JS -->
+        </div>
+
         <!-- Official Printable Table Container -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div id="recordTableContainer" class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden print:block">
             <!-- Print Header (Visible only when printed) -->
             <div class="p-6 pb-2 text-center hidden print-only">
                 <h2 class="text-lg font-bold">แบบบันทึกการรับ - ส่งซองข้อสอบและกระดาษคำตอบ</h2>
@@ -450,10 +468,33 @@
             container.innerHTML = html;
         }
 
+        let currentViewMode = (window.innerWidth < 768) ? 'cards' : 'table';
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const cardsEl = document.getElementById('recordCardsContainer');
+            const tableEl = document.getElementById('recordTableContainer');
+            const btnCards = document.getElementById('btnViewCards');
+            const btnTable = document.getElementById('btnViewTable');
+
+            if (mode === 'cards') {
+                if (cardsEl) cardsEl.classList.remove('hidden');
+                if (tableEl) tableEl.classList.add('hidden');
+                if (btnCards) btnCards.className = 'px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 bg-white text-indigo-700 shadow-xs';
+                if (btnTable) btnTable.className = 'px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900';
+            } else {
+                if (cardsEl) cardsEl.classList.add('hidden');
+                if (tableEl) tableEl.classList.remove('hidden');
+                if (btnTable) btnTable.className = 'px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 bg-white text-indigo-700 shadow-xs';
+                if (btnCards) btnCards.className = 'px-2 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900';
+            }
+        }
+
         function renderTable() {
             const tbody = document.getElementById('recordTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
+            const cardsContainer = document.getElementById('recordCardsContainer');
+            if (tbody) tbody.innerHTML = '';
+            if (cardsContainer) cardsContainer.innerHTML = '';
 
             const search = (document.getElementById('recordSearchInput')?.value || '').trim().toLowerCase();
 
@@ -463,8 +504,10 @@
                 dayExams = dayExams.filter(e => e.class_name === currentRoom);
             }
             dayExams.sort((a,b) => {
-                const stA = stateData[a.row_id] || {};
-                const stB = stateData[b.row_id] || {};
+                const rowKeyA = a.row_id || a.id;
+                const rowKeyB = b.row_id || b.id;
+                const stA = stateData[rowKeyA] || {};
+                const stB = stateData[rowKeyB] || {};
                 const aDone = (stA.p1_picked && stA.p2_received);
                 const bDone = (stB.p1_picked && stB.p2_received);
                 
@@ -480,7 +523,8 @@
             let countReceived = 0;
 
             dayExams.forEach(e => {
-                const st = stateData[e.row_id] || {};
+                const rowKey = e.row_id || e.id;
+                const st = stateData[rowKey] || {};
                 if (st.p1_picked) countPicked++;
                 if (st.p2_received) countReceived++;
             });
@@ -492,77 +536,134 @@
 
             let filtered = dayExams;
             if (currentFilter === 'missing_p1') {
-                filtered = filtered.filter(e => !(stateData[e.row_id]?.p1_picked));
+                filtered = filtered.filter(e => !(stateData[e.row_id || e.id]?.p1_picked));
             } else if (currentFilter === 'missing_p2') {
-                filtered = filtered.filter(e => !(stateData[e.row_id]?.p2_received));
+                filtered = filtered.filter(e => !(stateData[e.row_id || e.id]?.p2_received));
             } else if (currentFilter === 'done') {
-                filtered = filtered.filter(e => stateData[e.row_id]?.p2_received);
+                filtered = filtered.filter(e => stateData[e.row_id || e.id]?.p2_received);
             }
 
             if (search) {
                 filtered = filtered.filter(e => 
                     e.room.toLowerCase().includes(search) ||
+                    e.class_name.toLowerCase().includes(search) ||
                     e.subj_code.toLowerCase().includes(search) ||
                     e.subj_name.toLowerCase().includes(search) ||
-                    (e.teacher_name && e.teacher_name.toLowerCase().includes(search))
+                    (e.teacher_name && e.teacher_name.toLowerCase().includes(search)) ||
+                    (e.proctor1 && e.proctor1.toLowerCase().includes(search)) ||
+                    (e.proctor2 && e.proctor2.toLowerCase().includes(search))
                 );
             }
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-slate-400">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+                if (tbody) tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-slate-400">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+                if (cardsContainer) cardsContainer.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200 text-xs">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</div>';
                 return;
             }
 
             filtered.forEach((item, idx) => {
-                const st = stateData[item.row_id] || {};
+                const rowKey = item.row_id || item.id;
+                const st = stateData[rowKey] || {};
                 const p1Checked = st.p1_picked === true;
                 const p2Checked = st.p2_received === true;
 
-                const tr = document.createElement('tr');
-                tr.className = `hover:bg-slate-50 transition-colors ${p2Checked ? 'bg-emerald-50/20' : ''}`;
+                // 1. Render Mobile Card
+                if (cardsContainer) {
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-2xl border ${p2Checked ? 'border-emerald-300 bg-emerald-50/20' : p1Checked ? 'border-indigo-300 bg-indigo-50/20' : 'border-slate-200'} p-3.5 shadow-2xs transition-all flex flex-col justify-between gap-3`;
+                    
+                    const proctorsText = [item.proctor1, item.proctor2].filter(Boolean).join(', ') || '-';
+                    
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-base font-black font-mono text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">ห้อง ${item.room}</span>
+                                    <span class="text-xs font-bold px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">${item.class_name}</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-black text-slate-800 font-mono">${item.time} น.</div>
+                                    <div class="text-[10px] text-slate-500 font-medium">⏱️ ${item.duration_mins} นาที</div>
+                                </div>
+                            </div>
+                            
+                            <div class="font-extrabold text-sm text-slate-900 leading-snug">
+                                <span class="text-indigo-600 font-mono">${item.subj_code}</span> ${item.subj_name}
+                            </div>
+                            
+                            <div class="mt-2 pt-2 border-t border-slate-100 text-xs text-slate-600 flex flex-col gap-0.5">
+                                <div><span class="text-slate-400 font-medium">กรรมการคุมสอบ:</span> <strong class="text-slate-800">${proctorsText}</strong></div>
+                                <div class="text-[11px] text-slate-400">ผู้สอน: ${item.teacher_name || '-'}</div>
+                            </div>
+                        </div>
 
-                tr.innerHTML = `
-                    <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
-                    <td class="p-3 text-slate-600 font-semibold whitespace-nowrap">${item.date_d} ก.ย.</td>
-                    <td class="p-3 whitespace-nowrap">
-                        <div class="font-bold text-slate-900">${item.time} น.</div>
-                        <div class="text-[10px] text-slate-500 font-medium">⏱️ ${item.duration_mins} นาที</div>
-                    </td>
-                    <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${item.subj_code}</td>
-                    <td class="p-3">
-                        <div class="font-bold text-slate-800">${item.subj_name}</div>
-                    </td>
-                    <td class="p-3 font-bold text-indigo-700 whitespace-nowrap">${item.class_name}</td>
-                    <td class="p-3 font-mono font-black text-center text-slate-900 whitespace-nowrap">${item.room}</td>
-                    <td class="p-3 text-slate-700 leading-tight">
-                        <div class="font-bold text-slate-800">${[item.proctor1, item.proctor2].filter(Boolean).join("<br>") || "-"}</div>
-                        <div class="text-[10px] text-slate-500 mt-0.5">ผู้สอน: ${item.teacher_name || "-"}</div>
-                    </td>
+                        <!-- Big Touch-Friendly Buttons -->
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                            <button onclick="toggleRecordP1('${rowKey}')" 
+                                    class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p1Checked ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-100' : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'}">
+                                <span class="text-xs sm:text-sm">${p1Checked ? '✅ รับข้อสอบแล้ว' : '📦 1. รับข้อสอบ'}</span>
+                                <span class="text-[10px] font-medium opacity-90">${p1Checked ? (st.p1_time || '') + ' น.' : 'แตะเพื่อบันทึก'}</span>
+                            </button>
 
-                    <!-- 1. มอบข้อสอบ (กรรมการรับ) -->
-                    <td class="p-2 text-center">
-                        <button onclick="toggleRecordP1('${item.row_id}')" 
-                                class="w-full py-1.5 px-2 rounded-xl text-xs font-bold transition-all border ${p1Checked ? 'bg-indigo-50 border-indigo-300 text-indigo-800' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}">
-                            ${p1Checked ? '✓ รับแล้ว (' + st.p1_time + ')' : '⬜ รอรับซอง'}
-                        </button>
-                    </td>
+                            <button onclick="toggleRecordP2('${rowKey}')" 
+                                    class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p2Checked ? 'bg-teal-600 text-white border-teal-700 shadow-teal-100' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}">
+                                <span class="text-xs sm:text-sm">${p2Checked ? '✅ ส่งคืนแล้ว' : '📥 2. ส่งคืนวัดผล'}</span>
+                                <span class="text-[10px] font-medium opacity-90">${p2Checked ? (st.p2_time || '') + ' น.' : 'แตะเมื่อส่งคืน'}</span>
+                            </button>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                }
 
-                    <!-- 2. ส่งคืนห้องวัดผล (รับซองคืน) -->
-                    <td class="p-2 text-center">
-                        <button onclick="toggleRecordP2('${item.row_id}')" 
-                                class="w-full py-1.5 px-2 rounded-xl text-xs font-bold transition-all border ${p2Checked ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'}">
-                            ${p2Checked ? '✓ ส่งแล้ว (' + st.p2_time + ')' : '⬜ รอส่งคืน'}
-                        </button>
-                    </td>
+                // 2. Render Desktop Table Row
+                if (tbody) {
+                    const tr = document.createElement('tr');
+                    tr.className = `hover:bg-slate-50 transition-colors ${p2Checked ? 'bg-emerald-50/20' : ''}`;
 
-                    <!-- หมายเหตุ -->
-                    <td class="p-2 no-print">
-                        <input type="text" onblur="saveNote('${item.row_id}', this.value)" value="${st.p2_note || ''}" placeholder="บันทึกย่อ..." class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-indigo-400">
-                    </td>
-                `;
+                    tr.innerHTML = `
+                        <td class="p-3 text-center text-slate-400 font-mono">${idx + 1}</td>
+                        <td class="p-3 text-slate-600 font-semibold whitespace-nowrap">${item.date_d} ก.ย.</td>
+                        <td class="p-3 whitespace-nowrap">
+                            <div class="font-bold text-slate-900">${item.time} น.</div>
+                            <div class="text-[10px] text-slate-500 font-medium">⏱️ ${item.duration_mins} นาที</div>
+                        </td>
+                        <td class="p-3 font-mono font-bold text-slate-900 whitespace-nowrap">${item.subj_code}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-800">${item.subj_name}</div>
+                        </td>
+                        <td class="p-3 font-bold text-indigo-700 whitespace-nowrap">${item.class_name}</td>
+                        <td class="p-3 font-mono font-black text-center text-slate-900 whitespace-nowrap">${item.room}</td>
+                        <td class="p-3 text-slate-700 leading-tight">
+                            <div class="font-bold text-slate-800">${[item.proctor1, item.proctor2].filter(Boolean).join("<br>") || "-"}</div>
+                            <div class="text-[10px] text-slate-500 mt-0.5">ผู้สอน: ${item.teacher_name || "-"}</div>
+                        </td>
 
-                tbody.appendChild(tr);
+                        <!-- 1. มอบข้อสอบ (กรรมการรับ) -->
+                        <td class="p-2 text-center">
+                            <button onclick="toggleRecordP1('${rowKey}')" 
+                                    class="w-full py-2 px-2 rounded-xl text-xs font-black transition-all border active:scale-95 shadow-2xs ${p1Checked ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'}">
+                                ${p1Checked ? '✅ รับแล้ว (' + (st.p1_time || '') + ')' : '📦 1. รับข้อสอบ'}
+                            </button>
+                        </td>
+
+                        <!-- 2. ส่งคืนห้องวัดผล (รับซองคืน) -->
+                        <td class="p-2 text-center">
+                            <button onclick="toggleRecordP2('${rowKey}')" 
+                                    class="w-full py-2 px-2 rounded-xl text-xs font-black transition-all border active:scale-95 shadow-2xs ${p2Checked ? 'bg-teal-600 text-white border-teal-700' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}">
+                                ${p2Checked ? '✅ ส่งแล้ว (' + (st.p2_time || '') + ')' : '📥 2. ส่งคืนวัดผล'}
+                            </button>
+                        </td>
+
+                        <!-- หมายเหตุ -->
+                        <td class="p-2 no-print">
+                            <input type="text" onblur="saveNote('${rowKey}', this.value)" value="${st.p2_note || ''}" placeholder="บันทึกย่อ..." class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-indigo-400">
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
             });
+
+            setViewMode(currentViewMode);
         }
 
         function toggleRecordP1(rowId) {
