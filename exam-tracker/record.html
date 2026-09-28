@@ -158,8 +158,32 @@
         </div>
 
         <!-- Filter & Search Toolbar -->
-        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3 no-print">
-            <div class="flex items-center gap-1.5 overflow-x-auto">
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-xs flex flex-col gap-3 no-print">
+            
+            <!-- Phase Mode Switcher (แยกขาส่ง / ขารับ / ภาพรวม) -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-slate-400 uppercase">ขั้นตอน:</span>
+                    <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
+                        <button onclick="setPhaseMode('dispatch')" id="btnPhaseDispatch" class="px-3 py-1.5 rounded-lg font-black transition-all bg-emerald-600 text-white shadow-xs flex items-center gap-1.5">
+                            <span>📦 1. ขาส่งข้อสอบ</span>
+                        </button>
+                        <button onclick="setPhaseMode('return')" id="btnPhaseReturn" class="px-3 py-1.5 rounded-lg font-black transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                            <span>📥 2. ขารับซองคืน</span>
+                        </button>
+                        <button onclick="setPhaseMode('all')" id="btnPhaseAll" class="px-3 py-1.5 rounded-lg font-black transition-all text-slate-600 hover:text-slate-900 flex items-center gap-1.5">
+                            <span>🔄 3. ภาพรวม</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-[11px] font-bold text-slate-500 hidden sm:block">
+                    💡 เลือกขาส่งเพื่อกดส่งซองอย่างเดียว หรือเลือกขารับเพื่อตรวจรับซองคืนตอนสอบเสร็จ
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-1.5 overflow-x-auto">
                 <span class="text-xs font-bold text-slate-400 uppercase mr-1">กรองสถานะ:</span>
                 <button onclick="setTableFilter('all')" id="btnFilterAll" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white">ทั้งหมด</button>
                 <button onclick="setTableFilter('missing_p1')" id="btnFilterMissingP1" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">⚠️ ยังไม่มารับ</button>
@@ -469,6 +493,22 @@
         }
 
         let currentViewMode = (window.innerWidth < 768) ? 'cards' : 'table';
+        let currentPhaseMode = 'dispatch'; // 'dispatch' | 'return' | 'all'
+
+        function setPhaseMode(mode) {
+            currentPhaseMode = mode;
+            ['dispatch', 'return', 'all'].forEach(m => {
+                const btn = document.getElementById('btnPhase' + m.charAt(0).toUpperCase() + m.slice(1));
+                if (btn) {
+                    if (m === mode) {
+                        btn.className = (m === 'dispatch' ? 'bg-emerald-600' : (m === 'return' ? 'bg-teal-600' : 'bg-indigo-600')) + ' text-white shadow-xs px-3 py-1.5 rounded-lg font-black transition-all flex items-center gap-1.5';
+                    } else {
+                        btn.className = 'text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg font-black transition-all flex items-center gap-1.5';
+                    }
+                }
+            });
+            renderTable();
+        }
 
         function setViewMode(mode) {
             currentViewMode = mode;
@@ -597,19 +637,34 @@
                             </div>
                         </div>
 
-                        <!-- Big Touch-Friendly Buttons -->
-                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                            <button onclick="toggleRecordP1('${rowKey}')" 
-                                    class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p1Checked ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-100' : 'bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100'}">
-                                <span class="text-xs sm:text-sm">${p1Checked ? '✅ รับข้อสอบแล้ว' : '📦 1. รับข้อสอบ'}</span>
-                                <span class="text-[10px] font-medium opacity-90">${p1Checked ? (st.p1_time || '') + ' น.' : 'แตะเพื่อบันทึก'}</span>
-                            </button>
-
-                            <button onclick="toggleRecordP2('${rowKey}')" 
-                                    class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p2Checked ? 'bg-teal-600 text-white border-teal-700 shadow-teal-100' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}">
-                                <span class="text-xs sm:text-sm">${p2Checked ? '✅ ส่งคืนแล้ว' : '📥 2. ส่งคืนวัดผล'}</span>
-                                <span class="text-[10px] font-medium opacity-90">${p2Checked ? (st.p2_time || '') + ' น.' : 'แตะเมื่อส่งคืน'}</span>
-                            </button>
+                        <!-- Action Buttons based on currentPhaseMode -->
+                        <div class="pt-2 border-t border-slate-100">
+                            ${currentPhaseMode === 'dispatch' ? `
+                                <button onclick="toggleRecordP1('${rowKey}')" 
+                                        class="w-full py-3 px-3 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 border active:scale-95 shadow-xs ${p1Checked ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100'}">
+                                    <span>${p1Checked ? '✅ ส่งข้อสอบถึงห้องแล้ว' : '📦 บันทึก: ส่งข้อสอบถึงห้องแล้ว'}</span>
+                                    <span class="text-xs opacity-90">${p1Checked ? '(' + (st.p1_time || '') + ' น.)' : ''}</span>
+                                </button>
+                            ` : currentPhaseMode === 'return' ? `
+                                <button onclick="toggleRecordP2('${rowKey}')" 
+                                        class="w-full py-3 px-3 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 border active:scale-95 shadow-xs ${p2Checked ? 'bg-teal-600 text-white border-teal-700' : 'bg-teal-50 border-teal-300 text-teal-800 hover:bg-teal-100'}">
+                                    <span>${p2Checked ? '✅ รับซองคืนเรียบร้อย' : '📥 บันทึก: รับซองคืนเข้าวัดผล'}</span>
+                                    <span class="text-xs opacity-90">${p2Checked ? '(' + (st.p2_time || '') + ' น.)' : ''}</span>
+                                </button>
+                            ` : `
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button onclick="toggleRecordP1('${rowKey}')" 
+                                            class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p1Checked ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-emerald-50 border-emerald-200 text-emerald-800'}">
+                                        <span class="text-xs sm:text-sm">${p1Checked ? '✅ ส่งแล้ว' : '📦 1. ส่งข้อสอบ'}</span>
+                                        <span class="text-[10px] opacity-90">${p1Checked ? (st.p1_time || '') + ' น.' : 'แตะเพื่อส่ง'}</span>
+                                    </button>
+                                    <button onclick="toggleRecordP2('${rowKey}')" 
+                                            class="py-2.5 px-2 rounded-xl font-black transition-all flex flex-col items-center justify-center gap-0.5 border active:scale-95 shadow-2xs ${p2Checked ? 'bg-teal-600 text-white border-teal-700' : 'bg-teal-50 border-teal-200 text-teal-800'}">
+                                        <span class="text-xs sm:text-sm">${p2Checked ? '✅ คืนแล้ว' : '📥 2. รับคืน'}</span>
+                                        <span class="text-[10px] opacity-90">${p2Checked ? (st.p2_time || '') + ' น.' : 'แตะเพื่อรับคืน'}</span>
+                                    </button>
+                                </div>
+                            `}
                         </div>
                     `;
                     cardsContainer.appendChild(card);
