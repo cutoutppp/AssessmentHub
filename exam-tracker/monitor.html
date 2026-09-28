@@ -211,10 +211,10 @@
                     ⚡ เวลาจริง (Live)
                 </button>
                 <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
-                    🌅 ช่วงเช้า (วิชา 1 - 3)
+                    🌅 ช่วงเช้า (ก่อน 12.00 น.)
                 </button>
                 <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
-                    ☀️ ช่วงบ่าย (วิชา 4 - 6)
+                    ☀️ ช่วงบ่าย (หลัง 13.00 น.)
                 </button>
             </div>
 
@@ -242,6 +242,9 @@
                     </button>
                     <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
                         วิชา 6
+                    </button>
+                    <button onclick="setMonitorPeriod(7)" id="btnPeriod7" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 7
                     </button>
                 </div>
             </div>
@@ -660,25 +663,22 @@
         function setMonitorPeriod(p) {
             currentPeriod = p;
             if (p !== 'all') {
-                // If period 1-3 -> morning, 4-6 -> afternoon
-                currentSession = (p <= 3) ? 'morning' : 'afternoon';
                 ['live', 'morning', 'afternoon'].forEach(s => {
                     const btn = document.getElementById('btnSess' + s.charAt(0).toUpperCase() + s.slice(1));
                     if (btn) {
-                        if (s === currentSession) {
-                            btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
-                        } else {
-                            btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
-                        }
+                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
                     }
                 });
+            } else {
+                setMonitorSession('live');
+                return;
             }
             updatePeriodButtons();
             renderGrid();
         }
 
         function updatePeriodButtons() {
-            ['all', 1, 2, 3, 4, 5, 6].forEach(p => {
+            ['all', 1, 2, 3, 4, 5, 6, 7].forEach(p => {
                 const btn = document.getElementById('btnPeriod' + (p === 'all' ? 'All' : p));
                 if (btn) {
                     if (currentPeriod === p) {
