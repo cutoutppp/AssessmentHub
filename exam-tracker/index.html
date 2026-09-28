@@ -33,7 +33,7 @@
     </style>
     
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
     
     <!-- UNIFIED COMMAND CENTER TOP BAR (ROW 1: BRAND, DAY SELECTOR, CLOCK, RADAR, SIM & SYSTEM LINKS) -->
@@ -150,7 +150,7 @@
     </div>
 
     <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN ON DESKTOP!) -->
-    <main class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2.5 flex-1 w-full flex flex-col justify-start gap-2.5 overflow-y-auto lg:overflow-hidden">
+    <main class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2 flex-1 w-full flex flex-col justify-start gap-2.5">
         <!-- MISSING BANNER -->
         <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
             <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
@@ -178,7 +178,7 @@
                         </div>
                         <span id="bld1CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
+                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2"></div>
                 </div>
 
                 <!-- อาคาร 2 (13 ห้อง) -->
@@ -190,7 +190,7 @@
                         </div>
                         <span id="bld2CountBadge" class="text-[10px] font-bold text-slate-500">0/13 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5"></div>
+                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2"></div>
                 </div>
 
                 <!-- ห้องพิเศษ (4 ห้อง) -->
@@ -202,7 +202,7 @@
                         </div>
                         <span id="bldSpecialCountBadge" class="text-[10px] font-bold text-slate-500">0/4 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-1.5"></div>
+                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-2"></div>
                 </div>
 
             </div>
@@ -219,7 +219,7 @@
                         </div>
                         <span id="bld3CountBadge" class="text-[10px] font-bold text-slate-500">0/19 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5"></div>
+                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2"></div>
                 </div>
 
                 <!-- อาคาร 4 (11 ห้อง) -->
@@ -231,7 +231,7 @@
                         </div>
                         <span id="bld4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5"></div>
+                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
 
             </div>
@@ -250,7 +250,7 @@
                         </div>
                         <span id="gradeM1CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
 
                 <!-- ม.2 (7 ห้อง) -->
@@ -262,7 +262,7 @@
                         </div>
                         <span id="gradeM2CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
 
                 <!-- ม.3 (8 ห้อง) -->
@@ -274,7 +274,7 @@
                         </div>
                         <span id="gradeM3CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
             </div>
 
@@ -289,7 +289,7 @@
                         </div>
                         <span id="gradeM4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
 
                 <!-- ม.5 (11 ห้อง) -->
@@ -301,7 +301,7 @@
                         </div>
                         <span id="gradeM5CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
 
                 <!-- ม.6 (11 ห้อง) -->
@@ -313,7 +313,7 @@
                         </div>
                         <span id="gradeM6CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
+                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
                 </div>
             </div>
         </div>
@@ -723,6 +723,9 @@
                     returnText: 'ไม่มีสอบ',
                     returnClass: 'text-slate-400',
                     subject: 'ไม่มีสอบ',
+                    subjectName: 'ไม่มีการสอบ',
+                    proctor1: '',
+                    proctor2: '',
                     timeSlot: '-',
                     duration: 0,
                     timeText: '-',
@@ -796,7 +799,10 @@
                     dispatchClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
                     returnText: '📥 คืนครบแล้ว ✅',
                     returnClass: 'text-emerald-700 font-black',
-                    subject: 'ส่งครบทุกวิชาแล้ว',
+                    subject: 'ครบทุกวิชา',
+                    subjectName: 'ส่งคืนครบถ้วนแล้ว',
+                    proctor1: '',
+                    proctor2: '',
                     timeSlot: 'เสร็จสิ้น',
                     duration: 0,
                     timeText: 'ครบถ้วน',
@@ -933,6 +939,9 @@
                 returnText: returnText,
                 returnClass: returnClass,
                 subject: pendingExam.subj_code,
+                subjectName: pendingExam.subj_name || '',
+                proctor1: pendingExam.proctor1 || '',
+                proctor2: pendingExam.proctor2 || '',
                 timeSlot: `${pendingExam.time} น.`,
                 duration: durationMins,
                 timeText: timeText,
@@ -1021,42 +1030,56 @@
                     ? st.timeSlot.replace(' น.', '') 
                     : (st.timeSlot === 'เสร็จสิ้น' ? 'สอบครบแล้ว' : '-');
 
+                // Resolve proctor names cleanly
+                const p1 = st.proctor1 || rm.p1 || '';
+                const p2 = st.proctor2 || rm.p2 || '';
+                const pList = [p1, p2].filter(Boolean);
+                const cleanProctor = pList.map(n => n.replace(/^(นาย|นางสาว|นาง|ว่าที่\s*ร\.ต\.|ดร\.|Mr\.|Ms\.)\s*/, '').split(/\s+/)[0]).join(', ') || '-';
+                const fullProctorTitle = pList.join(', ') || '-';
+
                 const cardHtml = `
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-1.5 flex flex-col justify-between h-[80px] relative group cursor-pointer overflow-hidden select-none">
+                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between h-[96px] relative group cursor-pointer overflow-hidden select-none">
                         
-                        <!-- Line 1: Room No. (Left) + Grade Badge (Right) - NEVER OVERLAPS -->
+                        <!-- Line 1: Room No. + Grade Badge + ⏰ Exam Time Slot -->
                         <div class="flex items-center justify-between leading-none">
-                            <span class="font-black text-xs sm:text-sm font-mono tracking-tight text-slate-900">${rm.room}</span>
-                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
-                        </div>
-                        
-                        <!-- Line 2: Dedicated Exam Time Slot Badge (CLEAR ON ITS OWN LINE - CANNOT COLLIDE WITH ROOM NO.) -->
-                        <div class="flex items-center justify-between text-[9px] font-mono leading-none bg-white/80 border border-indigo-100 rounded px-1.5 py-0.5 text-indigo-900 font-bold my-0.5 shadow-2xs">
-                            <span class="truncate flex items-center gap-0.5 text-indigo-800">⏰ ${timeClean}</span>
-                            ${st.duration > 0 ? `<span class="text-slate-400 font-normal shrink-0 text-[8px]">${st.duration}น.</span>` : ''}
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="font-black text-sm sm:text-base font-mono tracking-tight text-slate-900">${rm.room}</span>
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
+                            </div>
+                            <span class="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded shadow-2xs shrink-0 flex items-center gap-1">
+                                ⏰ ${timeClean}
+                            </span>
                         </div>
 
-                        <!-- Line 3: Period & Subject Code -->
-                        <div class="flex items-center justify-between text-[10px] leading-none mb-0.5">
-                            <div class="flex items-center gap-1 min-w-0 truncate">
-                                <span class="text-[8px] font-black px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">${st.periodBadge}</span>
-                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[10px]" title="${st.subject}">${st.subject}</span>
+                        <!-- Line 2: Period & Subject Code + Full Subject Name + Duration -->
+                        <div class="flex items-center justify-between text-xs leading-tight my-0.5">
+                            <div class="flex items-center gap-1 min-w-0 truncate mr-1">
+                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">${st.periodBadge}</span>
+                                <span class="font-mono font-bold text-slate-900 text-xs shrink-0">${st.subject}</span>
+                                ${st.subjectName ? `<span class="text-slate-600 truncate text-[11px]" title="${st.subjectName}">${st.subjectName}</span>` : ''}
                             </div>
+                            ${st.duration > 0 ? `<span class="text-[9px] font-semibold text-slate-400 shrink-0">${st.duration}น.</span>` : ''}
+                        </div>
+
+                        <!-- Line 3: Proctor Name (ครูคุมสอบประจำห้อง) -->
+                        <div class="flex items-center gap-1 text-[10px] text-slate-600 truncate leading-none">
+                            <span class="text-slate-400 font-medium shrink-0">👤 ครู:</span>
+                            <span class="truncate font-semibold text-slate-800" title="${fullProctorTitle}">${cleanProctor}</span>
                         </div>
                         
                         <!-- Line 4: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥 / Countdown ⏳) -->
-                        <div class="flex items-center justify-between text-[9px] leading-none pt-0.5 border-t border-slate-200/50 gap-1">
-                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1 rounded text-[8px] border shrink-0 ${st.dispatchClass}">
+                        <div class="flex items-center justify-between text-[10px] leading-none pt-1 border-t border-slate-200/60 gap-1.5">
+                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1.5 py-0.5 rounded text-[9px] border shrink-0 ${st.dispatchClass}">
                                 ${st.dispatchText}
                             </span>
-                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-extrabold text-[9px] ${st.returnClass}">
+                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-extrabold text-[10px] ${st.returnClass}">
                                 ${st.returnText}
                             </span>
                         </div>
                         
                         <!-- Line 5: Progress Bar at bottom edge -->
-                        <div class="w-full bg-slate-200/60 h-0.5 overflow-hidden absolute bottom-0 left-0 right-0">
+                        <div class="w-full bg-slate-200/60 h-1 overflow-hidden absolute bottom-0 left-0 right-0">
                             <div id="rm-prog-${rm.room}" class="${st.barColor} h-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
                         </div>
                     </div>
