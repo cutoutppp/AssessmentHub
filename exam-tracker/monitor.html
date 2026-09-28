@@ -726,6 +726,7 @@
                     subjectName: 'ไม่มีการสอบ',
                     proctor1: '',
                     proctor2: '',
+                    timerBadge: '<span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">ไม่มีสอบ</span>',
                     timeSlot: '-',
                     duration: 0,
                     timeText: '-',
@@ -803,6 +804,7 @@
                     subjectName: 'ส่งคืนครบถ้วนแล้ว',
                     proctor1: '',
                     proctor2: '',
+                    timerBadge: '<span class="text-[10px] font-black text-emerald-800 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded shadow-2xs">✅ ครบทุกวิชา</span>',
                     timeSlot: 'เสร็จสิ้น',
                     duration: 0,
                     timeText: 'ครบถ้วน',
@@ -845,7 +847,7 @@
                 dispatchClass = 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse font-bold';
             }
 
-            // 2. Calculate Return & Active Status (ขารับ)
+            // 2. Calculate Return & Active Status (ขารับ) and Live Timer Badge
             let returnText = '';
             let returnClass = '';
             let filterCategory = 'active';
@@ -854,15 +856,18 @@
             let barColor = 'bg-slate-300';
             let percent = 0;
             let timeText = '';
+            let timerBadge = '';
 
             if (isReceived) {
-                returnText = '📥 คืนแล้ว';
+                const rTime = stObj.p2_time ? ` (${stObj.p2_time.slice(0,5)})` : '';
+                returnText = `📥 คืนแล้ว${rTime}`;
                 returnClass = 'text-emerald-700 font-black';
                 filterCategory = 'done';
                 bgClass = 'bg-emerald-50 border-emerald-300 text-emerald-950';
                 dotClass = 'bg-emerald-500';
                 barColor = 'bg-emerald-500';
                 percent = 100;
+                timerBadge = `<span class="font-mono text-[10px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1">✅ คืนแล้ว${rTime}</span>`;
             } else if (nowTotalSec < sSec) {
                 const waitSec = sSec - nowTotalSec;
                 const waitM = Math.floor(waitSec / 60);
@@ -871,6 +876,7 @@
 
                 returnText = `⏳ อีก ${timeText}`;
                 returnClass = 'text-slate-600 font-bold';
+                timerBadge = `<span class="font-mono text-[10px] font-bold text-slate-700 bg-slate-100 border border-slate-300 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1">⏳ อีก ${timeText}</span>`;
 
                 if (isPicked) {
                     bgClass = 'bg-emerald-50/70 border-emerald-300 text-emerald-950 shadow-2xs';
@@ -897,20 +903,23 @@
                     bgClass = 'bg-rose-50 border-rose-400 text-rose-950 ring-1 ring-rose-400';
                     dotClass = 'bg-rose-500 animate-ping';
                     barColor = 'bg-rose-500';
+                    timerBadge = `<span class="font-mono text-[10px] font-black text-rose-800 bg-rose-100 border border-rose-400 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>🚨 ยังไม่ส่ง</span>`;
                 } else if (remainSec <= 300) {
                     filterCategory = 'warning';
-                    returnText = `⚠️ เหลือ ${timeFormatted}`;
+                    returnText = `⚠️ 5 นาทีท้าย`;
                     returnClass = 'text-amber-800 font-black animate-pulse';
                     bgClass = 'bg-amber-50 border-amber-300 text-amber-950';
                     dotClass = 'bg-amber-500';
                     barColor = 'bg-amber-500';
+                    timerBadge = `<span class="font-mono text-[10px] font-black text-amber-900 bg-amber-100 border border-amber-400 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>⚠️ เหลือ ${timeFormatted}</span>`;
                 } else {
                     filterCategory = 'active';
-                    returnText = `⏳ ${timeFormatted}`;
+                    returnText = `สอบอยู่ (${timeFormatted})`;
                     returnClass = 'text-indigo-700 font-extrabold';
                     bgClass = 'bg-indigo-50/50 border-indigo-200 text-indigo-950';
                     dotClass = 'bg-indigo-500';
                     barColor = 'bg-indigo-600';
+                    timerBadge = `<span class="font-mono text-[10px] font-black text-indigo-900 bg-indigo-50 border border-indigo-300 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>⏳ เหลือ ${timeFormatted}</span>`;
                 }
             } else {
                 // Exam finished, waiting for return
@@ -926,6 +935,7 @@
                 bgClass = 'bg-rose-50 border-rose-300 text-rose-950';
                 dotClass = 'bg-rose-500';
                 barColor = 'bg-rose-500';
+                timerBadge = `<span class="font-mono text-[10px] font-black text-rose-800 bg-rose-100 border border-rose-400 px-1.5 py-0.5 rounded-lg shadow-2xs flex items-center gap-1 animate-pulse"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>🔔 เกิน +${overM}:${overS < 10 ? '0' : ''}${overS}</span>`;
             }
 
             return {
@@ -942,6 +952,7 @@
                 subjectName: pendingExam.subj_name || '',
                 proctor1: pendingExam.proctor1 || '',
                 proctor2: pendingExam.proctor2 || '',
+                timerBadge: timerBadge,
                 timeSlot: `${pendingExam.time} น.`,
                 duration: durationMins,
                 timeText: timeText,
@@ -1041,25 +1052,25 @@
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
                          class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between h-[96px] relative group cursor-pointer overflow-hidden select-none">
                         
-                        <!-- Line 1: Room No. + Grade Badge + ⏰ Exam Time Slot -->
+                        <!-- Line 1: Room No. + Grade Badge (Left) | LIVE COUNTDOWN TIMER BADGE (Right) -->
                         <div class="flex items-center justify-between leading-none">
                             <div class="flex items-center gap-1.5 min-w-0">
                                 <span class="font-black text-sm sm:text-base font-mono tracking-tight text-slate-900">${rm.room}</span>
                                 <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
                             </div>
-                            <span class="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded shadow-2xs shrink-0 flex items-center gap-1">
-                                ⏰ ${timeClean}
-                            </span>
+                            <div class="shrink-0">
+                                ${st.timerBadge}
+                            </div>
                         </div>
 
-                        <!-- Line 2: Period & Subject Code + Full Subject Name + Duration -->
+                        <!-- Line 2: Period & Subject Code + Full Subject Name + Scheduled Time -->
                         <div class="flex items-center justify-between text-xs leading-tight my-0.5">
                             <div class="flex items-center gap-1 min-w-0 truncate mr-1">
                                 <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">${st.periodBadge}</span>
                                 <span class="font-mono font-bold text-slate-900 text-xs shrink-0">${st.subject}</span>
                                 ${st.subjectName ? `<span class="text-slate-600 truncate text-[11px]" title="${st.subjectName}">${st.subjectName}</span>` : ''}
                             </div>
-                            ${st.duration > 0 ? `<span class="text-[9px] font-semibold text-slate-400 shrink-0">${st.duration}น.</span>` : ''}
+                            ${st.timeSlot && st.timeSlot !== '-' && st.timeSlot !== 'เสร็จสิ้น' ? `<span class="text-[10px] font-mono text-slate-400 shrink-0">${st.timeSlot}</span>` : ''}
                         </div>
 
                         <!-- Line 3: Proctor Name (ครูคุมสอบประจำห้อง) -->
@@ -1068,7 +1079,7 @@
                             <span class="truncate font-semibold text-slate-800" title="${fullProctorTitle}">${cleanProctor}</span>
                         </div>
                         
-                        <!-- Line 4: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥 / Countdown ⏳) -->
+                        <!-- Line 4: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥) -->
                         <div class="flex items-center justify-between text-[10px] leading-none pt-1 border-t border-slate-200/60 gap-1.5">
                             <span id="rm-dispatch-${rm.room}" class="font-bold px-1.5 py-0.5 rounded text-[9px] border shrink-0 ${st.dispatchClass}">
                                 ${st.dispatchText}
