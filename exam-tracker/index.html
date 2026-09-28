@@ -470,6 +470,7 @@
                     type: 'none',
                     filterCategory: 'done',
                     label: 'ไม่มีสอบ',
+                    phaseBadge: '',
                     subject: 'ไม่มีสอบ',
                     timeSlot: '-',
                     duration: 0,
@@ -495,7 +496,8 @@
                 return {
                     type: 'all_done',
                     filterCategory: 'done',
-                    label: 'ส่งแล้ว',
+                    label: 'ส่งครบแล้ว',
+                    phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">✓ ส่งครบแล้ว</span>`,
                     subject: 'ส่งครบทุกวิชาแล้ว',
                     timeSlot: 'เสร็จสิ้น',
                     duration: 0,
@@ -506,6 +508,9 @@
                     barColor: 'bg-emerald-500'
                 };
             }
+
+            const stObj = state[pendingExam.row_id] || {};
+            const isPicked = (stObj.p1_picked === true);
 
             const sSec = pendingExam.start_min * 60;
             const eSec = pendingExam.end_min * 60;
@@ -520,10 +525,46 @@
                 if (waitM > 60) {
                     timeText = `เริ่มใน ${Math.floor(waitM / 60)}ชม.${waitM % 60}น.`;
                 }
+
+                if (isPicked) {
+                    return {
+                        type: 'picked_waiting',
+                        filterCategory: 'active',
+                        label: 'รับข้อสอบแล้ว',
+                        phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">✓ รับข้อสอบแล้ว</span>`,
+                        subject: pendingExam.subj_code,
+                        timeSlot: `${pendingExam.time} น.`,
+                        duration: durationMins,
+                        timeText: timeText,
+                        percent: 0,
+                        bgClass: 'bg-emerald-50/70 border-emerald-300 text-emerald-950',
+                        dotClass: 'bg-emerald-500',
+                        barColor: 'bg-emerald-400'
+                    };
+                }
+
+                if (waitSec <= 900) {
+                    return {
+                        type: 'standby_warning',
+                        filterCategory: 'attention',
+                        label: 'รอรับข้อสอบ',
+                        phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">⚠️ ยังไม่มารับ</span>`,
+                        subject: pendingExam.subj_code,
+                        timeSlot: `${pendingExam.time} น.`,
+                        duration: durationMins,
+                        timeText: timeText,
+                        percent: 0,
+                        bgClass: 'bg-amber-50 border-amber-300 text-amber-950',
+                        dotClass: 'bg-amber-500',
+                        barColor: 'bg-amber-400'
+                    };
+                }
+
                 return {
                     type: 'standby',
                     filterCategory: 'active',
                     label: 'รอเริ่มสอบ',
+                    phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 border border-slate-200">รอรับซอง</span>`,
                     subject: pendingExam.subj_code,
                     timeSlot: `${pendingExam.time} น.`,
                     duration: durationMins,
@@ -542,11 +583,29 @@
                 const timeFormatted = `${remM < 10 ? '0' : ''}${remM}:${remS < 10 ? '0' : ''}${remS}`;
                 const percent = Math.min(100, Math.max(0, Math.round(((nowTotalSec - sSec) / totalDurationSec) * 100)));
 
+                if (!isPicked) {
+                    return {
+                        type: 'missing_pickup',
+                        filterCategory: 'attention',
+                        label: 'ยังไม่มารับข้อสอบ!',
+                        phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300 animate-pulse">🚨 ยังไม่มารับซอง!</span>`,
+                        subject: pendingExam.subj_code,
+                        timeSlot: `${pendingExam.time} น.`,
+                        duration: durationMins,
+                        timeText: `⏳ ${timeFormatted}`,
+                        percent: percent,
+                        bgClass: 'bg-rose-50 border-rose-300 text-rose-950',
+                        dotClass: 'bg-rose-500',
+                        barColor: 'bg-rose-500'
+                    };
+                }
+
                 if (remainSec <= 300) {
                     return {
                         type: 'warning_runner',
                         filterCategory: 'warning',
                         label: '5 นาทีสุดท้าย',
+                        phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">5 นาทีสุดท้าย</span>`,
                         subject: pendingExam.subj_code,
                         timeSlot: `${pendingExam.time} น.`,
                         duration: durationMins,
@@ -561,6 +620,7 @@
                         type: 'active',
                         filterCategory: 'active',
                         label: 'กำลังสอบ',
+                        phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-indigo-100 text-indigo-800 border border-indigo-200">✓ กำลังสอบ</span>`,
                         subject: pendingExam.subj_code,
                         timeSlot: `${pendingExam.time} น.`,
                         duration: durationMins,
@@ -580,6 +640,7 @@
                 type: 'overdue',
                 filterCategory: 'attention',
                 label: 'หมดเวลา (รอส่ง)',
+                phaseBadge: `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300 animate-pulse">🔔 รอส่งคืน</span>`,
                 subject: pendingExam.subj_code,
                 timeSlot: `${pendingExam.time} น.`,
                 duration: durationMins,
@@ -868,7 +929,10 @@
                          class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-1.5 flex flex-col justify-between min-h-[58px] relative group cursor-pointer">
                         <div class="flex items-center justify-between">
                             <span class="font-extrabold text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
+                            <div class="flex items-center gap-1">
+                                <span id="rm-badge-${rm.room}">${st.phaseBadge || ''}</span>
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
+                            </div>
                         </div>
                         <div class="flex items-center justify-between text-[11px] font-semibold text-slate-800 truncate my-0.5">
                             <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
@@ -877,7 +941,7 @@
                         <div class="flex items-center justify-between text-[10px]">
                             <div class="flex items-center gap-1">
                                 <span id="rm-dot-${rm.room}" class="w-1.5 h-1.5 rounded-full shrink-0 ${st.dotClass}"></span>
-                                <span id="rm-status-${rm.room}" class="font-bold text-slate-600 truncate max-w-[50px]">${st.label}</span>
+                                <span id="rm-status-${rm.room}" class="font-bold text-slate-600 truncate max-w-[80px]">${st.label}</span>
                             </div>
                             <span id="rm-timer-${rm.room}" class="font-mono text-[10px] sm:text-[11px] font-extrabold ${st.clockColor || 'text-slate-700'}">${st.timeText}</span>
                         </div>
@@ -921,6 +985,8 @@
                 const cardEl = document.getElementById('rm-card-' + rm.room);
                 const durEl = document.getElementById('rm-dur-' + rm.room);
 
+                const badgeEl = document.getElementById('rm-badge-' + rm.room);
+                if (badgeEl) badgeEl.innerHTML = st.phaseBadge || '';
                 if (timerEl) timerEl.textContent = st.timeText;
                 if (statusEl) statusEl.textContent = st.label;
                 if (subjEl) subjEl.textContent = st.subject;
