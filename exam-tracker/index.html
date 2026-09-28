@@ -602,19 +602,103 @@
 
         let currentDay = '28';
         let simTime = 'real';
+        let simTimeBase = null;
+        let simTimeStartReal = 0;
         let currentGridFilter = 'all';
 
         function onStateDataChanged() {
-            renderGrid();
             updateClock();
+            renderGrid();
+        }
+
+        function changeSimTime(val) {
+            simTime = val;
+            if (val === 'real') {
+                simTimeBase = null;
+            } else {
+                const [h, m] = val.split(':').map(Number);
+                const d = new Date();
+                d.setHours(h, m, 0, 0);
+                simTimeBase = d;
+                simTimeStartReal = Date.now();
+            }
+            updateClock();
+            renderGrid();
         }
 
         function getEffectiveTime() {
-            if (simTime === 'real') return new Date();
-            const [h, m] = simTime.split(':').map(Number);
-            const d = new Date();
-            d.setHours(h, m, 0, 0);
-            return d;
+            if (simTime === 'real' || !simTimeBase) {
+                return new Date();
+            }
+            const elapsedMs = Date.now() - simTimeStartReal;
+            return new Date(simTimeBase.getTime() + elapsedMs);
+        }
+
+        function updateClock() {
+            const now = getEffectiveTime();
+            
+            // 1. Digital Clock Display
+            const clockEl = document.getElementById('clockDisplay');
+            if (clockEl) {
+                const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
+                clockEl.textContent = `${timeStr} น.` + (simTime !== 'real' ? ' [จำลอง]' : '');
+            }
+
+            // 2. Wave Radar
+            updateWaveRadar(now);
+        }
+
+        function updateWaveRadar(now) {
+            const badgeEl = document.getElementById('waveRadarBadge');
+            const countEl = document.getElementById('waveCountdownText');
+            if (!badgeEl || !countEl) return;
+
+            const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            const todayExams = examDb.filter(e => e.date_d === currentDay);
+
+            if (todayExams.length === 0) {
+                badgeEl.textContent = 'ไม่มีสอบวันนี้';
+                countEl.textContent = '-';
+                return;
+            }
+
+            const upcomingEnds = [...new Set(todayExams.map(e => e.end_min * 60))].filter(s => s > nowSec).sort((a,b) => a - b);
+            const upcomingStarts = [...new Set(todayExams.map(e => e.start_min * 60))].filter(s => s > nowSec).sort((a,b) => a - b);
+            const isExamRunningNow = todayExams.some(e => (e.start_min * 60 <= nowSec) && (nowSec < e.end_min * 60));
+
+            if (upcomingEnds.length > 0 && (isExamRunningNow || upcomingStarts.length === 0 || upcomingEnds[0] <= upcomingStarts[0])) {
+                const nextEndSec = upcomingEnds[0];
+                const diffSec = nextEndSec - nowSec;
+                const diffM = Math.floor(diffSec / 60);
+                const diffS = diffSec % 60;
+                const h = Math.floor(nextEndSec / 3600).toString().padStart(2, '0');
+                const m = Math.floor((nextEndSec % 3600) / 60).toString().padStart(2, '0');
+
+                badgeEl.textContent = `ระลอกส่งซองถัดไป: ${h}.${m} น.`;
+                countEl.textContent = `เหลือ ${diffM}:${diffS < 10 ? '0' : ''}${diffS} นาที`;
+
+                if (diffM <= 5) {
+                    countEl.className = 'font-bold text-amber-300 font-mono text-[11px] animate-pulse';
+                } else {
+                    countEl.className = 'font-bold text-emerald-300 font-mono text-[11px]';
+                }
+            } else if (upcomingStarts.length > 0) {
+                const nextStartSec = upcomingStarts[0];
+                const diffSec = nextStartSec - nowSec;
+                const diffM = Math.floor(diffSec / 60);
+                const diffS = diffSec % 60;
+                const h = Math.floor(nextStartSec / 3600).toString().padStart(2, '0');
+                const m = Math.floor((nextStartSec % 3600) / 60).toString().padStart(2, '0');
+
+                const isLunchBreak = (now.getHours() === 11 && now.getMinutes() >= 30) || (now.getHours() === 12);
+                badgeEl.textContent = isLunchBreak ? `🍱 พักเที่ยง (เริ่มบ่าย: ${h}.${m} น.)` : `เริ่มสอบรอบถัดไป: ${h}.${m} น.`;
+                countEl.textContent = `อีก ${diffM}:${diffS < 10 ? '0' : ''}${diffS} นาที`;
+                countEl.className = 'font-bold text-indigo-200 font-mono text-[11px]';
+            } else {
+                badgeEl.textContent = 'สิ้นสุดการสอบวันนี้';
+                countEl.textContent = 'ครบทุกวิชาแล้ว ✅';
+                countEl.className = 'font-bold text-slate-300 font-mono text-[11px]';
+            }
         }
 
         let currentGrouping = 'building'; // 'building' | 'grade'
@@ -1208,6 +1292,12 @@
             loadStorage();
             renderGrid();
             updateClock();
+
+            // Heartbeat: Live clock and countdown ticker every second
+            setInterval(() => {
+                updateClock();
+                renderGrid();
+            }, 1000);
         });
     </script>
 </body>
