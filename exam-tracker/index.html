@@ -65,7 +65,12 @@
                 </a>
             </div>
 
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-2">
+                <!-- Sticky Top Real-Time Master Clock -->
+                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-mono font-black text-indigo-900 shadow-2xs">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                    <span id="topBarLiveClock">--:--:-- น.</span>
+                </div>
                 <button onclick="openLogModal()" class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     ประวัติ (<span id="logBadge">0</span>)
@@ -636,15 +641,22 @@
 
         function updateClock() {
             const now = getEffectiveTime();
+            const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
+            const simSuffix = (simTime !== 'real') ? ' [จำลอง]' : '';
             
-            // 1. Digital Clock Display
+            // 1. Digital Clock in Control Bar
             const clockEl = document.getElementById('clockDisplay');
             if (clockEl) {
-                const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
-                clockEl.textContent = `${timeStr} น.` + (simTime !== 'real' ? ' [จำลอง]' : '');
+                clockEl.textContent = `${timeStr} น.` + simSuffix;
             }
 
-            // 2. Wave Radar
+            // 2. Sticky Top Bar Clock
+            const topClockEl = document.getElementById('topBarLiveClock');
+            if (topClockEl) {
+                topClockEl.textContent = `${timeStr} น.` + simSuffix;
+            }
+
+            // 3. Wave Radar
             updateWaveRadar(now);
         }
 
@@ -1084,16 +1096,22 @@
 
                 const cardHtml = `
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between min-h-[66px] relative group cursor-pointer">
+                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between min-h-[72px] relative group cursor-pointer">
                         
-                        <!-- Row 1: Room & Grade -->
-                        <div class="flex items-center justify-between leading-none">
-                            <span class="font-black text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
+                        <!-- Row 1: Room & Grade + Exam Time Slot -->
+                        <div class="flex items-center justify-between leading-none mb-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-black text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
+                            </div>
+                            <!-- Exam Time Slot prominently displayed -->
+                            <span class="font-mono text-[10px] font-black text-indigo-700 bg-white/90 px-1.5 py-0.5 rounded border border-indigo-200 shadow-2xs flex items-center gap-0.5 shrink-0">
+                                ⏰ ${st.timeSlot}
+                            </span>
                         </div>
                         
-                        <!-- Row 2: Subject & Period Badge -->
-                        <div class="flex items-center justify-between text-[11px] font-bold text-slate-800 my-1 leading-tight">
+                        <!-- Row 2: Subject & Period Badge + Duration -->
+                        <div class="flex items-center justify-between text-[11px] font-bold text-slate-800 my-0.5 leading-tight">
                             <div class="flex items-center gap-1 truncate mr-1">
                                 <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">${st.periodBadge}</span>
                                 <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
@@ -1101,12 +1119,12 @@
                             ${durBadge}
                         </div>
                         
-                        <!-- Row 3: 2-Phase Status (ขาส่ง vs ขารับ) -->
-                        <div class="flex items-center justify-between text-[10px] leading-tight mt-0.5 pt-1 border-t border-slate-200/60">
+                        <!-- Row 3: 2-Phase Status (ขาส่ง vs ขารับ / นับถอยหลัง) -->
+                        <div class="flex items-center justify-between text-[10px] leading-tight mt-1 pt-1 border-t border-slate-200/60">
                             <span id="rm-dispatch-${rm.room}" class="font-extrabold px-1.5 py-0.5 rounded text-[9px] border ${st.dispatchClass}">
                                 ${st.dispatchText}
                             </span>
-                            <span id="rm-return-${rm.room}" class="truncate shrink-0 ${st.returnClass}">
+                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-bold ${st.returnClass}">
                                 ${st.returnText}
                             </span>
                         </div>
