@@ -281,6 +281,9 @@
                     <div>
                         <h3 id="modalRoomTitle" class="font-extrabold text-lg text-slate-900">ห้อง 1101</h3>
                         <p id="modalRoomSub" class="text-xs text-slate-500">มัธยมศึกษาปีที่ 1 | อาคาร 1 ชั้น 1</p>
+                        <div class="mt-1 text-xs text-indigo-900 font-bold bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-lg inline-flex items-center gap-1">
+                            <span>👤 ครูคุมสอบ:</span> <span id="modalProctorsText" class="text-indigo-950 font-black">-</span>
+                        </div>
                     </div>
                 </div>
                 <button onclick="closeRoomModal()" class="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
@@ -1017,7 +1020,11 @@
             if (!rm) return;
 
             document.getElementById('modalRoomTitle').textContent = `ห้องสอบ ${rm.room}`;
-            document.getElementById('modalRoomSub').textContent = `${rm.grade} | อาคาร ${rm.building} ชั้น ${rm.floor}`;
+            document.getElementById('modalRoomSub').textContent = `${rm.grade} | อาคาร ${rm.building || '-'} ชั้น ${rm.floor || '-'}`;
+
+            const proctorNames = [rm.p1, rm.p2].filter(Boolean).join(', ') || '-';
+            const proctorEl = document.getElementById('modalProctorsText');
+            if (proctorEl) proctorEl.textContent = proctorNames;
 
             const list = document.getElementById('modalSubjectList');
             list.innerHTML = '';
@@ -1032,29 +1039,45 @@
                     const isP1 = st.p1_picked === true;
                     const isP2 = st.p2_received === true;
 
+                    const itemProctors = [item.proctor1, item.proctor2].filter(Boolean).join(', ') || proctorNames;
+
                     const div = document.createElement('div');
                     div.className = 'p-3 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-2';
                     div.innerHTML = `
                         <div>
                             <div class="flex items-center gap-1.5 flex-wrap">
-                                <span class="font-bold text-slate-900 text-xs sm:text-sm">${item.subj_code} ${item.subj_name}</span>
+                                <span class="font-black text-slate-900 text-xs sm:text-sm">${item.subj_code} ${item.subj_name}</span>
                                 <span class="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded border border-indigo-200">⏱️ ${item.duration_mins} นาที</span>
                             </div>
-                            <div class="text-slate-500 text-xs mt-1">เวลาสอบ: <strong class="text-indigo-700">${item.time} น.</strong> | ครูผู้สอน: ${item.teacher_name}</div>
+                            
+                            <!-- Proctor & Teacher Info -->
+                            <div class="mt-1.5 pt-1.5 border-t border-slate-200/80 text-xs flex flex-col gap-0.5">
+                                <div class="flex items-center gap-1 text-slate-800">
+                                    <span class="text-slate-500 font-medium">ครูคุมสอบ:</span>
+                                    <strong class="text-indigo-900 font-black">${itemProctors}</strong>
+                                </div>
+                                <div class="text-[11px] text-slate-500">
+                                    <span>เวลาสอบ: <strong class="text-indigo-700 font-mono">${item.time} น.</strong></span>
+                                    <span class="mx-1 text-slate-300">|</span>
+                                    <span>ครูผู้สอน: ${item.teacher_name || '-'}</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- 2 Big Touch-Friendly Modal Action Buttons -->
                         <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-xs">
-                            <label class="flex items-center gap-2 p-2 rounded-xl border ${isP1 ? 'bg-indigo-50/50 border-indigo-200 text-indigo-900' : 'bg-white border-slate-200 text-slate-600'} cursor-pointer">
-                                <input type="checkbox" onchange="toggleP1('${item.row_id || item.id}', this.checked)" ${isP1 ? 'checked' : ''} class="rounded text-indigo-600 w-4 h-4">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border ${isP1 ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'} cursor-pointer transition-all active:scale-95">
+                                <input type="checkbox" onchange="toggleP1('${rowKey}', this.checked)" ${isP1 ? 'checked' : ''} class="rounded text-emerald-600 w-4 h-4">
                                 <div class="truncate">
-                                    <div class="font-bold text-[11px]">1. มอบซองให้กรรมการ</div>
-                                    <div class="text-[10px] opacity-75">${st.p1_time || 'ยังไม่มารับ'}</div>
+                                    <div class="font-black text-[11px] sm:text-xs">${isP1 ? '✅ มอบข้อสอบแล้ว' : '📦 1. มอบข้อสอบ'}</div>
+                                    <div class="text-[10px] opacity-90">${st.p1_time ? st.p1_time + ' น.' : 'ยังไม่มารับ'}</div>
                                 </div>
                             </label>
-                            <label class="flex items-center gap-2 p-2 rounded-xl border ${isP2 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-white border-slate-200 text-slate-600'} cursor-pointer">
-                                <input type="checkbox" onchange="toggleP2('${item.row_id || item.id}', this.checked)" ${isP2 ? 'checked' : ''} class="rounded text-emerald-600 w-4 h-4">
+                            <label class="flex items-center gap-2 p-2.5 rounded-xl border ${isP2 ? 'bg-teal-600 text-white border-teal-700 shadow-xs' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'} cursor-pointer transition-all active:scale-95">
+                                <input type="checkbox" onchange="toggleP2('${rowKey}', this.checked)" ${isP2 ? 'checked' : ''} class="rounded text-teal-600 w-4 h-4">
                                 <div class="truncate">
-                                    <div class="font-bold text-[11px]">2. รับซองคืนห้องวัดผล</div>
-                                    <div class="text-[10px] opacity-75">${st.p2_time || 'ยังไม่ส่งคืน'}</div>
+                                    <div class="font-black text-[11px] sm:text-xs">${isP2 ? '✅ รับซองคืนแล้ว' : '📥 2. รับซองคืน'}</div>
+                                    <div class="text-[10px] opacity-90">${st.p2_time ? st.p2_time + ' น.' : 'ยังไม่ส่งคืน'}</div>
                                 </div>
                             </label>
                         </div>
