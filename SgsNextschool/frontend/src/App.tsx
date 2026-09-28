@@ -1208,8 +1208,8 @@ function App() {
       <AssistantChatbot 
         roundType={roundType}
         viewMode={viewMode}
-        hasErrors={results ? results.some((r: any) => r.errors && r.errors.length > 0) : false}
-        hasResults={!!results}
+        hasErrors={Boolean(results?.pairs?.some((p: any) => p.results?.errors && p.results.errors.length > 0))}
+        hasResults={Boolean(results?.pairs && results.pairs.length > 0)}
       />
 
     </div>
