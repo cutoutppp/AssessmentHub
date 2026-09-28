@@ -54,14 +54,18 @@
             </div>
         </div>
 
-        <!-- Center: Master Real-Time Clock & Wave Radar -->
-        <div class="flex items-center gap-2.5 bg-white/10 px-3 py-0.5 rounded-lg border border-white/10 text-xs shadow-2xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-            <span id="clockDisplay" class="font-mono text-xs font-black text-white tracking-wider">--:--:-- น.</span>
+        <!-- Center: Master Real-Time Clock & Wave Radar (PROMINENT NOC DIGITAL CLOCK) -->
+        <div class="flex items-center gap-3 bg-gradient-to-r from-indigo-900/60 via-slate-800 to-indigo-900/60 px-3.5 py-1 rounded-xl border border-indigo-400/30 shadow-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span id="clockDisplay" class="font-mono text-sm sm:text-base font-black text-white tracking-wider">--:--:-- น.</span>
+            </div>
             <span id="topBarLiveClock" class="hidden"></span>
-            <div class="h-3 w-px bg-white/20"></div>
-            <span id="waveRadarBadge" class="text-[11px] text-indigo-200 font-bold truncate max-w-[200px]">ระลอกถัดไป: --:-- น.</span>
-            <span id="waveCountdownText" class="text-[11px] text-emerald-300 font-mono font-bold shrink-0">เหลือ --:--</span>
+            <div class="h-4 w-px bg-white/20"></div>
+            <div class="flex items-center gap-1.5">
+                <span id="waveRadarBadge" class="text-xs text-indigo-200 font-bold bg-indigo-500/20 px-2 py-0.5 rounded border border-indigo-400/20 truncate max-w-[220px]">ระลอกถัดไป: --:-- น.</span>
+                <span id="waveCountdownText" class="text-xs text-emerald-300 font-mono font-black shrink-0">เหลือ --:--</span>
+            </div>
         </div>
 
         <!-- Right: Sim, Navigation Links & Log -->
@@ -146,7 +150,7 @@
     </div>
 
     <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN ON DESKTOP!) -->
-    <main class="max-w-[1720px] mx-auto px-2 sm:px-3 py-2 flex-1 w-full flex flex-col justify-start gap-2 overflow-y-auto lg:overflow-hidden">
+    <main class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2.5 flex-1 w-full flex flex-col justify-start gap-2.5 overflow-y-auto lg:overflow-hidden">
         <!-- MISSING BANNER -->
         <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
             <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
@@ -161,155 +165,155 @@
         </div>
 
         <!-- 55 ROOMS UNIFIED DASHBOARD (2 TIERS - ALL 55 ROOMS VISIBLE IN ONE SCREEN!) -->
-        <div id="roomsUnifiedDashboard" class="flex flex-col gap-2 select-none">
+        <div id="roomsUnifiedDashboard" class="flex flex-col gap-2.5 select-none">
             <!-- TIER 1: อาคาร 1 (8) + อาคาร 2 (13) + ห้องพิเศษ (4) = 25 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
                 
                 <!-- อาคาร 1 (8 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 1</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">8 ห้อง (ชั้น 1-2)</span>
                         </div>
                         <span id="bld1CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-4 gap-1"></div>
+                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
                 </div>
 
                 <!-- อาคาร 2 (13 ห้อง) -->
                 <div class="lg:col-span-6 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 2</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">13 ห้อง (ชั้น 1-2)</span>
                         </div>
                         <span id="bld2CountBadge" class="text-[10px] font-bold text-slate-500">0/13 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1"></div>
+                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1.5"></div>
                 </div>
 
                 <!-- ห้องพิเศษ (4 ห้อง) -->
                 <div class="lg:col-span-2 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 พิเศษ</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">4 ห้อง</span>
                         </div>
                         <span id="bldSpecialCountBadge" class="text-[10px] font-bold text-slate-500">0/4 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-1"></div>
+                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-1.5"></div>
                 </div>
 
             </div>
 
             <!-- TIER 2: อาคาร 3 (19) + อาคาร 4 (11) = 30 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
                 
                 <!-- อาคาร 3 (19 ห้อง) -->
                 <div class="lg:col-span-8 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 3</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">19 ห้อง (ชั้น 2, 3, 4)</span>
                         </div>
                         <span id="bld3CountBadge" class="text-[10px] font-bold text-slate-500">0/19 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1"></div>
+                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5"></div>
                 </div>
 
                 <!-- อาคาร 4 (11 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 4</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ชั้น 2-3)</span>
                         </div>
                         <span id="bld4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1"></div>
+                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5"></div>
                 </div>
 
             </div>
         </div>
 
             <!-- 55 ROOMS DASHBOARD (BY GRADE LEVEL: ม.1 - ม.6) -->
-        <div id="roomsGradeDashboard" class="flex flex-col gap-2 select-none hidden">
+        <div id="roomsGradeDashboard" class="flex flex-col gap-2.5 select-none hidden">
             <!-- TIER 1: มัธยมศึกษาตอนต้น (ม.1, ม.2, ม.3 = 22 ห้อง) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
                 <!-- ม.1 (7 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 1</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">7 ห้อง (ม.1/1 - ม.1/7)</span>
                         </div>
                         <span id="gradeM1CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
 
                 <!-- ม.2 (7 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 2</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">7 ห้อง (ม.2/1 - ม.2/7)</span>
                         </div>
                         <span id="gradeM2CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
 
                 <!-- ม.3 (8 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 3</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">8 ห้อง (ม.3/1 - ม.3/8)</span>
                         </div>
                         <span id="gradeM3CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
             </div>
 
             <!-- TIER 2: มัธยมศึกษาตอนปลาย (ม.4, ม.5, ม.6 = 33 ห้อง) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
                 <!-- ม.4 (11 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 4</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.4/1 - ม.4/11)</span>
                         </div>
                         <span id="gradeM4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
 
                 <!-- ม.5 (11 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 5</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.5/1 - ม.5/11)</span>
                         </div>
                         <span id="gradeM5CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
 
                 <!-- ม.6 (11 ห้อง) -->
                 <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 6</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.6/1 - ม.6/11)</span>
                         </div>
                         <span id="gradeM6CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
+                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5"></div>
                 </div>
             </div>
         </div>
@@ -1017,38 +1021,38 @@
 
                 const cardHtml = `
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-lg border transition-all hover:shadow p-1.5 flex flex-col justify-between h-[56px] relative group cursor-pointer overflow-hidden leading-tight select-none">
+                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between h-[76px] relative group cursor-pointer overflow-hidden select-none">
                         
-                        <!-- Line 1: Room, Grade, Time -->
-                        <div class="flex items-center justify-between text-xs leading-none">
-                            <div class="flex items-center gap-1 min-w-0">
-                                <span class="font-black text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
-                                <span class="text-[9px] font-bold text-slate-500">${rm.grade}</span>
+                        <!-- Line 1: Room No. + Grade + Exam Time Clock Slot -->
+                        <div class="flex items-center justify-between leading-none">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span class="font-black text-sm font-mono tracking-tight text-slate-900">${rm.room}</span>
+                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
                             </div>
-                            ${timeClean ? `<span class="font-mono text-[9px] font-bold text-indigo-700 bg-white/80 px-1 py-0.2 rounded border border-indigo-100 shrink-0">${timeClean}</span>` : ''}
+                            ${timeClean ? `<span class="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-50/90 px-1.5 py-0.5 rounded border border-indigo-200 shrink-0 flex items-center gap-0.5 shadow-2xs">⏰ ${timeClean}</span>` : ''}
                         </div>
                         
-                        <!-- Line 2: Period & Subject Code -->
-                        <div class="flex items-center justify-between text-[10px] leading-none my-0.5">
-                            <div class="flex items-center gap-1 min-w-0">
-                                <span class="text-[8px] font-black px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">${st.periodBadge}</span>
-                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[10px]" title="${st.subject}">${st.subject}</span>
+                        <!-- Line 2: Period & Subject Code + Duration -->
+                        <div class="flex items-center justify-between text-xs leading-none my-0.5">
+                            <div class="flex items-center gap-1.5 min-w-0 truncate mr-1">
+                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-100/80 text-indigo-800 border border-indigo-200 shrink-0">${st.periodBadge}</span>
+                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[11px]" title="${st.subject}">${st.subject}</span>
                             </div>
-                            ${st.duration > 0 ? `<span class="text-[8px] font-semibold text-slate-400 shrink-0">${st.duration}น.</span>` : ''}
+                            ${st.duration > 0 ? `<span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200 shrink-0">${st.duration}น.</span>` : ''}
                         </div>
                         
-                        <!-- Line 3: 2-Phase Status (Left: Dispatch, Right: Return/Countdown) -->
-                        <div class="flex items-center justify-between text-[9px] leading-none pt-0.5 border-t border-slate-200/50 gap-1">
-                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1 rounded text-[8px] border shrink-0 ${st.dispatchClass}">
+                        <!-- Line 3: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥 / Countdown ⏳) -->
+                        <div class="flex items-center justify-between text-[10px] leading-none pt-1 border-t border-slate-200/60 gap-1">
+                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1.5 py-0.5 rounded text-[9px] border shrink-0 ${st.dispatchClass}">
                                 ${st.dispatchText}
                             </span>
-                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-bold ${st.returnClass}">
+                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-extrabold text-[10px] ${st.returnClass}">
                                 ${st.returnText}
                             </span>
                         </div>
                         
-                        <!-- Line 4: Slim 2px Progress Bar at bottom edge -->
-                        <div class="w-full bg-slate-200/60 h-0.5 overflow-hidden absolute bottom-0 left-0 right-0">
+                        <!-- Line 4: Progress Bar at bottom edge -->
+                        <div class="w-full bg-slate-200/60 h-1 overflow-hidden absolute bottom-0 left-0 right-0">
                             <div id="rm-prog-${rm.room}" class="${st.barColor} h-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
                         </div>
                     </div>
