@@ -1017,42 +1017,46 @@
 
                 if (!targetContainer) return;
 
-                const timeClean = (st.timeSlot && st.timeSlot !== '-' && st.timeSlot !== 'เสร็จสิ้น') ? st.timeSlot.replace(' น.', '') : '';
+                const timeClean = (st.timeSlot && st.timeSlot !== '-' && st.timeSlot !== 'เสร็จสิ้น') 
+                    ? st.timeSlot.replace(' น.', '') 
+                    : (st.timeSlot === 'เสร็จสิ้น' ? 'สอบครบแล้ว' : '-');
 
                 const cardHtml = `
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2 flex flex-col justify-between h-[76px] relative group cursor-pointer overflow-hidden select-none">
+                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-1.5 flex flex-col justify-between h-[80px] relative group cursor-pointer overflow-hidden select-none">
                         
-                        <!-- Line 1: Room No. + Grade + Exam Time Clock Slot -->
+                        <!-- Line 1: Room No. (Left) + Grade Badge (Right) - NEVER OVERLAPS -->
                         <div class="flex items-center justify-between leading-none">
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="font-black text-sm font-mono tracking-tight text-slate-900">${rm.room}</span>
-                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
-                            </div>
-                            ${timeClean ? `<span class="font-mono text-[10px] font-bold text-indigo-800 bg-indigo-50/90 px-1.5 py-0.5 rounded border border-indigo-200 shrink-0 flex items-center gap-0.5 shadow-2xs">⏰ ${timeClean}</span>` : ''}
+                            <span class="font-black text-xs sm:text-sm font-mono tracking-tight text-slate-900">${rm.room}</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
                         </div>
                         
-                        <!-- Line 2: Period & Subject Code + Duration -->
-                        <div class="flex items-center justify-between text-xs leading-none my-0.5">
-                            <div class="flex items-center gap-1.5 min-w-0 truncate mr-1">
-                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-100/80 text-indigo-800 border border-indigo-200 shrink-0">${st.periodBadge}</span>
-                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[11px]" title="${st.subject}">${st.subject}</span>
+                        <!-- Line 2: Dedicated Exam Time Slot Badge (CLEAR ON ITS OWN LINE - CANNOT COLLIDE WITH ROOM NO.) -->
+                        <div class="flex items-center justify-between text-[9px] font-mono leading-none bg-white/80 border border-indigo-100 rounded px-1.5 py-0.5 text-indigo-900 font-bold my-0.5 shadow-2xs">
+                            <span class="truncate flex items-center gap-0.5 text-indigo-800">⏰ ${timeClean}</span>
+                            ${st.duration > 0 ? `<span class="text-slate-400 font-normal shrink-0 text-[8px]">${st.duration}น.</span>` : ''}
+                        </div>
+
+                        <!-- Line 3: Period & Subject Code -->
+                        <div class="flex items-center justify-between text-[10px] leading-none mb-0.5">
+                            <div class="flex items-center gap-1 min-w-0 truncate">
+                                <span class="text-[8px] font-black px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">${st.periodBadge}</span>
+                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[10px]" title="${st.subject}">${st.subject}</span>
                             </div>
-                            ${st.duration > 0 ? `<span class="text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200 shrink-0">${st.duration}น.</span>` : ''}
                         </div>
                         
-                        <!-- Line 3: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥 / Countdown ⏳) -->
-                        <div class="flex items-center justify-between text-[10px] leading-none pt-1 border-t border-slate-200/60 gap-1">
-                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1.5 py-0.5 rounded text-[9px] border shrink-0 ${st.dispatchClass}">
+                        <!-- Line 4: 2-Phase Status (Left: Dispatch 📦, Right: Return 📥 / Countdown ⏳) -->
+                        <div class="flex items-center justify-between text-[9px] leading-none pt-0.5 border-t border-slate-200/50 gap-1">
+                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1 rounded text-[8px] border shrink-0 ${st.dispatchClass}">
                                 ${st.dispatchText}
                             </span>
-                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-extrabold text-[10px] ${st.returnClass}">
+                            <span id="rm-return-${rm.room}" class="truncate shrink-0 font-extrabold text-[9px] ${st.returnClass}">
                                 ${st.returnText}
                             </span>
                         </div>
                         
-                        <!-- Line 4: Progress Bar at bottom edge -->
-                        <div class="w-full bg-slate-200/60 h-1 overflow-hidden absolute bottom-0 left-0 right-0">
+                        <!-- Line 5: Progress Bar at bottom edge -->
+                        <div class="w-full bg-slate-200/60 h-0.5 overflow-hidden absolute bottom-0 left-0 right-0">
                             <div id="rm-prog-${rm.room}" class="${st.barColor} h-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
                         </div>
                     </div>
