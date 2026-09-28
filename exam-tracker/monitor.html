@@ -36,85 +36,106 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
     
-    <!-- UNIFIED COMMAND CENTER TOP BAR (ROW 1: NAV, DAY, VIEW, CLOCK, RADAR) -->
+    <!-- UNIFIED COMMAND CENTER TOP BAR (ROW 1: BRAND, DAY SELECTOR, CLOCK, RADAR, SIM & SYSTEM LINKS) -->
     <header class="bg-slate-900 text-white px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 shadow-xs shrink-0 select-none z-30 no-print">
-        <!-- Left: Brand, Day & View -->
+        <!-- Left: Brand & Day Switcher -->
         <div class="flex items-center gap-2 flex-wrap">
-            <a href="../index.html" class="font-bold text-xs bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded-lg text-slate-200 transition-colors">Hub</a>
-            <span class="font-black text-xs text-white flex items-center gap-1">🖥️ มอนิเตอร์ <span class="hidden sm:inline text-indigo-300 font-normal">55 ห้อง</span></span>
-            <div class="h-3 w-px bg-white/20"></div>
+            <a href="../index.html" class="font-bold text-xs bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded-lg text-slate-200 transition-colors">AssessmentHub</a>
+            <span class="font-black text-xs text-white flex items-center gap-1.5">
+                🖥️ ศูนย์มอนิเตอร์ <span class="text-indigo-300 font-bold bg-indigo-950/80 px-1.5 py-0.2 rounded border border-indigo-500/30 text-[11px]">55 ห้อง (NOC)</span>
+            </span>
+            <div class="h-3.5 w-px bg-white/20 mx-0.5"></div>
             <!-- Day Switcher -->
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1 bg-white/10 p-0.5 rounded-lg border border-white/10 text-xs">
+                <span class="text-[10px] font-bold text-slate-400 px-1">วัน:</span>
                 <button onclick="setDay('28')" id="btnDay28" class="px-2 py-0.5 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-2xs">28 ก.ย.</button>
-                <button onclick="setDay('29')" id="btnDay29" class="px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-slate-300 hover:bg-white/20">29</button>
-                <button onclick="setDay('30')" id="btnDay30" class="px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-slate-300 hover:bg-white/20">30</button>
-            </div>
-            <div class="h-3 w-px bg-white/20"></div>
-            <!-- Grouping Switcher -->
-            <div class="flex items-center gap-0.5 bg-white/10 p-0.5 rounded-lg text-xs">
-                <button onclick="setMonitorGrouping('building')" id="btnGroupBuilding" class="px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs">🏢 อาคาร</button>
-                <button onclick="setMonitorGrouping('grade')" id="btnGroupGrade" class="px-2 py-0.5 rounded font-black text-slate-300 hover:text-white">🎓 ชั้น</button>
+                <button onclick="setDay('29')" id="btnDay29" class="px-2 py-0.5 rounded-md text-xs font-bold bg-transparent text-slate-300 hover:bg-white/20">29</button>
+                <button onclick="setDay('30')" id="btnDay30" class="px-2 py-0.5 rounded-md text-xs font-bold bg-transparent text-slate-300 hover:bg-white/20">30</button>
             </div>
         </div>
 
         <!-- Center: Master Real-Time Clock & Wave Radar -->
-        <div class="flex items-center gap-2 bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10 text-xs">
+        <div class="flex items-center gap-2.5 bg-white/10 px-3 py-0.5 rounded-lg border border-white/10 text-xs shadow-2xs">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-            <span id="clockDisplay" class="font-mono text-xs font-black text-white">--:--:-- น.</span>
+            <span id="clockDisplay" class="font-mono text-xs font-black text-white tracking-wider">--:--:-- น.</span>
             <span id="topBarLiveClock" class="hidden"></span>
             <div class="h-3 w-px bg-white/20"></div>
-            <span id="waveRadarBadge" class="text-[10px] text-indigo-200 font-bold truncate max-w-[160px]">ระลอกถัดไป: --:-- น.</span>
-            <span id="waveCountdownText" class="text-[10px] text-emerald-300 font-mono font-bold shrink-0">เหลือ --:--</span>
+            <span id="waveRadarBadge" class="text-[11px] text-indigo-200 font-bold truncate max-w-[200px]">ระลอกถัดไป: --:-- น.</span>
+            <span id="waveCountdownText" class="text-[11px] text-emerald-300 font-mono font-bold shrink-0">เหลือ --:--</span>
         </div>
 
         <!-- Right: Sim, Navigation Links & Log -->
         <div class="flex items-center gap-1.5 text-xs">
-            <select id="simTimeSelect" onchange="changeSimTime(this.value)" class="bg-white/10 text-white text-[11px] rounded px-1.5 py-0.5 border border-white/20 outline-none">
-                <option value="real" class="bg-slate-900 text-white">⏱️ เวลาจริง</option>
-                <option value="08:15" class="bg-slate-900 text-white">🌅 08:15</option>
-                <option value="09:05" class="bg-slate-900 text-white">⚠️ 09:05</option>
-                <option value="09:25" class="bg-slate-900 text-white">⚠️ 09:25</option>
-                <option value="11:35" class="bg-slate-900 text-white">🍱 11:35</option>
-                <option value="12:50" class="bg-slate-900 text-white">☀️ 12:50</option>
-                <option value="15:15" class="bg-slate-900 text-white">🌆 15:15</option>
-            </select>
-            <a href="record.html" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors">📋 บันทึก</a>
+            <div class="flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded border border-white/10">
+                <span class="text-[10px] text-slate-300 font-medium">จำลอง:</span>
+                <select id="simTimeSelect" onchange="changeSimTime(this.value)" class="bg-transparent text-white text-[11px] font-bold outline-none cursor-pointer">
+                    <option value="real" class="bg-slate-900 text-white">⏱️ เวลาจริง</option>
+                    <option value="08:15" class="bg-slate-900 text-white">🌅 08:15 (เช้าก่อนสอบ)</option>
+                    <option value="09:05" class="bg-slate-900 text-white">⚠️ 09:05 (ม.5 ใกล้หมด)</option>
+                    <option value="09:25" class="bg-slate-900 text-white">⚠️ 09:25 (ม.1,2,4,6 ใกล้หมด)</option>
+                    <option value="11:35" class="bg-slate-900 text-white">🍱 11:35 (พักเที่ยง)</option>
+                    <option value="12:50" class="bg-slate-900 text-white">☀️ 12:50 (เริ่มบ่าย)</option>
+                    <option value="15:15" class="bg-slate-900 text-white">🌆 15:15 (ปิดวัน)</option>
+                </select>
+            </div>
+            <a href="record.html" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors">📋 บันทึกรับ-ส่ง</a>
             <a href="round0.html" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors">📦 รอบ 0</a>
             <button onclick="openLogModal()" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold">ประวัติ (<span id="logBadge">0</span>)</button>
-            <button onclick="resetDataConfirm()" class="p-1 text-slate-400 hover:text-red-400" title="รีเซ็ต"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
+            <button onclick="resetDataConfirm()" class="p-1 text-slate-400 hover:text-red-400" title="รีเซ็ตข้อมูลทดสอบ"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
         </div>
     </header>
 
-    <!-- UNIFIED LIVE CONTROLS (ROW 2: SESSIONS, PERIODS, FILTERS, COUNTERS, SEARCH) -->
-    <div class="bg-white border-b border-slate-200 px-3 sm:px-4 py-1 flex flex-wrap items-center justify-between gap-1.5 text-xs shrink-0 select-none shadow-2xs no-print">
-        <!-- Left: Session & Periods -->
-        <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">ช่วง:</span>
-            <button onclick="setMonitorSession('live')" id="btnSessLive" class="px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs">⚡ Live</button>
-            <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">🌅 เช้า</button>
-            <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">☀️ บ่าย</button>
-            <div class="h-3 w-px bg-slate-200 mx-0.5"></div>
-            <span class="text-[10px] font-bold text-slate-400 uppercase">วิชา:</span>
+    <!-- UNIFIED LIVE CONTROLS (ROW 2: GROUPING VIEW, SESSIONS, PERIODS, FILTERS, COUNTERS, SEARCH) -->
+    <div class="bg-white border-b border-slate-200 px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs shrink-0 select-none shadow-2xs no-print">
+        <!-- Left: Grouping Switcher + Session & Periods -->
+        <div class="flex items-center gap-2 flex-wrap">
+            <!-- 1. PROMINENT GROUPING SWITCHER (อาคาร vs ระดับชั้น) -->
             <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                <button onclick="setMonitorPeriod('all')" id="btnPeriodAll" class="px-1.5 py-0.2 rounded font-bold text-[11px] bg-white text-indigo-700 shadow-2xs">ทั้งหมด</button>
-                <button onclick="setMonitorPeriod(1)" id="btnPeriod1" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">1</button>
-                <button onclick="setMonitorPeriod(2)" id="btnPeriod2" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">2</button>
-                <button onclick="setMonitorPeriod(3)" id="btnPeriod3" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">3</button>
-                <button onclick="setMonitorPeriod(4)" id="btnPeriod4" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">4</button>
-                <button onclick="setMonitorPeriod(5)" id="btnPeriod5" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">5</button>
-                <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">6</button>
-                <button onclick="setMonitorPeriod(7)" id="btnPeriod7" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">7</button>
+                <span class="text-[10px] font-black text-slate-500 uppercase px-1">มุมมอง:</span>
+                <button onclick="setMonitorGrouping('building')" id="btnGroupBuilding" class="px-2.5 py-1 rounded-md text-xs font-black transition-all bg-indigo-600 text-white shadow-2xs flex items-center gap-1">
+                    🏢 ตามอาคาร
+                </button>
+                <button onclick="setMonitorGrouping('grade')" id="btnGroupGrade" class="px-2.5 py-1 rounded-md text-xs font-black transition-all bg-transparent text-slate-700 hover:bg-slate-200 flex items-center gap-1">
+                    🎓 ตามระดับชั้น (ม.1 - ม.6)
+                </button>
+            </div>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- 2. Session Switcher (Live / เช้า / บ่าย) -->
+            <div class="flex items-center gap-1">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">ช่วง:</span>
+                <button onclick="setMonitorSession('live')" id="btnSessLive" class="px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs">⚡ Live</button>
+                <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">🌅 เช้า</button>
+                <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">☀️ บ่าย</button>
+            </div>
+
+            <div class="h-4 w-px bg-slate-200 mx-0.5"></div>
+
+            <!-- 3. Period Switcher (1 - 7) -->
+            <div class="flex items-center gap-1">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">วิชา:</span>
+                <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                    <button onclick="setMonitorPeriod('all')" id="btnPeriodAll" class="px-1.5 py-0.5 rounded font-bold text-[11px] bg-white text-indigo-700 shadow-2xs">ทั้งหมด</button>
+                    <button onclick="setMonitorPeriod(1)" id="btnPeriod1" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">1</button>
+                    <button onclick="setMonitorPeriod(2)" id="btnPeriod2" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">2</button>
+                    <button onclick="setMonitorPeriod(3)" id="btnPeriod3" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">3</button>
+                    <button onclick="setMonitorPeriod(4)" id="btnPeriod4" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">4</button>
+                    <button onclick="setMonitorPeriod(5)" id="btnPeriod5" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">5</button>
+                    <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">6</button>
+                    <button onclick="setMonitorPeriod(7)" id="btnPeriod7" class="px-1.5 py-0.5 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">7</button>
+                </div>
             </div>
         </div>
 
-        <!-- Right: Filters, Counters & Search -->
+        <!-- Right: Status Filters, Dispatch/Return Counters & Search -->
         <div class="flex items-center gap-1.5 flex-wrap">
             <button onclick="setGridFilter('all')" id="btnGFilterAll" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs">ทั้งหมด (55)</button>
             <button onclick="setGridFilter('attention')" id="btnGFilterAttention" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🔴 ต้องติดตาม (<span id="countAttention">0</span>)</button>
             <button onclick="setGridFilter('active')" id="btnGFilterActive" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🔵 กำลังสอบ (<span id="countActive">0</span>)</button>
             <button onclick="setGridFilter('done')" id="btnGFilterDone" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🟢 ส่งครบ (<span id="countDone">0</span>)</button>
             <div class="h-3 w-px bg-slate-200"></div>
-            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold">
+            <div class="hidden xl:flex items-center gap-1 text-[11px] font-bold">
                 <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">📦 <span id="statDispatchCount">0/55</span></span>
                 <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-800 border border-teal-200">📥 <span id="statReturnCount">0/55</span></span>
             </div>
@@ -125,8 +146,7 @@
     </div>
 
     <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN ON DESKTOP!) -->
-    <main class="max-w-[1720px] mx-auto px-2 sm:px-3 py-1 flex-1 w-full flex flex-col justify-between gap-1 overflow-y-auto lg:overflow-hidden">
-
+    <main class="max-w-[1720px] mx-auto px-2 sm:px-3 py-2 flex-1 w-full flex flex-col justify-start gap-2 overflow-y-auto lg:overflow-hidden">
         <!-- MISSING BANNER -->
         <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
             <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
@@ -624,13 +644,13 @@
             if (grouping === 'grade') {
                 if (bldDash) bldDash.classList.add('hidden');
                 if (gradeDash) gradeDash.classList.remove('hidden');
-                if (btnGrade) btnGrade.className = 'px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs';
-                if (btnBld) btnBld.className = 'px-2 py-0.5 rounded font-black text-slate-300 hover:text-white';
+                if (btnGrade) btnGrade.className = 'px-2.5 py-1 rounded-md text-xs font-black transition-all bg-indigo-600 text-white shadow-2xs flex items-center gap-1';
+                if (btnBld) btnBld.className = 'px-2.5 py-1 rounded-md text-xs font-black transition-all bg-transparent text-slate-700 hover:bg-slate-200 flex items-center gap-1';
             } else {
                 if (gradeDash) gradeDash.classList.add('hidden');
                 if (bldDash) bldDash.classList.remove('hidden');
-                if (btnBld) btnBld.className = 'px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs';
-                if (btnGrade) btnGrade.className = 'px-2 py-0.5 rounded font-black text-slate-300 hover:text-white';
+                if (btnBld) btnBld.className = 'px-2.5 py-1 rounded-md text-xs font-black transition-all bg-indigo-600 text-white shadow-2xs flex items-center gap-1';
+                if (btnGrade) btnGrade.className = 'px-2.5 py-1 rounded-md text-xs font-black transition-all bg-transparent text-slate-700 hover:bg-slate-200 flex items-center gap-1';
             }
             renderGrid();
         }
