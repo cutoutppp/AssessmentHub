@@ -33,227 +33,99 @@
     </style>
     
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-100 text-slate-800 min-h-screen lg:h-screen lg:overflow-hidden flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
     
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs no-print">
-        <div class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2 flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center gap-2 sm:gap-3">
-                <a href="../index.html" class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    AssessmentHub
-                </a>
-                <div class="h-4 w-px bg-slate-300"></div>
-                <div class="flex items-center gap-1.5">
-                    <span class="font-extrabold text-sm sm:text-base text-slate-900 leading-tight font-prompt">
-                        งานจัดสอบ 2569-1
-                    </span>
-                    <span class="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.2 rounded border border-indigo-200">โรงเรียนพัฒนานิคม</span>
-                </div>
+    <!-- UNIFIED COMMAND CENTER TOP BAR (ROW 1: NAV, DAY, VIEW, CLOCK, RADAR) -->
+    <header class="bg-slate-900 text-white px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 shadow-xs shrink-0 select-none z-30 no-print">
+        <!-- Left: Brand, Day & View -->
+        <div class="flex items-center gap-2 flex-wrap">
+            <a href="../index.html" class="font-bold text-xs bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded-lg text-slate-200 transition-colors">Hub</a>
+            <span class="font-black text-xs text-white flex items-center gap-1">🖥️ มอนิเตอร์ <span class="hidden sm:inline text-indigo-300 font-normal">55 ห้อง</span></span>
+            <div class="h-3 w-px bg-white/20"></div>
+            <!-- Day Switcher -->
+            <div class="flex items-center gap-1">
+                <button onclick="setDay('28')" id="btnDay28" class="px-2 py-0.5 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-2xs">28 ก.ย.</button>
+                <button onclick="setDay('29')" id="btnDay29" class="px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-slate-300 hover:bg-white/20">29</button>
+                <button onclick="setDay('30')" id="btnDay30" class="px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-slate-300 hover:bg-white/20">30</button>
             </div>
+            <div class="h-3 w-px bg-white/20"></div>
+            <!-- Grouping Switcher -->
+            <div class="flex items-center gap-0.5 bg-white/10 p-0.5 rounded-lg text-xs">
+                <button onclick="setMonitorGrouping('building')" id="btnGroupBuilding" class="px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs">🏢 อาคาร</button>
+                <button onclick="setMonitorGrouping('grade')" id="btnGroupGrade" class="px-2 py-0.5 rounded font-black text-slate-300 hover:text-white">🎓 ชั้น</button>
+            </div>
+        </div>
 
-            <!-- 3 Standalone System Switchers with Dedicated URLs -->
-            <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <a href="monitor.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
-                    🖥️ มอนิเตอร์ 55 ห้อง
-                </a>
-                <a href="record.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
-                    📋 บันทึกรับ-ส่ง (วันสอบ)
-                </a>
-                <a href="round0.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
-                    📦 ตรวจรับเย็บชุด (รอบ 0)
-                </a>
-            </div>
+        <!-- Center: Master Real-Time Clock & Wave Radar -->
+        <div class="flex items-center gap-2 bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10 text-xs">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <span id="clockDisplay" class="font-mono text-xs font-black text-white">--:--:-- น.</span>
+            <span id="topBarLiveClock" class="hidden"></span>
+            <div class="h-3 w-px bg-white/20"></div>
+            <span id="waveRadarBadge" class="text-[10px] text-indigo-200 font-bold truncate max-w-[160px]">ระลอกถัดไป: --:-- น.</span>
+            <span id="waveCountdownText" class="text-[10px] text-emerald-300 font-mono font-bold shrink-0">เหลือ --:--</span>
+        </div>
 
-            <div class="flex items-center gap-2">
-                <!-- Sticky Top Real-Time Master Clock -->
-                <div class="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-xl text-xs font-mono font-black text-indigo-900 shadow-2xs">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-                    <span id="topBarLiveClock">--:--:-- น.</span>
-                </div>
-                <button onclick="openLogModal()" class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    ประวัติ (<span id="logBadge">0</span>)
-                </button>
-                <button onclick="resetDataConfirm()" class="p-1 text-slate-400 hover:text-red-600 rounded hover:bg-red-50 transition-colors" title="รีเซ็ตข้อมูลทดสอบ">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </button>
-            </div>
+        <!-- Right: Sim, Navigation Links & Log -->
+        <div class="flex items-center gap-1.5 text-xs">
+            <select id="simTimeSelect" onchange="changeSimTime(this.value)" class="bg-white/10 text-white text-[11px] rounded px-1.5 py-0.5 border border-white/20 outline-none">
+                <option value="real" class="bg-slate-900 text-white">⏱️ เวลาจริง</option>
+                <option value="08:15" class="bg-slate-900 text-white">🌅 08:15</option>
+                <option value="09:05" class="bg-slate-900 text-white">⚠️ 09:05</option>
+                <option value="09:25" class="bg-slate-900 text-white">⚠️ 09:25</option>
+                <option value="11:35" class="bg-slate-900 text-white">🍱 11:35</option>
+                <option value="12:50" class="bg-slate-900 text-white">☀️ 12:50</option>
+                <option value="15:15" class="bg-slate-900 text-white">🌆 15:15</option>
+            </select>
+            <a href="record.html" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors">📋 บันทึก</a>
+            <a href="round0.html" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold transition-colors">📦 รอบ 0</a>
+            <button onclick="openLogModal()" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold">ประวัติ (<span id="logBadge">0</span>)</button>
+            <button onclick="resetDataConfirm()" class="p-1 text-slate-400 hover:text-red-400" title="รีเซ็ต"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
         </div>
     </header>
-    
 
-    <!-- CONTROL & RADAR BAR -->
-    <div id="centralControlBar" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xs no-print">
-        <div class="max-w-[1720px] mx-auto px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-            
-            <!-- Day Selectors -->
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] font-bold text-indigo-300 uppercase tracking-wider">วันสอบ:</span>
-                <button onclick="setDay('28')" id="btnDay28" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-indigo-600 text-white shadow-xs">
-                    28 ก.ย.
-                </button>
-                <button onclick="setDay('29')" id="btnDay29" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-white/10 text-slate-300 hover:bg-white/20">
-                    29 ก.ย.
-                </button>
-                <button onclick="setDay('30')" id="btnDay30" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-white/10 text-slate-300 hover:bg-white/20">
-                    30 ก.ย.
-                </button>
+    <!-- UNIFIED LIVE CONTROLS (ROW 2: SESSIONS, PERIODS, FILTERS, COUNTERS, SEARCH) -->
+    <div class="bg-white border-b border-slate-200 px-3 sm:px-4 py-1 flex flex-wrap items-center justify-between gap-1.5 text-xs shrink-0 select-none shadow-2xs no-print">
+        <!-- Left: Session & Periods -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">ช่วง:</span>
+            <button onclick="setMonitorSession('live')" id="btnSessLive" class="px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs">⚡ Live</button>
+            <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">🌅 เช้า</button>
+            <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200">☀️ บ่าย</button>
+            <div class="h-3 w-px bg-slate-200 mx-0.5"></div>
+            <span class="text-[10px] font-bold text-slate-400 uppercase">วิชา:</span>
+            <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                <button onclick="setMonitorPeriod('all')" id="btnPeriodAll" class="px-1.5 py-0.2 rounded font-bold text-[11px] bg-white text-indigo-700 shadow-2xs">ทั้งหมด</button>
+                <button onclick="setMonitorPeriod(1)" id="btnPeriod1" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">1</button>
+                <button onclick="setMonitorPeriod(2)" id="btnPeriod2" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">2</button>
+                <button onclick="setMonitorPeriod(3)" id="btnPeriod3" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">3</button>
+                <button onclick="setMonitorPeriod(4)" id="btnPeriod4" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">4</button>
+                <button onclick="setMonitorPeriod(5)" id="btnPeriod5" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">5</button>
+                <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">6</button>
+                <button onclick="setMonitorPeriod(7)" id="btnPeriod7" class="px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900">7</button>
             </div>
+        </div>
 
-            <!-- Center: Master Digital Clock & Wave Radar -->
-            <div class="flex items-center gap-3 bg-white/10 px-3 py-1 rounded-xl border border-white/10">
-                <div class="flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span id="clockDisplay" class="font-mono text-xs sm:text-sm font-bold text-white tracking-wider">08:00:00 น.</span>
-                </div>
-                <div class="h-3 w-px bg-white/20"></div>
-                <div id="waveRadarBox" class="flex items-center gap-1.5">
-                    <span id="waveRadarBadge" class="px-2 py-0.2 rounded font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[11px]">
-                        ระลอกถัดไป: 09:10 น.
-                    </span>
-                    <span id="waveCountdownText" class="font-bold text-emerald-300 font-mono text-[11px]">เหลือ 10:00 นาที</span>
-                </div>
+        <!-- Right: Filters, Counters & Search -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+            <button onclick="setGridFilter('all')" id="btnGFilterAll" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs">ทั้งหมด (55)</button>
+            <button onclick="setGridFilter('attention')" id="btnGFilterAttention" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🔴 ต้องติดตาม (<span id="countAttention">0</span>)</button>
+            <button onclick="setGridFilter('active')" id="btnGFilterActive" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🔵 กำลังสอบ (<span id="countActive">0</span>)</button>
+            <button onclick="setGridFilter('done')" id="btnGFilterDone" class="grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200">🟢 ส่งครบ (<span id="countDone">0</span>)</button>
+            <div class="h-3 w-px bg-slate-200"></div>
+            <div class="hidden md:flex items-center gap-1 text-[11px] font-bold">
+                <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">📦 <span id="statDispatchCount">0/55</span></span>
+                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-800 border border-teal-200">📥 <span id="statReturnCount">0/55</span></span>
             </div>
-
-            <!-- Simulation Dropdown -->
-            <div class="flex items-center gap-1.5">
-                <span class="text-[11px] text-indigo-300 font-medium">จำลองเวลา:</span>
-                <select id="simTimeSelect" onchange="changeSimTime(this.value)" class="bg-white/10 text-white text-xs rounded-lg px-2 py-1 border border-white/20 outline-none hover:bg-white/20 transition-colors">
-                    <option value="real" class="bg-slate-900 text-white">⏱️ เวลาจริง</option>
-                    <option value="08:15" class="bg-slate-900 text-white">🌅 08:15 (เช้าก่อนสอบ - เช็คการรับซอง)</option>
-                    <option value="09:05" class="bg-slate-900 text-white">⚠️ 09:05 (ม.5 ใกล้หมด 09.10 น. [40 นาที])</option>
-                    <option value="09:12" class="bg-slate-900 text-white">🔔 09:12 (ม.5 หมดเวลาแล้ว / ชั้นอื่นยังสอบ)</option>
-                    <option value="09:25" class="bg-slate-900 text-white">⚠️ 09:25 (ม.1, 2, 4, 6 ใกล้หมด 09.30 น.)</option>
-                    <option value="09:35" class="bg-slate-900 text-white">🔔 09:35 (ม.1-4, 6 หมดเวลาคาบ 1)</option>
-                    <option value="11:35" class="bg-slate-900 text-white">🍱 11:35 (ก่อนเที่ยง - เคลียร์ซองเช้า)</option>
-                    <option value="12:50" class="bg-slate-900 text-white">☀️ 12:50 (หลังพักเที่ยง - เริ่มคาบบ่าย)</option>
-                    <option value="15:15" class="bg-slate-900 text-white">🌆 15:15 (เย็นปิดวัน)</option>
-                </select>
+            <div class="relative w-32 sm:w-40">
+                <input type="text" id="gridRoomSearch" oninput="renderGrid()" placeholder="🔍 ค้นห้อง..." class="w-full px-2 py-0.5 bg-slate-50 border border-slate-200 rounded-md text-xs focus:outline-none focus:border-indigo-500">
             </div>
-
-        
-            <!-- Grouping Switcher: อาคาร vs ระดับชั้น -->
-            <div class="flex items-center gap-1 bg-white/10 p-0.5 rounded-xl border border-white/10 text-xs">
-                <button onclick="setMonitorGrouping('building')" id="btnGroupBuilding" class="px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1">
-                    🏢 แยกตามอาคาร
-                </button>
-                <button onclick="setMonitorGrouping('grade')" id="btnGroupGrade" class="px-2.5 py-1 rounded-lg font-black transition-all text-slate-300 hover:text-white flex items-center gap-1">
-                    🎓 แยกตามระดับชั้น
-                </button>
-            </div>
-            </div>
+        </div>
     </div>
 
-    <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN!) -->
-    <main class="max-w-[1720px] mx-auto px-3 sm:px-4 py-2 flex-1 w-full flex flex-col gap-2">
-
-        <!-- SMART RUNNER DISPATCH RECOMMENDATION STRIP -->
-        <div id="dispatchRecommenderBox" class="bg-white rounded-xl p-2 border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
-            <div class="flex items-center gap-2 shrink-0">
-                <div class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-xs">
-                    <span>🚶‍♂️ แนะนำสายเดิน:</span>
-                </div>
-                <span class="text-[11px] text-slate-500 hidden lg:inline">
-                    รวมวิชาตึกเดียวกัน/เวลาใกล้กันเป็น 1 สายเดิน (ชี้เพื่อไฮไลต์ห้องบนผัง)
-                </span>
-            </div>
-
-            <!-- Dynamic Dispatch Batch Chips -->
-            <div id="dispatchCardsContainer" class="flex items-center gap-2 overflow-x-auto pb-0.5 flex-1 justify-start md:justify-end"></div>
-        </div>
-
-        <!-- QUICK STATUS FILTER & COLOR LEGEND -->
-        <div class="bg-white rounded-xl px-3 py-1.5 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-1 overflow-x-auto">
-                <button onclick="setGridFilter('all')" id="btnGFilterAll" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-black transition-all bg-indigo-600 text-white shadow-xs whitespace-nowrap">
-                    ทั้งหมด (55)
-                </button>
-                <button onclick="setGridFilter('attention')" id="btnGFilterAttention" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🔴 ต้องติดตาม (<span id="countAttention">0</span>)
-                </button>
-                <button onclick="setGridFilter('active')" id="btnGFilterActive" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🔵 กำลังสอบ (<span id="countActive">0</span>)
-                </button>
-                <button onclick="setGridFilter('done')" id="btnGFilterDone" class="grid-filter-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap">
-                    🟢 ส่งครบ (<span id="countDone">0</span>)
-                </button>
-
-                <div class="h-4 w-px bg-slate-300 mx-1"></div>
-
-                <!-- 2-Step Realtime Badges -->
-                <div class="flex items-center gap-1.5 text-xs font-bold whitespace-nowrap">
-                    <span class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-300 flex items-center gap-1">
-                        📦 ขาส่ง: <span id="statDispatchCount" class="font-black text-emerald-700">0/55</span>
-                    </span>
-                    <span class="px-2 py-0.5 rounded-lg bg-teal-50 text-teal-800 border border-teal-300 flex items-center gap-1">
-                        📥 ขารับ: <span id="statReturnCount" class="font-black text-teal-700">0/55</span>
-                    </span>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <div class="hidden xl:flex items-center gap-3 text-[11px] font-semibold text-slate-500">
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> ส่งคืนแล้ว</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> กำลังสอบ</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> เตรียมสายส่ง (5น.)</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> ค้างส่ง/หมดเวลา</span>
-                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-300"></span> รอเริ่ม</span>
-                </div>
-                <div class="relative w-44 sm:w-56">
-                    <input type="text" id="gridRoomSearch" oninput="renderGrid()" placeholder="🔍 ค้นหาห้อง (เช่น 1101, 3208)..." class="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-indigo-500 transition-all">
-                </div>
-            </div>
-        </div>
-
-        <!-- PERIOD & SESSION SELECTOR (เช้า / บ่าย / วิชา 1, 2, 3, 4...) -->
-        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 no-print text-xs">
-            
-            <!-- Left: Session Switcher (เวลาจริง vs เช้า vs บ่าย) -->
-            <div class="flex items-center gap-1.5 flex-wrap">
-                <span class="font-extrabold text-slate-500 uppercase text-[11px] mr-0.5">ช่วงเวลา:</span>
-                <button onclick="setMonitorSession('live')" id="btnSessLive" class="px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1">
-                    ⚡ เวลาจริง (Live)
-                </button>
-                <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
-                    🌅 ช่วงเช้า (ก่อน 12.00 น.)
-                </button>
-                <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
-                    ☀️ ช่วงบ่าย (หลัง 13.00 น.)
-                </button>
-            </div>
-
-            <!-- Right: Period Selector (วิชาที่ 1, 2, 3, 4, 5, 6) -->
-            <div class="flex items-center gap-1 flex-wrap">
-                <span class="font-extrabold text-slate-500 uppercase text-[11px] mr-0.5">เจาะจงวิชา:</span>
-                <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-xl border border-slate-200">
-                    <button onclick="setMonitorPeriod('all')" id="btnPeriodAll" class="px-2 py-0.5 rounded-lg font-bold text-xs bg-white text-indigo-700 shadow-2xs">
-                        ทั้งหมด
-                    </button>
-                    <button onclick="setMonitorPeriod(1)" id="btnPeriod1" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 1
-                    </button>
-                    <button onclick="setMonitorPeriod(2)" id="btnPeriod2" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 2
-                    </button>
-                    <button onclick="setMonitorPeriod(3)" id="btnPeriod3" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 3
-                    </button>
-                    <button onclick="setMonitorPeriod(4)" id="btnPeriod4" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 4
-                    </button>
-                    <button onclick="setMonitorPeriod(5)" id="btnPeriod5" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 5
-                    </button>
-                    <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 6
-                    </button>
-                    <button onclick="setMonitorPeriod(7)" id="btnPeriod7" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
-                        วิชา 7
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- MAIN MONITOR VIEW (ALL 55 ROOMS VISIBLE IN ONE SCREEN ON DESKTOP!) -->
+    <main class="max-w-[1720px] mx-auto px-2 sm:px-3 py-1 flex-1 w-full flex flex-col justify-between gap-1 overflow-y-auto lg:overflow-hidden">
 
         <!-- MISSING BANNER -->
         <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
@@ -269,163 +141,161 @@
         </div>
 
         <!-- 55 ROOMS UNIFIED DASHBOARD (2 TIERS - ALL 55 ROOMS VISIBLE IN ONE SCREEN!) -->
-        <div id="roomsUnifiedDashboard" class="flex flex-col gap-2.5 select-none">
+        <div id="roomsUnifiedDashboard" class="flex flex-col gap-2 select-none">
             <!-- TIER 1: อาคาร 1 (8) + อาคาร 2 (13) + ห้องพิเศษ (4) = 25 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
                 
                 <!-- อาคาร 1 (8 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 1</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">8 ห้อง (ชั้น 1-2)</span>
                         </div>
                         <span id="bld1CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-2"></div>
+                    <div id="bldRooms-1" class="grid grid-cols-2 sm:grid-cols-4 gap-1"></div>
                 </div>
 
                 <!-- อาคาร 2 (13 ห้อง) -->
-                <div class="lg:col-span-6 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-6 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 2</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">13 ห้อง (ชั้น 1-2)</span>
                         </div>
                         <span id="bld2CountBadge" class="text-[10px] font-bold text-slate-500">0/13 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2"></div>
+                    <div id="bldRooms-2" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-1"></div>
                 </div>
 
                 <!-- ห้องพิเศษ (4 ห้อง) -->
-                <div class="lg:col-span-2 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-2 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 พิเศษ</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">4 ห้อง</span>
                         </div>
                         <span id="bldSpecialCountBadge" class="text-[10px] font-bold text-slate-500">0/4 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-2"></div>
+                    <div id="bldRooms-พิเศษ" class="grid grid-cols-2 gap-1"></div>
                 </div>
 
             </div>
 
             <!-- TIER 2: อาคาร 3 (19) + อาคาร 4 (11) = 30 ห้อง -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
                 
                 <!-- อาคาร 3 (19 ห้อง) -->
-                <div class="lg:col-span-8 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-8 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 3</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">19 ห้อง (ชั้น 2, 3, 4)</span>
                         </div>
                         <span id="bld3CountBadge" class="text-[10px] font-bold text-slate-500">0/19 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-2"></div>
+                    <div id="bldRooms-3" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1"></div>
                 </div>
 
                 <!-- อาคาร 4 (11 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🏢 อาคาร 4</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ชั้น 2-3)</span>
                         </div>
                         <span id="bld4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="bldRooms-4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1"></div>
                 </div>
 
             </div>
         </div>
 
-    </main>
-
-    
-
-        <!-- 55 ROOMS DASHBOARD (BY GRADE LEVEL: ม.1 - ม.6) -->
-        <div id="roomsGradeDashboard" class="flex flex-col gap-2.5 select-none hidden">
+            <!-- 55 ROOMS DASHBOARD (BY GRADE LEVEL: ม.1 - ม.6) -->
+        <div id="roomsGradeDashboard" class="flex flex-col gap-2 select-none hidden">
             <!-- TIER 1: มัธยมศึกษาตอนต้น (ม.1, ม.2, ม.3 = 22 ห้อง) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
                 <!-- ม.1 (7 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 1</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">7 ห้อง (ม.1/1 - ม.1/7)</span>
                         </div>
                         <span id="gradeM1CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.1" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
 
                 <!-- ม.2 (7 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 2</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">7 ห้อง (ม.2/1 - ม.2/7)</span>
                         </div>
                         <span id="gradeM2CountBadge" class="text-[10px] font-bold text-slate-500">0/7 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.2" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
 
                 <!-- ม.3 (8 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 3</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">8 ห้อง (ม.3/1 - ม.3/8)</span>
                         </div>
                         <span id="gradeM3CountBadge" class="text-[10px] font-bold text-slate-500">0/8 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.3" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
             </div>
 
             <!-- TIER 2: มัธยมศึกษาตอนปลาย (ม.4, ม.5, ม.6 = 33 ห้อง) -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-2">
                 <!-- ม.4 (11 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 4</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.4/1 - ม.4/11)</span>
                         </div>
                         <span id="gradeM4CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.4" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
 
                 <!-- ม.5 (11 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 5</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.5/1 - ม.5/11)</span>
                         </div>
                         <span id="gradeM5CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.5" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
 
                 <!-- ม.6 (11 ห้อง) -->
-                <div class="lg:col-span-4 bg-white rounded-xl p-2.5 border border-slate-200 shadow-xs flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-1.5 pb-1 border-b border-slate-100">
+                <div class="lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-2xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-1 pb-0.5 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
                             <span class="font-extrabold text-xs text-slate-900">🎓 มัธยมศึกษาปีที่ 6</span>
                             <span class="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded">11 ห้อง (ม.6/1 - ม.6/11)</span>
                         </div>
                         <span id="gradeM6CountBadge" class="text-[10px] font-bold text-slate-500">0/11 เสร็จสิ้น</span>
                     </div>
-                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2"></div>
+                    <div id="gradeRooms-ม.6" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1"></div>
                 </div>
             </div>
         </div>
-<!-- ROOM DETAIL MODAL -->
+    </main>
+
+    <!-- ROOM DETAIL MODAL -->
     <div id="roomDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 hidden no-print">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
             <div class="flex justify-between items-center pb-3 border-b border-slate-100">
@@ -717,6 +587,33 @@
         let currentSession = 'live';      // 'live' | 'morning' | 'afternoon'
         let currentPeriod = 'all';        // 'all' | 1 | 2 | 3 | 4 | 5 | 6
 
+        function setDay(day) {
+            currentDay = day;
+            ['28', '29', '30'].forEach(d => {
+                const btn = document.getElementById('btnDay' + d);
+                if (btn) {
+                    btn.className = (d === day) 
+                        ? 'px-2 py-0.5 rounded-md text-xs font-bold bg-indigo-600 text-white shadow-2xs' 
+                        : 'px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-slate-300 hover:bg-white/20';
+                }
+            });
+            updateWaveRadar(getEffectiveTime());
+            renderGrid();
+        }
+
+        function setGridFilter(filter) {
+            currentGridFilter = filter;
+            ['all', 'attention', 'active', 'done'].forEach(f => {
+                const btn = document.getElementById('btnGFilter' + f.charAt(0).toUpperCase() + f.slice(1));
+                if (btn) {
+                    btn.className = (f === filter)
+                        ? 'grid-filter-btn px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs'
+                        : 'grid-filter-btn px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+                }
+            });
+            renderGrid();
+        }
+
         function setMonitorGrouping(grouping) {
             currentGrouping = grouping;
             const bldDash = document.getElementById('roomsUnifiedDashboard');
@@ -727,13 +624,13 @@
             if (grouping === 'grade') {
                 if (bldDash) bldDash.classList.add('hidden');
                 if (gradeDash) gradeDash.classList.remove('hidden');
-                if (btnGrade) btnGrade.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
-                if (btnBld) btnBld.className = 'px-2.5 py-1 rounded-lg font-black transition-all text-slate-300 hover:text-white flex items-center gap-1';
+                if (btnGrade) btnGrade.className = 'px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs';
+                if (btnBld) btnBld.className = 'px-2 py-0.5 rounded font-black text-slate-300 hover:text-white';
             } else {
                 if (gradeDash) gradeDash.classList.add('hidden');
                 if (bldDash) bldDash.classList.remove('hidden');
-                if (btnBld) btnBld.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
-                if (btnGrade) btnGrade.className = 'px-2.5 py-1 rounded-lg font-black transition-all text-slate-300 hover:text-white flex items-center gap-1';
+                if (btnBld) btnBld.className = 'px-2 py-0.5 rounded font-black bg-indigo-600 text-white shadow-2xs';
+                if (btnGrade) btnGrade.className = 'px-2 py-0.5 rounded font-black text-slate-300 hover:text-white';
             }
             renderGrid();
         }
@@ -746,9 +643,9 @@
                 const btn = document.getElementById('btnSess' + s.charAt(0).toUpperCase() + s.slice(1));
                 if (btn) {
                     if (s === sess) {
-                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
+                        btn.className = 'px-2 py-0.5 rounded-md text-xs font-black bg-indigo-600 text-white shadow-2xs';
                     } else {
-                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
+                        btn.className = 'px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200';
                     }
                 }
             });
@@ -762,7 +659,7 @@
                 ['live', 'morning', 'afternoon'].forEach(s => {
                     const btn = document.getElementById('btnSess' + s.charAt(0).toUpperCase() + s.slice(1));
                     if (btn) {
-                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
+                        btn.className = 'px-2 py-0.5 rounded-md text-xs font-black bg-slate-100 text-slate-700 hover:bg-slate-200';
                     }
                 });
             } else {
@@ -778,9 +675,9 @@
                 const btn = document.getElementById('btnPeriod' + (p === 'all' ? 'All' : p));
                 if (btn) {
                     if (currentPeriod === p) {
-                        btn.className = 'px-2 py-0.5 rounded-lg font-bold text-xs bg-white text-indigo-700 shadow-2xs';
+                        btn.className = 'px-1.5 py-0.2 rounded font-bold text-[11px] bg-white text-indigo-700 shadow-2xs';
                     } else {
-                        btn.className = 'px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900';
+                        btn.className = 'px-1.5 py-0.2 rounded font-bold text-[11px] text-slate-600 hover:text-slate-900';
                     }
                 }
             });
@@ -901,7 +798,7 @@
             const durationMins = pendingExam.duration_mins;
             const totalDurationSec = durationMins * 60;
 
-            const periodBadge = `วิชา ${pendingExam._periodIdx || 1} • ${pendingExam._sessionTh || 'เช้า'}`;
+            const periodBadge = `วิชา ${pendingExam._periodIdx || 1}`;
 
             // 1. Calculate Dispatch Status (ขาส่ง)
             let dispatchText = '📦 รอส่ง';
@@ -929,8 +826,7 @@
             let timeText = '';
 
             if (isReceived) {
-                const rTime = stObj.p2_time ? ` (${stObj.p2_time.slice(0,5)})` : '';
-                returnText = `📥 คืนแล้ว${rTime} ✅`;
+                returnText = '📥 คืนแล้ว';
                 returnClass = 'text-emerald-700 font-black';
                 filterCategory = 'done';
                 bgClass = 'bg-emerald-50 border-emerald-300 text-emerald-950';
@@ -941,10 +837,9 @@
                 const waitSec = sSec - nowTotalSec;
                 const waitM = Math.floor(waitSec / 60);
                 const waitS = waitSec % 60;
-                timeText = `เริ่มใน ${waitM}:${waitS < 10 ? '0' : ''}${waitS}`;
-                if (waitM > 60) timeText = `เริ่มใน ${Math.floor(waitM / 60)}ชม.${waitM % 60}น.`;
+                timeText = (waitM > 60) ? `${Math.floor(waitM / 60)}ชม.${waitM % 60}น.` : `${waitM}:${waitS < 10 ? '0' : ''}${waitS}`;
 
-                returnText = `⏳ ${timeText}`;
+                returnText = `⏳ อีก ${timeText}`;
                 returnClass = 'text-slate-600 font-bold';
 
                 if (isPicked) {
@@ -967,21 +862,21 @@
 
                 if (!isPicked) {
                     filterCategory = 'attention';
-                    returnText = '🚨 ยังไม่ได้รับข้อสอบ!';
+                    returnText = '🚨 ค้างส่ง!';
                     returnClass = 'text-rose-700 font-black animate-pulse';
                     bgClass = 'bg-rose-50 border-rose-400 text-rose-950 ring-1 ring-rose-400';
                     dotClass = 'bg-rose-500 animate-ping';
                     barColor = 'bg-rose-500';
                 } else if (remainSec <= 300) {
                     filterCategory = 'warning';
-                    returnText = `⏳ 5 นาทีท้าย (${timeFormatted})`;
+                    returnText = `⚠️ เหลือ ${timeFormatted}`;
                     returnClass = 'text-amber-800 font-black animate-pulse';
                     bgClass = 'bg-amber-50 border-amber-300 text-amber-950';
                     dotClass = 'bg-amber-500';
                     barColor = 'bg-amber-500';
                 } else {
                     filterCategory = 'active';
-                    returnText = `⏳ สอบอยู่ (${timeFormatted})`;
+                    returnText = `⏳ ${timeFormatted}`;
                     returnClass = 'text-indigo-700 font-extrabold';
                     bgClass = 'bg-indigo-50/50 border-indigo-200 text-indigo-950';
                     dotClass = 'bg-indigo-500';
@@ -996,7 +891,7 @@
                 timeText = `+${overM}:${overS < 10 ? '0' : ''}${overS}`;
 
                 filterCategory = 'attention';
-                returnText = `🔔 รอส่งคืน (+${overM}น.)`;
+                returnText = `🔔 รอคืน (+${overM}น.)`;
                 returnClass = 'text-rose-700 font-black animate-pulse';
                 bgClass = 'bg-rose-50 border-rose-300 text-rose-950';
                 dotClass = 'bg-rose-500';
@@ -1076,7 +971,7 @@
                 if (st.isReceived) totalReturned++;
 
                 if (st.filterCategory === 'attention') countAttention++;
-                else if (st.filterCategory === 'active') countActive++;
+                else if (st.filterCategory === 'active' || st.filterCategory === 'warning') countActive++;
                 else if (st.filterCategory === 'done') {
                     countDone++;
                     bldCounts[bld] = (bldCounts[bld] || 0) + 1;
@@ -1084,7 +979,13 @@
                 }
 
                 if (search && !rm.room.toLowerCase().includes(search) && !st.subject.toLowerCase().includes(search)) return;
-                if (currentGridFilter !== 'all' && st.filterCategory !== currentGridFilter) return;
+                if (currentGridFilter !== 'all') {
+                    if (currentGridFilter === 'active' && (st.filterCategory === 'active' || st.filterCategory === 'warning')) {
+                        // pass
+                    } else if (st.filterCategory !== currentGridFilter) {
+                        return;
+                    }
+                }
 
                 const targetContainer = (currentGrouping === 'grade') 
                     ? gradeRoomContainers[gradeGroup] 
@@ -1092,34 +993,33 @@
 
                 if (!targetContainer) return;
 
-                const durBadge = st.duration > 0 ? `<span id="rm-dur-${rm.room}" class="text-[9px] font-bold text-slate-500 bg-slate-100 px-1 py-0.2 rounded border border-slate-200 shrink-0">${st.duration}น.</span>` : '';
-                const timeTextClean = (st.timeSlot && st.timeSlot !== '-' && st.timeSlot !== 'เสร็จสิ้น') ? st.timeSlot.replace(' น.', '') : '';
+                const timeClean = (st.timeSlot && st.timeSlot !== '-' && st.timeSlot !== 'เสร็จสิ้น') ? st.timeSlot.replace(' น.', '') : '';
 
                 const cardHtml = `
                     <div id="rm-card-${rm.room}" onclick="openRoomModal('${rm.room}')" 
-                         class="${st.bgClass} rounded-xl border transition-all hover:shadow-md p-2.5 flex flex-col justify-between min-h-[76px] relative group cursor-pointer">
+                         class="${st.bgClass} rounded-lg border transition-all hover:shadow p-1.5 flex flex-col justify-between h-[56px] relative group cursor-pointer overflow-hidden leading-tight select-none">
                         
-                        <!-- Row 1: Room & Grade + Compact Time Slot -->
-                        <div class="flex items-center justify-between leading-tight mb-1">
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                <span class="font-black text-xs sm:text-sm font-mono tracking-tight text-slate-900">${rm.room}</span>
-                                <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-white/90 border border-slate-200 text-slate-700 shadow-2xs">${rm.grade}</span>
+                        <!-- Line 1: Room, Grade, Time -->
+                        <div class="flex items-center justify-between text-xs leading-none">
+                            <div class="flex items-center gap-1 min-w-0">
+                                <span class="font-black text-xs font-mono tracking-tight text-slate-900">${rm.room}</span>
+                                <span class="text-[9px] font-bold text-slate-500">${rm.grade}</span>
                             </div>
-                            ${timeTextClean ? `<span class="font-mono text-[10px] font-bold text-indigo-700 bg-indigo-50/80 px-1.5 py-0.2 rounded border border-indigo-200 shrink-0">⏰ ${timeTextClean}</span>` : ''}
+                            ${timeClean ? `<span class="font-mono text-[9px] font-bold text-indigo-700 bg-white/80 px-1 py-0.2 rounded border border-indigo-100 shrink-0">${timeClean}</span>` : ''}
                         </div>
                         
-                        <!-- Row 2: Subject & Period Badge + Duration -->
-                        <div class="flex items-center justify-between text-[11px] font-bold text-slate-800 my-0.5 leading-tight">
-                            <div class="flex items-center gap-1 truncate mr-1 min-w-0">
-                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200 shrink-0">${st.periodBadge}</span>
-                                <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
+                        <!-- Line 2: Period & Subject Code -->
+                        <div class="flex items-center justify-between text-[10px] leading-none my-0.5">
+                            <div class="flex items-center gap-1 min-w-0">
+                                <span class="text-[8px] font-black px-1 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">${st.periodBadge}</span>
+                                <span id="rm-subj-${rm.room}" class="truncate font-mono font-bold text-slate-800 text-[10px]" title="${st.subject}">${st.subject}</span>
                             </div>
-                            ${durBadge}
+                            ${st.duration > 0 ? `<span class="text-[8px] font-semibold text-slate-400 shrink-0">${st.duration}น.</span>` : ''}
                         </div>
                         
-                        <!-- Row 3: 2-Phase Status (ขาส่ง vs ขารับ / นับถอยหลัง) -->
-                        <div class="flex items-center justify-between text-[10px] leading-tight mt-1 pt-1 border-t border-slate-200/60 gap-1">
-                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1.5 py-0.5 rounded text-[9px] border shrink-0 ${st.dispatchClass}">
+                        <!-- Line 3: 2-Phase Status (Left: Dispatch, Right: Return/Countdown) -->
+                        <div class="flex items-center justify-between text-[9px] leading-none pt-0.5 border-t border-slate-200/50 gap-1">
+                            <span id="rm-dispatch-${rm.room}" class="font-bold px-1 rounded text-[8px] border shrink-0 ${st.dispatchClass}">
                                 ${st.dispatchText}
                             </span>
                             <span id="rm-return-${rm.room}" class="truncate shrink-0 font-bold ${st.returnClass}">
@@ -1127,9 +1027,9 @@
                             </span>
                         </div>
                         
-                        <!-- Row 4: Progress Bar -->
-                        <div class="w-full bg-slate-200/80 rounded-full h-1 overflow-hidden mt-1">
-                            <div id="rm-prog-${rm.room}" class="${st.barColor} h-full rounded-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
+                        <!-- Line 4: Slim 2px Progress Bar at bottom edge -->
+                        <div class="w-full bg-slate-200/60 h-0.5 overflow-hidden absolute bottom-0 left-0 right-0">
+                            <div id="rm-prog-${rm.room}" class="${st.barColor} h-full transition-all duration-1000" style="width: ${st.percent}%;"></div>
                         </div>
                     </div>
                 `;
