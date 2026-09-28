@@ -201,6 +201,52 @@
             </div>
         </div>
 
+        <!-- PERIOD & SESSION SELECTOR (เช้า / บ่าย / วิชา 1, 2, 3, 4...) -->
+        <div class="bg-white p-2.5 rounded-2xl border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2.5 no-print text-xs">
+            
+            <!-- Left: Session Switcher (เวลาจริง vs เช้า vs บ่าย) -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-extrabold text-slate-500 uppercase text-[11px] mr-0.5">ช่วงเวลา:</span>
+                <button onclick="setMonitorSession('live')" id="btnSessLive" class="px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1">
+                    ⚡ เวลาจริง (Live)
+                </button>
+                <button onclick="setMonitorSession('morning')" id="btnSessMorning" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
+                    🌅 ช่วงเช้า (วิชา 1 - 3)
+                </button>
+                <button onclick="setMonitorSession('afternoon')" id="btnSessAfternoon" class="px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1">
+                    ☀️ ช่วงบ่าย (วิชา 4 - 6)
+                </button>
+            </div>
+
+            <!-- Right: Period Selector (วิชาที่ 1, 2, 3, 4, 5, 6) -->
+            <div class="flex items-center gap-1 flex-wrap">
+                <span class="font-extrabold text-slate-500 uppercase text-[11px] mr-0.5">เจาะจงวิชา:</span>
+                <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-xl border border-slate-200">
+                    <button onclick="setMonitorPeriod('all')" id="btnPeriodAll" class="px-2 py-0.5 rounded-lg font-bold text-xs bg-white text-indigo-700 shadow-2xs">
+                        ทั้งหมด
+                    </button>
+                    <button onclick="setMonitorPeriod(1)" id="btnPeriod1" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 1
+                    </button>
+                    <button onclick="setMonitorPeriod(2)" id="btnPeriod2" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 2
+                    </button>
+                    <button onclick="setMonitorPeriod(3)" id="btnPeriod3" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 3
+                    </button>
+                    <button onclick="setMonitorPeriod(4)" id="btnPeriod4" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 4
+                    </button>
+                    <button onclick="setMonitorPeriod(5)" id="btnPeriod5" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 5
+                    </button>
+                    <button onclick="setMonitorPeriod(6)" id="btnPeriod6" class="px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900">
+                        วิชา 6
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- MISSING BANNER -->
         <div id="gridMissingBanner" class="bg-rose-50 border border-rose-300 rounded-xl px-3 py-1.5 shadow-xs hidden">
             <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
@@ -569,6 +615,8 @@
         }
 
         let currentGrouping = 'building'; // 'building' | 'grade'
+        let currentSession = 'live';      // 'live' | 'morning' | 'afternoon'
+        let currentPeriod = 'all';        // 'all' | 1 | 2 | 3 | 4 | 5 | 6
 
         function setMonitorGrouping(grouping) {
             currentGrouping = grouping;
@@ -591,14 +639,68 @@
             renderGrid();
         }
 
+        function setMonitorSession(sess) {
+            currentSession = sess;
+            currentPeriod = 'all'; // reset period when session changes
+
+            ['live', 'morning', 'afternoon'].forEach(s => {
+                const btn = document.getElementById('btnSess' + s.charAt(0).toUpperCase() + s.slice(1));
+                if (btn) {
+                    if (s === sess) {
+                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
+                    }
+                }
+            });
+            updatePeriodButtons();
+            renderGrid();
+        }
+
+        function setMonitorPeriod(p) {
+            currentPeriod = p;
+            if (p !== 'all') {
+                // If period 1-3 -> morning, 4-6 -> afternoon
+                currentSession = (p <= 3) ? 'morning' : 'afternoon';
+                ['live', 'morning', 'afternoon'].forEach(s => {
+                    const btn = document.getElementById('btnSess' + s.charAt(0).toUpperCase() + s.slice(1));
+                    if (btn) {
+                        if (s === currentSession) {
+                            btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-indigo-600 text-white shadow-xs flex items-center gap-1';
+                        } else {
+                            btn.className = 'px-2.5 py-1 rounded-lg font-black transition-all bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1';
+                        }
+                    }
+                });
+            }
+            updatePeriodButtons();
+            renderGrid();
+        }
+
+        function updatePeriodButtons() {
+            ['all', 1, 2, 3, 4, 5, 6].forEach(p => {
+                const btn = document.getElementById('btnPeriod' + (p === 'all' ? 'All' : p));
+                if (btn) {
+                    if (currentPeriod === p) {
+                        btn.className = 'px-2 py-0.5 rounded-lg font-bold text-xs bg-white text-indigo-700 shadow-2xs';
+                    } else {
+                        btn.className = 'px-2 py-0.5 rounded-lg font-bold text-xs text-slate-600 hover:text-slate-900';
+                    }
+                }
+            });
+        }
+
         function getRoomLiveStatus(roomNo, day, now, state) {
-            const todayExams = examDb.filter(e => e.room === roomNo && e.date_d === day);
+            const todayExams = examDb.filter(e => e.room === roomNo && e.date_d === day)
+                .sort((a,b) => a.start_min - b.start_min);
+
             if (todayExams.length === 0) {
                 return {
                     type: 'none',
                     filterCategory: 'done',
                     isPicked: false,
                     isReceived: true,
+                    periodBadge: 'ไม่มีสอบ',
                     dispatchText: '📦 ไม่มีสอบ',
                     dispatchClass: 'bg-slate-100 text-slate-400 border-slate-200',
                     returnText: 'ไม่มีสอบ',
@@ -614,16 +716,57 @@
                 };
             }
 
-            const nowH = now.getHours();
-            const nowM = now.getMinutes();
-            const nowS = now.getSeconds();
-            const nowTotalSec = nowH * 3600 + nowM * 60 + nowS;
-
-            const pendingExam = todayExams.find(e => {
-                const rowKey = e.row_id || e.id;
-                const st = state[rowKey];
-                return !(st && st.p2_received === true);
+            // Assign sequence numbers & session
+            todayExams.forEach((e, idx) => {
+                e._periodIdx = idx + 1; // 1, 2, 3, 4, 5, 6
+                e._sessionTh = (e.start_min < 720) ? 'เช้า' : 'บ่าย';
             });
+
+            // Target Exam Selection based on currentPeriod and currentSession
+            let pendingExam = null;
+
+            if (currentPeriod !== 'all') {
+                pendingExam = todayExams.find(e => e._periodIdx === currentPeriod);
+                if (!pendingExam) {
+                    return {
+                        type: 'none',
+                        filterCategory: 'done',
+                        isPicked: false,
+                        isReceived: true,
+                        periodBadge: `วิชา ${currentPeriod}`,
+                        dispatchText: 'ไม่มีสอบ',
+                        dispatchClass: 'bg-slate-100 text-slate-400 border-slate-200',
+                        returnText: 'ห้องนี้ไม่มีสอบวิชานี้',
+                        returnClass: 'text-slate-400',
+                        subject: 'ไม่มีสอบ',
+                        timeSlot: '-',
+                        duration: 0,
+                        timeText: '-',
+                        percent: 0,
+                        bgClass: 'bg-slate-50 border-slate-200 text-slate-400',
+                        dotClass: 'bg-slate-300',
+                        barColor: 'bg-slate-200'
+                    };
+                }
+            } else if (currentSession === 'morning') {
+                const morningExams = todayExams.filter(e => e.start_min < 720);
+                pendingExam = morningExams.find(e => {
+                    const rowKey = e.row_id || e.id;
+                    return !(state[rowKey] && state[rowKey].p2_received === true);
+                }) || morningExams[morningExams.length - 1];
+            } else if (currentSession === 'afternoon') {
+                const afternoonExams = todayExams.filter(e => e.start_min >= 720);
+                pendingExam = afternoonExams.find(e => {
+                    const rowKey = e.row_id || e.id;
+                    return !(state[rowKey] && state[rowKey].p2_received === true);
+                }) || afternoonExams[afternoonExams.length - 1];
+            } else {
+                // Live mode
+                pendingExam = todayExams.find(e => {
+                    const rowKey = e.row_id || e.id;
+                    return !(state[rowKey] && state[rowKey].p2_received === true);
+                });
+            }
 
             if (!pendingExam) {
                 return {
@@ -631,6 +774,7 @@
                     filterCategory: 'done',
                     isPicked: true,
                     isReceived: true,
+                    periodBadge: 'เสร็จสิ้น',
                     dispatchText: '📦 ส่งแล้ว',
                     dispatchClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
                     returnText: '📥 คืนครบแล้ว ✅',
@@ -651,10 +795,17 @@
             const isPicked = (stObj.p1_picked === true);   // ขาส่ง
             const isReceived = (stObj.p2_received === true); // ขารับ
 
+            const nowH = now.getHours();
+            const nowM = now.getMinutes();
+            const nowS = now.getSeconds();
+            const nowTotalSec = nowH * 3600 + nowM * 60 + nowS;
+
             const sSec = pendingExam.start_min * 60;
             const eSec = pendingExam.end_min * 60;
             const durationMins = pendingExam.duration_mins;
             const totalDurationSec = durationMins * 60;
+
+            const periodBadge = `วิชา ${pendingExam._periodIdx || 1} • ${pendingExam._sessionTh || 'เช้า'}`;
 
             // 1. Calculate Dispatch Status (ขาส่ง)
             let dispatchText = '📦 รอส่ง';
@@ -681,7 +832,16 @@
             let percent = 0;
             let timeText = '';
 
-            if (nowTotalSec < sSec) {
+            if (isReceived) {
+                const rTime = stObj.p2_time ? ` (${stObj.p2_time.slice(0,5)})` : '';
+                returnText = `📥 คืนแล้ว${rTime} ✅`;
+                returnClass = 'text-emerald-700 font-black';
+                filterCategory = 'done';
+                bgClass = 'bg-emerald-50 border-emerald-300 text-emerald-950';
+                dotClass = 'bg-emerald-500';
+                barColor = 'bg-emerald-500';
+                percent = 100;
+            } else if (nowTotalSec < sSec) {
                 const waitSec = sSec - nowTotalSec;
                 const waitM = Math.floor(waitSec / 60);
                 const waitS = waitSec % 60;
@@ -752,6 +912,7 @@
                 filterCategory: filterCategory,
                 isPicked: isPicked,
                 isReceived: isReceived,
+                periodBadge: periodBadge,
                 dispatchText: dispatchText,
                 dispatchClass: dispatchClass,
                 returnText: returnText,
@@ -796,7 +957,6 @@
             let totalDispatched = 0;
             let totalReturned = 0;
             let countAttention = 0;
-            let countWarning = 0;
             let countActive = 0;
             let countDone = 0;
 
@@ -820,7 +980,6 @@
                 if (st.isReceived) totalReturned++;
 
                 if (st.filterCategory === 'attention') countAttention++;
-                else if (st.filterCategory === 'warning') countWarning++;
                 else if (st.filterCategory === 'active') countActive++;
                 else if (st.filterCategory === 'done') {
                     countDone++;
@@ -849,9 +1008,12 @@
                             <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/90 border border-slate-200/80 text-slate-700 shadow-2xs">${rm.grade}</span>
                         </div>
                         
-                        <!-- Row 2: Subject & Duration -->
+                        <!-- Row 2: Subject & Period Badge -->
                         <div class="flex items-center justify-between text-[11px] font-bold text-slate-800 my-1 leading-tight">
-                            <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
+                            <div class="flex items-center gap-1 truncate mr-1">
+                                <span class="text-[9px] font-black px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">${st.periodBadge}</span>
+                                <span id="rm-subj-${rm.room}" class="truncate font-mono">${st.subject}</span>
+                            </div>
                             ${durBadge}
                         </div>
                         
