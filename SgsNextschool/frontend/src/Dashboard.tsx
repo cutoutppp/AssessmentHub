@@ -429,10 +429,9 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
 
                                 {/* WP16 (Final) */}
                                 <button 
-                                  onClick={() => (t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต')) && downloadSavedDoc('wp16', t.teacher_name, { mock_subjects: teacherData.filter((td: any) => td.teacher_name === t.teacher_name) })} 
-                                  disabled={!(t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต'))}
-                                  className={`px-2 py-0.5 text-[11px] rounded-md font-medium transition shadow-2xs flex items-center gap-1 ${t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต') ? 'bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-300 cursor-pointer' : 'bg-slate-50 text-slate-400 border border-slate-200 cursor-not-allowed opacity-60 grayscale'}`}
-                                  title={t.overall_status_final.includes('สมบูรณ์') || t.overall_status_final.includes('สังเกต') ? "ดาวน์โหลด วผ.16 (รายงาน 0 ร มผ)" : "ต้องส่งคะแนนปลายภาคให้ครบก่อนจึงจะดาวน์โหลดได้"}
+                                  onClick={() => downloadSavedDoc('wp16', t.teacher_name, { mock_subjects: teacherData.filter((td: any) => td.teacher_name === t.teacher_name) })} 
+                                  className="px-2.5 py-0.5 text-[11px] rounded-md font-medium transition shadow-2xs flex items-center gap-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-300 cursor-pointer"
+                                  title="ดาวน์โหลด วผ.16 (รายงาน 0 ร มส มผ ปลายภาค)"
                                 >
                                   📄 วผ.16 (ปลายภาค)
                                 </button>

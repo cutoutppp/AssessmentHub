@@ -310,7 +310,7 @@
           let lastErr = null;
           for (let attempt = 1; attempt <= 3; attempt++) {
             try {
-              const response = await fetch(`${API_BASE_URL}?action=student-info&studentId=${encodeURIComponent(stuId)}`);
+              const response = await fetch(`${API_BASE_URL}?action=student-info&studentId=${encodeURIComponent(stuId)}`, { credentials: 'omit' });
               const text = await response.text();
               if (text.trim().startsWith('<')) {
                 if (attempt < 3) {
@@ -549,7 +549,7 @@
               .registerTask(rowId, specialId);
           });
         } else {
-          const response = await fetch(`${API_BASE_URL}?action=register-task&rowId=${rowId}&specialId=${encodeURIComponent(specialId)}`);
+          const response = await fetch(`${API_BASE_URL}?action=register-task&rowId=${rowId}&specialId=${encodeURIComponent(specialId)}`, { credentials: 'omit' });
           res = await response.json();
         }
 

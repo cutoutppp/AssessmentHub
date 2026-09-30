@@ -5,50 +5,93 @@ import Dashboard from './Dashboard'
 import AssistantChatbot from './AssistantChatbot'
 
 const StudentErrorRow = ({ studentId, errors }: { studentId: string, errors: any[] }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
+  const studentName = errors[0]?.name || '';
+  const isOfficialMs = errors.some((e: any) => e.type === "Official MS Violation" || e.message?.includes("มส. ทางการ") || e.message?.includes("เวลาเรียนไม่ถึง 80%"));
+  const isUnauthorizedMs = errors.some((e: any) => e.type === "Unauthorized MS Error" || e.message?.includes("ไม่อยู่ในประกาศรายชื่อ มส.") || e.message?.includes("แอบให้ มส"));
+
   return (
     <>
-      <tr className="hover:bg-red-50 transition cursor-pointer" onClick={() => setExpanded(!expanded)}>
-        <td className="px-4 py-3 font-bold text-slate-800">{studentId}</td>
+      <tr className="hover:bg-red-50/80 transition cursor-pointer border-b border-red-100" onClick={() => setExpanded(!expanded)}>
+        <td className="px-4 py-3">
+          <div className="font-bold text-slate-800 font-mono text-sm">{studentId}</div>
+          {studentName && <div className="text-xs text-slate-600 font-medium">{studentName}</div>}
+        </td>
         <td className="px-4 py-3 text-slate-600 flex items-center justify-between">
-          <span className="font-medium text-red-700">พบ {errors.length} จุดขัดแย้ง</span>
-          <span className="text-slate-400 text-xs font-semibold">{expanded ? '▲ ปิด' : '▼ ดูเพิ่ม'}</span>
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-red-700 text-sm">พบ {errors.length} จุดขัดแย้ง</span>
+            {isOfficialMs && (
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-100 text-red-800 border border-red-200">
+                มส. ทางการ
+              </span>
+            )}
+            {isUnauthorizedMs && (
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                มส. นอกประกาศ
+              </span>
+            )}
+          </div>
+          <span className="text-slate-400 text-xs font-semibold">{expanded ? '▲ ย่อ' : '▼ ดูรายละเอียด'}</span>
         </td>
       </tr>
-      {expanded && errors.map((err, idx) => (
-        <tr key={`${studentId}-${idx}`} className="bg-red-50/40">
-          <td className="px-4 py-2 border-l-4 border-red-400"></td>
-          <td className="px-4 py-2 text-sm text-slate-700">
-            • {err.message}
-          </td>
-        </tr>
-      ))}
+      {expanded && errors.map((err, idx) => {
+        const itemIsOfficialMs = err.type === "Official MS Violation" || err.message?.includes("มส. ทางการ") || err.message?.includes("เวลาเรียนไม่ถึง 80%");
+        const itemIsUnauthorizedMs = err.type === "Unauthorized MS Error" || err.message?.includes("ไม่อยู่ในประกาศรายชื่อ มส.");
+
+        return (
+          <tr key={`${studentId}-${idx}`} className="bg-red-50/40 border-b border-red-100/60">
+            <td className="px-4 py-2 border-l-4 border-red-500"></td>
+            <td className="px-4 py-2.5 text-sm text-slate-700 space-y-1">
+              <div className="font-medium text-red-800">• {err.message}</div>
+              {itemIsOfficialMs && (
+                <div className="text-xs text-red-700 bg-white/90 p-2 rounded-lg border border-red-200 font-medium shadow-xs">
+                  👉 <b>วิธีแก้ไข:</b> นักเรียนมีชื่อติด มส. ทางการ (เวลาเรียนไม่ถึง 80%) ห้ามมีคะแนนสอบปลายภาคและห้ามได้เกรดอื่น กรุณาแก้ใน SGS ให้เกรดเป็น <b>'มส'</b> และลบคะแนนสอบปลายภาคออก
+                </div>
+              )}
+              {itemIsUnauthorizedMs && (
+                <div className="text-xs text-amber-800 bg-white/90 p-2 rounded-lg border border-amber-200 font-medium shadow-xs">
+                  👉 <b>วิธีแก้ไข:</b> นักเรียนไม่ได้อยู่ในประกาศรายชื่อ มส. ทางการ หากไม่ได้ผ่านมติวิชาการ ห้ามตัดสิทธิ์ มส. เองทีหลัง ให้ประเมินและให้เกรดตามปกติ
+                </div>
+              )}
+              {!itemIsOfficialMs && !itemIsUnauthorizedMs && (
+                <div className="text-xs text-slate-600 bg-white/90 p-2 rounded-lg border border-slate-200 font-medium shadow-xs">
+                  👉 <b>วิธีแก้ไข:</b> ตรวจสอบช่องคะแนนใน SGS และ NextSchool ให้ตรงกัน แล้วนำไฟล์มาตรวจใหม่อีกครั้ง
+                </div>
+              )}
+            </td>
+          </tr>
+        );
+      })}
     </>
   );
 };
 
 const StudentWarningRow = ({ studentId, warnings }: { studentId: string, warnings: any[] }) => {
   const [expanded, setExpanded] = useState(false);
-  const isMissingWork = warnings.some(warn => warn.message.includes('ขาด') || warn.message.includes('ยังไม่ได้กรอก') || warn.message.includes('0'));
+  const studentName = warnings[0]?.name || '';
+  const isMissingWork = warnings.some(warn => warn.message?.includes('ขาด') || warn.message?.includes('ยังไม่ได้กรอก') || warn.message?.includes('0'));
   
   return (
     <>
-      <tr className="hover:bg-amber-50 transition cursor-pointer" onClick={() => setExpanded(!expanded)}>
-        <td className="px-4 py-3 font-bold text-slate-800">{studentId}</td>
+      <tr className="hover:bg-amber-50 transition cursor-pointer border-b border-amber-100" onClick={() => setExpanded(!expanded)}>
+        <td className="px-4 py-3">
+          <div className="font-bold text-slate-800 font-mono text-sm">{studentId}</div>
+          {studentName && <div className="text-xs text-slate-600 font-medium">{studentName}</div>}
+        </td>
         <td className="px-4 py-3">
           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${isMissingWork ? 'bg-orange-100 text-orange-700' : 'bg-amber-100 text-amber-700'}`}>
             {isMissingWork ? 'ค้างส่งงาน' : 'จุดสังเกต'}
           </span>
         </td>
         <td className="px-4 py-3 text-slate-600 flex items-center justify-between">
-          <span className="font-medium text-amber-700">พบ {warnings.length} รายการ</span>
-          <span className="text-slate-400 text-xs font-semibold">{expanded ? '▲ ปิด' : '▼ ดูเพิ่ม'}</span>
+          <span className="font-medium text-amber-700 text-sm">พบ {warnings.length} รายการ</span>
+          <span className="text-slate-400 text-xs font-semibold">{expanded ? '▲ ย่อ' : '▼ ดูรายละเอียด'}</span>
         </td>
       </tr>
       {expanded && warnings.map((warn, idx) => {
-        const isMissingRow = warn.message.includes('ขาด') || warn.message.includes('ยังไม่ได้กรอก') || warn.message.includes('0');
+        const isMissingRow = warn.message?.includes('ขาด') || warn.message?.includes('ยังไม่ได้กรอก') || warn.message?.includes('0');
         return (
-          <tr key={`${studentId}-${idx}`} className={`${isMissingRow ? 'bg-orange-50/40' : 'bg-amber-50/40'}`}>
+          <tr key={`${studentId}-${idx}`} className={`${isMissingRow ? 'bg-orange-50/40' : 'bg-amber-50/40'} border-b border-amber-100/60`}>
             <td className={`px-4 py-2 border-l-4 ${isMissingRow ? 'border-orange-400' : 'border-amber-400'}`}></td>
             <td colSpan={2} className="px-4 py-2 text-sm text-slate-700">
               • {warn.message}
@@ -216,14 +259,45 @@ function App() {
   }
 
   const handleCompare = async () => {
-    if (files.length < 2) {
-      setErrorMsg("กรุณาอัปโหลดไฟล์ให้ครบอย่างน้อย 2 ไฟล์ (SGS และ NextSchool)")
-      return
+    if (files.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'ยังไม่ได้เลือกไฟล์',
+        text: 'กรุณาอัปโหลดไฟล์คะแนนจาก SGS (PDF) และ NextSchool (Excel) อย่างน้อยระบบละ 1 ไฟล์',
+        confirmButtonColor: '#3b82f6',
+      });
+      return;
+    }
+
+    if (files.length === 1) {
+      const singleFile = files[0];
+      const isPdf = singleFile.name.toLowerCase().endsWith('.pdf');
+      const isXlsx = singleFile.name.toLowerCase().endsWith('.xlsx') || singleFile.name.toLowerCase().endsWith('.xls');
+      const missingType = isPdf ? 'Excel (.xlsx) ของ NextSchool' : (isXlsx ? 'PDF ของ SGS' : 'ไฟล์คู่เทียบจากอีกระบบ');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'ไฟล์ยังไม่ครบ 2 ระบบ',
+        html: `
+          <div class="text-left text-sm space-y-2">
+            <p>ขณะนี้ท่านเพิ่งเลือกไฟล์เพียง <b>1 ไฟล์</b>:</p>
+            <div class="p-2.5 bg-slate-100 rounded-lg text-slate-700 font-mono text-xs">📄 ${singleFile.name}</div>
+            <p class="text-amber-800 font-semibold">⚠️ ขาดไฟล์คู่เทียบ: กรุณาเพิ่มไฟล์ <u>${missingType}</u> เพื่อนำมาตรวจเปรียบเทียบกัน</p>
+          </div>
+        `,
+        confirmButtonColor: '#f59e0b',
+      });
+      return;
     }
     
     if (!roundType) {
-      setErrorMsg("กรุณาเลือกประเภทการสอบ (กลางภาค หรือ ปลายภาค) ก่อนเริ่มตรวจสอบ")
-      return
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณาเลือกประเภทการสอบ',
+        text: 'กรุณาคลิกเลือก "กลางภาค" หรือ "ปลายภาค" ที่แถบด้านบน ก่อนเริ่มตรวจสอบ',
+        confirmButtonColor: '#f59e0b',
+      });
+      return;
     }
     
     if (!masterScores || masterScores.length === 0) {
@@ -252,7 +326,7 @@ function App() {
 
       const data = await response.json()
       if (!response.ok) {
-        setErrorMsg(data.detail || "An error occurred during comparison")
+        setErrorMsg(data.detail || "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล")
       } else {
         if (data.data && data.data.pairs) {
           data.data.pairs = data.data.pairs.map((pair: any) => ({
@@ -262,8 +336,19 @@ function App() {
         }
         setResults(data.data)
       }
-    } catch (err) {
-      setErrorMsg("Failed to connect to the backend server. Is it running?")
+    } catch (err: any) {
+      console.error(err);
+      const isNetworkErr = err?.message?.includes('fetch') || err?.name === 'TypeError';
+      const msg = isNetworkErr
+        ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (กรุณาตรวจสอบว่าเปิดโปรแกรมรัน Backend ที่พอร์ต 8000 อยู่หรือไม่)"
+        : ("เกิดข้อผิดพลาดในการประมวลผล: " + (err?.message || String(err)));
+      setErrorMsg(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'การเชื่อมต่อขัดข้อง',
+        text: msg,
+        confirmButtonColor: '#ef4444'
+      });
     } finally {
       setLoading(false)
     }
@@ -281,26 +366,144 @@ function App() {
       const hasErrors = activePair.results.errors && activePair.results.errors.length > 0;
       
       if (hasErrors) {
+        const errorList = activePair.results.errors || [];
+        
+        // Group by category for clear, actionable reporting
+        const officialMsErrors = errorList.filter((e: any) => 
+          e.type === "Official MS Violation" || e.message?.includes("มส. ทางการ") || e.message?.includes("เวลาเรียนไม่ถึง 80%")
+        );
+        const unauthorizedMsErrors = errorList.filter((e: any) => 
+          e.type === "Unauthorized MS Error" || e.message?.includes("ไม่อยู่ในประกาศรายชื่อ มส.") || e.message?.includes("แอบให้ มส")
+        );
+        const mismatchErrors = errorList.filter((e: any) => 
+          !officialMsErrors.includes(e) && !unauthorizedMsErrors.includes(e)
+        );
+
+        let html = `
+          <div class="text-left text-sm space-y-3 max-h-[65vh] overflow-y-auto pr-1">
+            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded text-red-900 text-xs">
+              <span class="font-bold text-sm">⛔ พบข้อผิดพลาดทั้งหมด ${errorList.length} จุด</span>
+              <p class="mt-0.5 text-slate-600">ระบบจำเป็นต้องระงับการบันทึกข้อมูลเข้า Google Sheets และ Drive ชั่วคราว เพื่อป้องกันข้อมูลเกรดหรือสถิติผิดพลาด</p>
+            </div>
+        `;
+
+        if (officialMsErrors.length > 0) {
+          html += `
+            <div class="border border-red-200 bg-white rounded-lg p-3 shadow-xs">
+              <div class="font-bold text-red-800 text-xs flex items-center justify-between pb-1.5 border-b border-red-100">
+                <span>🚫 นักเรียนติด มส. ทางการ แต่ครูคีย์เกรดหรือคะแนนสอบ</span>
+                <span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-[11px] font-bold">${officialMsErrors.length} รายการ</span>
+              </div>
+              <ul class="divide-y divide-red-50 mt-1 max-h-36 overflow-y-auto text-xs">
+                ${officialMsErrors.map((e: any) => `
+                  <li class="py-1.5">
+                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
+                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
+                    <span class="text-red-700">${e.message}</span>
+                  </li>
+                `).join('')}
+              </ul>
+              <div class="mt-2 text-[11px] bg-red-50 p-2 rounded text-red-800 font-medium">
+                👉 <b>วิธีแก้ไข:</b> เข้าโปรแกรม SGS เปลี่ยนผลการเรียนเป็น <b>'มส'</b> และลบคะแนนสอบปลายภาคออกให้เป็นช่องว่าง
+              </div>
+            </div>
+          `;
+        }
+
+        if (unauthorizedMsErrors.length > 0) {
+          html += `
+            <div class="border border-amber-200 bg-white rounded-lg p-3 shadow-xs">
+              <div class="font-bold text-amber-800 text-xs flex items-center justify-between pb-1.5 border-b border-amber-100">
+                <span>⚠️ ติด 'มส' เองทีหลังโดยไม่ผ่านประกาศวิชาการ</span>
+                <span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full text-[11px] font-bold">${unauthorizedMsErrors.length} รายการ</span>
+              </div>
+              <ul class="divide-y divide-amber-50 mt-1 max-h-36 overflow-y-auto text-xs">
+                ${unauthorizedMsErrors.map((e: any) => `
+                  <li class="py-1.5">
+                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
+                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
+                    <span class="text-amber-700">${e.message}</span>
+                  </li>
+                `).join('')}
+              </ul>
+              <div class="mt-2 text-[11px] bg-amber-50 p-2 rounded text-amber-800 font-medium">
+                👉 <b>วิธีแก้ไข:</b> นักเรียนคนนี้ไม่ได้อยู่ในประกาศ มส. ทางการ หากไม่ได้ผ่านมติงานวิชาการ ห้ามตัดสิทธิ์ มส. เอง ให้ใส่คะแนนและเกรดตามจริง
+              </div>
+            </div>
+          `;
+        }
+
+        if (mismatchErrors.length > 0) {
+          html += `
+            <div class="border border-slate-200 bg-white rounded-lg p-3 shadow-xs">
+              <div class="font-bold text-slate-800 text-xs flex items-center justify-between pb-1.5 border-b border-slate-100">
+                <span>❌ คะแนนหรือข้อมูลไม่ตรงกันระหว่างสองระบบ</span>
+                <span class="bg-slate-100 text-slate-800 px-2 py-0.5 rounded-full text-[11px] font-bold">${mismatchErrors.length} รายการ</span>
+              </div>
+              <ul class="divide-y divide-slate-100 mt-1 max-h-36 overflow-y-auto text-xs">
+                ${mismatchErrors.map((e: any) => `
+                  <li class="py-1.5">
+                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
+                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
+                    <span class="text-slate-700">${e.message}</span>
+                  </li>
+                `).join('')}
+              </ul>
+              <div class="mt-2 text-[11px] bg-slate-100 p-2 rounded text-slate-700 font-medium">
+                👉 <b>วิธีแก้ไข:</b> เทียบดูคะแนนที่ไฮไลท์กล่องสีแดงในเอกสารด้านล่าง แล้วปรับแก้คะแนนในระบบให้ตรงกัน
+              </div>
+            </div>
+          `;
+        }
+
+        html += `
+            <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 flex items-center space-x-2">
+              <span class="text-base">💡</span>
+              <span><b>ขั้นตอนต่อไป:</b> เมื่อแก้ไขใน SGS / NextSchool แล้ว บันทึกและนำไฟล์ใหม่มาตรวจอีกครั้ง</span>
+            </div>
+          </div>
+        `;
+
         await Swal.fire({
           icon: 'error',
           title: 'ไม่อนุญาตให้บันทึกข้อมูล',
-          text: 'เนื่องจากพบข้อมูลขัดแย้ง หรือคะแนนไม่ตรงกัน (การ์ดสีแดง) กรุณาแก้ไขข้อมูลให้ถูกต้อง 100% ก่อนส่งเข้าฐานข้อมูล',
-          confirmButtonColor: '#3085d6',
+          html: html,
+          confirmButtonColor: '#ef4444',
+          confirmButtonText: 'เข้าใจแล้ว จะนำไปแก้ไขในระบบ',
+          customClass: {
+            popup: 'rounded-2xl max-w-xl',
+          }
         });
         return;
       }
 
       const hasMissing = activePair.results.missing_students && activePair.results.missing_students.length > 0;
       if (hasMissing) {
+        const missingList = activePair.results.missing_students;
         const res = await Swal.fire({
-          icon: 'warning',
-          title: 'พบข้อมูลรายชื่อตกหล่น',
-          text: 'มีนักเรียนที่รายชื่อไม่ตรงกันระหว่างระบบ (การ์ดสีส้ม) คุณต้องการส่งข้อมูลเข้าฐานข้อมูลใช่หรือไม่?',
+          icon: 'info',
+          title: 'แจ้งเตือน: พบรายชื่อไม่ตรงกัน',
+          html: `
+            <div class="text-left text-sm space-y-2">
+              <p>มีนักเรียนที่ปรากฏในระบบหนึ่งแต่ไม่มีในอีกระบบ <b>${missingList.length}</b> คน (แจ้งเตือนเพื่อทราบ):</p>
+              <div class="max-h-40 overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs divide-y divide-slate-100">
+                ${missingList.map((m: any) => `
+                  <div class="py-1.5 flex justify-between items-center">
+                    <span class="font-mono font-bold text-slate-800">${m.id}</span>
+                    <span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-medium border border-amber-200">ตกหล่นใน ${m.missing_in}</span>
+                  </div>
+                `).join('')}
+              </div>
+              <p class="text-slate-600 text-xs mt-2">
+                คะแนนในส่วนของนักเรียนคนอื่นๆ มีความถูกต้องสมบูรณ์ คุณต้องการยืนยันบันทึกข้อมูลเข้าฐานข้อมูลใช่หรือไม่?
+              </p>
+            </div>
+          `,
           showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'ยืนยันบันทึก',
-          cancelButtonText: 'ยกเลิก'
+          confirmButtonColor: '#f59e0b',
+          cancelButtonColor: '#94a3b8',
+          confirmButtonText: 'ยืนยันบันทึกข้อมูล',
+          cancelButtonText: 'ยกเลิกเพื่อตรวจสอบก่อน'
         });
         if (!res.isConfirmed) return;
       }
@@ -422,14 +625,47 @@ function App() {
         }
 
         await fetchDbData(); // Re-fetch dashboard data after saving
-      } catch (err) {
-        Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + String(err), 'error');
+      } catch (err: any) {
+        console.error(err);
+        const errMsg = String(err?.message || err);
+        let friendlyReason = errMsg;
+        let suggestion = "กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ";
+
+        if (errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError') || errMsg.includes('connection')) {
+          friendlyReason = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Backend หรือปลายทางได้ (เน็ตเวิร์กขัดข้อง หรือ เซิร์ฟเวอร์ Backend ปิดอยู่)";
+          suggestion = "กรุณาตรวจสอบว่าเซิร์ฟเวอร์ Backend (พอร์ต 8000) เปิดทำงานอยู่ และอินเทอร์เน็ตยังเชื่อมต่อได้ปกติ";
+        } else if (errMsg.includes('timeout') || errMsg.includes('timed out')) {
+          friendlyReason = "Google Apps Script หรือ Google Drive ใช้เวลาตอบสนองนานเกินไป (Timeout)";
+          suggestion = "ข้อมูลอาจกำลังประมวลผลอยู่เบื้องหลังใน Google Drive กรุณารอสักครู่แล้วตรวจสอบที่ Google Drive หรือส่งใหม่อีกครั้ง";
+        } else if (errMsg.includes('Script') || errMsg.includes('404') || errMsg.includes('403')) {
+          friendlyReason = "URL ของ Google Apps Script Web App ไม่ถูกต้อง หรือไม่มีสิทธิ์เข้าถึง (Permission Denied)";
+          suggestion = "กรุณาตรวจสอบการตั้งค่า Deploy Web App ให้สิทธิ์ 'Anyone' (ทุกคน) เข้าถึงได้";
+        }
+
+        Swal.fire({
+          icon: 'error',
+          title: 'การส่งข้อมูลขัดข้อง',
+          html: `
+            <div class="text-left text-sm space-y-2">
+              <p class="text-rose-700 font-semibold">❌ สาเหตุ: ${friendlyReason}</p>
+              <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700">
+                💡 <b>คำแนะนำ:</b> ${suggestion}
+              </div>
+            </div>
+          `,
+          confirmButtonColor: '#ef4444'
+        });
       } finally {
         setIsSaving(false);
       }
-    } catch (globalErr) {
-      Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในระบบ (Frontend): ' + String(globalErr), 'error');
+    } catch (globalErr: any) {
       console.error(globalErr);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในระบบ',
+        text: 'เกิดข้อผิดพลาดภายในระบบ: ' + (globalErr?.message || String(globalErr)),
+        confirmButtonColor: '#ef4444'
+      });
       setIsSaving(false);
     }
   }
@@ -659,8 +895,14 @@ function App() {
 
           <button 
             onClick={handleCompare}
-            disabled={loading || files.length < 2}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            disabled={loading}
+            className={`px-8 py-3 text-white text-lg font-medium rounded-xl shadow-sm transition flex items-center space-x-2 ${
+              loading 
+                ? 'bg-slate-400 cursor-wait' 
+                : files.length < 2 || !roundType
+                ? 'bg-blue-600/80 hover:bg-blue-600 hover:shadow' 
+                : 'bg-blue-600 hover:bg-blue-700 hover:scale-105'
+            }`}
           >
             {loading && (
               <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -672,9 +914,29 @@ function App() {
           </button>
         </div>
 
+        {/* Dynamic Helper Hint Badges */}
+        {files.length === 0 && (
+          <div className="flex items-center justify-center mt-3 text-sm text-slate-500 space-x-1.5 animate-fade-in">
+            <span>ℹ️</span>
+            <span>กรุณาอัปโหลดไฟล์ PDF (SGS) และ Excel (NextSchool) เพื่อเริ่มการตรวจสอบ</span>
+          </div>
+        )}
+        {files.length === 1 && (
+          <div className="flex items-center justify-center mt-3 text-sm text-amber-800 bg-amber-50 py-2.5 px-4 rounded-xl border border-amber-200 space-x-2 animate-fade-in shadow-xs">
+            <span>⚠️</span>
+            <span><b>เลือกแล้ว 1 ไฟล์:</b> กรุณาเพิ่มไฟล์จากอีกระบบ (SGS หรือ NextSchool) ให้ครบเพื่อนำมาเปรียบเทียบกัน</span>
+          </div>
+        )}
+        {files.length >= 2 && !roundType && (
+          <div className="flex items-center justify-center mt-3 text-sm text-amber-800 bg-amber-50 py-2.5 px-4 rounded-xl border border-amber-200 space-x-2 animate-fade-in shadow-xs">
+            <span>👆</span>
+            <span><b>ขั้นตอนสุดท้าย:</b> กรุณาคลิกเลือกประเภทการสอบ <b>"กลางภาค"</b> หรือ <b>"ปลายภาค"</b> ด้านบน</span>
+          </div>
+        )}
+
         {/* Error Message */}
         {errorMsg && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 text-center animate-fade-in-up">
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 text-center animate-fade-in-up mt-3">
             {errorMsg}
           </div>
         )}
@@ -702,12 +964,16 @@ function App() {
                       }`}
                     >
                       <span>วิชา {pair.subject_code}</span>
-                      {totalIssues > 0 ? (
-                        <span className={`px-2 py-0.5 rounded-full text-xs ${selectedPairIndex === idx ? 'bg-white text-red-600' : 'bg-red-100 text-red-600'}`}>
-                          พบ {totalIssues} จุด
+                      {errorCount > 0 ? (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${selectedPairIndex === idx ? 'bg-white text-red-600' : 'bg-red-100 text-red-600'}`}>
+                          ผิด {errorCount} จุด
+                        </span>
+                      ) : warningCount > 0 ? (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${selectedPairIndex === idx ? 'bg-white text-amber-600' : 'bg-amber-100 text-amber-700'}`}>
+                          เตือน {warningCount} จุด
                         </span>
                       ) : (
-                        <span className={`px-2 py-0.5 rounded-full text-xs ${selectedPairIndex === idx ? 'bg-white text-emerald-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${selectedPairIndex === idx ? 'bg-white text-emerald-600' : 'bg-emerald-100 text-emerald-600'}`}>
                           ผ่าน
                         </span>
                       )}
@@ -790,33 +1056,45 @@ function App() {
 
                   return (
                     <div className="space-y-6">
-                      <div className="flex items-center space-x-2 border-b border-slate-200 pb-2">
+                      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
                         <h3 className="text-xl font-bold text-slate-800">สรุปข้อมูลตรวจสอบนักเรียน</h3>
-                        <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-sm font-semibold">
-                          พบปัญหา {((res.errors?.length || 0) + (res.warnings?.length || 0) + missingStudents.length + atRiskStudents.length)} รายการ
-                        </span>
+                        {hasErrors && (
+                          <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-sm font-semibold">
+                            ข้อผิดพลาด {res.errors.length} รายการ
+                          </span>
+                        )}
+                        {(hasWarnings || hasMissing || hasAtRisk) && (
+                          <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-semibold">
+                            ข้อสังเกต/แจ้งเตือน {((res.warnings?.length || 0) + atRiskStudents.length)} รายการ
+                          </span>
+                        )}
                       </div>
 
                       {hasMissing && (
-                        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 shadow-sm">
-                          <h4 className="font-bold text-rose-700 text-lg flex items-center space-x-2 mb-4">
-                            <span>🚫 นักเรียนตกหล่น (รายชื่อไม่ตรงกัน)</span>
-                            <span className="bg-rose-200 text-rose-800 px-2 py-0.5 rounded-full text-sm">{missingStudents.length} รายการ</span>
-                          </h4>
-                          <div className="bg-white rounded-xl shadow-sm border border-rose-200 overflow-hidden">
+                        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <h4 className="font-bold text-amber-800 text-lg flex items-center space-x-2">
+                              <span>⚠️ นักเรียนตกหล่น (รายชื่อไม่ตรงกัน — แจ้งเตือนเพื่อทราบ)</span>
+                              <span className="bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full text-sm font-semibold">{missingStudents.length} คน</span>
+                            </h4>
+                            <span className="text-xs text-amber-700 bg-amber-100/70 border border-amber-200 px-2.5 py-1 rounded-lg">
+                              ℹ️ แจ้งเตือนเพื่อทราบ ไม่มีผลบล็อกการบันทึกข้อมูล
+                            </span>
+                          </div>
+                          <div className="bg-white rounded-xl shadow-sm border border-amber-200 overflow-hidden">
                             <table className="w-full text-left text-sm">
-                              <thead className="bg-rose-50 border-b border-rose-200">
+                              <thead className="bg-amber-50/75 border-b border-amber-200">
                                 <tr>
-                                  <th className="px-4 py-3 font-semibold text-rose-800 w-32">รหัสประจำตัว</th>
-                                  <th className="px-4 py-3 font-semibold text-rose-800 w-48 text-center">ตกหล่นในระบบ</th>
+                                  <th className="px-4 py-3 font-semibold text-amber-900 w-32">รหัสประจำตัว</th>
+                                  <th className="px-4 py-3 font-semibold text-amber-900 w-48 text-center">ตกหล่นในระบบ</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-rose-100">
+                              <tbody className="divide-y divide-amber-100">
                                 {missingStudents.map((ms: any, idx: number) => (
-                                  <tr key={idx} className="hover:bg-rose-50/50 transition-colors">
+                                  <tr key={idx} className="hover:bg-amber-50/40 transition-colors">
                                     <td className="px-4 py-3 font-mono font-medium text-slate-700">{ms.id}</td>
                                     <td className="px-4 py-3 text-center">
-                                      <span className="bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-bold border border-rose-200 shadow-sm">
+                                      <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-bold border border-amber-200 shadow-sm">
                                         {ms.missing_in}
                                       </span>
                                     </td>
@@ -1001,20 +1279,115 @@ function App() {
                   )
                 })()}
 
-                {/* Bottom Action Buttons */}
-                <div className="bg-slate-100 p-6 rounded-2xl flex flex-col items-center justify-center space-y-4 mt-8 border border-slate-200">
-                  <h3 className="text-slate-700 font-bold mb-2">เมื่อตรวจสอบความถูกต้องเรียบร้อยแล้ว</h3>
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <button 
-                      onClick={exportToGoogleSheets}
-                      disabled={savedPairs[selectedPairIndex]}
-                      className={`px-8 py-3 font-bold rounded-xl shadow-md transition flex items-center space-x-2 ${savedPairs[selectedPairIndex] ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white transform hover:scale-105'}`}
-                    >
-                      <span className="text-xl">✅</span>
-                      <span>{savedPairs[selectedPairIndex] ? 'บันทึกแล้ว' : 'ยืนยันข้อมูลและบันทึก (วิชานี้)'}</span>
-                    </button>
-                  </div>
-                </div>
+                {/* Bottom Action Buttons with Smart Status Reporting */}
+                {(() => {
+                  const activePair = results.pairs[selectedPairIndex];
+                  const isSaved = !!savedPairs[selectedPairIndex];
+                  const errorList = activePair?.results?.errors || [];
+                  const missingList = activePair?.results?.missing_students || [];
+                  const hasErrors = errorList.length > 0;
+                  const hasMissing = missingList.length > 0;
+
+                  return (
+                    <div className={`p-6 rounded-2xl flex flex-col items-center justify-center space-y-4 mt-8 border transition-all ${
+                      isSaved
+                        ? 'bg-slate-50 border-slate-200'
+                        : hasErrors
+                        ? 'bg-rose-50 border-rose-200 shadow-sm'
+                        : hasMissing
+                        ? 'bg-amber-50 border-amber-200 shadow-sm'
+                        : 'bg-emerald-50 border-emerald-200 shadow-sm'
+                    }`}>
+                      
+                      {/* Status Header Badge & Explanations */}
+                      <div className="text-center space-y-1.5 max-w-2xl">
+                        {isSaved ? (
+                          <div className="flex items-center justify-center space-x-2 text-slate-700 font-bold text-lg">
+                            <span className="text-2xl">✅</span>
+                            <span>บันทึกข้อมูลวิชานี้เข้าสู่ระบบเรียบร้อยแล้ว</span>
+                          </div>
+                        ) : hasErrors ? (
+                          <>
+                            <div className="flex items-center justify-center space-x-2 text-rose-700 font-bold text-lg">
+                              <span className="text-2xl">⛔</span>
+                              <span>ยังไม่สามารถบันทึกข้อมูลได้ (พบ {errorList.length} ข้อผิดพลาดที่ต้องแก้ไข)</span>
+                            </div>
+                            <p className="text-sm text-rose-600">
+                              มีข้อมูลขัดแย้ง เช่น นักเรียนติด มส. ทางการแต่มีเกรด/คะแนน หรือคะแนนปลายภาคไม่ตรงกัน ระบบจึงบล็อกการบันทึกไว้ชั่วคราว
+                            </p>
+                            <p className="text-xs text-slate-500 font-medium">
+                              👇 คลิกปุ่มสีแดงด้านล่างเพื่อเปิดดู <b>รายชื่อนักเรียน + รายละเอียดปัญหา + วิธีแก้ไข</b> ทั้งหมด
+                            </p>
+                          </>
+                        ) : hasMissing ? (
+                          <>
+                            <div className="flex items-center justify-center space-x-2 text-amber-700 font-bold text-lg">
+                              <span className="text-2xl">⚠️</span>
+                              <span>พบรายชื่อนักเรียนตกหล่น {missingList.length} คน (สามารถบันทึกได้หากยืนยัน)</span>
+                            </div>
+                            <p className="text-xs text-amber-600">
+                              คะแนนในส่วนที่มีข้อมูลตรงกันทั้งหมด แต่มีนักเรียนบางคนตกหล่นในระบบใดระบบหนึ่ง
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-center space-x-2 text-emerald-700 font-bold text-lg">
+                              <span className="text-2xl">🎉</span>
+                              <span>ตรวจสอบความถูกต้องผ่าน 100% (ข้อมูลตรงกันทุกจุด)</span>
+                            </div>
+                            <p className="text-xs text-emerald-600">
+                              ข้อมูลคะแนนและผลการเรียนถูกต้องสมบูรณ์ พร้อมส่งเข้า Google Sheets และสำรองไฟล์ต้นฉบับลง Google Drive
+                            </p>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Main Action Button */}
+                      <div className="flex flex-wrap justify-center gap-4 pt-1">
+                        <button 
+                          onClick={exportToGoogleSheets}
+                          disabled={isSaved || isSaving}
+                          className={`px-8 py-3.5 font-bold rounded-xl shadow-md transition-all flex items-center space-x-2 text-base ${
+                            isSaved
+                              ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                              : hasErrors
+                              ? 'bg-rose-600 hover:bg-rose-700 text-white transform hover:scale-105 shadow-rose-200'
+                              : hasMissing
+                              ? 'bg-amber-600 hover:bg-amber-700 text-white transform hover:scale-105 shadow-amber-200'
+                              : 'bg-emerald-600 hover:bg-emerald-700 text-white transform hover:scale-105 shadow-emerald-200'
+                          }`}
+                        >
+                          <span className="text-xl">
+                            {isSaved ? '📁' : hasErrors ? '🔍' : hasMissing ? '⚠️' : '💾'}
+                          </span>
+                          <span>
+                            {isSaved 
+                              ? 'บันทึกเรียบร้อยแล้ว' 
+                              : hasErrors 
+                              ? `คลิกดูข้อผิดพลาด (${errorList.length} จุด) และวิธีแก้ไข`
+                              : hasMissing
+                              ? 'ยืนยันข้อมูลและบันทึก (มีรายชื่อตกหล่น)'
+                              : 'ยืนยันข้อมูลและบันทึก (วิชานี้)'
+                            }
+                          </span>
+                        </button>
+
+                        {roundType === 'final' && (
+                          <button 
+                            onClick={() => downloadDoc('wp16', [activePair])}
+                            disabled={isSaving}
+                            className="px-6 py-3.5 font-bold rounded-xl shadow-md transition-all flex items-center space-x-2 text-base bg-sky-600 hover:bg-sky-700 text-white transform hover:scale-105 shadow-sky-200 cursor-pointer"
+                            title="ดาวน์โหลดแบบบันทึกข้อความรายงานผลการเรียน 0, ร, มส, มผ (วผ.16 ปลายภาค)"
+                          >
+                            <span className="text-xl">📄</span>
+                            <span>ดาวน์โหลด วผ.16 (ปลายภาค)</span>
+                          </button>
+                        )}
+                      </div>
+
+                    </div>
+                  );
+                })()}
 
               </div>
             )}
