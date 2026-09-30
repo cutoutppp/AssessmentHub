@@ -246,8 +246,9 @@ def parse_nextschool_excel(file_content, filename):
             if student_id and student_id != "nan":
                 if student_id.endswith(".0"):
                     student_id = student_id[:-2]
-                    
-                student_name = str(row[2]).strip()
+
+                raw_name = str(row[2]).strip() if len(row) > 2 and row[2] is not None else ""
+                student_name = clean_text(raw_name) if raw_name.lower() != "nan" else ""
                 student_data = {
                     "student_id": student_id,
                     "name": student_name,

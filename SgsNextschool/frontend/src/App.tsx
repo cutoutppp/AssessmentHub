@@ -570,27 +570,73 @@ function App() {
        reading: roundType === "midterm" ? {} : readCounts
     };
     
+    // ดึงรายชื่อนักเรียนจากไฟล์ Excel ของ NextSchool มาจับคู่เพื่อแก้ชื่อเพี้ยนจาก PDF
+    const nsStudentsObj = p.raw_data?.nextschool_students || {};
+    const nsNameMap: Record<string, string> = {};
+    if (Array.isArray(nsStudentsObj)) {
+      nsStudentsObj.forEach((ns: any) => {
+        const sid = String(ns?.student_id || ns?.id || "").trim();
+        const sname = (ns?.name || ns?.student_name || "").trim();
+        if (sid && sname && sname.toLowerCase() !== "nan" && sname !== "-") nsNameMap[sid] = sname;
+      });
+    } else if (typeof nsStudentsObj === 'object') {
+      Object.entries(nsStudentsObj).forEach(([k, ns]: [string, any]) => {
+        const sid = String(ns?.student_id || ns?.id || k || "").trim();
+        const sname = (ns?.name || ns?.student_name || "").trim();
+        if (sid && sname && sname.toLowerCase() !== "nan" && sname !== "-") nsNameMap[sid] = sname;
+      });
+    }
+
+    const subjCode = tInfo.subject_code || subjectCode;
+    const subjName = p.subject_name || tInfo.subject_name || "";
+    const teachName = tInfo.teacher_name || "";
+    const cLevel = tInfo.class_level || classLevel;
+    const nowIso = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
     const failingStudents: any[] = [];
     sgsStudents.forEach((student: any) => {
       let g = String(student.grade || "").trim();
       if (g.endsWith(".0")) g = g.slice(0, -2);
       const isMan = Boolean(student.is_manual);
       if (["0", "ร", "มส", "มผ"].includes(g) || isMan) {
-        const sName = student.name || `${student.prefix || ""}${student.firstname || ""} ${student.lastname || ""}`.trim();
         const sid = String(student.student_id || student.id || "").trim();
         if (sid) {
+          // ดึงชื่อภาษาไทยที่ถูกต้องจาก NextSchool ก่อนเสมอ หากไม่มีค่อยใช้ชื่อจาก SGS
+          const cleanName = (nsNameMap[sid] && !isMan)
+            ? nsNameMap[sid]
+            : (student.name || `${student.prefix || ""}${student.firstname || ""} ${student.lastname || ""}`.trim());
+
           const defaultTask = g === "0" ? "สอบแก้ตัว" : (g === "มส" ? "มส. (ขาดเรียนเกิน 20%)" : "");
           const defaultRemark = isMan ? "[เพิ่มเอง]" : (g === "มส" ? "[มส. ประกาศทางการ]" : "");
+          const oldScore = String(student.total ?? student.score ?? student.raw_score ?? "");
+
           failingStudents.push({
-            student_id: sid,
-            student_name: sName,
-            class_level: tInfo.class_level || classLevel,
-            old_score: String(student.total ?? student.score ?? student.raw_score ?? ""),
-            old_grade: g,
-            pending_task: student.pending_task || defaultTask,
-            remark: student.remark || defaultRemark,
+            special_id: `${subjCode}${sid}`,
+            specialId: `${subjCode}${sid}`,
             academic_year: academicYear,
+            year: academicYear,
             semester: semester,
+            term: semester,
+            subject_code: subjCode,
+            subjCode: subjCode,
+            subject_name: subjName,
+            subjName: subjName,
+            teacher_name: teachName,
+            teacherName: teachName,
+            class_level: cLevel,
+            classLevel: cLevel,
+            student_id: sid,
+            stuId: sid,
+            student_name: cleanName,
+            stuName: cleanName,
+            old_score: oldScore,
+            oldScore: oldScore,
+            old_grade: g,
+            oldGrade: g,
+            pending_task: student.pending_task || defaultTask,
+            pendingTask: student.pending_task || defaultTask,
+            remark: student.remark || defaultRemark,
+            updated_at: nowIso,
             is_manual: isMan
           });
         }
@@ -598,11 +644,11 @@ function App() {
     });
 
     const payloadPairs = [{
-      subject_code: tInfo.subject_code || subjectCode,
-      subject_name: p.subject_name || tInfo.subject_name || "",
+      subject_code: subjCode,
+      subject_name: subjName,
       subject_group: tInfo.subject_group,
-      teacher_name: tInfo.teacher_name,
-      class_level: tInfo.class_level || classLevel,
+      teacher_name: teachName,
+      class_level: cLevel,
       sgs_filename: p.sgs_filename,
       nextschool_filename: p.nextschool_filename,
       sgs_pdf_b64: p.results?.sgs_pdf_b64,
@@ -635,39 +681,9 @@ function App() {
           }
         });
 
-        // Directly sync failing students to Google Sheets WP16_งานค้าง tab
+        // Directly sync failing students to Google Sheets WP16_งานค้าง tab (14 columns)
         if (failingStudents.length > 0 && webhookUrl) {
           try {
-            const gasItems = failingStudents.map(s => ({
-              special_id: `${tInfo.subject_code || subjectCode}${s.student_id}`,
-              specialId: `${tInfo.subject_code || subjectCode}${s.student_id}`,
-              academic_year: academicYear,
-              year: academicYear,
-              semester: semester,
-              term: semester,
-              year_term: `${academicYear}/${semester}`,
-              termStr: `${academicYear}/${semester}`,
-              subject_code: tInfo.subject_code || subjectCode,
-              subjCode: tInfo.subject_code || subjectCode,
-              subject_name: p.subject_name || tInfo.subject_name || "",
-              subjName: p.subject_name || tInfo.subject_name || "",
-              teacher_name: tInfo.teacher_name || "",
-              teacherName: tInfo.teacher_name || "",
-              class_level: tInfo.class_level || classLevel,
-              classLevel: tInfo.class_level || classLevel,
-              student_id: s.student_id,
-              stuId: s.student_id,
-              student_name: s.student_name,
-              stuName: s.student_name,
-              old_score: s.old_score,
-              oldScore: s.old_score,
-              old_grade: s.old_grade,
-              oldGrade: s.old_grade,
-              pending_task: s.pending_task,
-              pendingTask: s.pending_task,
-              remark: s.remark,
-              updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
-            }));
             fetch(webhookUrl, {
               method: "POST",
               headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -675,7 +691,7 @@ function App() {
                 action: "sync-wp16-sheet",
                 spreadsheetId: "1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ",
                 sheetName: "WP16_งานค้าง",
-                items: gasItems
+                items: failingStudents
               })
             }).catch(e => console.warn('Direct GAS WP16 sync error:', e));
           } catch (syncErr) {

@@ -326,6 +326,30 @@ async def api_save_work(request: Request):
 
             raw = pair_data.get("raw_data") or {}
             sgs_students = raw.get("sgs_students") or {}
+            ns_students = raw.get("nextschool_students") or {}
+
+            # ดึงรายชื่อที่ถูกต้องจาก NextSchool Excel มาจับคู่แก้ชื่อต่างดาว
+            ns_name_map = {}
+            if isinstance(ns_students, list):
+                for ns_s in ns_students:
+                    if isinstance(ns_s, dict):
+                        n_id = str(ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+            elif isinstance(ns_students, dict):
+                for n_id, ns_s in ns_students.items():
+                    if isinstance(ns_s, dict):
+                        n_id = str(n_id or ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+
+            # อัปเดตชื่อใน failing_list หากส่งมาจาก frontend
+            for ef in failing_list:
+                ef_sid = str(ef.get("student_id", "")).strip()
+                if ef_sid and ef_sid in ns_name_map and not ef.get("is_manual"):
+                    ef["student_name"] = ns_name_map[ef_sid]
 
             if isinstance(sgs_students, list):
                 sgs_iter = [(s.get("student_id", ""), s) for s in sgs_students]
@@ -344,16 +368,22 @@ async def api_save_work(request: Request):
                 is_man = bool(s.get("is_manual", False))
                 if grade in ["0", "ร", "มส", "มผ"] or is_man:
                     seen_ids.add(sid)
-                    s_name = s.get("name", "")
-                    if not s_name:
-                        s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                    clean_name = ns_name_map.get(sid, "").strip()
+                    if not clean_name:
+                        s_name = s.get("name", "")
+                        if not s_name:
+                            s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                        clean_name = s_name
+
+                    # บันทึกชื่อที่ถูกต้องกลับไปในข้อมูลดิบด้วย
+                    s["name"] = clean_name
 
                     default_task = "สอบแก้ตัว" if grade == "0" else ("มส. (ขาดเรียนเกิน 20%)" if grade == "มส" else "")
                     default_remark = "[เพิ่มเอง]" if is_man else ("[มส. ประกาศทางการ]" if grade == "มส" else "")
 
                     failing_list.append({
                         "student_id": sid,
-                        "student_name": s_name,
+                        "student_name": clean_name,
                         "class_level": class_level,
                         "old_score": str(s.get("total", "") or s.get("score", "") or s.get("raw_score", "")),
                         "old_grade": grade,
@@ -447,6 +477,24 @@ async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", se
                     c_level = (r.get("teacher_info") or {}).get("class_level", "")
                     raw = r.get("raw_data") or {}
                     sgs_students = raw.get("sgs_students") or {}
+                    ns_students = raw.get("nextschool_students") or {}
+
+                    ns_name_map = {}
+                    if isinstance(ns_students, list):
+                        for ns_s in ns_students:
+                            if isinstance(ns_s, dict):
+                                n_id = str(ns_s.get("student_id", "")).strip()
+                                n_name = str(ns_s.get("name", "")).strip()
+                                if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                                    ns_name_map[n_id] = n_name
+                    elif isinstance(ns_students, dict):
+                        for n_id, ns_s in ns_students.items():
+                            if isinstance(ns_s, dict):
+                                n_id = str(n_id or ns_s.get("student_id", "")).strip()
+                                n_name = str(ns_s.get("name", "")).strip()
+                                if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                                    ns_name_map[n_id] = n_name
+
                     sgs_iter = [(s.get("student_id", ""), s) for s in sgs_students] if isinstance(sgs_students, list) else (sgs_students.items() if isinstance(sgs_students, dict) else [])
                     for sid, s in sgs_iter:
                         sid = str(sid or s.get("student_id", "")).strip()
@@ -458,18 +506,33 @@ async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", se
                         if grade in ["0", "ร", "มส", "มผ"]:
                             seen.add(sid)
                             old_t = existing_tasks.get(sid, {})
-                            s_name = s.get("name", "")
-                            if not s_name:
-                                s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                            clean_name = ns_name_map.get(sid, "").strip() or s.get("name", "")
+                            if not clean_name:
+                                clean_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
                             failing.append({
                                 "student_id": sid,
-                                "student_name": s_name,
+                                "student_name": clean_name,
                                 "class_level": c_level,
                                 "old_score": str(s.get("total", "") or s.get("score", "")),
                                 "old_grade": grade,
                                 "pending_task": old_t.get("pending_task", ""),
                                 "remark": old_t.get("remark", "")
                             })
+
+                # รวมนักเรียนที่ถูกเพิ่มด้วยตนเอง (Manual) ในงานค้างของวิชานี้ด้วย
+                for sid, t_item in existing_tasks.items():
+                    if sid not in seen:
+                        seen.add(sid)
+                        c_name = t_item.get("student_name", "")
+                        failing.append({
+                            "student_id": sid,
+                            "student_name": c_name,
+                            "class_level": t_item.get("class_level", ""),
+                            "old_score": str(t_item.get("old_score", "")),
+                            "old_grade": str(t_item.get("old_grade", "0")),
+                            "pending_task": t_item.get("pending_task", ""),
+                            "remark": t_item.get("remark", "")
+                        })
                 if failing:
                     doc_bytes = generate_wp16(subject_code=scode, subject_name=sinfo["name"], teacher_name=teacher_name, students=failing, term=semester, year=academic_year)
                     if doc_bytes:
@@ -649,6 +712,24 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
 
             raw = r.get("raw_data") or {}
             sgs_students = raw.get("sgs_students") or {}
+            ns_students = raw.get("nextschool_students") or {}
+
+            ns_name_map = {}
+            if isinstance(ns_students, list):
+                for ns_s in ns_students:
+                    if isinstance(ns_s, dict):
+                        n_id = str(ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+            elif isinstance(ns_students, dict):
+                for n_id, ns_s in ns_students.items():
+                    if isinstance(ns_s, dict):
+                        n_id = str(n_id or ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+
             sgs_iter = (
                 [(s.get("student_id", ""), s) for s in sgs_students]
                 if isinstance(sgs_students, list)
@@ -665,14 +746,18 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                 if grade in ["0", "ร", "มส", "มผ"]:
                     seen_sids.add(sid)
                     old_task = existing_tasks.get(sid, {})
-                    s_name = s.get("name", "")
-                    if not s_name:
-                        s_name = (
-                            s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")
-                        ).strip()
+                    clean_name = ns_name_map.get(sid, "").strip()
+                    if not clean_name:
+                        s_name = s.get("name", "")
+                        if not s_name:
+                            s_name = (
+                                s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")
+                            ).strip()
+                        clean_name = s_name
+
                     students.append({
                         "student_id": sid,
-                        "student_name": s_name,
+                        "student_name": clean_name,
                         "class_level": t_info.get("class_level", ""),
                         "old_score": str(s.get("total", "") or s.get("score", "") or ""),
                         "old_grade": grade,
@@ -685,9 +770,10 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
         for sid, t_item in existing_tasks.items():
             if sid not in seen_sids:
                 seen_sids.add(sid)
+                clean_name = ns_name_map.get(sid, "").strip() or t_item.get("student_name", "")
                 students.append({
                     "student_id": sid,
-                    "student_name": t_item.get("student_name", ""),
+                    "student_name": clean_name,
                     "class_level": t_item.get("class_level", ""),
                     "old_score": str(t_item.get("old_score", "")),
                     "old_grade": str(t_item.get("old_grade", "0")),

@@ -62,14 +62,35 @@ def generate_wp16(pair_results=None, subject_code="", subject_name="", teacher_n
                 
             raw = pair.get("raw_data", {})
             sgs_students = raw.get("sgs_students", {})
-            for sid, sgs in sgs_students.items():
+            ns_students = raw.get("nextschool_students", {})
+            ns_name_map = {}
+            if isinstance(ns_students, list):
+                for ns_s in ns_students:
+                    if isinstance(ns_s, dict):
+                        n_id = str(ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+            elif isinstance(ns_students, dict):
+                for n_id, ns_s in ns_students.items():
+                    if isinstance(ns_s, dict):
+                        n_id = str(n_id or ns_s.get("student_id", "")).strip()
+                        n_name = str(ns_s.get("name", "")).strip()
+                        if n_id and n_name and n_name.lower() != "nan" and n_name != "-":
+                            ns_name_map[n_id] = n_name
+
+            sgs_iter = sgs_students.items() if isinstance(sgs_students, dict) else [(s.get("student_id", ""), s) for s in sgs_students]
+            for sid, sgs in sgs_iter:
+                sid_str = str(sid or sgs.get("student_id", "")).strip()
                 grade = str(sgs.get("grade", "")).strip()
                 if grade.endswith(".0"): grade = grade[:-2]
                 if grade in ["0", "ร", "มส", "มผ"]:
-                    score = str(sgs.get("total", ""))
-                    name = sgs.get("name", "")
+                    score = str(sgs.get("total", "") or sgs.get("score", ""))
+                    name = ns_name_map.get(sid_str, "").strip() or sgs.get("name", "")
+                    if not name:
+                        name = (sgs.get("prefix", "") + sgs.get("firstname", "") + " " + sgs.get("lastname", "")).strip()
                     failing_students.append({
-                        "student_id": sid,
+                        "student_id": sid_str,
                         "class_level": class_level,
                         "name": name,
                         "score": score,
