@@ -10,7 +10,7 @@ from validator import validate_scores
 from doc_generator import generate_wp16, generate_wp17, generate_wp25, generate_wp25_group
 from work_db import get_works_for_teacher, add_work, get_rooms_for_subject, get_rooms_for_group
 from score_db import load_scores_from_json
-from wp16_db import save_pending_tasks, get_pending_tasks_for_subject, get_all_pending_tasks
+from wp16_db import save_pending_tasks, get_pending_tasks_for_subject, get_all_pending_tasks, remove_pending_task
 
 app = FastAPI(title="SGS vs NextSchool Score Checker")
 
@@ -735,3 +735,37 @@ async def api_save_wp16_tasks(request: Request):
         return {"status": "success", "count": len(students)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/wp16/student")
+async def api_add_wp16_student(request: Request):
+    """เพิ่มหรืออัปเดตนักเรียนใน วผ.16 เป็นรายคน (กรณีตกหล่น หรือเพิ่มเอง)"""
+    try:
+        data = await request.json()
+        teacher_name = data.get("teacher_name", "")
+        subject_code = data.get("subject_code", "")
+        subject_name = data.get("subject_name", "")
+        academic_year = str(data.get("academic_year", "2569"))
+        semester = str(data.get("semester", "1"))
+        student = data.get("student")
+        webhook_url = data.get("webhookUrl") or data.get("webhook_url")
+
+        if not student or not student.get("student_id"):
+            raise HTTPException(status_code=400, detail="Missing student data")
+
+        student["is_manual"] = True
+        save_pending_tasks(teacher_name, subject_code, subject_name, [student], academic_year, semester, webhook_url=webhook_url)
+        return {"status": "success", "student_id": student.get("student_id")}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/wp16/student")
+async def api_delete_wp16_student(subject_code: str, student_id: str, webhook_url: str = None):
+    """ลบนักเรียนออกจากรายการ วผ.16"""
+    try:
+        success = remove_pending_task(subject_code, student_id, webhook_url=webhook_url)
+        return {"status": "success" if success else "not_found", "deleted": success}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
