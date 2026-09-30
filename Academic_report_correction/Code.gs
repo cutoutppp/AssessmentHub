@@ -85,8 +85,7 @@ function doGet(e) {
       if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
         let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
         let clearAll = (action === 'clean-sync-wp16') || (e.parameter.clearAll === 'true');
-        let targetId = e.parameter.spreadsheetId || e.parameter.spreadsheet_id;
-        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll, targetId))).setMimeType(ContentService.MimeType.JSON);
+        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
       }
 
       // 🛑 กรณีส่ง action มาแต่ไม่ตรงกับ endpoint ใดๆ ให้ส่ง Error JSON เสมอ ป้องกันการหลุดไปเรนเดอร์หน้า HTML
@@ -203,8 +202,7 @@ function doPost(e) {
     if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
       let items = params.items || params.payload || [];
       let clearAll = (action === 'clean-sync-wp16') || !!params.clearAll;
-      let targetId = params.spreadsheetId || params.spreadsheet_id;
-      return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll, targetId))).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
     }
     
     return ContentService.createTextOutput(JSON.stringify({success: false, message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
@@ -1251,98 +1249,49 @@ function syncFromSgsNextschool(items) {
   }
 }
 
-// 🌟 ระบบซิงค์ข้อมูลลงในแผ่นงาน WP16_งานค้าง (14 คอลัมน์ ตรงตามหัวตารางมาตรฐาน)
-function syncWp16Sheet(items, clearAll, targetSheetId) {
+// 🌟 ระบบซิงค์ข้อมูลลงในแผ่นงาน WP16_งานค้าง (ตรงกับโครงสร้าง 13 หัวตาราง)
+function syncWp16Sheet(items, clearAll) {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(30000);
-    var targetId = targetSheetId || '1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ';
-    var ss;
-    try {
-      ss = SpreadsheetApp.openById(targetId);
-    } catch(err) {
-      ss = SpreadsheetApp.openById(SHEET_ID);
-    }
+    var ss = SpreadsheetApp.openById(SHEET_ID);
     var sheet = ss.getSheetByName('WP16_งานค้าง');
     if (!sheet) {
       sheet = ss.insertSheet('WP16_งานค้าง');
     }
 
     var expectedHeaders = [
-      'เลขเฉพาะ', 'ปีการศึกษา', 'ภาคเรียน', 'รหัสวิชา', 'ชื่อวิชา', 'ครูผู้สอน', 
-      'ชั้น/ห้อง', 'เลขประจำตัว', 'ชื่อ-นามสกุล', 'คะแนนเดิม', 'ผลการเรียนเดิม', 
-      'งานค้าง', 'หมายเหตุ', 'วันที่บันทึก'
+      'เลขเฉพาะ', 'ปี/เทอม', 'รหัสวิชา', 'ชื่อวิชา', 'ครูผู้สอน', 
+      'ชั้น/ห้อง', 'เลขประจำตัว', 'ชื่อ-นามสกุล', 'ผลเดิม', 'คะแนน', 
+      'งานค้าง/ภาระงาน', 'หมายเหตุ', 'วันที่บันทึก'
     ];
 
     // ตั้งค่าหัวตารางแถว 1 ให้ตรงกับ expectedHeaders เสมอ
     sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
     sheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight("bold").setBackground("#e0f2fe");
 
-    // 🌟 Auto-heal: ลบแถวทดสอบ และแก้อาการคอลัมน์เลื่อน (กรณี col 2 เป็น "2569/1")
-    var lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      var allData = sheet.getRange(2, 1, lastRow - 1, Math.max(14, sheet.getLastColumn())).getValues();
-      var healed = false;
-      for (var r = allData.length - 1; r >= 0; r--) {
-        var row = allData[r];
-        var val0 = String(row[0] || "").trim();
-        if (val0.indexOf("TEST") === 0) {
-          sheet.deleteRow(r + 2);
-          healed = true;
-          continue;
-        }
-        var col2 = String(row[1] || "").trim();
-        if (col2.indexOf("/") > -1) {
-          var parts = col2.split("/");
-          var yrPart = parts[0] || "2569";
-          var semPart = parts[1] || "1";
-          var newRow = [
-            row[0],
-            yrPart,
-            semPart,
-            row[2],
-            row[3],
-            row[4],
-            row[5],
-            row[6],
-            row[7],
-            row[9] !== undefined ? row[9] : '',
-            row[8] !== undefined ? row[8] : 'มส',
-            row[10] !== undefined ? row[10] : '',
-            row[11] !== undefined ? row[11] : '',
-            row[12] !== undefined ? row[12] : ''
-          ];
-          sheet.getRange(r + 2, 1, 1, newRow.length).setValues([newRow]);
-          healed = true;
-        }
-      }
-      if (healed) SpreadsheetApp.flush();
-    }
-
     var today = new Date();
     var dateStr = Utilities.formatDate(today, "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss");
 
     var processedRows = (items || []).map(function(it) {
       var sp = cleanStr_(it.special_id || it.specialId || ((it.subject_code || it.subjCode || '') + (it.student_id || it.stuId || '')));
-      var yr = cleanStr_(it.academic_year || it.year || '2569');
-      var sem = cleanStr_(it.semester || it.term || '1');
-      if (it.year_term && (!it.academic_year || it.academic_year === '')) {
-        var parts = String(it.year_term).split('/');
-        yr = parts[0] || yr;
-        sem = parts[1] || sem;
+      var termStr = cleanStr_(it.year_term || it.termStr);
+      if (!termStr) {
+        var yr = cleanStr_(it.academic_year || it.year || '2569');
+        var sem = cleanStr_(it.semester || it.term || '1');
+        termStr = (yr && sem) ? (yr + '/' + sem) : (yr || sem || '');
       }
       return [
         sp,
-        yr,
-        sem,
+        termStr,
         cleanStr_(it.subject_code || it.subjCode),
         cleanStr_(it.subject_name || it.subjName),
         cleanStr_(it.teacher_name || it.teacherName),
         cleanStr_(it.class_level || it.classLevel),
         cleanStr_(it.student_id || it.stuId),
         cleanStr_(it.student_name || it.stuName),
-        (it.old_score !== undefined && it.old_score !== null) ? String(it.old_score) : (it.score !== undefined ? String(it.score) : ''),
         cleanStr_(it.old_grade || it.oldGrade || it.grade || 'มส'),
+        (it.old_score !== undefined && it.old_score !== null) ? String(it.old_score) : (it.score !== undefined ? String(it.score) : ''),
         (it.pending_task !== undefined && it.pending_task !== null) ? String(it.pending_task) : (it.task !== undefined ? String(it.task) : ''),
         cleanStr_(it.remark),
         cleanStr_(it.updated_at) || dateStr
@@ -1350,9 +1299,9 @@ function syncWp16Sheet(items, clearAll, targetSheetId) {
     }).filter(function(r) { return r[0] !== ''; });
 
     if (clearAll) {
-      var curLastRow = sheet.getLastRow();
-      if (curLastRow > 1) {
-        sheet.getRange(2, 1, curLastRow - 1, sheet.getLastColumn()).clearContent();
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();
       }
       if (processedRows.length > 0) {
         sheet.getRange(2, 1, processedRows.length, expectedHeaders.length).setValues(processedRows);
@@ -1362,7 +1311,7 @@ function syncWp16Sheet(items, clearAll, targetSheetId) {
         status: 'success',
         success: true,
         count: processedRows.length,
-        message: `ล้างและบันทึกข้อมูลคลีนลงใน WP16_งานค้าง เรียบร้อยแล้ว (${processedRows.length} รายการ ตรงตาม 14 หัวตาราง)`
+        message: `ล้างและบันทึกข้อมูลคลีนลงใน WP16_งานค้าง เรียบร้อยแล้ว (${processedRows.length} รายการ ตรง 13 หัวตาราง)`
       };
     }
 
