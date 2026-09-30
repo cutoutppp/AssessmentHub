@@ -766,9 +766,9 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                         "is_manual": old_task.get("is_manual", False),
                     })
 
-        # เพิ่มนักเรียนที่มีงานค้างบันทึกไว้แล้วแต่ไม่อยู่ใน room data
+        # เพิ่มนักเรียนที่มีการเพิ่มด้วยตนเอง (is_manual) เท่านั้น ป้องกันการดึงข้อมูลนักเรียนห้องอื่น/ข้อมูลเก่ามาปน
         for sid, t_item in existing_tasks.items():
-            if sid not in seen_sids:
+            if sid not in seen_sids and t_item.get("is_manual"):
                 seen_sids.add(sid)
                 clean_name = ns_name_map.get(sid, "").strip() or t_item.get("student_name", "")
                 students.append({
@@ -779,7 +779,7 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                     "old_grade": str(t_item.get("old_grade", "0")),
                     "pending_task": t_item.get("pending_task", ""),
                     "remark": t_item.get("remark", ""),
-                    "is_manual": t_item.get("is_manual", True),
+                    "is_manual": True,
                 })
 
         # ดึง recent tasks ที่เคยใช้บ่อย

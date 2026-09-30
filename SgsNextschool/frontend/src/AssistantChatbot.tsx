@@ -407,17 +407,6 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
     <>
       {/* Floating Trigger Button */}
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2">
-        {!isOpen && (
-          <div 
-            onClick={() => { setIsOpen(true); handleSelectTopic('wp16'); }}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white text-indigo-700 font-bold text-xs rounded-full shadow-lg border border-indigo-200 cursor-pointer hover:bg-indigo-50 transition-all animate-bounce"
-            title="คลิกเพื่อดูคำแนะนำการใช้ระบบ วผ.16"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>แนะนำระบบ วผ.16 คลิกที่นี่!</span>
-          </div>
-        )}
-
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`relative p-3.5 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 cursor-pointer ${

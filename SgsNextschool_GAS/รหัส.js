@@ -9,6 +9,97 @@
 function doGet(e) {
   try {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "";
+    
+    // 🌟 ดึงข้อมูลงานค้างทั้งหมดจากชีต WP16_งานค้าง
+    if (action === "get-wp16") {
+      var wp16Sheet = ss.getSheetByName("WP16_งานค้าง");
+      if (!wp16Sheet) {
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", count: 0, gid: null, items: [] })).setMimeType(ContentService.MimeType.JSON);
+      }
+      var gid = wp16Sheet.getSheetId();
+      var data = wp16Sheet.getDataRange().getValues();
+      var headers = data.length > 0 ? data[0] : [];
+      var items = [];
+      for (var i = 1; i < data.length; i++) {
+        var row = data[i];
+        if (!row[0] && !row[7]) continue;
+        var obj = {};
+        for (var j = 0; j < headers.length; j++) {
+          obj[headers[j]] = row[j];
+        }
+        items.push(obj);
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        spreadsheetId: ss.getId(),
+        spreadsheetUrl: ss.getUrl(),
+        sheetName: "WP16_งานค้าง",
+        gid: gid,
+        count: items.length,
+        items: items
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 🌟 ตรวจสอบโฟลเดอร์ Google Drive
+    if (action === "check-drive") {
+      var rootFolderId = "1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj";
+      var result = {
+        specifiedFolderId: rootFolderId,
+        specifiedFolderFound: false,
+        specifiedFolderUrl: "",
+        specifiedFolderName: "",
+        folderOwner: "",
+        error: null,
+        recentFiles: [],
+        tree: []
+      };
+      var listTree = function(folder, depth) {
+        if (depth > 8) return [];
+        var res = [];
+        var files = folder.getFiles();
+        while (files.hasNext()) {
+          var fi = files.next();
+          res.push({ type: "file", name: fi.getName(), url: fi.getUrl(), size: fi.getSize(), updated: Utilities.formatDate(fi.getLastUpdated(), "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss") });
+        }
+        var subfs = folder.getFolders();
+        while (subfs.hasNext()) {
+          var sf = subfs.next();
+          res.push({ type: "folder", name: sf.getName(), url: sf.getUrl(), children: listTree(sf, depth + 1) });
+        }
+        return res;
+      };
+
+      try {
+        var f = DriveApp.getFolderById(rootFolderId);
+        result.specifiedFolderFound = true;
+        result.specifiedFolderName = f.getName();
+        result.specifiedFolderUrl = f.getUrl();
+        try {
+          result.folderOwner = f.getOwner() ? f.getOwner().getEmail() : "";
+        } catch(eOwn) {
+          result.folderOwner = "Shared drive or cannot access owner: " + eOwn;
+        }
+        result.tree = listTree(f, 1);
+        
+        // ค้นหาไฟล์ที่เพิ่งสร้างใน Drive ทั้งหมด
+        var recent = DriveApp.searchFiles("trashed = false");
+        var count = 0;
+        while (recent.hasNext() && count < 20) {
+          var rf = recent.next();
+          result.recentFiles.push({
+            name: rf.getName(),
+            url: rf.getUrl(),
+            size: rf.getSize(),
+            updated: Utilities.formatDate(rf.getLastUpdated(), "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss")
+          });
+          count++;
+        }
+      } catch(errF) {
+        result.error = String(errF);
+      }
+      return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+    }
     
     // 1. ดึงการตั้งค่า
     var settingsSheet = ss.getSheetByName("Settings");
@@ -456,8 +547,17 @@ function doPost(e) {
           }
         }
       }
+      var fileDeleted = 0;
+      try {
+        var testFiles = DriveApp.searchFiles("title contains 'TEST_' and trashed = false");
+        while (testFiles.hasNext()) {
+          var tf = testFiles.next();
+          tf.setTrashed(true);
+          fileDeleted++;
+        }
+      } catch(eFileDel) {}
       SpreadsheetApp.flush();
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", deleted: deleted, message: "ลบแถวทดสอบเรียบร้อยแล้ว " + deleted + " แถว" })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", deleted: deleted, files_deleted: fileDeleted, message: "ลบแถวทดสอบเรียบร้อยแล้ว " + deleted + " แถว และลบไฟล์ทดสอบใน Drive " + fileDeleted + " ไฟล์" })).setMimeType(ContentService.MimeType.JSON);
     }
 
     // 🌟 1. ตรวจจับคำสั่งซิงค์ WP16_งานค้าง
@@ -640,22 +740,36 @@ function doPost(e) {
       }
 
       // 🌟 2. อัปโหลดไฟล์ PDF/Excel ลงใน Google Drive (แยก try-catch ป้องกันผลกระทบ)
+      var uploadedFiles = [];
+      var lastTeacherFolderUrl = "";
       if (roundFolder) {
         try {
           var groupFolder = getOrCreateFolder(roundFolder, groupName);
           var teacherFolder = getOrCreateFolder(groupFolder, teacherName);
+          lastTeacherFolderUrl = teacherFolder.getUrl();
           
           if (pair.sgs_pdf_b64) {
+             var sgsB64 = String(pair.sgs_pdf_b64);
+             if (sgsB64.indexOf(',') > -1) {
+                sgsB64 = sgsB64.split(',')[1];
+             }
+             sgsB64 = sgsB64.replace(/\s+/g, '');
              var sgsName = pair.subject_code + classSuffix + "_SGS_ตรวจแล้ว.pdf";
              var existingSgs = teacherFolder.getFilesByName(sgsName);
              while (existingSgs.hasNext()) {
                 existingSgs.next().setTrashed(true);
              }
-             var sgsBlob = Utilities.newBlob(Utilities.base64Decode(pair.sgs_pdf_b64), 'application/pdf', sgsName);
-             teacherFolder.createFile(sgsBlob);
+             var sgsBlob = Utilities.newBlob(Utilities.base64Decode(sgsB64), 'application/pdf', sgsName);
+             var createdSgs = teacherFolder.createFile(sgsBlob);
+             uploadedFiles.push({ name: sgsName, url: createdSgs.getUrl() });
           }
           
           if (pair.nextschool_pdf_b64) {
+             var nsB64 = String(pair.nextschool_pdf_b64);
+             if (nsB64.indexOf(',') > -1) {
+                nsB64 = nsB64.split(',')[1];
+             }
+             nsB64 = nsB64.replace(/\s+/g, '');
              var nsOrigName = pair.nextschool_filename || "";
              var nsExt = ".pdf";
              var nsMime = "application/pdf";
@@ -673,8 +787,9 @@ function doPost(e) {
              while (existingNs.hasNext()) {
                 existingNs.next().setTrashed(true);
              }
-             var nsBlob = Utilities.newBlob(Utilities.base64Decode(pair.nextschool_pdf_b64), nsMime, nsName);
-             teacherFolder.createFile(nsBlob);
+             var nsBlob = Utilities.newBlob(Utilities.base64Decode(nsB64), nsMime, nsName);
+             var createdNs = teacherFolder.createFile(nsBlob);
+             uploadedFiles.push({ name: nsName, url: createdNs.getUrl() });
           }
         } catch(fileErr) {
           console.warn("Drive file upload error for " + pair.subject_code + ": " + fileErr);
@@ -682,7 +797,12 @@ function doPost(e) {
       }
     }
     
-    return ContentService.createTextOutput(JSON.stringify({"status": "success"})).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "drive_root_url": "https://drive.google.com/drive/folders/1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj",
+      "drive_folder_url": lastTeacherFolderUrl || (roundFolder ? roundFolder.getUrl() : "https://drive.google.com/drive/folders/1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj"),
+      "uploaded_files": uploadedFiles
+    })).setMimeType(ContentService.MimeType.JSON);
     
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": String(err)})).setMimeType(ContentService.MimeType.JSON);

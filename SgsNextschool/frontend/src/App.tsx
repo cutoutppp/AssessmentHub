@@ -671,6 +671,7 @@ function App() {
       try {
         setIsSaving(true);
         let backendSaved = false;
+        let driveFolderUrl = "https://drive.google.com/drive/folders/1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj";
         try {
           const res = await fetch(`${BACKEND_URL}/api/queue_save`, {
             method: "POST",
@@ -684,6 +685,10 @@ function App() {
           });
           if (res.ok) {
             backendSaved = true;
+            try {
+              const resJson = await res.json();
+              if (resJson?.drive_folder_url) driveFolderUrl = resJson.drive_folder_url;
+            } catch (_) {}
           }
         } catch (backendErr) {
           console.warn("Backend queue_save offline/failed, falling back to direct GAS Webhook:", backendErr);
@@ -691,11 +696,15 @@ function App() {
 
         // หาก Backend ไม่ได้เปิดทำงาน หรือตอบสนองช้า ให้ส่งข้อมูลตรงไปยัง Google Apps Script ทันที เพื่อบันทึกลงชีต History
         if (!backendSaved && webhookUrl) {
-          await fetch(webhookUrl, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-          });
+          try {
+            const directRes = await fetch(webhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(payload)
+            });
+            const directJson = await directRes.json();
+            if (directJson?.drive_folder_url) driveFolderUrl = directJson.drive_folder_url;
+          } catch (_) {}
         }
 
         // Directly sync failing students to Google Sheets WP16_งานค้าง tab (14 columns)
@@ -721,7 +730,13 @@ function App() {
           title: 'บันทึกสำเร็จ!',
           html: `
             <div class="text-left text-sm space-y-2">
-              <p class="text-emerald-700 font-semibold">✅ ส่งข้อมูลและสถิติเข้า Google Sheets และ Drive เรียบร้อยแล้ว</p>
+              <p class="text-emerald-700 font-semibold">✅ บันทึกสถิติลง Google Sheet และอัปโหลดไฟล์ลง Google Drive เรียบร้อยแล้ว</p>
+              
+              <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 space-y-1">
+                <div>📁 <b>โฟลเดอร์ใน Google Drive:</b> <a href="${driveFolderUrl}" target="_blank" class="underline font-bold text-blue-600">คลิกที่นี่เพื่อเปิดโฟลเดอร์เก็บไฟล์วิชานี้</a></div>
+                <div class="text-[11px] text-slate-500">บันทึกไฟล์ PDF SGS และ Excel NextSchool แยกตามกลุ่มสาระและชื่อครูอัตโนมัติ</div>
+              </div>
+
               ${failingStudents.length > 0 
                 ? `<div class="text-xs text-indigo-800 bg-indigo-50 p-2.5 rounded-lg border border-indigo-200">
                     📋 <b>ซิงค์ข้อมูลงานค้าง:</b> บันทึกรายชื่อนักเรียนติด 0, ร, มส, มผ จำนวน <b>${failingStudents.length} คน</b> ลงในแผ่นงาน <a href="https://docs.google.com/spreadsheets/d/1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ/edit?gid=1367227681#gid=1367227681" target="_blank" class="underline font-bold text-blue-600">WP16_งานค้าง</a> บน Google Sheet เรียบร้อยแล้ว
