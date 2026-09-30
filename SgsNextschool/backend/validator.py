@@ -85,6 +85,17 @@ def validate_scores(sgs_data, nextschool_data, round_type="final", ms_list=None)
     
     sgs_students = sgs_data.get("students", {})
     next_students = nextschool_data.get("students", {})
+
+    # 🌟 ซ่อมและแทนที่ชื่อ-นามสกุลนักเรียนใน SGS ด้วยชื่อที่อ่านได้อย่างถูกต้องจากไฟล์ Excel ของ NextSchool
+    # เพื่อป้องกันปัญหาฟอนต์ใน PDF ของ SGS ถอดรหัสเพี้ยนเป็นภาษาต่างดาว
+    for sid, sgs_stu in sgs_students.items():
+        sid_str = str(sid).strip()
+        ns_stu = next_students.get(sid_str) or next_students.get(sid)
+        if ns_stu:
+            ns_name = str(ns_stu.get("name", "")).strip()
+            if ns_name and ns_name.lower() != "nan" and ns_name != "-":
+                sgs_stu["name"] = ns_name
+                sgs_stu["nextschool_name"] = ns_name
     
     all_student_ids = set(sgs_students.keys()).union(set(next_students.keys()))
     

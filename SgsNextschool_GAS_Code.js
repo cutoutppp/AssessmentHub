@@ -289,6 +289,47 @@ function syncWp16Sheet(ss, items, clearAll) {
     sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
     sheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight("bold").setBackground("#e0f2fe");
 
+    // 🌟 Auto-heal: ลบแถวทดสอบ และแก้อาการคอลัมน์เลื่อน (กรณี col 2 เป็น "2569/1")
+    var lastRowCheck = sheet.getLastRow();
+    if (lastRowCheck > 1) {
+      var allData = sheet.getRange(2, 1, lastRowCheck - 1, Math.max(14, sheet.getLastColumn())).getValues();
+      var healed = false;
+      for (var r = allData.length - 1; r >= 0; r--) {
+        var row = allData[r];
+        var val0 = String(row[0] || "").trim();
+        if (val0.indexOf("TEST") === 0) {
+          sheet.deleteRow(r + 2);
+          healed = true;
+          continue;
+        }
+        var col2 = String(row[1] || "").trim();
+        if (col2.indexOf("/") > -1) {
+          var parts = col2.split("/");
+          var yrPart = parts[0] || "2569";
+          var semPart = parts[1] || "1";
+          var newRow = [
+            row[0],
+            yrPart,
+            semPart,
+            row[2],
+            row[3],
+            row[4],
+            row[5],
+            row[6],
+            row[7],
+            row[9] !== undefined ? row[9] : '',
+            row[8] !== undefined ? row[8] : 'มส',
+            row[10] !== undefined ? row[10] : '',
+            row[11] !== undefined ? row[11] : '',
+            row[12] !== undefined ? row[12] : ''
+          ];
+          sheet.getRange(r + 2, 1, 1, newRow.length).setValues([newRow]);
+          healed = true;
+        }
+      }
+      if (healed) SpreadsheetApp.flush();
+    }
+
     var today = new Date();
     var dateStr = Utilities.formatDate(today, "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss");
 
