@@ -442,6 +442,20 @@ function doPost(e) {
           }
         }
       }
+      var histSheet = ss.getSheetByName("History");
+      if (histSheet) {
+        var hLastRow = histSheet.getLastRow();
+        if (hLastRow > 1) {
+          var hVals = histSheet.getRange(2, 7, hLastRow - 1, 1).getValues(); // Col 7 = รหัสวิชา
+          for (var hr = hVals.length - 1; hr >= 0; hr--) {
+            var sc = String(hVals[hr][0] || "").trim();
+            if (sc.indexOf("TEST") === 0) {
+              histSheet.deleteRow(hr + 2);
+              deleted++;
+            }
+          }
+        }
+      }
       SpreadsheetApp.flush();
       return ContentService.createTextOutput(JSON.stringify({ status: "success", deleted: deleted, message: "ลบแถวทดสอบเรียบร้อยแล้ว " + deleted + " แถว" })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -482,26 +496,7 @@ function doPost(e) {
     var sem = data.semester || "1";
     var roundTypeStr = data.round_type === "final" ? "ปลายภาค" : "กลางภาค";
     
-    // ค้นหาหรือสร้างโฟลเดอร์ราก (Root Folder)
-    var rootFolderId = "1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj";
-    var rootFolder;
-    try {
-      rootFolder = DriveApp.getFolderById(rootFolderId);
-    } catch(e) {
-      var roots = DriveApp.getFoldersByName("SGS_NextSchool_Reports");
-      if(roots.hasNext()) {
-        rootFolder = roots.next();
-      } else {
-        rootFolder = DriveApp.createFolder("SGS_NextSchool_Reports");
-      }
-    }
-    
-    // สร้างลำดับชั้นโฟลเดอร์: ปี > เทอม > รอบ
-    var yearFolder = getOrCreateFolder(rootFolder, "ปีการศึกษา " + year);
-    var semFolder = getOrCreateFolder(yearFolder, "ภาคเรียนที่ " + sem);
-    var roundFolder = getOrCreateFolder(semFolder, roundTypeStr);
-    
-    // ดึง Sheet สำหรับเก็บประวัติ
+    // ดึง Sheet สำหรับเก็บประวัติ (History)
     var sheet = ss.getSheetByName("History");
     if (!sheet) {
       sheet = ss.getSheets()[0];
@@ -512,7 +507,7 @@ function doPost(e) {
       }
     }
     
-    // ถ้า Sheet ยังว่างเปล่า ให้สร้างหัวตาราง (Headers) 30 คอลัมน์
+    // ถ้า Sheet ยังว่างเปล่า ให้สร้างหัวตาราง (Headers) 32 คอลัมน์
     if (sheet.getLastRow() === 0) {
       sheet.appendRow([
         "วัน-เวลาที่บันทึก", "ปีการศึกษา", "ภาคเรียน", "รอบประเมิน", 
@@ -525,130 +520,166 @@ function doPost(e) {
       ]);
       sheet.getRange("A1:AF1").setFontWeight("bold").setBackground("#f3f4f6");
     }
+
+    // เตรียมโฟลเดอร์ Google Drive (ถ้าทำได้ แต่จะไม่ให้กระทบการบันทึก History)
+    var rootFolder = null;
+    var roundFolder = null;
+    try {
+      var rootFolderId = "1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj";
+      try {
+        rootFolder = DriveApp.getFolderById(rootFolderId);
+      } catch(eRoot) {
+        var roots = DriveApp.getFoldersByName("SGS_NextSchool_Reports");
+        if (roots.hasNext()) {
+          rootFolder = roots.next();
+        } else {
+          rootFolder = DriveApp.createFolder("SGS_NextSchool_Reports");
+        }
+      }
+      if (rootFolder) {
+        var yearFolder = getOrCreateFolder(rootFolder, "ปีการศึกษา " + year);
+        var semFolder = getOrCreateFolder(yearFolder, "ภาคเรียนที่ " + sem);
+        roundFolder = getOrCreateFolder(semFolder, roundTypeStr);
+      }
+    } catch(errDriveInit) {
+      console.warn("Drive folder init error: " + errDriveInit);
+    }
     
     // วนลูปรายวิชาที่ส่งมา
     for (var i = 0; i < data.pairs.length; i++) {
       var pair = data.pairs[i];
       var groupName = pair.subject_group || "อื่นๆ";
       var teacherName = pair.teacher_name || "ไม่ระบุชื่อครู";
-      
       var classSuffix = pair.class_level ? "_" + pair.class_level.replace(/\//g, "-").replace(/\s+/g, "") : "";
-      
-      var groupFolder = getOrCreateFolder(roundFolder, groupName);
-      var teacherFolder = getOrCreateFolder(groupFolder, teacherName);
-      
-      if (pair.sgs_pdf_b64) {
-         var sgsName = pair.subject_code + classSuffix + "_SGS_ตรวจแล้ว.pdf";
-         var existingSgs = teacherFolder.getFilesByName(sgsName);
-         while (existingSgs.hasNext()) {
-            existingSgs.next().setTrashed(true);
-         }
-         var sgsBlob = Utilities.newBlob(Utilities.base64Decode(pair.sgs_pdf_b64), 'application/pdf', sgsName);
-         teacherFolder.createFile(sgsBlob);
+
+      // 🌟 1. บันทึกลง Sheet History ทันทีเป็นอันดับแรก (ไม่ให้ความล่าช้าของ Drive ขัดขวาง)
+      try {
+        var errorCount = pair.results && pair.results.errors ? pair.results.errors.length : 0;
+        var warningCount = pair.results && pair.results.warnings ? pair.results.warnings.length : 0;
+        var status = (errorCount > 0) ? "❌ ต้องแก้ไข" : (warningCount > 0 ? "⚠️ มีจุดสังเกต" : "✅ สมบูรณ์ 100%");
+        
+        var stats = pair.stats || {};
+        var formatStats = function(obj) {
+           if (!obj) return "-";
+           var keys = Object.keys(obj).sort(function(a,b) {
+              var numA = parseFloat(a); var numB = parseFloat(b);
+              if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+              return a.localeCompare(b);
+           });
+           var parts = [];
+           for (var k=0; k<keys.length; k++) {
+              parts.push(keys[k] + "=" + obj[keys[k]]);
+           }
+           return parts.join(", ");
+        };
+        
+        var formatIssues = function(issues) {
+           if (!issues || issues.length === 0) return "-";
+           var parts = [];
+           for (var k=0; k < issues.length; k++) {
+              var issue = issues[k];
+              var txt = (issue.student_id && issue.student_id !== "-" ? ("[" + issue.student_id + "] " + (issue.name || "") + ": ") : "") + issue.message;
+              parts.push(txt);
+           }
+           return parts.join("\n");
+        };
+        
+        var errorsStr = formatIssues(pair.results ? pair.results.errors : []);
+        var warningsStr = formatIssues(pair.results ? pair.results.warnings : []);
+        
+        var attrsStr = formatStats(stats.attributes);
+        var readStr = formatStats(stats.reading);
+        var totalStudents = stats.total_students || 0;
+        
+        var g = stats.grades || {};
+        var g4 = g["4"] || g["4.0"] || g["4.00"] || 0;
+        var g35 = g["3.5"] || g["3.50"] || 0;
+        var g3 = g["3"] || g["3.0"] || g["3.00"] || 0;
+        var g25 = g["2.5"] || g["2.50"] || 0;
+        var g2 = g["2"] || g["2.0"] || g["2.00"] || 0;
+        var g15 = g["1.5"] || g["1.50"] || 0;
+        var g1 = g["1"] || g["1.0"] || g["1.00"] || 0;
+        var g0 = g["0"] || g["0.0"] || g["0.00"] || 0;
+        var gr = g["ร"] || 0;
+        var gms = g["มส"] || 0;
+
+        var attrs = stats.attributes || {};
+        var a3 = attrs["3"] || attrs["3.0"] || 0;
+        var a2 = attrs["2"] || attrs["2.0"] || 0;
+        var a1 = attrs["1"] || attrs["1.0"] || 0;
+        var a0 = attrs["0"] || attrs["0.0"] || 0;
+
+        var reads = stats.reading || {};
+        var r3 = reads["3"] || reads["3.0"] || 0;
+        var r2 = reads["2"] || reads["2.0"] || 0;
+        var r1 = reads["1"] || reads["1.0"] || 0;
+        var r0 = reads["0"] || reads["0.0"] || 0;
+
+        sheet.appendRow([
+          new Date(),
+          year,
+          sem,
+          roundTypeStr,
+          groupName,
+          teacherName,
+          pair.subject_code,
+          pair.class_level || "",
+          status,
+          errorCount,
+          warningCount,
+          totalStudents,
+          g4, g35, g3, g25, g2, g15, g1, g0, gr, gms,
+          a3, a2, a1, a0,
+          r3, r2, r1, r0,
+          errorsStr,
+          warningsStr
+        ]);
+        SpreadsheetApp.flush();
+      } catch(histErr) {
+        console.error("Error writing History: " + histErr);
       }
-      
-      if (pair.nextschool_pdf_b64) {
-         var nsOrigName = pair.nextschool_filename || "";
-         var nsExt = ".pdf";
-         var nsMime = "application/pdf";
-         
-         if (nsOrigName.toLowerCase().indexOf(".xlsx") > -1) {
-            nsExt = ".xlsx";
-            nsMime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-         } else if (nsOrigName.toLowerCase().indexOf(".xls") > -1) {
-            nsExt = ".xls";
-            nsMime = "application/vnd.ms-excel";
-         }
-         
-         var nsName = pair.subject_code + classSuffix + "_NextSchool_ตรวจแล้ว" + nsExt;
-         var existingNs = teacherFolder.getFilesByName(nsName);
-         while (existingNs.hasNext()) {
-            existingNs.next().setTrashed(true);
-         }
-         var nsBlob = Utilities.newBlob(Utilities.base64Decode(pair.nextschool_pdf_b64), nsMime, nsName);
-         teacherFolder.createFile(nsBlob);
+
+      // 🌟 2. อัปโหลดไฟล์ PDF/Excel ลงใน Google Drive (แยก try-catch ป้องกันผลกระทบ)
+      if (roundFolder) {
+        try {
+          var groupFolder = getOrCreateFolder(roundFolder, groupName);
+          var teacherFolder = getOrCreateFolder(groupFolder, teacherName);
+          
+          if (pair.sgs_pdf_b64) {
+             var sgsName = pair.subject_code + classSuffix + "_SGS_ตรวจแล้ว.pdf";
+             var existingSgs = teacherFolder.getFilesByName(sgsName);
+             while (existingSgs.hasNext()) {
+                existingSgs.next().setTrashed(true);
+             }
+             var sgsBlob = Utilities.newBlob(Utilities.base64Decode(pair.sgs_pdf_b64), 'application/pdf', sgsName);
+             teacherFolder.createFile(sgsBlob);
+          }
+          
+          if (pair.nextschool_pdf_b64) {
+             var nsOrigName = pair.nextschool_filename || "";
+             var nsExt = ".pdf";
+             var nsMime = "application/pdf";
+             
+             if (nsOrigName.toLowerCase().indexOf(".xlsx") > -1) {
+                nsExt = ".xlsx";
+                nsMime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+             } else if (nsOrigName.toLowerCase().indexOf(".xls") > -1) {
+                nsExt = ".xls";
+                nsMime = "application/vnd.ms-excel";
+             }
+             
+             var nsName = pair.subject_code + classSuffix + "_NextSchool_ตรวจแล้ว" + nsExt;
+             var existingNs = teacherFolder.getFilesByName(nsName);
+             while (existingNs.hasNext()) {
+                existingNs.next().setTrashed(true);
+             }
+             var nsBlob = Utilities.newBlob(Utilities.base64Decode(pair.nextschool_pdf_b64), nsMime, nsName);
+             teacherFolder.createFile(nsBlob);
+          }
+        } catch(fileErr) {
+          console.warn("Drive file upload error for " + pair.subject_code + ": " + fileErr);
+        }
       }
-      
-      var errorCount = pair.results.errors ? pair.results.errors.length : 0;
-      var warningCount = pair.results.warnings ? pair.results.warnings.length : 0;
-      var status = (errorCount > 0) ? "❌ ต้องแก้ไข" : (warningCount > 0 ? "⚠️ มีจุดสังเกต" : "✅ สมบูรณ์ 100%");
-      
-      var stats = pair.stats || {};
-      var formatStats = function(obj) {
-         if (!obj) return "-";
-         var keys = Object.keys(obj).sort(function(a,b) {
-            var numA = parseFloat(a); var numB = parseFloat(b);
-            if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
-            return a.localeCompare(b);
-         });
-         var parts = [];
-         for (var k=0; k<keys.length; k++) {
-            parts.push(keys[k] + "=" + obj[keys[k]]);
-         }
-         return parts.join(", ");
-      };
-      
-      var formatIssues = function(issues) {
-         if (!issues || issues.length === 0) return "-";
-         var parts = [];
-         for (var k=0; k < issues.length; k++) {
-            var issue = issues[k];
-            var txt = (issue.student_id && issue.student_id !== "-" ? ("[" + issue.student_id + "] " + (issue.name || "") + ": ") : "") + issue.message;
-            parts.push(txt);
-         }
-         return parts.join("\n");
-      };
-      
-      var errorsStr = formatIssues(pair.results.errors);
-      var warningsStr = formatIssues(pair.results.warnings);
-      
-      var attrsStr = formatStats(stats.attributes);
-      var readStr = formatStats(stats.reading);
-      var totalStudents = stats.total_students || 0;
-      
-      var g = stats.grades || {};
-      var g4 = g["4"] || g["4.0"] || g["4.00"] || 0;
-      var g35 = g["3.5"] || g["3.50"] || 0;
-      var g3 = g["3"] || g["3.0"] || g["3.00"] || 0;
-      var g25 = g["2.5"] || g["2.50"] || 0;
-      var g2 = g["2"] || g["2.0"] || g["2.00"] || 0;
-      var g15 = g["1.5"] || g["1.50"] || 0;
-      var g1 = g["1"] || g["1.0"] || g["1.00"] || 0;
-      var g0 = g["0"] || g["0.0"] || g["0.00"] || 0;
-      var gr = g["ร"] || 0;
-      var gms = g["มส"] || 0;
-
-      var attrs = stats.attributes || {};
-      var a3 = attrs["3"] || attrs["3.0"] || 0;
-      var a2 = attrs["2"] || attrs["2.0"] || 0;
-      var a1 = attrs["1"] || attrs["1.0"] || 0;
-      var a0 = attrs["0"] || attrs["0.0"] || 0;
-
-      var reads = stats.reading || {};
-      var r3 = reads["3"] || reads["3.0"] || 0;
-      var r2 = reads["2"] || reads["2.0"] || 0;
-      var r1 = reads["1"] || reads["1.0"] || 0;
-      var r0 = reads["0"] || reads["0.0"] || 0;
-
-      sheet.appendRow([
-        new Date(),
-        year,
-        sem,
-        roundTypeStr,
-        groupName,
-        teacherName,
-        pair.subject_code,
-        pair.class_level || "",
-        status,
-        errorCount,
-        warningCount,
-        totalStudents,
-        g4, g35, g3, g25, g2, g15, g1, g0, gr, gms,
-        a3, a2, a1, a0,
-        r3, r2, r1, r0,
-        errorsStr,
-        warningsStr
-      ]);
     }
     
     return ContentService.createTextOutput(JSON.stringify({"status": "success"})).setMimeType(ContentService.MimeType.JSON);
