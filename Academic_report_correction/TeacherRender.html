@@ -583,7 +583,7 @@
         }
 
         const isSetupMode = new URLSearchParams(window.location.search).get('setup') === '1' || new URLSearchParams(window.location.search).get('admin') === '1';
-        const isApiIssue = (IS_ADMIN || isSetupMode) && message && (
+        const isApiIssue = message && (
           message.includes('Google Apps Script') || 
           message.includes('Web App') || 
           message.includes('Google Drive') || 
@@ -600,7 +600,12 @@
           actions.innerHTML = `
             <div class="flex flex-col gap-2 w-full">
               <button id="dialogOk" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-md transition text-xs sm:text-sm cursor-pointer">ตกลง</button>
-              ${isApiIssue ? '<button type="button" id="dialogConfigApi" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer"><i class="material-icons-round text-sm">settings</i> ตั้งค่า Web App URL ใหม่</button>' : ''}
+              ${isApiIssue ? `
+                <button type="button" id="dialogResetApi" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold py-2.5 rounded-xl transition text-xs sm:text-sm flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i class="material-icons-round text-sm">restart_alt</i> รีเซ็ต URL เริ่มต้น & ล้างแคช
+                </button>
+                ${(IS_ADMIN || isSetupMode) ? '<button type="button" id="dialogConfigApi" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"><i class="material-icons-round text-sm">settings</i> กำหนด Web App URL เอง</button>' : ''}
+              ` : ''}
             </div>
           `;
         }
@@ -627,6 +632,16 @@
         } else {
           const okBtn = document.getElementById('dialogOk');
           if (okBtn) okBtn.onclick = () => closeModal(true);
+          const resetBtn = document.getElementById('dialogResetApi');
+          if (resetBtn) {
+            resetBtn.onclick = () => {
+              try {
+                localStorage.removeItem('custom_gas_url');
+                sessionStorage.clear();
+              } catch(e) {}
+              location.reload();
+            };
+          }
           const cfgBtn = document.getElementById('dialogConfigApi');
           if (cfgBtn) cfgBtn.onclick = () => { closeModal(false); configureApiUrl(); };
         }
@@ -737,7 +752,10 @@
             urlParams.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
           }
                       let fetchUrl = API_BASE_URL;
-            let fetchOptions = { method: method || 'GET' };
+            let fetchOptions = { 
+              method: method || 'GET',
+              credentials: 'omit' // 🛡️ ไม่ส่ง Google session cookies ข้าม origin เพื่อป้องกัน Google Multi-Account Session Conflict ("ขออภัย ไม่สามารถเปิดไฟล์ได้")
+            };
             
             if (fetchOptions.method === 'POST' || isWriteAction) {
                 fetchOptions.method = 'POST'; // Force POST for write actions to avoid URL length limits
@@ -768,7 +786,7 @@
                   }
                   let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
                   if (text.includes('ไม่สามารถเปิดไฟล์ได้') || text.includes('drive.google.com')) {
-                    errDetail = 'Google Drive: "ขออภัย ไม่สามารถเปิดไฟล์ได้"\n\nURL Web App อาจถูกเปลี่ยนหลังจาก Deploy ใหม่\nกรุณาตรวจสอบ Apps Script > Deploy > Manage deployments';
+                    errDetail = 'Google Drive: "ขออภัย ไม่สามารถเปิดไฟล์ได้"\n\n💡 สาเหตุพบบ่อย: เกิดจากเบราว์เซอร์ล็อกอินบัญชี Google ค้างไว้หลายบัญชีพร้อมกัน (Google Multi-Account Conflict)\n👉 วิธีแก้: ให้กดปุ่ม "รีเซ็ต URL เริ่มต้น & ล้างแคช" ด้านล่าง หรือเปิดใช้งานผ่าน "หน้าต่างไม่ระบุตัวตน" (Incognito Window)';
                   }
                   return { ok: false, retry: false, error: new Error(errDetail) };
                 }

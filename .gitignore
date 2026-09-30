@@ -1,0 +1,15 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary and archive files
+*.zip
+*.crx
+*.db
+auth.db
+hotfix_backend.zip
+schoolen_helper_extracted/
+node_modules/
+.DS_Store
+Thumbs.db

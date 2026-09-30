@@ -113,7 +113,14 @@ async def compare_pdfs(
             unmatched_files.append(ns["filename"])
             
     if not pairs:
-        raise HTTPException(status_code=400, detail="ไม่สามารถจับคู่ไฟล์ใดๆ ได้เลย โปรดตรวจสอบว่ามีไฟล์ SGS และ NextSchool ที่มีรายชื่อนักเรียนตรงกันหรือไม่")
+        if len(sgs_files) == 0 and len(ns_files) == 0:
+            raise HTTPException(status_code=400, detail="ไม่สามารถอ่านข้อมูลคะแนนจากไฟล์ที่อัปโหลดได้เลย โปรดตรวจสอบว่าเป็นไฟล์ ปพ.5 ของ SGS (PDF) หรือ Excel ของ NextSchool (.xlsx) ที่ถูกต้อง")
+        elif len(sgs_files) == 0:
+            raise HTTPException(status_code=400, detail="ไม่พบไฟล์คะแนนจากระบบ SGS (PDF) โปรดตรวจสอบว่าได้เลือกไฟล์ ปพ.5 ของ SGS เข้ามาด้วยหรือไม่")
+        elif len(ns_files) == 0:
+            raise HTTPException(status_code=400, detail="ไม่พบไฟล์คะแนนจากระบบ NextSchool (.xlsx) โปรดตรวจสอบว่าได้เลือกไฟล์ Excel ของ NextSchool เข้ามาด้วยหรือไม่")
+        else:
+            raise HTTPException(status_code=400, detail="ไม่สามารถจับคู่ไฟล์ได้: ตรวจพบไฟล์ทั้งสองระบบ แต่ไม่มีรายชื่อนักเรียนหรือรหัสวิชาตรงกัน โปรดตรวจสอบว่าเลือกไฟล์ของวิชาและห้องเดียวกันหรือไม่")
 
     try:
         def render_annotated_pdf(file_content, highlights):
