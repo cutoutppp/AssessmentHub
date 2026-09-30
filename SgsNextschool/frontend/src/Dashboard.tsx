@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Swal from 'sweetalert2';
+import Wp16Modal from './Wp16Modal';
 
 interface DashboardProps {
   teacherData: any[];
@@ -7,18 +8,29 @@ interface DashboardProps {
   academicYear: string;
   semester: string;
   roundType: string;
+  backendUrl?: string;
   downloadSavedDoc?: (type: 'wp16' | 'wp17' | 'wp25' | 'wp25_group', teacher_name: string, extraData?: any) => void;
 }
 
-export default function Dashboard({ teacherData, submissions, academicYear, semester, roundType, downloadSavedDoc }: DashboardProps) {
+export default function Dashboard({ teacherData, submissions, academicYear, semester, roundType, backendUrl = 'http://localhost:8000', downloadSavedDoc }: DashboardProps) {
   const [filterGroup, setFilterGroup] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedTeachers, setExpandedTeachers] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'midterm'|'final'>('midterm');
 
+  // Full WP16 Modal state
+  const [wp16ModalState, setWp16ModalState] = useState<{
+    isOpen: boolean;
+    teacherName: string;
+    subjectCode: string;
+    subjectName: string;
+    availableSubjects: { subject_code: string; subject_name: string }[];
+  } | null>(null);
+
   const handleDownloadGroupDoc = async (groupName: string, teacherNames: string[]) => {
     if (!downloadSavedDoc) return;
+
 
     // Filter valid teacher names (exclude placeholder strings like "ไม่พบในฐานข้อมูล" or "ไม่ระบุ")
     const validTeacherNames = teacherNames.filter(name => 
@@ -429,11 +441,32 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
 
                                 {/* WP16 (Final) */}
                                 <button 
-                                  onClick={() => downloadSavedDoc('wp16', t.teacher_name, { mock_subjects: teacherData.filter((td: any) => td.teacher_name === t.teacher_name) })} 
-                                  className="px-2.5 py-0.5 text-[11px] rounded-md font-medium transition shadow-2xs flex items-center gap-1 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-300 cursor-pointer"
-                                  title="ดาวน์โหลด วผ.16 (รายงาน 0 ร มส มผ ปลายภาค)"
+                                  type="button"
+                                  onClick={() => {
+                                    const subjectsMap = new Map();
+                                    teacherData.filter((td: any) => td.teacher_name === t.teacher_name).forEach((td: any) => {
+                                      if (td.subject_code && !subjectsMap.has(td.subject_code)) {
+                                        subjectsMap.set(td.subject_code, td.subject_name || '');
+                                      }
+                                    });
+                                    const availableSubjects = Array.from(subjectsMap.entries()).map(([code, name]) => ({
+                                      subject_code: code,
+                                      subject_name: name
+                                    }));
+                                    const initialCode = availableSubjects.length > 0 ? availableSubjects[0].subject_code : '';
+                                    const initialName = availableSubjects.length > 0 ? availableSubjects[0].subject_name : '';
+                                    setWp16ModalState({
+                                      isOpen: true,
+                                      teacherName: t.teacher_name,
+                                      subjectCode: initialCode,
+                                      subjectName: initialName,
+                                      availableSubjects
+                                    });
+                                  }}
+                                  className="px-2 py-0.5 text-[11px] rounded-md font-medium transition shadow-2xs flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 cursor-pointer"
+                                  title="ระบุงานค้างและดาวน์โหลด วผ.16 (รายงาน 0, ร, มส)"
                                 >
-                                  📄 วผ.16 (ปลายภาค)
+                                  📄 วผ.16 (รายงาน 0, ร, มส)
                                 </button>
 
                                 {/* WP17 (Final) - ปิดการใช้งานปุ่มดาวน์โหลดชั่วคราว */}
@@ -568,6 +601,23 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
           </tbody>
         </table>
       </div>
+
+      {/* ─── WP16 Full Modal (งานค้างนักเรียน 0, ร, มส) ─── */}
+      {wp16ModalState && (
+        <Wp16Modal
+          isOpen={wp16ModalState.isOpen}
+          onClose={() => setWp16ModalState(null)}
+          teacherName={wp16ModalState.teacherName}
+          initialSubjectCode={wp16ModalState.subjectCode}
+          availableSubjects={wp16ModalState.availableSubjects}
+          academicYear={academicYear}
+          semester={semester}
+          backendUrl={backendUrl}
+          onDownload={async (extra) => {
+            if (downloadSavedDoc) downloadSavedDoc('wp16', wp16ModalState.teacherName, extra);
+          }}
+        />
+      )}
     </div>
   );
 }

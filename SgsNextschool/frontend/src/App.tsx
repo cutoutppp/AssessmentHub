@@ -617,7 +617,11 @@ function App() {
            await fetch(`${BACKEND_URL}/api/save_work`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ pairs: payloadPairs })
+              body: JSON.stringify({
+                pairs: payloadPairs,
+                academic_year: academicYear,
+                semester: semester
+              })
            });
            await fetchSavedWorks();
         } catch(e) {
@@ -784,6 +788,7 @@ function App() {
             academicYear={academicYear}
             semester={semester}
             roundType={roundType}
+            backendUrl={BACKEND_URL}
             downloadSavedDoc={downloadSavedDoc}
           />
         )}
@@ -1371,18 +1376,6 @@ function App() {
                             }
                           </span>
                         </button>
-
-                        {roundType === 'final' && (
-                          <button 
-                            onClick={() => downloadDoc('wp16', [activePair])}
-                            disabled={isSaving}
-                            className="px-6 py-3.5 font-bold rounded-xl shadow-md transition-all flex items-center space-x-2 text-base bg-sky-600 hover:bg-sky-700 text-white transform hover:scale-105 shadow-sky-200 cursor-pointer"
-                            title="ดาวน์โหลดแบบบันทึกข้อความรายงานผลการเรียน 0, ร, มส, มผ (วผ.16 ปลายภาค)"
-                          >
-                            <span className="text-xl">📄</span>
-                            <span>ดาวน์โหลด วผ.16 (ปลายภาค)</span>
-                          </button>
-                        )}
                       </div>
 
                     </div>
