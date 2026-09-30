@@ -10,6 +10,7 @@ from validator import validate_scores
 from doc_generator import generate_wp16, generate_wp17, generate_wp25, generate_wp25_group
 from work_db import get_works_for_teacher, add_work, get_rooms_for_subject, get_rooms_for_group
 from score_db import load_scores_from_json
+from wp16_db import save_pending_tasks, get_pending_tasks_for_subject, get_all_pending_tasks
 
 app = FastAPI(title="SGS vs NextSchool Score Checker")
 
@@ -276,18 +277,68 @@ async def test_extract(request: Request):
 async def api_save_work(request: Request):
     try:
         data = await request.json()
-        pair_data = data.get("pair")
-        if not pair_data:
+        pairs = data.get("pairs")
+        if not pairs:
+            single = data.get("pair")
+            pairs = [single] if single else []
+        if not pairs:
             return {"status": "error", "message": "No pair data"}
-            
-        teacher_info = pair_data.get("teacher_info", {})
-        teacher_name = teacher_info.get("teacher_name", "Unknown Teacher")
-        subject_code = teacher_info.get("subject_code", "Unknown Subject")
-        class_level = teacher_info.get("class_level", "Unknown Class")
-        
-        # Save to DB
-        add_work(teacher_name, subject_code, class_level, pair_data)
-        
+
+        academic_year = str(data.get("academic_year") or "2568")
+        semester = str(data.get("semester") or "2")
+
+        for pair_data in pairs:
+            if not pair_data:
+                continue
+            sgs_info = pair_data.get("sgs") or {}
+            teacher_info = pair_data.get("teacher_info") or {}
+            teacher_name = data.get("teacher_name") or pair_data.get("teacher_name") or teacher_info.get("teacher_name") or sgs_info.get("teacher_name", "Unknown Teacher")
+            subject_code = pair_data.get("subject_code") or teacher_info.get("subject_code") or sgs_info.get("subject_code", "Unknown Subject")
+            class_level = pair_data.get("class_level") or teacher_info.get("class_level") or sgs_info.get("grade_level", "Unknown Class")
+            subject_name = pair_data.get("subject_name") or teacher_info.get("subject_name") or sgs_info.get("subject_name", "")
+
+            # Save to work_db
+            add_work(teacher_name, subject_code, class_level, pair_data)
+
+            # Auto-extract failing students (0, ร, มส, มผ) or manual additions to WP16_งานค้าง
+            raw = pair_data.get("raw_data") or {}
+            sgs_students = raw.get("sgs_students") or {}
+            failing_list = []
+
+            if isinstance(sgs_students, list):
+                sgs_iter = [(s.get("student_id", ""), s) for s in sgs_students]
+            elif isinstance(sgs_students, dict):
+                sgs_iter = list(sgs_students.items())
+            else:
+                sgs_iter = []
+
+            for sid, s in sgs_iter:
+                sid = str(sid or s.get("student_id", "")).strip()
+                if not sid:
+                    continue
+                grade = str(s.get("grade", "")).strip()
+                if grade.endswith(".0"):
+                    grade = grade[:-2]
+                is_man = bool(s.get("is_manual", False))
+                if grade in ["0", "ร", "มส", "มผ"] or is_man:
+                    s_name = s.get("name", "")
+                    if not s_name:
+                        s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                    failing_list.append({
+                        "student_id": sid,
+                        "student_name": s_name,
+                        "class_level": class_level,
+                        "old_score": str(s.get("total", "") or s.get("score", "") or s.get("raw_score", "")),
+                        "old_grade": grade,
+                        "pending_task": s.get("pending_task", ""),
+                        "academic_year": academic_year,
+                        "semester": semester,
+                        "is_manual": is_man
+                    })
+
+            if failing_list:
+                save_pending_tasks(teacher_name, subject_code, subject_name, failing_list, academic_year, semester)
+
         return {"status": "success"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -310,38 +361,24 @@ def _get_fallback_demo_rooms(name):
 async def api_export_wp16_saved(request: Request):
     try:
         data = await request.json()
-        teacher_name = data.get("teacher_name")
-        subject_code = data.get("subject_code", None)
+        teacher_name = data.get("teacher_name", "")
+        subject_code = data.get("subject_code", "")
+        subject_name = data.get("subject_name", "")
+        academic_year = str(data.get("academic_year", "2568"))
+        semester = str(data.get("semester", "2"))
+        students = data.get("students", [])
 
-        mock_subjects = data.get("mock_subjects", [])
-        
-        rooms = get_rooms_for_subject(teacher_name, subject_code)
-        if not rooms and mock_subjects:
-            rooms = []
-            for s in mock_subjects:
-                rooms.append({
-                    "subject_code": s.get("subject_code"),
-                    "teacher_info": {
-                        "teacher_name": teacher_name,
-                        "subject_name": s.get("subject_name", ""),
-                        "class_level": s.get("class_level", ""),
-                        "subject_group": data.get("subject_group", "")
-                    },
-                    "raw_data": {
-                        "sgs_students": {
-                           "1": {"student_id": "10001", "prefix": "นาย", "firstname": "ทดสอบ", "lastname": "ระบบดาวน์โหลด", "grade": "4.0", "attributes": "3", "reading": "3"},
-                           "2": {"student_id": "10002", "prefix": "นางสาว", "firstname": "ตัวอย่าง", "lastname": "ทดสอบเอกสาร", "grade": "3.5", "attributes": "3", "reading": "3"}
-                        }
-                    }
-                })
-        elif not rooms:
-            rooms = _get_fallback_demo_rooms(teacher_name)
-            
-        doc_bytes = generate_wp16(rooms)
+        if not students:
+            rooms = get_rooms_for_subject(teacher_name, subject_code)
+            doc_bytes = generate_wp16(pair_results=rooms, subject_code=subject_code, subject_name=subject_name, teacher_name=teacher_name, term=semester, year=academic_year)
+        else:
+            save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester)
+            doc_bytes = generate_wp16(subject_code=subject_code, subject_name=subject_name, teacher_name=teacher_name, students=students, term=semester, year=academic_year)
+
         if not doc_bytes:
             raise HTTPException(status_code=404, detail="Template not found")
-            
-        filename = f"WP16_{subject_code}.docx" if subject_code else f"WP16_{teacher_name}.docx"
+
+        filename = f"WP16_{subject_code}_{teacher_name}.docx" if subject_code else f"WP16_{teacher_name}.docx"
         encoded_fn = quote(filename)
         return Response(
             content=doc_bytes,
@@ -350,6 +387,80 @@ async def api_export_wp16_saved(request: Request):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/export/wp16/zip")
+async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", semester: str = "2"):
+    try:
+        import zipfile
+        rooms = get_rooms_for_subject(teacher_name, None)
+        if not rooms:
+            raise HTTPException(status_code=404, detail="No rooms found for this teacher")
+
+        subjects = {}
+        for r in rooms:
+            scode = r.get("subject_code")
+            t_info = r.get("teacher_info") or {}
+            sname = t_info.get("subject_name", "")
+            if scode not in subjects:
+                subjects[scode] = {"name": sname, "rooms": []}
+            subjects[scode]["rooms"].append(r)
+
+        zip_buffer = io.BytesIO()
+        count_docs = 0
+
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for scode, sinfo in subjects.items():
+                existing_tasks = get_pending_tasks_for_subject(scode, teacher_name)
+                failing = []
+                seen = set()
+                for r in sinfo["rooms"]:
+                    c_level = (r.get("teacher_info") or {}).get("class_level", "")
+                    raw = r.get("raw_data") or {}
+                    sgs_students = raw.get("sgs_students") or {}
+                    sgs_iter = [(s.get("student_id", ""), s) for s in sgs_students] if isinstance(sgs_students, list) else (sgs_students.items() if isinstance(sgs_students, dict) else [])
+                    for sid, s in sgs_iter:
+                        sid = str(sid or s.get("student_id", "")).strip()
+                        if not sid or sid in seen:
+                            continue
+                        grade = str(s.get("grade", "")).strip()
+                        if grade.endswith(".0"):
+                            grade = grade[:-2]
+                        if grade in ["0", "ร", "มส", "มผ"]:
+                            seen.add(sid)
+                            old_t = existing_tasks.get(sid, {})
+                            s_name = s.get("name", "")
+                            if not s_name:
+                                s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                            failing.append({
+                                "student_id": sid,
+                                "student_name": s_name,
+                                "class_level": c_level,
+                                "old_score": str(s.get("total", "") or s.get("score", "")),
+                                "old_grade": grade,
+                                "pending_task": old_t.get("pending_task", ""),
+                                "remark": old_t.get("remark", "")
+                            })
+                if failing:
+                    doc_bytes = generate_wp16(subject_code=scode, subject_name=sinfo["name"], teacher_name=teacher_name, students=failing, term=semester, year=academic_year)
+                    if doc_bytes:
+                        count_docs += 1
+                        doc_filename = f"WP16_{scode}_{teacher_name}.docx"
+                        zip_file.writestr(doc_filename, doc_bytes)
+
+        if count_docs == 0:
+            raise HTTPException(status_code=404, detail="ไม่มีนักเรียนติด 0, ร, มส ในวิชาใดๆ ของครูท่านนี้")
+
+        zip_buffer.seek(0)
+        filename = f"WP16_รวมทุกวิชา_{teacher_name}.zip"
+        encoded_fn = quote(filename)
+        return Response(
+            content=zip_buffer.read(),
+            media_type="application/zip",
+            headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/export/wp17/saved")
 async def api_export_wp17_saved(request: Request):
@@ -486,3 +597,110 @@ async def api_export_wp25_group_saved(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ─────────────────────────────────────────────────────────
+#  WP16 Pending Tasks (งานค้าง) – สำหรับนักเรียนที่ได้ 0/ร/มส/มผ
+# ─────────────────────────────────────────────────────────
+
+@app.get("/api/wp16/students")
+async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
+    """ดึงรายชื่อนักเรียนที่ได้เกรด 0/ร/มส/มผ พร้อมงานค้างที่บันทึกไว้"""
+    try:
+        rooms = get_rooms_for_subject(teacher_name, subject_code)
+        existing_tasks = get_pending_tasks_for_subject(subject_code, teacher_name)
+
+        subject_name = ""
+        students = []
+        seen_sids = set()
+
+        for r in rooms:
+            t_info = r.get("teacher_info") or {}
+            if not subject_name:
+                subject_name = t_info.get("subject_name", "")
+
+            raw = r.get("raw_data") or {}
+            sgs_students = raw.get("sgs_students") or {}
+            sgs_iter = (
+                [(s.get("student_id", ""), s) for s in sgs_students]
+                if isinstance(sgs_students, list)
+                else (sgs_students.items() if isinstance(sgs_students, dict) else [])
+            )
+
+            for sid, s in sgs_iter:
+                sid = str(sid or s.get("student_id", "")).strip()
+                if not sid or sid in seen_sids:
+                    continue
+                grade = str(s.get("grade", "")).strip()
+                if grade.endswith(".0"):
+                    grade = grade[:-2]
+                if grade in ["0", "ร", "มส", "มผ"]:
+                    seen_sids.add(sid)
+                    old_task = existing_tasks.get(sid, {})
+                    s_name = s.get("name", "")
+                    if not s_name:
+                        s_name = (
+                            s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")
+                        ).strip()
+                    students.append({
+                        "student_id": sid,
+                        "student_name": s_name,
+                        "class_level": t_info.get("class_level", ""),
+                        "old_score": str(s.get("total", "") or s.get("score", "") or ""),
+                        "old_grade": grade,
+                        "pending_task": old_task.get("pending_task", ""),
+                        "remark": old_task.get("remark", ""),
+                        "is_manual": old_task.get("is_manual", False),
+                    })
+
+        # เพิ่มนักเรียนที่มีงานค้างบันทึกไว้แล้วแต่ไม่อยู่ใน room data
+        for sid, t_item in existing_tasks.items():
+            if sid not in seen_sids:
+                seen_sids.add(sid)
+                students.append({
+                    "student_id": sid,
+                    "student_name": t_item.get("student_name", ""),
+                    "class_level": t_item.get("class_level", ""),
+                    "old_score": str(t_item.get("old_score", "")),
+                    "old_grade": str(t_item.get("old_grade", "0")),
+                    "pending_task": t_item.get("pending_task", ""),
+                    "remark": t_item.get("remark", ""),
+                    "is_manual": t_item.get("is_manual", True),
+                })
+
+        # ดึง recent tasks ที่เคยใช้บ่อย
+        all_db_tasks = get_all_pending_tasks()
+        recent_set = set()
+        for item in all_db_tasks:
+            t = (item.get("pending_task") or "").strip()
+            if t and t != "สอบแก้ตัว":
+                if item.get("teacher_name") == teacher_name or item.get("subject_code") == subject_code:
+                    recent_set.add(t)
+
+        return {
+            "status": "success",
+            "teacher_name": teacher_name,
+            "subject_code": subject_code,
+            "subject_name": subject_name,
+            "total": len(students),
+            "students": students,
+            "recent_tasks": list(recent_set),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/wp16/save")
+async def api_save_wp16_tasks(request: Request):
+    """บันทึกงานค้างของนักเรียน"""
+    try:
+        data = await request.json()
+        teacher_name = data.get("teacher_name", "")
+        subject_code = data.get("subject_code", "")
+        subject_name = data.get("subject_name", "")
+        academic_year = str(data.get("academic_year", "2569"))
+        semester = str(data.get("semester", "1"))
+        students = data.get("students", [])
+
+        save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester)
+        return {"status": "success", "count": len(students)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
