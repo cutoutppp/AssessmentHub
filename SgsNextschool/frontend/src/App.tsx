@@ -570,6 +570,33 @@ function App() {
        reading: roundType === "midterm" ? {} : readCounts
     };
     
+    const failingStudents: any[] = [];
+    sgsStudents.forEach((student: any) => {
+      let g = String(student.grade || "").trim();
+      if (g.endsWith(".0")) g = g.slice(0, -2);
+      const isMan = Boolean(student.is_manual);
+      if (["0", "ร", "มส", "มผ"].includes(g) || isMan) {
+        const sName = student.name || `${student.prefix || ""}${student.firstname || ""} ${student.lastname || ""}`.trim();
+        const sid = String(student.student_id || student.id || "").trim();
+        if (sid) {
+          const defaultTask = g === "0" ? "สอบแก้ตัว" : (g === "มส" ? "มส. (ขาดเรียนเกิน 20%)" : "");
+          const defaultRemark = isMan ? "[เพิ่มเอง]" : (g === "มส" ? "[มส. ประกาศทางการ]" : "");
+          failingStudents.push({
+            student_id: sid,
+            student_name: sName,
+            class_level: tInfo.class_level || classLevel,
+            old_score: String(student.total ?? student.score ?? student.raw_score ?? ""),
+            old_grade: g,
+            pending_task: student.pending_task || defaultTask,
+            remark: student.remark || defaultRemark,
+            academic_year: academicYear,
+            semester: semester,
+            is_manual: isMan
+          });
+        }
+      }
+    });
+
     const payloadPairs = [{
       subject_code: tInfo.subject_code || subjectCode,
       subject_name: p.subject_name || tInfo.subject_name || "",
@@ -581,13 +608,17 @@ function App() {
       sgs_pdf_b64: p.results?.sgs_pdf_b64,
       nextschool_pdf_b64: p.results?.nextschool_pdf_b64,
       results: p.results, // Contains errors, warnings, grading stats
-      stats: stats
+      stats: stats,
+      raw_data: p.raw_data,
+      failing_students: failingStudents
     }];
 
     const payload = {
       round_type: roundType,
       academic_year: academicYear,
       semester: semester,
+      spreadsheetId: "1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ",
+      failing_students: failingStudents,
       pairs: payloadPairs
     };
 
@@ -603,12 +634,71 @@ function App() {
             "Content-Type": "application/json"
           }
         });
+
+        // Directly sync failing students to Google Sheets WP16_งานค้าง tab
+        if (failingStudents.length > 0 && webhookUrl) {
+          try {
+            const gasItems = failingStudents.map(s => ({
+              special_id: `${tInfo.subject_code || subjectCode}${s.student_id}`,
+              specialId: `${tInfo.subject_code || subjectCode}${s.student_id}`,
+              academic_year: academicYear,
+              year: academicYear,
+              semester: semester,
+              term: semester,
+              year_term: `${academicYear}/${semester}`,
+              termStr: `${academicYear}/${semester}`,
+              subject_code: tInfo.subject_code || subjectCode,
+              subjCode: tInfo.subject_code || subjectCode,
+              subject_name: p.subject_name || tInfo.subject_name || "",
+              subjName: p.subject_name || tInfo.subject_name || "",
+              teacher_name: tInfo.teacher_name || "",
+              teacherName: tInfo.teacher_name || "",
+              class_level: tInfo.class_level || classLevel,
+              classLevel: tInfo.class_level || classLevel,
+              student_id: s.student_id,
+              stuId: s.student_id,
+              student_name: s.student_name,
+              stuName: s.student_name,
+              old_score: s.old_score,
+              oldScore: s.old_score,
+              old_grade: s.old_grade,
+              oldGrade: s.old_grade,
+              pending_task: s.pending_task,
+              pendingTask: s.pending_task,
+              remark: s.remark,
+              updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19)
+            }));
+            fetch(webhookUrl, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({
+                action: "sync-wp16-sheet",
+                spreadsheetId: "1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ",
+                sheetName: "WP16_งานค้าง",
+                items: gasItems
+              })
+            }).catch(e => console.warn('Direct GAS WP16 sync error:', e));
+          } catch (syncErr) {
+            console.warn("Direct WP16 GAS sync error:", syncErr);
+          }
+        }
+
         await Swal.fire({
           icon: 'success',
           title: 'บันทึกสำเร็จ!',
-          text: 'ส่งข้อมูลเข้า Google Sheets และบันทึกไฟล์ลง Drive สำเร็จ! (ระบบใช้เวลาทำงานเบื้องหลังประมาณ 1-2 นาที กรุณาตรวจสอบโฟลเดอร์ใน Drive)',
-          timer: 3000,
-          showConfirmButton: false
+          html: `
+            <div class="text-left text-sm space-y-2">
+              <p class="text-emerald-700 font-semibold">✅ ส่งข้อมูลและสถิติเข้า Google Sheets และ Drive เรียบร้อยแล้ว</p>
+              ${failingStudents.length > 0 
+                ? `<div class="text-xs text-indigo-800 bg-indigo-50 p-2.5 rounded-lg border border-indigo-200">
+                    📋 <b>ซิงค์ข้อมูลงานค้าง:</b> บันทึกรายชื่อนักเรียนติด 0, ร, มส, มผ จำนวน <b>${failingStudents.length} คน</b> ลงในแผ่นงาน <a href="https://docs.google.com/spreadsheets/d/1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ/edit?gid=1367227681#gid=1367227681" target="_blank" class="underline font-bold text-blue-600">WP16_งานค้าง</a> บน Google Sheet เรียบร้อยแล้ว
+                   </div>` 
+                : `<p class="text-slate-500 text-xs">วิชานี้ไม่มีนักเรียนที่ได้เกรด 0, ร, มส, มผ</p>`
+              }
+            </div>
+          `,
+          confirmButtonColor: '#10b981',
+          confirmButtonText: 'ตกลง'
         });
         setSavedPairs(prev => ({...prev, [selectedPairIndex]: true}));
 
@@ -620,7 +710,12 @@ function App() {
               body: JSON.stringify({
                 pairs: payloadPairs,
                 academic_year: academicYear,
-                semester: semester
+                semester: semester,
+                teacher_name: tInfo.teacher_name,
+                subject_code: tInfo.subject_code || subjectCode,
+                subject_name: p.subject_name || tInfo.subject_name || "",
+                failing_students: failingStudents,
+                webhookUrl: webhookUrl
               })
            });
            await fetchSavedWorks();
@@ -789,6 +884,7 @@ function App() {
             semester={semester}
             roundType={roundType}
             backendUrl={BACKEND_URL}
+            webAppUrl={webAppUrl}
             downloadSavedDoc={downloadSavedDoc}
           />
         )}
