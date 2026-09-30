@@ -221,9 +221,19 @@ def get_all_pending_tasks():
 
 def remove_pending_task(subject_code, student_id, webhook_url=None):
     db = _load_wp16_db()
-    special_id = f'{subject_code}{student_id}'
+    s_code = (subject_code or '').strip()
+    s_id = (student_id or '').strip()
+    special_id = f'{s_code}{s_id}'
+    target_key = None
     if special_id in db:
-        del db[special_id]
+        target_key = special_id
+    else:
+        for k, v in db.items():
+            if str(v.get('subject_code', '')).strip() == s_code and str(v.get('student_id', '')).strip() == s_id:
+                target_key = k
+                break
+    if target_key:
+        del db[target_key]
         _save_wp16_db(db)
         try:
             import threading

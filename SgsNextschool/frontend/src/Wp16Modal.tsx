@@ -58,6 +58,15 @@ export default function Wp16Modal({
   const [filterStatus, setFilterStatus] = useState<'all' | 'unassigned' | 'assigned'>('all');
   const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
 
+  // States for manual add student
+  const [showAddModal, setShowAddModal] = useState<boolean>(false);
+  const [newStudentId, setNewStudentId] = useState<string>('');
+  const [newName, setNewName] = useState<string>('');
+  const [newClassLevel, setNewClassLevel] = useState<string>('');
+  const [newOldGrade, setNewOldGrade] = useState<string>('0');
+  const [newOldScore, setNewOldScore] = useState<string>('');
+  const [newTask, setNewTask] = useState<string>('');
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem('wp16_task_history');
@@ -318,6 +327,161 @@ export default function Wp16Modal({
       toast: true,
       position: 'top-end',
     });
+  };
+
+  const handleOpenAddModal = () => {
+    const defaultClass = students.length > 0 ? students[0].class_level : '';
+    setNewStudentId('');
+    setNewName('');
+    setNewClassLevel(defaultClass);
+    setNewOldScore('');
+    setNewOldGrade('0');
+    setNewTask('');
+    setShowAddModal(true);
+  };
+
+  const handleSaveNewStudent = async () => {
+    const sId = newStudentId.trim();
+    const sName = newName.trim();
+    if (!sId) {
+      Swal.fire('ข้อผิดพลาด', 'กรุณาระบุเลขประจำตัวนักเรียน', 'warning');
+      return;
+    }
+    if (!sName) {
+      Swal.fire('ข้อผิดพลาด', 'กรุณาระบุชื่อ - นามสกุลนักเรียน', 'warning');
+      return;
+    }
+    if (students.some((s) => s.student_id === sId)) {
+      Swal.fire('แจ้งเตือน', `เลขประจำตัว ${sId} มีอยู่ในรายการแล้ว`, 'warning');
+      return;
+    }
+    const newStudent = {
+      student_id: sId,
+      student_name: sName,
+      class_level: cleanClassLevel(newClassLevel),
+      old_score: newOldScore.trim(),
+      old_grade: newOldGrade.trim() || '0',
+      pending_task: newTask.trim(),
+      remark: '[เพิ่มเอง]',
+      is_manual: true,
+    };
+
+    try {
+      await fetch(`${backendUrl}/api/wp16/student`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teacher_name: teacherName,
+          subject_code: selectedSubject,
+          subject_name: subjectName,
+          academic_year: academicYear || '2569',
+          semester: semester || '1',
+          student: newStudent,
+          webhookUrl: webAppUrl,
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to save manual student to backend:', err);
+    }
+
+    if (webAppUrl) {
+      try {
+        fetch(webAppUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'sync-wp16-sheet',
+            spreadsheetId: '1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ',
+            sheetName: 'WP16_งานค้าง',
+            items: [
+              {
+                special_id: `${selectedSubject}${sId}`,
+                specialId: `${selectedSubject}${sId}`,
+                academic_year: academicYear || '2569',
+                year: academicYear || '2569',
+                semester: semester || '1',
+                term: semester || '1',
+                year_term: `${academicYear || '2569'}/${semester || '1'}`,
+                termStr: `${academicYear || '2569'}/${semester || '1'}`,
+                subject_code: selectedSubject,
+                subjCode: selectedSubject,
+                subject_name: subjectName,
+                subjName: subjectName,
+                teacher_name: teacherName,
+                teacherName: teacherName,
+                class_level: newStudent.class_level,
+                classLevel: newStudent.class_level,
+                student_id: sId,
+                stuId: sId,
+                student_name: sName,
+                stuName: sName,
+                old_score: newStudent.old_score,
+                oldScore: newStudent.old_score,
+                old_grade: newStudent.old_grade,
+                oldGrade: newStudent.old_grade,
+                pending_task: newStudent.pending_task,
+                pendingTask: newStudent.pending_task,
+                remark: '[เพิ่มเอง]',
+                updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+              },
+            ],
+          }),
+        }).catch((err) => console.warn('GAS manual student sync error:', err));
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    setStudents((prev) => [...prev, newStudent]);
+    setShowAddModal(false);
+    Swal.fire({
+      icon: 'success',
+      title: 'เพิ่มนักเรียนสำเร็จ',
+      text: `เพิ่ม ${sName} เข้าสู่รายการ วผ.16 แล้ว`,
+      timer: 1500,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end',
+    });
+  };
+
+  const handleDeleteStudent = async (studentId: string, studentName: string) => {
+    const confirm = await Swal.fire({
+      icon: 'warning',
+      title: 'ลบนักเรียนคนนี้?',
+      html: `คุณต้องการลบ <b>${studentName}</b> (รหัส ${studentId})<br/>ออกจากรายการ วผ.16 ของวิชานี้ใช่หรือไม่?`,
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยันลบ',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#94a3b8',
+    });
+    if (confirm.isConfirmed) {
+      try {
+        await fetch(
+          `${backendUrl}/api/wp16/student?subject_code=${encodeURIComponent(
+            selectedSubject
+          )}&student_id=${encodeURIComponent(studentId)}`,
+          { method: 'DELETE' }
+        );
+      } catch (e) {
+        console.error('Failed to delete on server', e);
+      }
+      setStudents((prev) => prev.filter((s) => s.student_id !== studentId));
+      setSelectedStudentIds((prev) => {
+        const next = new Set(prev);
+        next.delete(studentId);
+        return next;
+      });
+      Swal.fire({
+        icon: 'success',
+        title: 'ลบเรียบร้อย',
+        timer: 1200,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end',
+      });
+    }
   };
 
   const handleSaveAndDownload = async () => {
@@ -817,28 +981,39 @@ export default function Wp16Modal({
               )}
             </div>
 
-            {students.length > 5 && (
-              <div className="relative self-end sm:self-auto">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="ค้นหาชื่อ, รหัส, ห้อง..."
-                  className="px-2.5 py-1 pl-6 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:bg-white outline-none w-44 transition"
-                />
-                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]">
-                  🔍
-                </span>
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <button
+                type="button"
+                onClick={handleOpenAddModal}
+                className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5 active:scale-95 text-xs shrink-0"
+                title="เพิ่มนักเรียนกรณีตกหล่น หรือมีกรณีพิเศษ"
+              >
+                <span>➕ เพิ่มนักเรียน</span>
+              </button>
+
+              {students.length > 5 && (
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="ค้นหาชื่อ, รหัส, ห้อง..."
+                    className="px-2.5 py-1.5 pl-6 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:bg-white outline-none w-44 transition"
+                  />
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[11px]">
+                    🔍
+                  </span>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {!loading && students.length > 0 && (
@@ -877,6 +1052,13 @@ export default function Wp16Modal({
               <p className="text-xs text-emerald-600 mt-1">
                 นักเรียนทุกคนได้ผลการเรียนผ่านเกณฑ์ทั้งหมด
               </p>
+              <button
+                type="button"
+                onClick={handleOpenAddModal}
+                className="mt-4 px-4 py-2 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-xl text-xs font-bold transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer active:scale-95 mx-auto"
+              >
+                <span>➕ เพิ่มนักเรียนกรณีพิเศษ (ถ้ามี)</span>
+              </button>
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="py-12 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
@@ -918,6 +1100,7 @@ export default function Wp16Modal({
                     <th className="px-4 py-2.5">
                       งานที่ไม่ส่ง / ภาระงานที่มอบหมาย (คลิกพิมพ์ได้เลย หรือกดปุ่มด่วนประจำแถว)
                     </th>
+                    <th className="px-2 py-2.5 text-center w-12">จัดการ</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
@@ -950,7 +1133,14 @@ export default function Wp16Modal({
                           {stu.student_id}
                         </td>
                         <td className="px-3 py-2.5 font-medium text-slate-800 text-xs md:text-sm">
-                          {stu.student_name}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span>{stu.student_name}</span>
+                            {stu.is_manual && (
+                              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200 shrink-0">
+                                เพิ่มเอง
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-3 py-2.5 text-center font-mono font-bold text-slate-700 text-xs">
                           {stu.old_score || '-'}
@@ -1058,6 +1248,16 @@ export default function Wp16Modal({
                             </div>
                           </div>
                         </td>
+                        <td className="px-2 py-2 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteStudent(stu.student_id, stu.student_name)}
+                            className="w-7 h-7 mx-auto rounded-lg text-slate-300 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition cursor-pointer text-xs"
+                            title={`ลบ ${stu.student_name} ออกจากรายการ วผ.16`}
+                          >
+                            🗑️
+                          </button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -1108,6 +1308,151 @@ export default function Wp16Modal({
             </button>
           </div>
         </div>
+
+        {/* Modal เพิ่มนักเรียนกรณีพิเศษ/ตกหล่น */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3.5 flex items-center justify-between text-white">
+                <div className="flex items-center gap-2">
+                  <span className="text-base">➕</span>
+                  <h3 className="font-bold text-sm">เพิ่มนักเรียนใน วผ.16 (กรณีพิเศษ / ตกหล่น)</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="text-white/70 hover:text-white text-base font-bold transition cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-5 space-y-3.5 text-xs text-slate-700">
+                <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-2.5 text-blue-900 text-[11px] leading-relaxed">
+                  💡 <b>บัฟเฟอร์กันตกหล่น:</b> หากมีนักเรียนที่ผลการเรียนใน SGS ยังไม่สะท้อน หรือมีกรณีพิเศษ คุณครูสามารถเพิ่มชื่อเข้าเอกสาร วผ.16 วิชา <b>{selectedSubject}</b> ได้ทันที
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      เลขประจำตัว <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newStudentId}
+                      onChange={(e) => setNewStudentId(e.target.value)}
+                      placeholder="เช่น 18248"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-mono font-medium"
+                      autoFocus
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">ระดับชั้น / ห้อง</label>
+                    <input
+                      type="text"
+                      value={newClassLevel}
+                      onChange={(e) => setNewClassLevel(e.target.value)}
+                      placeholder="เช่น ม.4/1"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    ชื่อ - นามสกุล <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="เช่น เด็กชายสมคิด รักเรียน"
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-medium"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">
+                      ผลการเรียนเดิม <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={newOldGrade}
+                      onChange={(e) => setNewOldGrade(e.target.value)}
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-bold bg-white"
+                    >
+                      <option value="0">0 (ศูนย์)</option>
+                      <option value="ร">ร (รอการตัดสิน)</option>
+                      <option value="มส">มส (หมดสิทธิ์สอบ)</option>
+                      <option value="มผ">มผ (ไม่ผ่าน)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">คะแนนเดิม</label>
+                    <input
+                      type="text"
+                      value={newOldScore}
+                      onChange={(e) => setNewOldScore(e.target.value)}
+                      placeholder="เช่น 45 หรือ ขาดสอบ"
+                      className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">งานค้าง / ภาระงานที่มอบหมาย</label>
+                  <textarea
+                    rows={2}
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    placeholder="ระบุงานค้าง หรือคลิกเลือกปุ่มด่วนด้านล่าง..."
+                    className="w-full px-3 py-1.5 border border-slate-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-medium resize-none leading-relaxed"
+                  />
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => setNewTask('ขาดสอบปลายภาค (ติดต่อสอบแก้ตัวข้อเขียน)')}
+                      className="px-2 py-0.5 rounded bg-slate-100 hover:bg-blue-50 text-slate-600 border border-slate-200 text-[10px] font-medium cursor-pointer"
+                    >
+                      📝 ปลายภาค
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewTask('ขาดสอบกลางภาค (ติดต่อสอบแก้ตัวข้อเขียน)')}
+                      className="px-2 py-0.5 rounded bg-slate-100 hover:bg-blue-50 text-slate-600 border border-slate-200 text-[10px] font-medium cursor-pointer"
+                    >
+                      📝 กลางภาค
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNewTask('เวลาเรียนไม่ครบ 80% (ทำชดเชยเวลาเรียน)')}
+                      className="px-2 py-0.5 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-medium cursor-pointer"
+                    >
+                      ⏳ มส 80%
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 px-5 py-3 border-t border-slate-200 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-200/70 rounded-xl transition cursor-pointer"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveNewStudent}
+                  className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-md active:scale-95 cursor-pointer"
+                >
+                  บันทึกเพิ่มนักเรียน
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
