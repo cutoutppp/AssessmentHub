@@ -10,18 +10,6 @@ GOOGLE_SPREADSHEET_URL = f"https://docs.google.com/spreadsheets/d/{GOOGLE_SPREAD
 
 def _load_wp16_db():
     if not os.path.exists(WP16_DB_FILE):
-        # Auto-seed from official_ms_list.json if available
-        ms_file = os.path.join(os.path.dirname(__file__), 'official_ms_list.json')
-        if os.path.exists(ms_file):
-            try:
-                with open(ms_file, 'r', encoding='utf-8') as f:
-                    ms_data = json.load(f)
-                    records = ms_data.get('ms_records', {})
-                    if records:
-                        _save_wp16_db(records)
-                        return records
-            except Exception as e:
-                print(f"Error seeding from official_ms_list: {e}")
         return {}
     try:
         with open(WP16_DB_FILE, 'r', encoding='utf-8') as f:
