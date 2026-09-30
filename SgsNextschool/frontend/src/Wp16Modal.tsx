@@ -10,6 +10,7 @@ export interface Wp16ModalProps {
   academicYear?: string;
   semester?: string;
   backendUrl?: string;
+  webAppUrl?: string;
   onDownload?: (extraData: any) => Promise<void> | void;
 }
 
@@ -37,9 +38,10 @@ export default function Wp16Modal({
   teacherName,
   initialSubjectCode,
   availableSubjects = [],
-  academicYear = '2568',
-  semester = '2',
+  academicYear = '2569',
+  semester = '1',
   backendUrl = 'http://127.0.0.1:8000',
+  webAppUrl,
   onDownload,
 }: Wp16ModalProps) {
   const [selectedSubject, setSelectedSubject] = useState<string>(initialSubjectCode || '');
@@ -336,10 +338,59 @@ export default function Wp16Modal({
         teacher_name: teacherName,
         subject_code: selectedSubject,
         subject_name: subjectName,
-        academic_year: academicYear || '2568',
-        semester: semester || '2',
+        academic_year: academicYear || '2569',
+        semester: semester || '1',
         students: cleanedStudents,
+        webhookUrl: webAppUrl,
       };
+
+      // Direct sync to Google Sheet if webAppUrl is provided
+      if (webAppUrl && cleanedStudents.length > 0) {
+        try {
+          const gasItems = cleanedStudents.map((s) => ({
+            special_id: `${selectedSubject}${s.student_id}`,
+            specialId: `${selectedSubject}${s.student_id}`,
+            academic_year: academicYear || '2569',
+            year: academicYear || '2569',
+            semester: semester || '1',
+            term: semester || '1',
+            year_term: `${academicYear || '2569'}/${semester || '1'}`,
+            termStr: `${academicYear || '2569'}/${semester || '1'}`,
+            subject_code: selectedSubject,
+            subjCode: selectedSubject,
+            subject_name: subjectName,
+            subjName: subjectName,
+            teacher_name: teacherName,
+            teacherName: teacherName,
+            class_level: s.class_level,
+            classLevel: s.class_level,
+            student_id: s.student_id,
+            stuId: s.student_id,
+            student_name: s.student_name,
+            stuName: s.student_name,
+            old_score: s.old_score,
+            oldScore: s.old_score,
+            old_grade: s.old_grade,
+            oldGrade: s.old_grade,
+            pending_task: s.pending_task,
+            pendingTask: s.pending_task,
+            remark: s.remark,
+            updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+          }));
+          fetch(webAppUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'sync-wp16-sheet',
+              spreadsheetId: '1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ',
+              sheetName: 'WP16_งานค้าง',
+              items: gasItems,
+            }),
+          }).catch((err) => console.warn('Wp16Modal direct sync error:', err));
+        } catch (e) {
+          console.warn('Wp16Modal sync error:', e);
+        }
+      }
 
       const res = await fetch(`${backendUrl}/api/export/wp16/saved`, {
         method: 'POST',
@@ -364,10 +415,16 @@ export default function Wp16Modal({
 
       Swal.fire({
         icon: 'success',
-        title: 'ดาวน์โหลดสำเร็จ',
-        text: `ดาวน์โหลดเอกสาร วผ.16 วิชา ${selectedSubject} เรียบร้อยแล้ว`,
+        title: 'บันทึกและดาวน์โหลดสำเร็จ',
+        html: `
+          <div class="text-left text-sm space-y-2">
+            <p>✅ ดาวน์โหลดเอกสาร วผ.16 วิชา <b>${selectedSubject}</b> เรียบร้อยแล้ว</p>
+            <p class="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-lg border border-indigo-200">
+              📊 บันทึกข้อมูลงานค้างลงแผ่นงาน <a href="https://docs.google.com/spreadsheets/d/1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ/edit?gid=1367227681#gid=1367227681" target="_blank" class="underline font-bold text-blue-600">WP16_งานค้าง</a> บน Google Sheet เรียบร้อยแล้ว
+            </p>
+          </div>
+        `,
         confirmButtonColor: '#3b82f6',
-        timer: 2000,
       });
     } catch (err: any) {
       console.error(err);

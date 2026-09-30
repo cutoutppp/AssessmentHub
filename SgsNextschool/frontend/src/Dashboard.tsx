@@ -9,10 +9,11 @@ interface DashboardProps {
   semester: string;
   roundType: string;
   backendUrl?: string;
+  webAppUrl?: string;
   downloadSavedDoc?: (type: 'wp16' | 'wp17' | 'wp25' | 'wp25_group', teacher_name: string, extraData?: any) => void;
 }
 
-export default function Dashboard({ teacherData, submissions, academicYear, semester, roundType, backendUrl = 'http://localhost:8000', downloadSavedDoc }: DashboardProps) {
+export default function Dashboard({ teacherData, submissions, academicYear, semester, roundType, backendUrl = 'http://localhost:8000', webAppUrl, downloadSavedDoc }: DashboardProps) {
   const [filterGroup, setFilterGroup] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedTeachers, setExpandedTeachers] = useState<Set<string>>(new Set());
@@ -613,6 +614,7 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
           academicYear={academicYear}
           semester={semester}
           backendUrl={backendUrl}
+          webAppUrl={webAppUrl}
           onDownload={async (extra) => {
             if (downloadSavedDoc) downloadSavedDoc('wp16', wp16ModalState.teacherName, extra);
           }}

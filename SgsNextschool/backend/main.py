@@ -273,6 +273,23 @@ async def test_extract(request: Request):
         "subject_name": extract_subject_name(text)
     }
 
+@app.post("/api/queue_save")
+async def api_queue_save(request: Request):
+    try:
+        data = await request.json()
+        webhook_url = data.get("webhookUrl")
+        payload = data.get("payload")
+        if not webhook_url:
+            return {"status": "error", "message": "No webhookUrl provided"}
+        import requests
+        resp = requests.post(webhook_url, json=payload, headers={"Content-Type": "text/plain;charset=utf-8"}, timeout=60)
+        try:
+            return resp.json()
+        except Exception:
+            return {"status": "success", "raw": resp.text}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 @app.post("/api/save_work")
 async def api_save_work(request: Request):
     try:
@@ -284,9 +301,12 @@ async def api_save_work(request: Request):
         if not pairs:
             return {"status": "error", "message": "No pair data"}
 
-        academic_year = str(data.get("academic_year") or "2568")
-        semester = str(data.get("semester") or "2")
+        academic_year = str(data.get("academic_year") or "2569")
+        semester = str(data.get("semester") or "1")
+        webhook_url = data.get("webhookUrl") or data.get("webhook_url")
+        explicit_failing = data.get("failing_students") or []
 
+        total_failing = 0
         for pair_data in pairs:
             if not pair_data:
                 continue
@@ -301,9 +321,11 @@ async def api_save_work(request: Request):
             add_work(teacher_name, subject_code, class_level, pair_data)
 
             # Auto-extract failing students (0, ร, มส, มผ) or manual additions to WP16_งานค้าง
+            failing_list = list(explicit_failing)
+            seen_ids = {str(s.get("student_id")).strip() for s in failing_list if s.get("student_id")}
+
             raw = pair_data.get("raw_data") or {}
             sgs_students = raw.get("sgs_students") or {}
-            failing_list = []
 
             if isinstance(sgs_students, list):
                 sgs_iter = [(s.get("student_id", ""), s) for s in sgs_students]
@@ -314,32 +336,39 @@ async def api_save_work(request: Request):
 
             for sid, s in sgs_iter:
                 sid = str(sid or s.get("student_id", "")).strip()
-                if not sid:
+                if not sid or sid in seen_ids:
                     continue
                 grade = str(s.get("grade", "")).strip()
                 if grade.endswith(".0"):
                     grade = grade[:-2]
                 is_man = bool(s.get("is_manual", False))
                 if grade in ["0", "ร", "มส", "มผ"] or is_man:
+                    seen_ids.add(sid)
                     s_name = s.get("name", "")
                     if not s_name:
                         s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+
+                    default_task = "สอบแก้ตัว" if grade == "0" else ("มส. (ขาดเรียนเกิน 20%)" if grade == "มส" else "")
+                    default_remark = "[เพิ่มเอง]" if is_man else ("[มส. ประกาศทางการ]" if grade == "มส" else "")
+
                     failing_list.append({
                         "student_id": sid,
                         "student_name": s_name,
                         "class_level": class_level,
                         "old_score": str(s.get("total", "") or s.get("score", "") or s.get("raw_score", "")),
                         "old_grade": grade,
-                        "pending_task": s.get("pending_task", ""),
+                        "pending_task": s.get("pending_task") or default_task,
+                        "remark": s.get("remark") or default_remark,
                         "academic_year": academic_year,
                         "semester": semester,
                         "is_manual": is_man
                     })
 
             if failing_list:
-                save_pending_tasks(teacher_name, subject_code, subject_name, failing_list, academic_year, semester)
+                total_failing += len(failing_list)
+                save_pending_tasks(teacher_name, subject_code, subject_name, failing_list, academic_year, semester, webhook_url=webhook_url)
 
-        return {"status": "success"}
+        return {"status": "success", "failing_count": total_failing}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -364,15 +393,16 @@ async def api_export_wp16_saved(request: Request):
         teacher_name = data.get("teacher_name", "")
         subject_code = data.get("subject_code", "")
         subject_name = data.get("subject_name", "")
-        academic_year = str(data.get("academic_year", "2568"))
-        semester = str(data.get("semester", "2"))
+        academic_year = str(data.get("academic_year", "2569"))
+        semester = str(data.get("semester", "1"))
         students = data.get("students", [])
+        webhook_url = data.get("webhookUrl") or data.get("webhook_url")
 
         if not students:
             rooms = get_rooms_for_subject(teacher_name, subject_code)
             doc_bytes = generate_wp16(pair_results=rooms, subject_code=subject_code, subject_name=subject_name, teacher_name=teacher_name, term=semester, year=academic_year)
         else:
-            save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester)
+            save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester, webhook_url=webhook_url)
             doc_bytes = generate_wp16(subject_code=subject_code, subject_name=subject_name, teacher_name=teacher_name, students=students, term=semester, year=academic_year)
 
         if not doc_bytes:
@@ -699,8 +729,9 @@ async def api_save_wp16_tasks(request: Request):
         academic_year = str(data.get("academic_year", "2569"))
         semester = str(data.get("semester", "1"))
         students = data.get("students", [])
+        webhook_url = data.get("webhookUrl") or data.get("webhook_url")
 
-        save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester)
+        save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester, webhook_url=webhook_url)
         return {"status": "success", "count": len(students)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
