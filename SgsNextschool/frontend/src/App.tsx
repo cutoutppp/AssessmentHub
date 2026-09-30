@@ -670,16 +670,33 @@ function App() {
 
       try {
         setIsSaving(true);
-        await fetch(`${BACKEND_URL}/api/queue_save`, {
-          method: "POST",
-          body: JSON.stringify({
-            webhookUrl: webhookUrl,
-            payload: payload
-          }),
-          headers: {
-            "Content-Type": "application/json"
+        let backendSaved = false;
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/queue_save`, {
+            method: "POST",
+            body: JSON.stringify({
+              webhookUrl: webhookUrl,
+              payload: payload
+            }),
+            headers: {
+              "Content-Type": "application/json"
+            }
+          });
+          if (res.ok) {
+            backendSaved = true;
           }
-        });
+        } catch (backendErr) {
+          console.warn("Backend queue_save offline/failed, falling back to direct GAS Webhook:", backendErr);
+        }
+
+        // หาก Backend ไม่ได้เปิดทำงาน หรือตอบสนองช้า ให้ส่งข้อมูลตรงไปยัง Google Apps Script ทันที เพื่อบันทึกลงชีต History
+        if (!backendSaved && webhookUrl) {
+          await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
+        }
 
         // Directly sync failing students to Google Sheets WP16_งานค้าง tab (14 columns)
         if (failingStudents.length > 0 && webhookUrl) {
