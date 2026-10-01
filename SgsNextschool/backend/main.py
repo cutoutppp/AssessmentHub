@@ -836,6 +836,10 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                 if item.get("teacher_name") == teacher_name or item.get("subject_code") == subject_code:
                     recent_set.add(t)
 
+        print(f"[DEBUG WP16] Returning {len(students)} students for {subject_code} / {teacher_name}")
+        for s in students:
+            print(f"   - {s.get('student_id')} : {s.get('student_name')}")
+
         return {
             "status": "success",
             "teacher_name": teacher_name,
