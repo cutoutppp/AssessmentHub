@@ -200,8 +200,7 @@ def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
     params = {"action": "get-wp16"}
     if subject_code:
         params["subject_code"] = subject_code
-    if teacher_name:
-        params["teacher_name"] = teacher_name
+    # Do not send teacher_name to GAS to avoid strict exact-match filtering in GAS
     try:
         resp = requests.get(GAS_URL, params=params, timeout=10)
         data = resp.json()
@@ -212,24 +211,14 @@ def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
 
 def get_pending_tasks_for_subject(subject_code, teacher_name=None):
     """
-    ดึงรายชื่อนักเรียนที่มีงานค้างสำหรับวิชานี้ (รวม Local DB + Google Sheet)
-    - Local DB: ต้องโหลดเพื่อรักษารายชื่อที่ครู 'เพิ่มเอง' หรือ 'ได้จากการตรวจไฟล์' ที่อาจจะยังไม่ได้อัปเดตขึ้น GAS
-    - Google Sheet: ใช้ทับข้อมูลชื่อ (Source of Truth สำหรับรายชื่อทางการที่แก้ภาษาต่างดาวแล้ว)
+    ดึงรายชื่อนักเรียนที่มีงานค้างสำหรับวิชานี้จาก Google Sheet โดยตรง 100%
+    ไม่มีการอ่านจาก Local DB เลย เพื่อให้รองรับการใช้งานออนไลน์หลายคนพร้อมกัน
     """
-    db = _load_wp16_db()
     result = {}
     
-    # 1. โหลดรายชื่อที่อยู่ใน Local DB ก่อน (พวกที่เพิ่งเพิ่ม/ตรวจไฟล์จะอยู่ที่นี่)
-    for k, v in db.items():
-        if v.get('subject_code') == subject_code:
-            sid = str(v.get('student_id', '')).strip()
-            if sid:
-                result[sid] = dict(v)
-                
-    # 2. ดึงจาก Google Sheet มาอัปเดต/ทับ
-    gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
+    # ดึงจาก Google Sheet (ส่งแค่ subject_code เพื่อไม่ให้ GAS filter ชื่อครูทิ้งถ้าพิมพ์ไม่ตรง)
+    gas_items = fetch_wp16_from_gas(subject_code)
     
-    changed = False
     for it in gas_items:
         sid = str(it.get('student_id') or it.get('เลขประจำตัว') or '').strip()
         if not sid:
@@ -238,7 +227,7 @@ def get_pending_tasks_for_subject(subject_code, teacher_name=None):
         sp = str(it.get('special_id') or it.get('เลขเฉพาะ') or f"{subject_code}{sid}").strip()
         gas_name = str(it.get('student_name') or it.get('ชื่อ-นามสกุล') or '').strip()
         
-        gas_rec = {
+        result[sid] = {
             'special_id': sp,
             'academic_year': str(it.get('academic_year') or it.get('ปีการศึกษา') or '2569'),
             'semester': str(it.get('semester') or it.get('ภาคเรียน') or '1'),
@@ -255,23 +244,6 @@ def get_pending_tasks_for_subject(subject_code, teacher_name=None):
             'is_manual': bool(it.get('is_manual', False)),
             'updated_at': str(it.get('updated_at') or it.get('วันที่บันทึก') or ''),
         }
-        
-        if sid in result:
-            # มีทั้งใน Local และ GAS -> ยึดชื่อจาก GAS เป็นหลัก (แก้ภาษาต่างดาว)
-            # ส่วนงานค้าง, หมายเหตุ ถ้าของ Local DB มี (เพิ่งแก้) ให้เก็บไว้
-            local_name = result[sid].get('student_name', '')
-            if gas_name and gas_name != local_name:
-                result[sid]['student_name'] = gas_name
-                db[sp]['student_name'] = gas_name
-                changed = True
-        else:
-            # มีใน GAS แต่ไม่มีใน Local DB -> เพิ่มเข้าไป
-            result[sid] = gas_rec
-            db[sp] = gas_rec
-            changed = True
-            
-    if changed:
-        _save_wp16_db(db)
         
     return result
 
