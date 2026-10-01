@@ -211,23 +211,15 @@ def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
         return []
 
 def get_pending_tasks_for_subject(subject_code, teacher_name=None):
-    """ดึงรายชื่อนักเรียนที่มีงานค้างสำหรับวิชานี้
-
-    ลำดับความสำคัญ:
-    1. Google Sheet (WP16_งานค้าง) — source of truth เสมอ
-       ชื่อ, ห้อง, คะแนน, เกรด ดึงจากชีตเป็นหลัก
-    2. Local DB (wp16_pending_tasks.json) — ใช้ merge ข้อมูลที่ user แก้ไขใน UI
-       เช่น pending_task, remark ที่บันทึกผ่านระบบ
-    3. ถ้า GAS ไม่ตอบสนอง → ใช้ local DB ทั้งหมด (fallback)
-    """
-    db = _load_wp16_db()
-
-    def _gas_item_to_db(it, subject_code, teacher_name):
+    """ดึงรายชื่อนักเรียนที่มีงานค้างจาก Google Sheet โดยตรง (source of truth)"""
+    gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
+    result = {}
+    for it in gas_items:
         sid = str(it.get('student_id') or it.get('เลขประจำตัว') or '').strip()
         if not sid:
-            return None, None
+            continue
         sp = str(it.get('special_id') or it.get('เลขเฉพาะ') or f"{subject_code}{sid}").strip()
-        return sid, {
+        result[sid] = {
             'special_id': sp,
             'academic_year': str(it.get('academic_year') or it.get('ปีการศึกษา') or '2569'),
             'semester': str(it.get('semester') or it.get('ภาคเรียน') or '1'),
@@ -244,42 +236,6 @@ def get_pending_tasks_for_subject(subject_code, teacher_name=None):
             'is_manual': bool(it.get('is_manual', False)),
             'updated_at': str(it.get('updated_at') or it.get('วันที่บันทึก') or ''),
         }
-
-    # --- 1. ดึงจาก Google Sheet (source of truth) ---
-    gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
-
-    if gas_items:
-        result = {}
-        changed = False
-        for it in gas_items:
-            sid, gas_rec = _gas_item_to_db(it, subject_code, teacher_name)
-            if not sid:
-                continue
-            sp = gas_rec['special_id']
-            local = db.get(sp, {})
-            # ข้อมูลหลักมาจากชีต แต่ pending_task / remark / is_manual
-            # ให้ใช้ local ถ้า local ถูก update ล่าสุดโดย user (ผ่าน /api/wp16/save)
-            merged = {
-                **gas_rec,
-                'pending_task': local.get('pending_task') or gas_rec.get('pending_task', ''),
-                'remark': local.get('remark') or gas_rec.get('remark', ''),
-                'is_manual': local.get('is_manual', gas_rec.get('is_manual', False)),
-            }
-            # อัปเดต local cache ด้วย gas data (เพื่อให้ชื่อ/ห้อง ล่าสุดเสมอ)
-            if db.get(sp) != merged:
-                db[sp] = merged
-                changed = True
-            result[sid] = merged
-        if changed:
-            _save_wp16_db(db)
-        return result
-
-    # --- 2. GAS ไม่ตอบสนอง — ใช้ local DB (fallback) ---
-    print(f"[WP16] GAS unavailable, falling back to local DB for {subject_code}")
-    result = {}
-    for k, v in db.items():
-        if v.get('subject_code') == subject_code:
-            result[v.get('student_id')] = v
     return result
 
 def get_all_pending_tasks():
