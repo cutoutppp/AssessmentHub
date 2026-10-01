@@ -9,7 +9,6 @@
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
         
-        /* สไตล์สำหรับตารางที่แปลงมาจาก Excel */
         .preview-table-container {
             max-height: 650px;
             overflow-y: auto;
@@ -33,7 +32,6 @@
             background-color: #f1f5f9;
         }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -63,9 +61,9 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <h1 class="text-2xl font-bold text-slate-800">ระบบวิเคราะห์ความผิดปกติ ต.2ก</h1>
-                            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">v2.0 (Tab View)</span>
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">v2.1 (Matrix Audit)</span>
                         </div>
-                        <p class="text-slate-500 text-sm mt-0.5">ระบบผู้ช่วยแอดมิน: ตรวจสอบความผิดปกติของการกรอกผลการเรียน พร้อมแสดงภาพเอกสารดิบแยกรายห้อง</p>
+                        <p class="text-slate-500 text-sm mt-0.5">ระบบตรวจสอบผลการเรียน: ตรวจจับทั้งแนวนอน (รายบุคคล) และแนวตั้ง (รายวิชา) พร้อมดึงชื่อครูผู้สอนจากตารางสอน</p>
                     </div>
                 </div>
             </div>
@@ -104,7 +102,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    กำลังอ่านไฟล์ Excel และประมวลผลภาพเอกสาร กรุณารอสักครู่...
+                    กำลังประมวลผลเอกสาร ตรวจจับแนวนอนและแนวตั้ง กรุณารอสักครู่...
                 </div>
             </div>
         </div>
@@ -113,10 +111,10 @@
         <div id="resultsContainer" class="hidden space-y-4">
             
             <!-- Global Overview Stats Card -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">จำนวนไฟล์ที่ประมวลผล</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">จำนวนไฟล์</p>
                         <p id="statTotalFiles" class="text-2xl font-bold text-slate-800 mt-1">0 ไฟล์</p>
                     </div>
                     <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
@@ -125,7 +123,7 @@
                 </div>
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">จำนวนนักเรียนทั้งหมด</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">จำนวนนักเรียน</p>
                         <p id="statTotalStudents" class="text-2xl font-bold text-slate-800 mt-1">0 คน</p>
                     </div>
                     <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
@@ -134,11 +132,20 @@
                 </div>
                 <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ข้อตรวจพบ / ผิดปกติ</p>
-                        <p id="statTotalIssues" class="text-2xl font-bold text-red-600 mt-1">0 รายการ</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ตรวจแนวนอน (รายบุคคล)</p>
+                        <p id="statStudentIssues" class="text-2xl font-bold text-red-600 mt-1">0 รายการ</p>
                     </div>
-                    <div id="statIssueIconBg" class="p-3 bg-red-50 text-red-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div class="p-3 bg-red-50 text-red-600 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ตรวจแนวตั้ง (รายวิชา)</p>
+                        <p id="statSubjectIssues" class="text-2xl font-bold text-amber-600 mt-1">0 รายวิชา</p>
+                    </div>
+                    <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     </div>
                 </div>
             </div>
@@ -164,7 +171,6 @@
         const fileCountBadge = document.getElementById('fileCountBadge');
         const fileCountText = document.getElementById('fileCountText');
 
-        // Drag and drop handlers
         uploadForm.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadForm.classList.add('bg-indigo-100/70', 'border-indigo-500');
@@ -234,13 +240,7 @@
             }
         });
 
-        let currentActiveTab = 0;
-        let globalProcessedData = null;
-
         function renderTabsAndResults(data) {
-            globalProcessedData = data;
-            
-            // Normalize files list
             let files = data.files || [];
             if (files.length === 0 && data.documents && data.documents.length > 0) {
                 files = data.documents.map((doc, idx) => ({
@@ -248,37 +248,31 @@
                     class_level: doc.class_level,
                     total_students: 0,
                     anomalies: (data.anomalies || []).filter(a => a.file === doc.filename),
+                    subject_anomalies: (data.subject_anomalies || []).filter(a => a.file === doc.filename),
                     html: doc.html,
                     error: null
                 }));
             }
 
-            // Calculate overall stats
             const totalFiles = files.length || data.total_files_processed || 0;
             let totalStudents = 0;
-            let totalIssues = 0;
+            let totalStudentIssues = (data.anomalies && data.anomalies.filter(a => !a.error).length) || 0;
+            let totalSubjectIssues = (data.subject_anomalies && data.subject_anomalies.length) || 0;
 
             files.forEach(f => {
                 totalStudents += (f.total_students || 0);
-                if (f.anomalies) totalIssues += f.anomalies.length;
             });
 
             document.getElementById('statTotalFiles').textContent = `${totalFiles} ไฟล์`;
             document.getElementById('statTotalStudents').textContent = `${totalStudents > 0 ? totalStudents : '-'} คน`;
-            document.getElementById('statTotalIssues').textContent = `${totalIssues} รายการ`;
-            
-            const issueBg = document.getElementById('statIssueIconBg');
-            if (totalIssues === 0) {
-                issueBg.className = 'p-3 bg-emerald-50 text-emerald-600 rounded-xl';
-                document.getElementById('statTotalIssues').className = 'text-2xl font-bold text-emerald-600 mt-1';
-            } else {
-                issueBg.className = 'p-3 bg-red-50 text-red-600 rounded-xl';
-                document.getElementById('statTotalIssues').className = 'text-2xl font-bold text-red-600 mt-1';
-            }
+            document.getElementById('statStudentIssues').textContent = `${totalStudentIssues} รายการ`;
+            document.getElementById('statSubjectIssues').textContent = `${totalSubjectIssues} รายวิชา`;
 
             // Build Tab Buttons
             const tabBar = document.getElementById('tabBar');
             tabBar.innerHTML = '';
+
+            const totalAllIssues = totalStudentIssues + totalSubjectIssues;
 
             // Tab 0: Overall Summary
             const summaryBtn = document.createElement('button');
@@ -288,20 +282,23 @@
             summaryBtn.innerHTML = `
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                 <span>ภาพรวมทั้งหมด</span>
-                <span class="text-xs px-2 py-0.5 rounded-full ${totalIssues > 0 ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white'}">${totalIssues} ข้อสังเกต</span>
+                <span class="text-xs px-2 py-0.5 rounded-full ${totalAllIssues > 0 ? 'bg-red-500 text-white' : 'bg-emerald-500 text-white'}">${totalAllIssues} ข้อสังเกต</span>
             `;
             tabBar.appendChild(summaryBtn);
 
             // Per-file tabs
             files.forEach((f, idx) => {
-                const fIssues = (f.anomalies && f.anomalies.length) || 0;
+                const fStudentIssues = (f.anomalies && f.anomalies.length) || 0;
+                const fSubjectIssues = (f.subject_anomalies && f.subject_anomalies.length) || 0;
+                const fTotalIssues = fStudentIssues + fSubjectIssues;
+
                 const tabBtn = document.createElement('button');
                 tabBtn.id = `tab-btn-file-${idx}`;
                 tabBtn.onclick = () => switchTab(idx);
                 tabBtn.className = 'flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap bg-slate-50 text-slate-600 hover:bg-slate-100';
                 
-                const badgeColor = fIssues > 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-emerald-100 text-emerald-700';
-                const badgeText = fIssues > 0 ? `พบ ${fIssues} จุด` : 'ปกติ';
+                const badgeColor = fTotalIssues > 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-emerald-100 text-emerald-700';
+                const badgeText = fTotalIssues > 0 ? `พบ ${fTotalIssues} จุด` : 'ปกติ';
 
                 tabBtn.innerHTML = `
                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -315,11 +312,47 @@
             const contentArea = document.getElementById('tabContentArea');
             contentArea.innerHTML = '';
 
-            // Content 0: Summary View
+            // --- Content 0: Summary View ---
             const summaryContent = document.createElement('div');
             summaryContent.id = 'tab-content-summary';
             summaryContent.className = 'space-y-6';
 
+            // 1. Subject-level anomalies summary cards
+            let subjectAnomaliesHtml = '';
+            if (data.subject_anomalies && data.subject_anomalies.length > 0) {
+                subjectAnomaliesHtml = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="p-1.5 bg-amber-100 text-amber-700 rounded-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-800">ข้อสังเกตระดับรายวิชา (แนวตั้ง: การกระจายตัวของเกรด / ข้อผิดพลาดของวิชา)</h3>
+                            </div>
+                            <span class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">${data.subject_anomalies.length} รายการ</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            ${data.subject_anomalies.map(sa => `
+                                <div class="bg-amber-50/60 border border-amber-200 rounded-xl p-4 flex flex-col justify-between space-y-2">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-bold text-slate-800 text-sm">${sa.subject}</span>
+                                            <span class="bg-white border border-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded font-medium">${sa.class_level}</span>
+                                        </div>
+                                        <p class="text-xs text-amber-900 font-semibold leading-relaxed">${sa.issues.join('<br>')}</p>
+                                    </div>
+                                    <div class="pt-2 border-t border-amber-200/60 text-xs text-slate-600 flex items-center gap-1.5">
+                                        <span class="text-slate-400">ครูผู้สอน:</span>
+                                        <span class="font-bold text-slate-700">${sa.teacher}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 2. Student-level anomalies table
             let allAnomaliesRows = '';
             if (data.anomalies && data.anomalies.length > 0) {
                 data.anomalies.forEach(item => {
@@ -355,21 +388,24 @@
             }
 
             summaryContent.innerHTML = `
-                <!-- Anomaly list table -->
+                <!-- Subject-level anomalies block -->
+                ${subjectAnomaliesHtml}
+
+                <!-- Student-level anomalies table -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
                         <div class="flex items-center gap-2.5">
-                            <div class="p-1.5 ${totalIssues > 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'} rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            <div class="p-1.5 ${totalStudentIssues > 0 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'} rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                             </div>
                             <h2 class="text-lg font-bold text-slate-800">
-                                ${totalIssues > 0 ? `รายการที่พบความผิดปกติ (${totalIssues} รายการ)` : 'ไม่พบความผิดปกติใดๆ 🎉'}
+                                ${totalStudentIssues > 0 ? `ข้อสังเกตระดับนักเรียน (แนวนอน: ${totalStudentIssues} รายการ)` : 'ไม่พบความผิดปกติระดับนักเรียน 🎉'}
                             </h2>
                         </div>
                         <span class="text-xs text-slate-500 font-medium">รวมทุกไฟล์ที่อัปโหลด</span>
                     </div>
 
-                    ${totalIssues > 0 ? `
+                    ${totalStudentIssues > 0 ? `
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm text-slate-600">
                                 <thead class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
@@ -388,10 +424,10 @@
                             </table>
                         </div>
                     ` : `
-                        <div class="p-10 text-center space-y-3">
-                            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">✓</div>
-                            <h3 class="text-xl font-bold text-emerald-800">ผลการวิเคราะห์สมบูรณ์: ไม่พบข้อผิดปกติ</h3>
-                            <p class="text-slate-500 max-w-lg mx-auto text-sm">การกรอกเกรดและการประเมินผลของนักเรียนทุกห้องมีความสอดคล้องกันดี ท่านสามารถคลิกเลือกแท็บของแต่ละห้องด้านบนเพื่อตรวจสอบข้อมูลเอกสารดิบอย่างละเอียดได้</p>
+                        <div class="p-8 text-center space-y-2">
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">✓</div>
+                            <h4 class="font-bold text-emerald-800 text-base">ไม่พบความผิดปกติระดับนักเรียน</h4>
+                            <p class="text-slate-500 text-xs">ผลการเรียนของนักเรียนทุกคนมีความสอดคล้องตามเกณฑ์ ไม่มีเด็กเรียนดีตกวิชาเดียว หรือเด็กเสี่ยงออกที่ผ่านวิชาเดียว</p>
                         </div>
                     `}
                 </div>
@@ -399,13 +435,13 @@
                 <!-- Files quick overview cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     ${files.map((f, i) => {
-                        const issuesCount = (f.anomalies && f.anomalies.length) || 0;
+                        const issuesCount = ((f.anomalies && f.anomalies.length) || 0) + ((f.subject_anomalies && f.subject_anomalies.length) || 0);
                         return `
                             <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:border-indigo-200 transition-all flex flex-col justify-between cursor-pointer" onclick="switchTab(${i})">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-xs font-bold px-2.5 py-1 rounded-full ${issuesCount > 0 ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'}">
-                                            ${issuesCount > 0 ? `พบ ${issuesCount} จุดผิดปกติ` : 'ปกติ'}
+                                            ${issuesCount > 0 ? `พบ ${issuesCount} จุดข้อสังเกต` : 'ปกติ'}
                                         </span>
                                         <span class="text-xs text-slate-400 font-mono">แท็บ #${i + 1}</span>
                                     </div>
@@ -423,26 +459,52 @@
             `;
             contentArea.appendChild(summaryContent);
 
-            // Content 1..N: Individual File Tabs with Raw Document Tables
+            // --- Content 1..N: Individual File Tabs with Raw Document Tables ---
             files.forEach((f, idx) => {
                 const fileContent = document.createElement('div');
                 fileContent.id = `tab-content-file-${idx}`;
                 fileContent.className = 'space-y-6 hidden';
 
-                const fIssues = f.anomalies || [];
-                let fileIssuesHtml = '';
+                const fStudentIssues = f.anomalies || [];
+                const fSubjectIssues = f.subject_anomalies || [];
 
-                if (fIssues.length > 0) {
-                    fileIssuesHtml = `
-                        <div class="bg-red-50 border border-red-200 rounded-2xl p-6">
-                            <h3 class="text-base font-bold text-red-800 flex items-center gap-2 mb-3">
-                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                พบข้อสังเกตในห้องนี้ (${fIssues.length} รายการ)
-                            </h3>
+                // 1. Subject issues in this room
+                let subjectAlertHtml = '';
+                if (fSubjectIssues.length > 0) {
+                    subjectAlertHtml = `
+                        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
+                            <h4 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                ข้อสังเกตระดับรายวิชาในห้องนี้ (${fSubjectIssues.length} วิชา)
+                            </h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                ${fIssues.map(it => `
-                                    <div class="bg-white rounded-xl p-4 border border-red-100 shadow-sm">
-                                        <div class="flex items-center justify-between mb-1.5">
+                                ${fSubjectIssues.map(sa => `
+                                    <div class="bg-white rounded-xl p-3.5 border border-amber-200 shadow-sm">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-bold text-slate-800 text-xs">${sa.subject}</span>
+                                            <span class="text-xs text-slate-500">ครู: <strong class="text-slate-700">${sa.teacher}</strong></span>
+                                        </div>
+                                        <p class="text-xs text-amber-800 font-semibold leading-relaxed">${sa.issues.join(', ')}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // 2. Student issues in this room
+                let studentAlertHtml = '';
+                if (fStudentIssues.length > 0) {
+                    studentAlertHtml = `
+                        <div class="bg-red-50 border border-red-200 rounded-2xl p-5 space-y-3">
+                            <h4 class="text-sm font-bold text-red-900 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                ข้อสังเกตระดับนักเรียนในห้องนี้ (${fStudentIssues.length} คน)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                ${fStudentIssues.map(it => `
+                                    <div class="bg-white rounded-xl p-3.5 border border-red-100 shadow-sm">
+                                        <div class="flex items-center justify-between mb-1">
                                             <span class="font-bold text-slate-800 text-sm">${it.student_name} (${it.student_id})</span>
                                             <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded font-mono font-bold">GPA ${it.gpa}</span>
                                         </div>
@@ -457,14 +519,18 @@
                             </div>
                         </div>
                     `;
-                } else {
-                    fileIssuesHtml = `
+                }
+
+                const totalRoomIssues = fStudentIssues.length + fSubjectIssues.length;
+                let roomStatusBanner = '';
+                if (totalRoomIssues === 0) {
+                    roomStatusBanner = `
                         <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-3">
                             <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                             <div>
-                                <h4 class="font-bold text-emerald-800 text-sm">ไม่พบความผิดปกติจากการตรวจอัตโนมัติ</h4>
+                                <h4 class="font-bold text-emerald-800 text-sm">ไม่พบความผิดปกติทั้งระดับนักเรียนและรายวิชา</h4>
                                 <p class="text-xs text-emerald-600">สามารถตรวจทานผลการเรียนของนักเรียนทุกคนในห้องนี้ได้ด้วยตาผ่านตารางเอกสารด้านล่าง</p>
                             </div>
                         </div>
@@ -477,19 +543,20 @@
                         <div>
                             <div class="flex items-center gap-2">
                                 <h2 class="text-xl font-bold text-slate-800">ห้อง ${f.class_level}</h2>
-                                <span class="text-xs px-2.5 py-1 rounded-full ${fIssues.length > 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-emerald-100 text-emerald-700'}">
-                                    ${fIssues.length > 0 ? `พบ ${fIssues.length} จุดผิดปกติ` : 'ปกติ'}
+                                <span class="text-xs px-2.5 py-1 rounded-full ${totalRoomIssues > 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-emerald-100 text-emerald-700'}">
+                                    ${totalRoomIssues > 0 ? `พบ ${totalRoomIssues} จุดข้อสังเกต` : 'ปกติ'}
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">ชื่อไฟล์: <span class="font-mono text-slate-600">${f.filename}</span></p>
+                            <p class="text-xs text-slate-400 mt-1">ชื่อไฟล์: <span class="font-mono text-slate-600">${f.filename}</span> (${f.total_students} คน)</p>
                         </div>
                         <div class="text-xs text-slate-500 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
-                            💡 เลื่อนแถบตารางแนวนอนและแนวตั้งเพื่อดูเกรดทุกวิชาได้เต็มจอ
+                            💡 ตรึงคอลัมน์ชื่อ-สกุล และตรึงหัววิชาด้านบนไว้ให้แล้ว สามารถเลื่อนดูได้เต็มที่
                         </div>
                     </div>
 
-                    <!-- Issues Box -->
-                    ${fileIssuesHtml}
+                    ${roomStatusBanner}
+                    ${subjectAlertHtml}
+                    ${studentAlertHtml}
 
                     <!-- Full Document Table Preview (ALWAYS VISIBLE) -->
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -511,10 +578,7 @@
                 contentArea.appendChild(fileContent);
             });
 
-            // Show results container
             document.getElementById('resultsContainer').classList.remove('hidden');
-
-            // Default to summary tab
             switchTab('summary');
         }
 
