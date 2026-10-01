@@ -460,7 +460,12 @@
                                 <div class="text-xs text-slate-400 font-normal truncate max-w-[120px]" title="${item.file}">${item.file}</div>
                             </td>
                             <td class="px-6 py-4 font-mono text-sm">${item.student_id}</td>
-                            <td class="px-6 py-4 font-medium text-slate-700">${item.student_name}</td>
+                            <td class="px-6 py-4 font-medium text-slate-700">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span>${item.student_name}</span>
+                                    ${item.is_special_ld ? '<span class="bg-purple-100 text-purple-700 text-[11px] font-bold px-2 py-0.5 rounded-full border border-purple-200">นักเรียนเรียนร่วม (LD)</span>' : ''}
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-center font-bold text-slate-800">
                                 <span class="bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">${item.gpa}</span>
                             </td>
@@ -589,7 +594,10 @@
                                 ${fStudentIssues.map(it => `
                                     <div class="bg-white rounded-xl p-3.5 border border-red-100 shadow-sm">
                                         <div class="flex items-center justify-between mb-1">
-                                            <span class="font-bold text-slate-800 text-sm">${it.student_name} (${it.student_id})</span>
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <span class="font-bold text-slate-800 text-sm">${it.student_name} (${it.student_id})</span>
+                                                ${it.is_special_ld ? '<span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-purple-200">นักเรียนเรียนร่วม (LD)</span>' : ''}
+                                            </div>
                                             <span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded font-mono font-bold">GPA ${it.gpa}</span>
                                         </div>
                                         <p class="text-xs text-red-600 font-medium leading-relaxed">${it.issues.join(', ')}</p>
@@ -800,7 +808,7 @@
 
             // 2. กฎการตรวจ / เกณฑ์
             if (lower.includes('กฎ') || lower.includes('เกณฑ์') || lower.includes('ตรวจอะไร') || lower.includes('เงื่อนไข')) {
-                return `**⚖️ ระบบใช้เกณฑ์การตรวจแบบ Matrix 2 มิติ ดังนี้ครับ:**\n\n` +
+                return `**⚖️ ระบบใช้เกณฑ์การตรวจแบบ Matrix 3 ส่วน ดังนี้ครับ:**\n\n` +
                        `**1. การตรวจแนวตั้ง (ระดับรายวิชา / แนวดิ่ง):**\n` +
                        `- **เกรดเหมือนกันทั้งห้อง 100%:** ทุกคนได้เกรดเดียวกันหมดเป๊ะ (เช่น ได้ 4 ทั้งห้อง 36 คน) มักเกิดจากการตัดเกรดเหมาห้อง หรือ Copy-paste คะแนนผิด\n` +
                        `- **อัตราการตกสูงผิดปกติ:** นักเรียนติด 0, ร, มส, มผ เกิน 35% ของห้อง และมากกว่า 5 คนขึ้นไป\n` +
@@ -810,7 +818,26 @@
                        `- **เด็กเรียนดีสะดุดตกวิชาเดียว:** GPA ≥ 2.50 หรือเกรด 4 เกิน 30% ของวิชา แต่ติด 0/ร/มส เพียง 1-2 วิชา (อาจลืมสอบปลายภาคหรือขาดส่งงานชิ้นสุดท้าย)\n` +
                        `- **เด็กเสี่ยงออกกลางคัน:** ติด 0/ร/มส เกือบทุกวิชา แต่ดันผ่านเพียง 1-2 วิชา (วิชาที่ผ่านอาจไม่ได้เช็คเวลาเรียนจริง)\n` +
                        `- **เกรดแกว่งรุนแรง:** ได้เกรด 4 หลายวิชาสลับกับติด 0/ร/มส ในเทอมเดียวกัน\n` +
-                       `- **ผ่านทุกวิชาแต่ตกกิจกรรม:** ผ่านวิชาการครบทุกวิชาแต่ได้ "มผ" ในกิจกรรมพัฒนาผู้เรียน ซึ่งทำให้ไม่จบหลักสูตรได้ครับ`;
+                       `- **ผ่านทุกวิชาแต่ตกกิจกรรม:** ผ่านวิชาการครบทุกวิชาแต่ได้ "มผ" ในกิจกรรมพัฒนาผู้เรียน ซึ่งทำให้ไม่จบหลักสูตรได้ครับ\n\n` +
+                       `**3. กฎเฉพาะนักเรียนเรียนร่วม (บกพร่องทางการเรียนรู้และสติปัญญา / LD):**\n` +
+                       `- **ผลการเรียนต้องมากกว่า 1 เท่านั้น:** นักเรียนกลุ่มเรียนร่วม 6 คน (เช่น ด.ช.ภาณุพงษ์ ม.3/7, ด.ช.ณัฐพล ม.4/9, ด.ช.ณัฏฐนันท์ ม.5/8, นายนรภัทร ม.5/9, ด.ญ.อภิญญา ม.5/10, ด.ญ.อำภา ม.5/10) ผลการเรียนทุกวิชาต้อง **มากกว่า 1.0 เท่านั้น** (ห้ามได้ 0, 1.0, ร, มส, มผ)`;
+            }
+
+            // 2.1 นักเรียนเรียนร่วม / LD / พิเศษ / มากกว่า 1
+            if (lower.includes('ld') || lower.includes('เรียนร่วม') || lower.includes('พิเศษ') || lower.includes('บกพร่อง') || lower.includes('มากกว่า 1') || lower.includes('สติปัญญา') || lower.includes('ภาณุพงษ์') || lower.includes('ณัฐพล') || lower.includes('ณัฏฐนันท์') || lower.includes('นรภัทร') || lower.includes('กรภัทร') || lower.includes('อภิญญา') || lower.includes('อำภา')) {
+                return `**🌟 กฎการตรวจเฉพาะนักเรียนเรียนร่วม (เรียนบกพร่องทางการเรียนรู้และสติปัญญา / LD):**\n\n` +
+                       `ตามระเบียบการวัดผลและแผนการจัดการศึกษาเฉพาะบุคคล (IEP) กำหนดเกณฑ์ว่า:\n` +
+                       `👉 **"นักเรียนที่มีรายชื่อดังต่อไปนี้ ผลการเรียนต้องมากกว่า 1 เท่านั้น"** (ห้ามได้ 0, 1.0, ร, มส หรือ มผ)\n\n` +
+                       `**รายชื่อนักเรียนกลุ่มเรียนร่วม ภาคเรียนที่ 1/2569:**\n` +
+                       `1. **เด็กชายภาณุพงษ์ รสโสดา** (ชั้น ม.3/7)\n` +
+                       `2. **เด็กชายณัฐพล โอนติ่ง** (ชั้น ม.4/9)\n` +
+                       `3. **เด็กชายณัฏฐนันท์ มณีศรี** (ชั้น ม.5/8)\n` +
+                       `4. **นายนรภัทร ชาติตอง** (ชั้น ม.5/9)\n` +
+                       `5. **เด็กหญิงอภิญญา ทัศนา** (ชั้น ม.5/10)\n` +
+                       `6. **เด็กหญิงอำภา ด้วงทอง** (ชั้น ม.5/10)\n\n` +
+                       `💡 **การทำงานอัตโนมัติ:**\n` +
+                       `- หากตรวจพบว่านักเรียนกลุ่มนี้ได้เกรด $\\le 1.0$ ในวิชาใด ระบบจะขึ้นแจ้งเตือนกรอบสีแดงพร้อมป้าย **[นักเรียนเรียนร่วม (LD)]** ทันที\n` +
+                       `- ระบบจะค้นหาและแสดง **ชื่อครูผู้สอน** ประจำวิชานั้นๆ จาก Google Sheet ตารางสอน เพื่อให้สามารถประสานงานปรับปรุงผลการเรียนได้อย่างรวดเร็วครับ!`;
             }
 
             // 3. ชื่อครูดึงมาจากไหน
