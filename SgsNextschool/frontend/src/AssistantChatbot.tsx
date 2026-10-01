@@ -41,6 +41,7 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const getNowTime = () => {
@@ -325,13 +326,26 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
 
     setInputText('');
     setMessages(prev => [...prev, userMsg]);
+    setIsTyping(true);
 
     // Match query against knowledge base keywords
     setTimeout(() => {
+      setIsTyping(false);
       const q = query.toLowerCase();
       let matchedTopicId = '';
+      let dynamicReply = '';
 
-      if (q.includes('เทา') || q.includes('ปุ่มเทา') || q.includes('ล็อก') || q.includes('lock') || q.includes('disabled') || q.includes('โหลดไม่ได้') || q.includes('ทำไมโหลดไม่ได้') || q.includes('ทำไมกดไม่ได้') || q.includes('กดไม่ได้')) {
+      if (q.includes('สวัสดี') || q.includes('หวัดดี') || q.includes('ดีครับ') || q.includes('ดีค่ะ') || q.includes('hello') || q.includes('hi')) {
+         dynamicReply = 'สวัสดีครับ! ยินดีที่ได้ให้บริการครับ 😊 ผมคือผู้ช่วยอัจฉริยะ SGS & NextSchool วันนี้มีอะไรให้ผมช่วยแนะนำหรือแก้ไขปัญหาเกี่ยวกับการส่งคะแนนไหมครับ?';
+      } else if (q.includes('ทำอะไรได้บ้าง') || q.includes('ช่วยอะไรได้บ้าง') || q.includes('เก่งเรื่องอะไร') || q.includes('คือใคร') || q.includes('ชื่ออะไร')) {
+         dynamicReply = `ผมคือผู้ช่วย AI (Chat Assistant) ที่ออกแบบมาเพื่อดูแลและแก้ปัญหาการใช้งานระบบ SGS & NextSchool ครับ! 🤖✨\n\nผมสามารถให้คำแนะนำเรื่อง:\n• วิธีใช้งานระบบ 5 ขั้นตอน\n• การแก้ปัญหาการ์ดสีแดง / ป้ายสีเหลือง\n• อธิบายการออกรายงาน วผ.16, วผ.17, วผ.25\n• วิธีปลดล็อกปุ่มดาวน์โหลดสีเทา\n\nลองสอบถามมาได้เลยครับ!`;
+      } else if (q.includes('ขอบคุณ') || q.includes('ขอบใจ') || q.includes('แต้ง') || q.includes('thank')) {
+         dynamicReply = 'ด้วยความยินดีครับ! หากติดขัดตรงไหน หรือมีคำถามเพิ่มเติม ทักหาผมได้ตลอดเลยนะครับ ขอให้การสอนวันนี้ราบรื่นครับ 💙';
+      } else if (q.includes('ลาก่อน') || q.includes('ไปแล้ว') || q.includes('บ๊ายบาย') || q.includes('bye')) {
+         dynamicReply = 'ไว้พบกันใหม่นะครับคุณครู ขอให้วันนี้เป็นวันที่ดีครับ! 👋';
+      } else if (q.includes('น่ารัก') || q.includes('เก่ง') || q.includes('ฉลาด') || q.includes('ดีมาก') || q.includes('ยอดเยี่ยม') || q.includes('สุดยอด') || q.includes('ดีจริงๆ')) {
+         dynamicReply = 'ขอบคุณมากครับ! คำชมของคุณครูคือกำลังใจของผมเลยครับ 🌟 ถ้ามีคำถามอะไรก็เรียกผมได้เสมอนะครับ';
+      } else if (q.includes('เทา') || q.includes('ปุ่มเทา') || q.includes('ล็อก') || q.includes('lock') || q.includes('disabled') || q.includes('โหลดไม่ได้') || q.includes('ทำไมโหลดไม่ได้') || q.includes('ทำไมกดไม่ได้') || q.includes('กดไม่ได้')) {
         matchedTopicId = 'grey_buttons';
       } else if (q.includes('ส่งไม่ได้') || q.includes('กดส่งไม่ได้') || q.includes('ส่งข้อมูลไม่ได้') || q.includes('บันทึกไม่ได้') || q.includes('ปุ่มส่ง') || q.includes('ปุ่มบันทึก') || q.includes('ทำไมส่งไม่ได้') || q.includes('กดปุ่มส่ง')) {
         matchedTopicId = 'cannot_submit';
@@ -353,7 +367,16 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         matchedTopicId = 'steps';
       }
 
-      if (matchedTopicId && KNOWLEDGE_BASE[matchedTopicId]) {
+      if (dynamicReply) {
+        const botMsg: Message = {
+          id: 'bot_' + Date.now(),
+          sender: 'bot',
+          text: dynamicReply,
+          time: getNowTime(),
+          actions: []
+        };
+        setMessages(prev => [...prev, botMsg]);
+      } else if (matchedTopicId && KNOWLEDGE_BASE[matchedTopicId]) {
         const topic = KNOWLEDGE_BASE[matchedTopicId];
         const botMsg: Message = {
           id: 'bot_' + Date.now(),
@@ -367,9 +390,7 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         const botFallbackMsg: Message = {
           id: 'bot_' + Date.now(),
           sender: 'bot',
-          text: `ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างชัดเจน 
-
-คุณครูสามารถคลิกเลือกหัวข้อที่พบบ่อยจากด้านล่างนี้ได้เลยครับ:`,
+          text: `ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างชัดเจน 🤔\n\nแต่คุณครูสามารถคลิกเลือกหัวข้อที่พบบ่อยจากด้านล่างนี้ได้เลยครับ:`,
           time: getNowTime(),
           actions: [
             { label: "🔘 ทำไมปุ่มเป็นสีเทา (ล็อก)?", topicId: "grey_buttons" },
@@ -382,7 +403,7 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         };
         setMessages(prev => [...prev, botFallbackMsg]);
       }
-    }, 300);
+    }, 1000);
   };
 
   const handleResetChat = () => {
@@ -527,6 +548,19 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
                 </div>
               </div>
             ))}
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex gap-2.5 justify-start">
+                <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                  <Bot className="w-3.5 h-3.5" />
+                </div>
+                <div className="bg-white text-slate-800 border border-slate-200/90 rounded-2xl rounded-bl-none p-3.5 shadow-xs flex items-center gap-1.5 h-11">
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 
