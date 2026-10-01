@@ -14,32 +14,50 @@
   <body>
     <div id="root"></div>
     <script>
-      // Script to dynamically inject the T2G Analyzer card into the Teacher Hub or Admin Dashboard
+      // Script to dynamically inject the T2G Analyzer card into the Teacher Hub under 'ระบบที่เกี่ยวข้อง'
       const observer = new MutationObserver((mutations) => {
-        // Look for ANY main grid container in the page
-        const grid = document.querySelector('.grid');
-        if (grid && !document.getElementById('t2g-injected-card')) {
-          const card = document.createElement('a'); // Make it an anchor tag directly
+        // Look for all grids
+        const grids = document.querySelectorAll('.grid');
+        
+        // We want to insert into the second grid (which is usually 'ระบบที่เกี่ยวข้อง' in the Teacher Hub)
+        // Or if we can find a title containing 'ระบบที่เกี่ยวข้อง', we find the grid next to it.
+        let targetGrid = null;
+        
+        document.querySelectorAll('h2, h3, div').forEach(el => {
+          if (el.textContent && el.textContent.includes('ระบบที่เกี่ยวข้อง')) {
+            const nextGrid = el.parentElement.querySelector('.grid') || el.parentElement.parentElement.querySelector('.grid');
+            if (nextGrid) targetGrid = nextGrid;
+          }
+        });
+        
+        // Fallback to the last grid on the page if we can't find by text
+        if (!targetGrid && grids.length > 0) {
+          targetGrid = grids[grids.length - 1];
+        }
+
+        if (targetGrid && !document.getElementById('t2g-injected-card')) {
+          const card = document.createElement('a');
           card.id = 't2g-injected-card';
           card.href = 't2g_admin.html';
-          // Mimic common card styling in this project
-          card.className = 'bg-white rounded-3xl p-8 shadow-sm hover:shadow-md transition-all border border-slate-100 flex flex-col justify-between cursor-pointer group relative overflow-hidden text-left block';
+          
+          // Mimic the styles of the cards in 'ระบบที่เกี่ยวข้อง'
+          card.className = 'bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between cursor-pointer hover:shadow-md transition-all relative overflow-hidden group block text-left decoration-transparent';
           
           card.innerHTML = `
-            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-400 to-rose-500"></div>
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 to-rose-500"></div>
             <div class="flex items-start justify-between mb-4">
-              <div class="p-3 bg-red-50 text-red-600 rounded-2xl group-hover:bg-red-500 group-hover:text-white transition-colors">
+              <div class="p-3 bg-red-50 text-red-600 rounded-xl group-hover:bg-red-500 group-hover:text-white transition-colors">
                 <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               </div>
-              <span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">แอดมิน</span>
+              <span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">แอดมิน</span>
             </div>
             <div>
-              <h3 class="text-xl font-bold text-slate-800 mb-2">ระบบวิเคราะห์ ต.2ก</h3>
-              <p class="text-slate-500 text-sm">ตรวจสอบและไฮไลท์เกรดผิดปกติ</p>
+              <h3 class="text-lg font-bold text-slate-800 mb-1">ระบบวิเคราะห์ ต.2ก</h3>
+              <p class="text-slate-500 text-sm">ตรวจสอบเกรดผิดปกติและพฤติกรรม</p>
             </div>
           `;
           
-          grid.appendChild(card);
+          targetGrid.appendChild(card);
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });
