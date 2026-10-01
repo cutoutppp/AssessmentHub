@@ -36,7 +36,7 @@
         </div>
 
         <!-- Results Section -->
-        <div id="resultsSection" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div id="resultsSection" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                 <h2 class="text-lg font-bold text-gray-800" id="resultTitle">ผลการวิเคราะห์</h2>
             </div>
@@ -57,6 +57,16 @@
                         <!-- Rows will be inserted here -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Document Preview Section -->
+        <div id="documentsSection" class="hidden bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-800">ภาพเอกสาร (ข้อมูลดิบที่ประมวลผล)</h2>
+            </div>
+            <div id="documentsContainer" class="p-6 space-y-6">
+                <!-- Document tables will be inserted here -->
             </div>
         </div>
     </div>
@@ -108,8 +118,32 @@
 
         function renderResults(data) {
             const tbody = document.getElementById('resultsTableBody');
+            const docContainer = document.getElementById('documentsContainer');
             tbody.innerHTML = '';
+            docContainer.innerHTML = '';
             
+            // Render Documents if present
+            if (data.documents && data.documents.length > 0) {
+                data.documents.forEach(doc => {
+                    const docDiv = document.createElement('div');
+                    docDiv.className = 'border border-gray-200 rounded-lg overflow-hidden';
+                    
+                    docDiv.innerHTML = `
+                        <div class="bg-blue-50 px-4 py-2 border-b border-gray-200 font-semibold text-blue-800 flex justify-between items-center cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                            <span>📄 ${doc.filename} (ห้อง ${doc.class_level})</span>
+                            <span class="text-sm font-normal">คลิกเพื่อดู/ซ่อน</span>
+                        </div>
+                        <div class="overflow-x-auto p-4 hidden">
+                            ${doc.html}
+                        </div>
+                    `;
+                    docContainer.appendChild(docDiv);
+                });
+                document.getElementById('documentsSection').classList.remove('hidden');
+            } else {
+                document.getElementById('documentsSection').classList.add('hidden');
+            }
+
             if (!data.anomalies || data.anomalies.length === 0) {
                 document.getElementById('resultTitle').textContent = `ผลการวิเคราะห์ (ประมวลผล ${data.total_files_processed} ไฟล์) - ไม่พบความผิดปกติ 🎉`;
                 document.getElementById('resultsSection').classList.remove('hidden');
