@@ -199,7 +199,8 @@ export default function Dashboard({ teacherData, submissions, academicYear, seme
       // Evaluate Final
       const finSubmitted = classes.filter(c => c.status_final !== '❌ ยังไม่ส่ง').length;
       const finErrors = classes.some(c => c.status_final.includes('แก้ไข'));
-      const finWarnings = classes.some(c => c.status_final.includes('สังเกต'));
+      // User requested: "รอบปลายภาคถ้ามันแจ้งเตือนเหลืองก็อยากให้มันบันทึกว่าสมบูรณ์"
+      const finWarnings = false; 
       
       let finStatus = "";
       if (classes.length === 0) finStatus = "ไม่มีวิชาสอน";
