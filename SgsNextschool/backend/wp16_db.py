@@ -213,14 +213,40 @@ def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
 def get_pending_tasks_for_subject(subject_code, teacher_name=None):
     db = _load_wp16_db()
     result = {}
+    subject_has_any = False  # track whether this subject exists locally at all
+
+    def _name_matches(db_name, query_name):
+        """Flexible teacher name match: strip whitespace, ignore prefix variations."""
+        if not query_name:
+            return True
+        a = (db_name or '').strip()
+        b = (query_name or '').strip()
+        if a == b:
+            return True
+        # strip common title prefixes for loose comparison
+        def _strip_prefix(s):
+            for pfx in ['นาย', 'นาง', 'นางสาว', 'ดร.', 'ผศ.', 'รศ.']:
+                if s.startswith(pfx):
+                    s = s[len(pfx):].strip()
+            return s
+        return _strip_prefix(a) == _strip_prefix(b)
+
     for k, v in db.items():
         if v.get('subject_code') == subject_code:
-            if teacher_name and v.get('teacher_name') != teacher_name:
+            subject_has_any = True
+            if not _name_matches(v.get('teacher_name', ''), teacher_name):
                 continue
             result[v.get('student_id')] = v
 
-    # If not found locally, fetch directly from Google Sheet WP16_งานค้าง
-    if not result and subject_code:
+    # If local DB has records for this subject but teacher_name didn't match,
+    # relax the filter and return all records for the subject (don't go to GAS).
+    if subject_has_any and not result:
+        for k, v in db.items():
+            if v.get('subject_code') == subject_code:
+                result[v.get('student_id')] = v
+
+    # Only fetch from GAS when the subject has NO records in local DB at all
+    if not subject_has_any and subject_code:
         gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
         if gas_items:
             for it in gas_items:
