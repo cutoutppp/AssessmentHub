@@ -22,16 +22,7 @@
         // We want to insert into the second grid (which is usually 'ระบบที่เกี่ยวข้อง' in the Teacher Hub)
         // Or if we can find a title containing 'ระบบที่เกี่ยวข้อง', we find the grid next to it.
         let targetGrid = null;
-        
-        document.querySelectorAll('h2, h3, div').forEach(el => {
-          if (el.textContent && el.textContent.includes('ระบบที่เกี่ยวข้อง')) {
-            const nextGrid = el.parentElement.querySelector('.grid') || el.parentElement.parentElement.querySelector('.grid');
-            if (nextGrid) targetGrid = nextGrid;
-          }
-        });
-        
-        // Fallback to the last grid on the page if we can't find by text
-        if (!targetGrid && grids.length > 0) {
+        if (grids.length > 0) {
           targetGrid = grids[grids.length - 1];
         }
 
