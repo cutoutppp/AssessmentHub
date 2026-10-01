@@ -14,28 +14,28 @@
   <body>
     <div id="root"></div>
     <script>
-      // Script to dynamically inject the T2G Analyzer card into the Admin Dashboard
+      // Script to dynamically inject the T2G Analyzer card into the Teacher Hub or Admin Dashboard
       const observer = new MutationObserver((mutations) => {
-        // Look for the grid container in Admin Dashboard
-        const grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4.gap-6');
+        // Look for ANY main grid container in the page
+        const grid = document.querySelector('.grid');
         if (grid && !document.getElementById('t2g-injected-card')) {
-          const card = document.createElement('div');
+          const card = document.createElement('a'); // Make it an anchor tag directly
           card.id = 't2g-injected-card';
-          card.className = 'bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden group';
-          card.onclick = () => window.location.href = 't2g_admin.html';
+          card.href = 't2g_admin.html';
+          // Mimic common card styling in this project
+          card.className = 'bg-white rounded-3xl p-8 shadow-sm hover:shadow-md transition-all border border-slate-100 flex flex-col justify-between cursor-pointer group relative overflow-hidden text-left block';
           
           card.innerHTML = `
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 to-rose-500"></div>
-            <div class="flex items-start justify-between mb-2">
-              <div class="text-slate-500 font-medium">ต.2ก Analyzer</div>
-              <span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-100">NEW</span>
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-400 to-rose-500"></div>
+            <div class="flex items-start justify-between mb-4">
+              <div class="p-3 bg-red-50 text-red-600 rounded-2xl group-hover:bg-red-500 group-hover:text-white transition-colors">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <span class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full">แอดมิน</span>
             </div>
-            <div class="flex items-end gap-2 mt-2">
-              <div class="text-2xl font-bold text-slate-800">วิเคราะห์ข้อมูล</div>
-            </div>
-            <div class="text-sm text-slate-400 mt-3 group-hover:text-red-500 transition-colors flex items-center gap-1">
-              คลิกเพื่อเปิดระบบ 
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            <div>
+              <h3 class="text-xl font-bold text-slate-800 mb-2">ระบบวิเคราะห์ ต.2ก</h3>
+              <p class="text-slate-500 text-sm">ตรวจสอบและไฮไลท์เกรดผิดปกติ</p>
             </div>
           `;
           
