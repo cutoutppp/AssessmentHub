@@ -128,6 +128,27 @@
             }
         }
 
+        
+        const uploadForm = document.getElementById('uploadForm');
+        uploadForm.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadForm.classList.add('bg-blue-100', 'border-blue-400');
+        });
+        
+        uploadForm.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadForm.classList.remove('bg-blue-100', 'border-blue-400');
+        });
+        
+        uploadForm.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadForm.classList.remove('bg-blue-100', 'border-blue-400');
+            if (e.dataTransfer.files.length > 0) {
+                document.getElementById('fileInput').files = e.dataTransfer.files;
+                updateFileCount({ target: document.getElementById('fileInput') });
+            }
+        });
+
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('fileInput');
@@ -197,16 +218,27 @@
                 document.getElementById('documentsSection').classList.remove('hidden');
             }
 
-            if (!data.anomalies || data.anomalies.length === 0) {
-                document.getElementById('resultTitle').textContent = ผลการวิเคราะห์ (ประมวลผล \ ไฟล์) - ไม่พบความผิดปกติ 🎉;
-                document.getElementById('resultTitle').className = "text-lg font-bold text-emerald-600 flex items-center gap-2";
-                document.getElementById('resultsSection').classList.remove('hidden');
-                return;
-            }
             
-            document.getElementById('resultTitle').className = "text-lg font-bold text-gray-800 flex items-center gap-2";
             let issuesCount = 0;
+            if (data.anomalies) {
+                data.anomalies.forEach(item => {
+                    if(!item.error) issuesCount++;
+                });
+            }
+            if (issuesCount === 0) {
+                
+                document.getElementById('resultTitle').className = "text-lg font-bold text-emerald-600 flex items-center gap-2";
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="6" class="px-6 py-6 text-center text-emerald-600 font-medium bg-emerald-50">ประมวลผลสำเร็จและไม่พบเกรดที่ผิดปกติ</td>`;
+                tbody.appendChild(tr);
+            } else {
+                
+                document.getElementById('resultTitle').className = "text-lg font-bold text-red-600 flex items-center gap-2";
+            }
 
+            
+            
             data.anomalies.forEach(item => {
                 if(item.error) return; // Skip files that couldn't be parsed
                 issuesCount++;
@@ -250,7 +282,7 @@
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('resultTitle').textContent = ผลการวิเคราะห์ (พบ \ รายการผิดปกติ จาก \ ไฟล์);
+            
             document.getElementById('resultsSection').classList.remove('hidden');
         }
     </script>
