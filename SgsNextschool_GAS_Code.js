@@ -28,7 +28,7 @@ function doGet(e) {
         if (!row[0] && !row[7]) continue;
         var tName = String(row[5] || "").trim();
         var sCode = String(row[3] || "").trim();
-        if (filterTeacher && tName && tName !== filterTeacher) continue;
+        // Do not strict filter by teacherName to prevent dropping manual entries
         if (filterSubj && sCode && sCode !== filterSubj) continue;
 
         var obj = {
