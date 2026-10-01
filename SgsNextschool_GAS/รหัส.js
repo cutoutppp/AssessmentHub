@@ -20,11 +20,33 @@ function doGet(e) {
       var gid = wp16Sheet.getSheetId();
       var data = wp16Sheet.getDataRange().getValues();
       var headers = data.length > 0 ? data[0] : [];
+      var filterTeacher = (e && e.parameter && e.parameter.teacher_name) ? String(e.parameter.teacher_name).trim() : "";
+      var filterSubj = (e && e.parameter && e.parameter.subject_code) ? String(e.parameter.subject_code).trim() : "";
       var items = [];
       for (var i = 1; i < data.length; i++) {
         var row = data[i];
         if (!row[0] && !row[7]) continue;
-        var obj = {};
+        var tName = String(row[5] || "").trim();
+        var sCode = String(row[3] || "").trim();
+        if (filterTeacher && tName && tName !== filterTeacher) continue;
+        if (filterSubj && sCode && sCode !== filterSubj) continue;
+
+        var obj = {
+          special_id: String(row[0] || ""),
+          academic_year: String(row[1] || ""),
+          semester: String(row[2] || ""),
+          subject_code: sCode,
+          subject_name: String(row[4] || ""),
+          teacher_name: tName,
+          class_level: String(row[6] || ""),
+          student_id: String(row[7] || ""),
+          student_name: String(row[8] || ""),
+          old_score: (row[9] !== undefined && row[9] !== null) ? String(row[9]) : "",
+          old_grade: String(row[10] || "0"),
+          pending_task: String(row[11] || ""),
+          remark: String(row[12] || ""),
+          updated_at: String(row[13] || "")
+        };
         for (var j = 0; j < headers.length; j++) {
           obj[headers[j]] = row[j];
         }

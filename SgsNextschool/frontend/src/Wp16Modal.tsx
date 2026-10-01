@@ -32,6 +32,19 @@ const cleanClassLevel = (val: any) => {
   return s ? `ม.${s}` : '';
 };
 
+const isGarbledName = (name: any) => {
+  if (!name || typeof name !== 'string') return true;
+  const s = name.trim();
+  if (!s || s.toLowerCase() === 'nan' || s === '-') return true;
+  if (s.includes('\ufffd')) return true;
+  if (/^[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/.test(s)) return true;
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    if (code > 0x7F && code < 0x0E00) return true;
+  }
+  return false;
+};
+
 export default function Wp16Modal({
   isOpen,
   onClose,
@@ -122,35 +135,82 @@ export default function Wp16Modal({
 
     (async () => {
       try {
-        const res = await fetch(
-          `${backendUrl}/api/wp16/students?teacher_name=${encodeURIComponent(teacherName)}&subject_code=${encodeURIComponent(selectedSubject)}`
-        );
-        if (!res.ok) throw new Error('Failed to load students');
-        const data = await res.json();
-        if (active) {
-          setStudents(
-            (data.students || []).map((s: any) => ({
-              ...s,
-              class_level: cleanClassLevel(s.class_level),
-            }))
+        let loadedStudents: any[] = [];
+        let fetchedSubjName = foundSubj?.subject_name || '';
+
+        // 1. Try Backend API first
+        try {
+          const res = await fetch(
+            `${backendUrl}/api/wp16/students?teacher_name=${encodeURIComponent(teacherName)}&subject_code=${encodeURIComponent(selectedSubject)}`
           );
-          if (data.subject_name) setSubjectName(data.subject_name);
-          setSelectedStudentIds(new Set());
-          if (data.subject_counts) setSubjectCounts(data.subject_counts);
-          if (data.recent_tasks && Array.isArray(data.recent_tasks)) {
-            setTaskHistory((prev) => {
-              const merged = Array.from(new Set([...data.recent_tasks, ...prev]));
-              try {
-                localStorage.setItem('wp16_task_history', JSON.stringify(merged.slice(0, 15)));
-              } catch (e) {
-                console.error(e);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.students) && data.students.length > 0) {
+              loadedStudents = data.students;
+            }
+            if (data.subject_name) fetchedSubjName = data.subject_name;
+            if (data.subject_counts) setSubjectCounts(data.subject_counts);
+            if (data.recent_tasks && Array.isArray(data.recent_tasks)) {
+              setTaskHistory((prev) => {
+                const merged = Array.from(new Set([...data.recent_tasks, ...prev]));
+                try {
+                  localStorage.setItem('wp16_task_history', JSON.stringify(merged.slice(0, 15)));
+                } catch (e) {
+                  console.error(e);
+                }
+                return merged.slice(0, 15);
+              });
+            }
+          }
+        } catch (backendErr) {
+          console.warn('Backend wp16 fetch error, will check Google Sheet:', backendErr);
+        }
+
+        // 2. If backend has 0 students or is offline, fetch directly from Google Sheet (WP16_งานค้าง)
+        if (loadedStudents.length === 0 && webAppUrl) {
+          try {
+            const gasUrl = `${webAppUrl}?action=get-wp16&subject_code=${encodeURIComponent(selectedSubject)}&teacher_name=${encodeURIComponent(teacherName)}`;
+            const gasRes = await fetch(gasUrl);
+            if (gasRes.ok) {
+              const gasData = await gasRes.json();
+              if (Array.isArray(gasData.items) && gasData.items.length > 0) {
+                loadedStudents = gasData.items.map((it: any) => ({
+                  student_id: String(it.student_id || it['เลขประจำตัว'] || '').trim(),
+                  student_name: String(it.student_name || it['ชื่อ-นามสกุล'] || '').trim(),
+                  class_level: cleanClassLevel(it.class_level || it['ชั้น/ห้อง'] || ''),
+                  old_score: String(it.old_score !== undefined && it.old_score !== null ? it.old_score : (it['คะแนนเดิม'] ?? '')),
+                  old_grade: String(it.old_grade || it['ผลการเรียนเดิม'] || '0'),
+                  pending_task: String(it.pending_task !== undefined ? it.pending_task : (it['งานค้าง'] || '')),
+                  remark: String(it.remark || it['หมายเหตุ'] || ''),
+                  is_manual: false
+                }));
+                if (!fetchedSubjName && gasData.items[0]) {
+                  fetchedSubjName = gasData.items[0].subject_name || gasData.items[0]['ชื่อวิชา'] || '';
+                }
               }
-              return merged.slice(0, 15);
-            });
+            }
+          } catch (gasErr) {
+            console.warn('Direct Google Sheet WP16 fetch error:', gasErr);
           }
         }
+
+        if (active) {
+          // Sanitize names: never show garbled text in WP16
+          const cleaned = loadedStudents.map((s: any) => {
+            const rawName = (s.student_name || '').trim();
+            const safeName = (!rawName || isGarbledName(rawName)) ? `นักเรียนรหัส ${s.student_id}` : rawName;
+            return {
+              ...s,
+              student_name: safeName,
+              class_level: cleanClassLevel(s.class_level),
+            };
+          });
+          setStudents(cleaned);
+          if (fetchedSubjName) setSubjectName(fetchedSubjName);
+          setSelectedStudentIds(new Set());
+        }
       } catch (e) {
-        console.error(e);
+        console.error('WP16 load error:', e);
         if (active) {
           setStudents([]);
           setSelectedStudentIds(new Set());
@@ -163,7 +223,7 @@ export default function Wp16Modal({
     return () => {
       active = false;
     };
-  }, [isOpen, teacherName, selectedSubject, backendUrl, availableSubjects]);
+  }, [isOpen, teacherName, selectedSubject, backendUrl, webAppUrl, availableSubjects]);
 
   if (!isOpen) return null;
 
@@ -689,6 +749,16 @@ export default function Wp16Modal({
                 <span className="text-amber-300 font-medium">
                   เด็กมีผล 0, ร, มส ในระบบ: {totalFailing} คน
                 </span>
+                <span className="text-slate-400 hidden md:inline">•</span>
+                <a
+                  href="https://docs.google.com/spreadsheets/d/1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ/edit?gid=1367227681#gid=1367227681"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hidden md:inline-flex items-center gap-1 text-emerald-300 hover:text-emerald-100 underline font-medium text-[11px] transition"
+                  title="เปิดดูและตรวจสอบชีต WP16_งานค้าง บน Google Sheets"
+                >
+                  📊 เชื่อมต่อแผ่นงาน WP16_งานค้าง
+                </a>
               </p>
             </div>
           </div>

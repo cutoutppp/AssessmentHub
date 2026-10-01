@@ -4,6 +4,23 @@ from docx.oxml.ns import qn
 import os
 import io
 import copy
+import re
+
+def is_garbled_thai(name: str) -> bool:
+    if not name or not isinstance(name, str):
+        return True
+    s = name.strip()
+    if not s or s.lower() == "nan" or s == "-":
+        return True
+    if "\ufffd" in s:
+        return True
+    if any(0x7F < ord(c) < 0x0E00 for c in s):
+        return True
+    if re.match(r"^[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]", s):
+        return True
+    if not re.search(r"[\u0E01-\u0E2E]", s) and not re.search(r"[A-Za-z]", s):
+        return True
+    return False
 
 def set_cell_text(cell, text):
     if len(cell.paragraphs) == 0:
@@ -89,6 +106,8 @@ def generate_wp16(pair_results=None, subject_code="", subject_name="", teacher_n
                     name = ns_name_map.get(sid_str, "").strip() or sgs.get("name", "")
                     if not name:
                         name = (sgs.get("prefix", "") + sgs.get("firstname", "") + " " + sgs.get("lastname", "")).strip()
+                    if not name or is_garbled_thai(name):
+                        name = f"นักเรียนรหัส {sid_str}"
                     failing_students.append({
                         "student_id": sid_str,
                         "class_level": class_level,
@@ -138,6 +157,8 @@ def generate_wp16(pair_results=None, subject_code="", subject_name="", teacher_n
             c_cleaned = re.sub(r'^(ม\s*)+', '', c_cleaned)
             c_level = f"ม.{c_cleaned}" if c_cleaned else ""
             s_name = stud.get("student_name") or stud.get("name", "")
+            if not s_name or is_garbled_thai(s_name):
+                s_name = f"นักเรียนรหัส {stud.get('student_id', '')}"
             s_score = str(stud.get("old_score") if stud.get("old_score") is not None else stud.get("score", ""))
             s_grade = str(stud.get("old_grade") if stud.get("old_grade") is not None else stud.get("grade", ""))
             s_task = str(stud.get("pending_task", "") or "สอบแก้ตัว")
