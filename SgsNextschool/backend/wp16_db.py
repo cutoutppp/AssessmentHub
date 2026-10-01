@@ -211,70 +211,75 @@ def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
         return []
 
 def get_pending_tasks_for_subject(subject_code, teacher_name=None):
+    """ดึงรายชื่อนักเรียนที่มีงานค้างสำหรับวิชานี้
+
+    ลำดับความสำคัญ:
+    1. Google Sheet (WP16_งานค้าง) — source of truth เสมอ
+       ชื่อ, ห้อง, คะแนน, เกรด ดึงจากชีตเป็นหลัก
+    2. Local DB (wp16_pending_tasks.json) — ใช้ merge ข้อมูลที่ user แก้ไขใน UI
+       เช่น pending_task, remark ที่บันทึกผ่านระบบ
+    3. ถ้า GAS ไม่ตอบสนอง → ใช้ local DB ทั้งหมด (fallback)
+    """
     db = _load_wp16_db()
+
+    def _gas_item_to_db(it, subject_code, teacher_name):
+        sid = str(it.get('student_id') or it.get('เลขประจำตัว') or '').strip()
+        if not sid:
+            return None, None
+        sp = str(it.get('special_id') or it.get('เลขเฉพาะ') or f"{subject_code}{sid}").strip()
+        return sid, {
+            'special_id': sp,
+            'academic_year': str(it.get('academic_year') or it.get('ปีการศึกษา') or '2569'),
+            'semester': str(it.get('semester') or it.get('ภาคเรียน') or '1'),
+            'subject_code': str(it.get('subject_code') or it.get('รหัสวิชา') or subject_code),
+            'subject_name': str(it.get('subject_name') or it.get('ชื่อวิชา') or ''),
+            'teacher_name': str(it.get('teacher_name') or it.get('ครูผู้สอน') or teacher_name or ''),
+            'class_level': str(it.get('class_level') or it.get('ชั้น/ห้อง') or ''),
+            'student_id': sid,
+            'student_name': str(it.get('student_name') or it.get('ชื่อ-นามสกุล') or ''),
+            'old_score': str(it.get('old_score') if it.get('old_score') is not None else it.get('คะแนนเดิม', '')),
+            'old_grade': str(it.get('old_grade') or it.get('ผลการเรียนเดิม') or '0'),
+            'pending_task': str(it.get('pending_task') or it.get('งานค้าง') or ''),
+            'remark': str(it.get('remark') or it.get('หมายเหตุ') or ''),
+            'is_manual': bool(it.get('is_manual', False)),
+            'updated_at': str(it.get('updated_at') or it.get('วันที่บันทึก') or ''),
+        }
+
+    # --- 1. ดึงจาก Google Sheet (source of truth) ---
+    gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
+
+    if gas_items:
+        result = {}
+        changed = False
+        for it in gas_items:
+            sid, gas_rec = _gas_item_to_db(it, subject_code, teacher_name)
+            if not sid:
+                continue
+            sp = gas_rec['special_id']
+            local = db.get(sp, {})
+            # ข้อมูลหลักมาจากชีต แต่ pending_task / remark / is_manual
+            # ให้ใช้ local ถ้า local ถูก update ล่าสุดโดย user (ผ่าน /api/wp16/save)
+            merged = {
+                **gas_rec,
+                'pending_task': local.get('pending_task') or gas_rec.get('pending_task', ''),
+                'remark': local.get('remark') or gas_rec.get('remark', ''),
+                'is_manual': local.get('is_manual', gas_rec.get('is_manual', False)),
+            }
+            # อัปเดต local cache ด้วย gas data (เพื่อให้ชื่อ/ห้อง ล่าสุดเสมอ)
+            if db.get(sp) != merged:
+                db[sp] = merged
+                changed = True
+            result[sid] = merged
+        if changed:
+            _save_wp16_db(db)
+        return result
+
+    # --- 2. GAS ไม่ตอบสนอง — ใช้ local DB (fallback) ---
+    print(f"[WP16] GAS unavailable, falling back to local DB for {subject_code}")
     result = {}
-    subject_has_any = False  # track whether this subject exists locally at all
-
-    def _name_matches(db_name, query_name):
-        """Flexible teacher name match: strip whitespace, ignore prefix variations."""
-        if not query_name:
-            return True
-        a = (db_name or '').strip()
-        b = (query_name or '').strip()
-        if a == b:
-            return True
-        # strip common title prefixes for loose comparison
-        def _strip_prefix(s):
-            for pfx in ['นาย', 'นาง', 'นางสาว', 'ดร.', 'ผศ.', 'รศ.']:
-                if s.startswith(pfx):
-                    s = s[len(pfx):].strip()
-            return s
-        return _strip_prefix(a) == _strip_prefix(b)
-
     for k, v in db.items():
         if v.get('subject_code') == subject_code:
-            subject_has_any = True
-            if not _name_matches(v.get('teacher_name', ''), teacher_name):
-                continue
             result[v.get('student_id')] = v
-
-    # If local DB has records for this subject but teacher_name didn't match,
-    # relax the filter and return all records for the subject (don't go to GAS).
-    if subject_has_any and not result:
-        for k, v in db.items():
-            if v.get('subject_code') == subject_code:
-                result[v.get('student_id')] = v
-
-    # Only fetch from GAS when the subject has NO records in local DB at all
-    if not subject_has_any and subject_code:
-        gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
-        if gas_items:
-            for it in gas_items:
-                sid = str(it.get('student_id') or it.get('เลขประจำตัว') or '').strip()
-                if not sid:
-                    continue
-                sp = str(it.get('special_id') or it.get('เลขเฉพาะ') or f"{subject_code}{sid}").strip()
-                db_item = {
-                    'special_id': sp,
-                    'academic_year': str(it.get('academic_year') or it.get('ปีการศึกษา') or '2569'),
-                    'semester': str(it.get('semester') or it.get('ภาคเรียน') or '1'),
-                    'subject_code': str(it.get('subject_code') or it.get('รหัสวิชา') or subject_code),
-                    'subject_name': str(it.get('subject_name') or it.get('ชื่อวิชา') or ''),
-                    'teacher_name': str(it.get('teacher_name') or it.get('ครูผู้สอน') or teacher_name or ''),
-                    'class_level': str(it.get('class_level') or it.get('ชั้น/ห้อง') or ''),
-                    'student_id': sid,
-                    'student_name': str(it.get('student_name') or it.get('ชื่อ-นามสกุล') or ''),
-                    'old_score': str(it.get('old_score') if it.get('old_score') is not None else it.get('คะแนนเดิม', '')),
-                    'old_grade': str(it.get('old_grade') or it.get('ผลการเรียนเดิม') or '0'),
-                    'pending_task': str(it.get('pending_task') or it.get('งานค้าง') or ''),
-                    'remark': str(it.get('remark') or it.get('หมายเหตุ') or ''),
-                    'is_manual': False,
-                    'updated_at': str(it.get('updated_at') or it.get('วันที่บันทึก') or '')
-                }
-                db[sp] = db_item
-                result[sid] = db_item
-            _save_wp16_db(db)
-
     return result
 
 def get_all_pending_tasks():
