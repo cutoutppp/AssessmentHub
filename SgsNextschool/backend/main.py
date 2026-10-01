@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import io
 import base64
 from urllib.parse import quote
+import re
 import pdfplumber
 from parser import parse_sgs_pdf, parse_nextschool_excel
 from validator import validate_scores
@@ -11,6 +12,26 @@ from doc_generator import generate_wp16, generate_wp17, generate_wp25, generate_
 from work_db import get_works_for_teacher, add_work, get_rooms_for_subject, get_rooms_for_group
 from score_db import load_scores_from_json
 from wp16_db import save_pending_tasks, get_pending_tasks_for_subject, get_all_pending_tasks, remove_pending_task
+
+def is_garbled_thai(name: str) -> bool:
+    """ตรวจสอบว่าข้อความชื่อนักเรียนเป็นภาษาต่างดาวหรือข้อความที่อ่านไม่ออกหรือไม่"""
+    if not name or not isinstance(name, str):
+        return True
+    s = name.strip()
+    if not s or s.lower() == "nan" or s == "-":
+        return True
+    if "\ufffd" in s:
+        return True
+    # อักขระประหลาดที่ไม่ใช่ภาษาไทยหรืออังกฤษ (เช่น Latin-1 supplement / mojibake / Cyrillic)
+    if any(0x7F < ord(c) < 0x0E00 for c in s):
+        return True
+    # ขึ้นต้นด้วยสระบน/ล่าง หรือวรรณยุกต์ (ฟอนต์เพี้ยนจนพยัญชนะต้นหลุด)
+    if re.match(r"^[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]", s):
+        return True
+    # ไม่มีตัวอักษรไทยปกติเลย
+    if not re.search(r"[\u0E01-\u0E2E]", s) and not re.search(r"[A-Za-z]", s):
+        return True
+    return False
 
 app = FastAPI(title="SGS vs NextSchool Score Checker")
 
@@ -506,9 +527,16 @@ async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", se
                         if grade in ["0", "ร", "มส", "มผ"]:
                             seen.add(sid)
                             old_t = existing_tasks.get(sid, {})
-                            clean_name = ns_name_map.get(sid, "").strip() or s.get("name", "")
-                            if not clean_name:
-                                clean_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                            clean_name = ns_name_map.get(sid, "").strip()
+                            if not clean_name or is_garbled_thai(clean_name):
+                                existing_name = str(old_t.get("student_name", "")).strip()
+                                if existing_name and not is_garbled_thai(existing_name):
+                                    clean_name = existing_name
+                                else:
+                                    s_name = s.get("name", "")
+                                    if not s_name:
+                                        s_name = (s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")).strip()
+                                    clean_name = s_name if not is_garbled_thai(s_name) else f"นักเรียนรหัส {sid}"
                             failing.append({
                                 "student_id": sid,
                                 "student_name": clean_name,
@@ -519,11 +547,13 @@ async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", se
                                 "remark": old_t.get("remark", "")
                             })
 
-                # รวมนักเรียนที่ถูกเพิ่มด้วยตนเอง (Manual) ในงานค้างของวิชานี้ด้วย
+                # รวมนักเรียนในงานค้าง/Google Sheet สำหรับวิชานี้ด้วย
                 for sid, t_item in existing_tasks.items():
                     if sid not in seen:
                         seen.add(sid)
-                        c_name = t_item.get("student_name", "")
+                        c_name = str(t_item.get("student_name", "")).strip()
+                        if not c_name or is_garbled_thai(c_name):
+                            c_name = f"นักเรียนรหัส {sid}"
                         failing.append({
                             "student_id": sid,
                             "student_name": c_name,
@@ -704,6 +734,7 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
         subject_name = ""
         students = []
         seen_sids = set()
+        ns_name_map = {}
 
         for r in rooms:
             t_info = r.get("teacher_info") or {}
@@ -747,13 +778,17 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                     seen_sids.add(sid)
                     old_task = existing_tasks.get(sid, {})
                     clean_name = ns_name_map.get(sid, "").strip()
-                    if not clean_name:
-                        s_name = s.get("name", "")
-                        if not s_name:
-                            s_name = (
-                                s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")
-                            ).strip()
-                        clean_name = s_name
+                    if not clean_name or is_garbled_thai(clean_name):
+                        existing_sname = str(old_task.get("student_name", "")).strip()
+                        if existing_sname and not is_garbled_thai(existing_sname):
+                            clean_name = existing_sname
+                        else:
+                            s_name = s.get("name", "")
+                            if not s_name:
+                                s_name = (
+                                    s.get("prefix", "") + s.get("firstname", "") + " " + s.get("lastname", "")
+                                ).strip()
+                            clean_name = s_name if not is_garbled_thai(s_name) else f"นักเรียนรหัส {sid}"
 
                     students.append({
                         "student_id": sid,
@@ -766,11 +801,14 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                         "is_manual": old_task.get("is_manual", False),
                     })
 
-        # เพิ่มนักเรียนที่มีการเพิ่มด้วยตนเอง (is_manual) เท่านั้น ป้องกันการดึงข้อมูลนักเรียนห้องอื่น/ข้อมูลเก่ามาปน
+        # รวมนักเรียนจากงานค้าง/Google Sheet ที่บันทึกไว้สำหรับวิชานี้ (ทั้งที่บันทึกไว้เดิมและเพิ่มเอง)
         for sid, t_item in existing_tasks.items():
-            if sid not in seen_sids and t_item.get("is_manual"):
+            if sid not in seen_sids:
                 seen_sids.add(sid)
-                clean_name = ns_name_map.get(sid, "").strip() or t_item.get("student_name", "")
+                raw_sname = str(t_item.get("student_name", "")).strip()
+                clean_name = ns_name_map.get(sid, "").strip() or raw_sname
+                if not clean_name or is_garbled_thai(clean_name):
+                    clean_name = f"นักเรียนรหัส {sid}"
                 students.append({
                     "student_id": sid,
                     "student_name": clean_name,
@@ -779,8 +817,15 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                     "old_grade": str(t_item.get("old_grade", "0")),
                     "pending_task": t_item.get("pending_task", ""),
                     "remark": t_item.get("remark", ""),
-                    "is_manual": True,
+                    "is_manual": t_item.get("is_manual", False),
                 })
+
+        # หากไม่มี subject_name จาก room ให้ดึงจาก existing_tasks
+        if not subject_name and existing_tasks:
+            for it in existing_tasks.values():
+                if it.get("subject_name"):
+                    subject_name = it.get("subject_name")
+                    break
 
         # ดึง recent tasks ที่เคยใช้บ่อย
         all_db_tasks = get_all_pending_tasks()

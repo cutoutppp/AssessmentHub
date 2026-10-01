@@ -193,6 +193,23 @@ def sync_all_accumulated_tasks_to_gas(target_gas_url=None):
         print(f"[GAS SYNC] Error: {e}")
         return {'status': 'error', 'message': str(e), 'count': len(items)}
 
+def fetch_wp16_from_gas(subject_code=None, teacher_name=None):
+    """Fetch stored WP16 records directly from Google Sheet via GAS."""
+    import requests
+    GAS_URL = "https://script.google.com/macros/s/AKfycbxzpP9b_eBJUU5KaNX1CbMOLHygMsrUdO7earro-bQIs8lMS9H6YM6Z6mlamm3jJd1fDQ/exec"
+    params = {"action": "get-wp16"}
+    if subject_code:
+        params["subject_code"] = subject_code
+    if teacher_name:
+        params["teacher_name"] = teacher_name
+    try:
+        resp = requests.get(GAS_URL, params=params, timeout=10)
+        data = resp.json()
+        return data.get("items", [])
+    except Exception as e:
+        print(f"[GAS FETCH] Error fetching wp16 from GAS: {e}")
+        return []
+
 def get_pending_tasks_for_subject(subject_code, teacher_name=None):
     db = _load_wp16_db()
     result = {}
@@ -201,6 +218,37 @@ def get_pending_tasks_for_subject(subject_code, teacher_name=None):
             if teacher_name and v.get('teacher_name') != teacher_name:
                 continue
             result[v.get('student_id')] = v
+
+    # If not found locally, fetch directly from Google Sheet WP16_งานค้าง
+    if not result and subject_code:
+        gas_items = fetch_wp16_from_gas(subject_code, teacher_name)
+        if gas_items:
+            for it in gas_items:
+                sid = str(it.get('student_id') or it.get('เลขประจำตัว') or '').strip()
+                if not sid:
+                    continue
+                sp = str(it.get('special_id') or it.get('เลขเฉพาะ') or f"{subject_code}{sid}").strip()
+                db_item = {
+                    'special_id': sp,
+                    'academic_year': str(it.get('academic_year') or it.get('ปีการศึกษา') or '2569'),
+                    'semester': str(it.get('semester') or it.get('ภาคเรียน') or '1'),
+                    'subject_code': str(it.get('subject_code') or it.get('รหัสวิชา') or subject_code),
+                    'subject_name': str(it.get('subject_name') or it.get('ชื่อวิชา') or ''),
+                    'teacher_name': str(it.get('teacher_name') or it.get('ครูผู้สอน') or teacher_name or ''),
+                    'class_level': str(it.get('class_level') or it.get('ชั้น/ห้อง') or ''),
+                    'student_id': sid,
+                    'student_name': str(it.get('student_name') or it.get('ชื่อ-นามสกุล') or ''),
+                    'old_score': str(it.get('old_score') if it.get('old_score') is not None else it.get('คะแนนเดิม', '')),
+                    'old_grade': str(it.get('old_grade') or it.get('ผลการเรียนเดิม') or '0'),
+                    'pending_task': str(it.get('pending_task') or it.get('งานค้าง') or ''),
+                    'remark': str(it.get('remark') or it.get('หมายเหตุ') or ''),
+                    'is_manual': False,
+                    'updated_at': str(it.get('updated_at') or it.get('วันที่บันทึก') or '')
+                }
+                db[sp] = db_item
+                result[sid] = db_item
+            _save_wp16_db(db)
+
     return result
 
 def get_all_pending_tasks():
