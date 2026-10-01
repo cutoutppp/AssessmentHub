@@ -46,9 +46,17 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen text-slate-800">
+<body class="p-4 md:p-8 min-h-screen text-slate-800 relative">
     <div class="max-w-7xl mx-auto space-y-6">
         
         <!-- Header -->
@@ -61,16 +69,22 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <h1 class="text-2xl font-bold text-slate-800">ระบบวิเคราะห์ความผิดปกติ ต.2ก</h1>
-                            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">v2.1 (Matrix Audit)</span>
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">v2.2 (AI Chat Guide)</span>
                         </div>
-                        <p class="text-slate-500 text-sm mt-0.5">ระบบตรวจสอบผลการเรียน: ตรวจจับทั้งแนวนอน (รายบุคคล) และแนวตั้ง (รายวิชา) พร้อมดึงชื่อครูผู้สอนจากตารางสอน</p>
+                        <p class="text-slate-500 text-sm mt-0.5">ระบบตรวจสอบผลการเรียน: ตรวจจับทั้งแนวนอน (รายบุคคล) และแนวตั้ง (รายวิชา) พร้อมผู้ช่วย AI ให้คำแนะนำ</p>
                     </div>
                 </div>
             </div>
-            <a href="../index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2.5 rounded-xl transition-colors text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                กลับหน้าหลัก AssessmentHub
-            </a>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleChat()" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium px-4 py-2.5 rounded-xl shadow-md shadow-indigo-100 transition-all text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                    <span>ถาม AI คู่มือ & กฎตรวจ</span>
+                </button>
+                <a href="../index.html" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2.5 rounded-xl transition-colors text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    กลับหน้าหลัก
+                </a>
+            </div>
         </div>
 
         <!-- Upload Section -->
@@ -165,11 +179,81 @@
         </div>
     </div>
 
+    <!-- Floating AI Chat Assistant Widget -->
+    <div id="aiChatWidget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        
+        <!-- Chat Modal Drawer -->
+        <div id="chatDrawer" class="hidden w-[92vw] sm:w-[420px] h-[580px] max-h-[82vh] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden mb-4 transition-all transform origin-bottom-right">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shadow-inner">
+                        🤖
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-sm">ผู้ช่วยครูวัดผล AI</h3>
+                            <span class="bg-emerald-400 w-2 h-2 rounded-full animate-ping"></span>
+                        </div>
+                        <p class="text-xs text-indigo-100">คู่มือการใช้งาน & กฎการตรวจ ต.2ก</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="clearChat()" title="ล้างบทสนทนา" class="p-1.5 hover:bg-white/20 rounded-lg transition-colors text-white/80 hover:text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                    <button onclick="toggleChat()" class="p-1.5 hover:bg-white/20 rounded-lg transition-colors text-white/80 hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Suggested Quick Questions -->
+            <div class="bg-slate-50 border-b border-slate-100 px-3 py-2 flex items-center gap-1.5 overflow-x-auto whitespace-nowrap text-xs">
+                <span class="text-slate-400 font-medium">คำถามด่วน:</span>
+                <button onclick="askPrompt('วิธีใช้งานระบบทำอย่างไร?')" class="bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200 transition-colors">📖 วิธีใช้งาน</button>
+                <button onclick="askPrompt('มีกฎการตรวจจับอะไรบ้าง?')" class="bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200 transition-colors">⚖️ กฎการตรวจ</button>
+                <button onclick="askPrompt('ชื่อครูผู้สอนดึงมาจากไหน?')" class="bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200 transition-colors">👤 ที่มาชื่อครู</button>
+                <button onclick="askPrompt('สรุปผลการวิเคราะห์ไฟล์ที่อัปโหลดให้หน่อย')" class="bg-white hover:bg-indigo-50 hover:text-indigo-600 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200 transition-colors">📊 สรุปผลไฟล์</button>
+            </div>
+
+            <!-- Chat Messages Log -->
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm">
+                <!-- Messages will be injected here -->
+            </div>
+
+            <!-- Typing indicator -->
+            <div id="typingIndicator" class="hidden px-4 py-2 text-xs text-slate-400 italic flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></span>
+                <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                <span>ผู้ช่วยกำลังพิมพ์คำตอบ...</span>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-3 bg-white border-t border-slate-100 flex items-center gap-2">
+                <input type="text" id="chatInput" placeholder="พิมพ์คำถาม เช่น กฎแนวตั้งมีอะไรบ้าง..." class="flex-1 text-xs md:text-sm bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-indigo-500 focus:bg-white transition-colors" onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-xl transition-all shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Chat Button -->
+        <button id="chatToggleBtn" onclick="toggleChat()" class="flex items-center gap-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-5 py-3.5 rounded-full shadow-xl shadow-indigo-300 transition-all transform hover:scale-105 animate-pulse-slow">
+            <span class="text-xl">🤖</span>
+            <span class="text-sm">ผู้ช่วยครูวัดผล AI</span>
+            <span class="bg-white/20 text-white text-[11px] font-bold px-2 py-0.5 rounded-full">ถามได้เลย</span>
+        </button>
+    </div>
+
     <script>
         const uploadForm = document.getElementById('uploadForm');
         const fileInput = document.getElementById('fileInput');
         const fileCountBadge = document.getElementById('fileCountBadge');
         const fileCountText = document.getElementById('fileCountText');
+
+        let globalProcessedData = null;
 
         uploadForm.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -241,6 +325,8 @@
         });
 
         function renderTabsAndResults(data) {
+            globalProcessedData = data;
+
             let files = data.files || [];
             if (files.length === 0 && data.documents && data.documents.length > 0) {
                 files = data.documents.map((doc, idx) => ({
@@ -468,7 +554,6 @@
                 const fStudentIssues = f.anomalies || [];
                 const fSubjectIssues = f.subject_anomalies || [];
 
-                // 1. Subject issues in this room
                 let subjectAlertHtml = '';
                 if (fSubjectIssues.length > 0) {
                     subjectAlertHtml = `
@@ -492,7 +577,6 @@
                     `;
                 }
 
-                // 2. Student issues in this room
                 let studentAlertHtml = '';
                 if (fStudentIssues.length > 0) {
                     studentAlertHtml = `
@@ -604,6 +688,198 @@
                 const content = document.getElementById(`tab-content-file-${target}`);
                 if (content) content.classList.remove('hidden');
             }
+        }
+
+        // ==========================================
+        // 🤖 AI Chat Assistant Engine (คู่มือ & กฎตรวจ)
+        // ==========================================
+        let chatOpen = false;
+        let chatHistory = [];
+
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            const drawer = document.getElementById('chatDrawer');
+            if (chatOpen) {
+                drawer.classList.remove('hidden');
+                if (chatHistory.length === 0) {
+                    addBotMessage(`สวัสดีครับอาจารย์/คุณครูงานวัดผล! ผมคือ **ผู้ช่วยครูวัดผล AI** ยินดีต้อนรับครับ 😊\n\nผมพร้อมให้คำแนะนำเรื่อง **คู่มือการใช้งานระบบ** และ **เกณฑ์การตรวจจับความผิดปกติ ต.2ก** ทั้งแนวนอนและแนวตั้ง หรือหากคุณครูอัปโหลดไฟล์เข้ามาแล้ว จะให้ผมช่วยสรุปผลตรวจของแต่ละห้องให้ก็ได้นะครับ!`);
+                }
+                setTimeout(() => document.getElementById('chatInput').focus(), 150);
+            } else {
+                drawer.classList.add('hidden');
+            }
+        }
+
+        function clearChat() {
+            chatHistory = [];
+            document.getElementById('chatMessages').innerHTML = '';
+            addBotMessage(`เริ่มบทสนทนาใหม่เรียบร้อยครับ มีข้อสงสัยเรื่องวิธีใช้ระบบหรือกฎการตรวจข้อไหน ถามผมได้เลยครับ!`);
+        }
+
+        function askPrompt(text) {
+            document.getElementById('chatInput').value = text;
+            sendChatMessage();
+        }
+
+        function addUserMessage(text) {
+            chatHistory.push({ role: 'user', text });
+            const container = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex justify-end';
+            msgDiv.innerHTML = `
+                <div class="bg-indigo-600 text-white px-4 py-2.5 rounded-2xl rounded-tr-none text-xs md:text-sm max-w-[85%] shadow-sm">
+                    ${escapeHtml(text)}
+                </div>
+            `;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addBotMessage(text) {
+            chatHistory.push({ role: 'bot', text });
+            const container = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'flex items-start gap-2.5';
+            
+            // Format markdown-like text
+            let formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n- /g, '<br>• ')
+                .replace(/\n/g, '<br>');
+
+            msgDiv.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm shrink-0 mt-0.5 font-bold shadow-sm">
+                    🤖
+                </div>
+                <div class="bg-slate-100 text-slate-800 px-4 py-3 rounded-2xl rounded-tl-none text-xs md:text-sm max-w-[88%] shadow-sm leading-relaxed border border-slate-200/60">
+                    ${formattedText}
+                </div>
+            `;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(string) {
+            return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            addUserMessage(query);
+            input.value = '';
+
+            // Show typing indicator
+            const typing = document.getElementById('typingIndicator');
+            typing.classList.remove('hidden');
+
+            setTimeout(() => {
+                typing.classList.add('hidden');
+                const reply = processQueryWithAI(query);
+                addBotMessage(reply);
+            }, 450);
+        }
+
+        function processQueryWithAI(q) {
+            const lower = q.toLowerCase();
+
+            // 1. วิธีใช้งานระบบ / คู่มือ
+            if (lower.includes('วิธี') || lower.includes('ใช้ยังไง') || lower.includes('คู่มือ') || lower.includes('ทำยังไง') || lower.includes('ขั้นตอน')) {
+                return `**📖 คู่มือขั้นตอนการใช้งานระบบวิเคราะห์ ต.2ก:**\n\n` +
+                       `1. **เตรียมไฟล์:** ดาวน์โหลดไฟล์ Excel ต.2ก (.xls หรือ .xlsx) จากระบบ SGS ของโรงเรียน\n` +
+                       `2. **อัปโหลด:** ลากไฟล์มาวางในกล่องสีฟ้า หรือคลิกเพื่อเลือกไฟล์ (สามารถเลือกหลายไฟล์/หลายห้องพร้อมกันได้ครับ)\n` +
+                       `3. **กดวิเคราะห์ข้อมูล:** ระบบจะเริ่มประมวลผลทันที โดยใช้เวลาเพียงไม่กี่วินาที\n` +
+                       `4. **ตรวจสอบผลลัพธ์ผ่านระบบแท็บ (Tabs):**\n` +
+                       `- **แท็บภาพรวม:** ดูสรุปยอดรวมของทุกห้อง และดูว่ามีวิชาไหนที่มีข้อสังเกต\n` +
+                       `- **แท็บรายห้อง:** คลิกสลับดูผลแยกรายห้อง พร้อมตารางเอกสารดิบฉบับเต็มด้านล่าง ที่มีแถบสีแดงไฮไลท์เด็กที่มีปัญหา\n` +
+                       `- **ดูชื่อครูผู้สอน:** หากพบข้อผิดพลาด ระบบจะดึงชื่อครูผู้สอนจากตารางสอนของโรงเรียนมาให้ติดต่อได้ทันทีครับ!`;
+            }
+
+            // 2. กฎการตรวจ / เกณฑ์
+            if (lower.includes('กฎ') || lower.includes('เกณฑ์') || lower.includes('ตรวจอะไร') || lower.includes('เงื่อนไข')) {
+                return `**⚖️ ระบบใช้เกณฑ์การตรวจแบบ Matrix 2 มิติ ดังนี้ครับ:**\n\n` +
+                       `**1. การตรวจแนวตั้ง (ระดับรายวิชา / แนวดิ่ง):**\n` +
+                       `- **เกรดเหมือนกันทั้งห้อง 100%:** ทุกคนได้เกรดเดียวกันหมดเป๊ะ (เช่น ได้ 4 ทั้งห้อง 36 คน) มักเกิดจากการตัดเกรดเหมาห้อง หรือ Copy-paste คะแนนผิด\n` +
+                       `- **อัตราการตกสูงผิดปกติ:** นักเรียนติด 0, ร, มส, มผ เกิน 35% ของห้อง และมากกว่า 5 คนขึ้นไป\n` +
+                       `- **ช่องเกรดตกหล่น (ฟันหลอ):** เพื่อนมีเกรดครบทุกคน แต่นักเรียน 1-3 คนช่องเกรดว่างเปล่า ไม่มีเกรดและไม่มี ร/มส\n` +
+                       `- **ตัดเกรดผิดสเกล:** วิชากิจกรรมพัฒนาผู้เรียนแต่ใส่เกรดตัวเลข (0-4) หรือวิชาการมีหน่วยกิตแต่ใส่เป็น ผ/มผ\n\n` +
+                       `**2. การตรวจแนวนอน (ระดับนักเรียน / แนวนอน):**\n` +
+                       `- **เด็กเรียนดีสะดุดตกวิชาเดียว:** GPA ≥ 2.50 หรือเกรด 4 เกิน 30% ของวิชา แต่ติด 0/ร/มส เพียง 1-2 วิชา (อาจลืมสอบปลายภาคหรือขาดส่งงานชิ้นสุดท้าย)\n` +
+                       `- **เด็กเสี่ยงออกกลางคัน:** ติด 0/ร/มส เกือบทุกวิชา แต่ดันผ่านเพียง 1-2 วิชา (วิชาที่ผ่านอาจไม่ได้เช็คเวลาเรียนจริง)\n` +
+                       `- **เกรดแกว่งรุนแรง:** ได้เกรด 4 หลายวิชาสลับกับติด 0/ร/มส ในเทอมเดียวกัน\n` +
+                       `- **ผ่านทุกวิชาแต่ตกกิจกรรม:** ผ่านวิชาการครบทุกวิชาแต่ได้ "มผ" ในกิจกรรมพัฒนาผู้เรียน ซึ่งทำให้ไม่จบหลักสูตรได้ครับ`;
+            }
+
+            // 3. ชื่อครูดึงมาจากไหน
+            if (lower.includes('ครู') || lower.includes('ผู้สอน') || lower.includes('มาจากไหน') || lower.includes('ตารางสอน') || lower.includes('google sheet')) {
+                return `**👤 ที่มาของข้อมูลครูผู้สอน:**\n\n` +
+                       `ระบบเชื่อมต่อโดยตรงแบบ **Real-time** กับ **Google Sheet ตารางสอนของโรงเรียน** (ชีต \`View_ClassTeacher\`) ครับ!\n\n` +
+                       `- ระบบจะนำ **รหัสวิชา** (เช่น ท21101) และ **ห้องเรียน** (เช่น ม.1/1) ไปค้นหาชื่อครูผู้สอนที่รับผิดชอบสอนห้องนั้นจริงๆ ตามตารางสอน\n` +
+                       `- หากมีการเปลี่ยนแปลงครูผู้สอนใน Google Sheet ระบบวิเคราะห์ ต.2ก จะอัปเดตตามทันที\n` +
+                       `- มีระบบ Offline Cache สำรอง 1,138 รายการ ป้องกันกรณีเน็ตช้า ทำให้ระบบค้นหาชื่อครูเจออย่างรวดเร็วเสมอครับ`;
+            }
+
+            // 4. แถวสีแดง / ไฮไลท์ในตาราง
+            if (lower.includes('สีแดง') || lower.includes('ไฮไลท์') || lower.includes('แถว') || lower.includes('ตาราง')) {
+                return `**🎨 ความหมายของแถบสีในตารางเอกสารดิบ:**\n\n` +
+                       `- **แถวสีแดงอ่อน + ขอบแดงซ้ายมือ:** คือนักเรียนที่ระบบตรวจพบความผิดปกติแนวนอน เช่น ติด 0 วิชาเดียวทั้งที่เกรดดี เพื่อให้คุณครูกวาดสายตาเจอเด็กกลุ่มนี้ได้ทันที\n` +
+                       `- **Pill ป้ายสีแดง (เช่น [0], [ร], [มส], [มผ]):** ไฮไลท์ผลการเรียนที่ยังไม่ผ่าน ให้เห็นเด่นชัด\n` +
+                       `- **ตัวเลขสีน้ำเงินเข้ม:** เกรด 4\n` +
+                       `- **ตัวอักษรสีเขียว [ผ]:** ผ่านกิจกรรมพัฒนาผู้เรียน\n` +
+                       `- **คอลัมน์ตรึงด้านซ้าย:** เลขที่, เลขประจำตัว และชื่อ-นามสกุล จะตรึงอยู่กับที่เสมอขณะเลื่อนดูวิชาทางขวาครับ!`;
+            }
+
+            // 5. สรุปผลไฟล์ที่เพิ่งอัปโหลด (Context-aware)
+            if (lower.includes('สรุป') || lower.includes('ผล') || lower.includes('ตรวจเจอ') || lower.includes('ห้อง') || lower.includes('มีอะไรผิดปกติ')) {
+                if (!globalProcessedData || !globalProcessedData.files || globalProcessedData.files.length === 0) {
+                    return `ตอนนี้ยังไม่มีการประมวลผลไฟล์เลยครับ 😊\n\nคุณครูสามารถลากไฟล์ Excel ต.2ก มาวางที่กล่องด้านบน แล้วกด **"เริ่มวิเคราะห์ข้อมูล"** ได้เลยครับ พอวิเคราะห์เสร็จแล้ว ถามผมใหม่อีกครั้ง ผมจะสรุปจุดที่ตรวจพบของแต่ละห้องให้ฟังอย่างละเอียดเลยครับ!`;
+                }
+
+                const d = globalProcessedData;
+                const totalF = d.files.length;
+                let stuIssues = (d.anomalies && d.anomalies.filter(a => !a.error).length) || 0;
+                let subIssues = (d.subject_anomalies && d.subject_anomalies.length) || 0;
+
+                let reply = `**📊 สรุปผลการวิเคราะห์ไฟล์ปัจจุบัน (ประมวลผล ${totalF} ไฟล์):**\n\n`;
+                reply += `- **ตรวจแนวนอน (รายบุคคล):** พบ ${stuIssues} รายการ\n`;
+                reply += `- **ตรวจแนวตั้ง (รายวิชา):** พบ ${subIssues} รายวิชา\n\n`;
+
+                if (subIssues > 0) {
+                    reply += `**ข้อสังเกตรายวิชาเด่นๆ:**\n`;
+                    d.subject_anomalies.slice(0, 3).forEach(sa => {
+                        reply += `- **${sa.subject} (ห้อง ${sa.class_level}):** ${sa.issues.join(', ')} (ครูผู้สอน: ${sa.teacher})\n`;
+                    });
+                }
+
+                if (stuIssues > 0) {
+                    reply += `\n**ข้อสังเกตระดับนักเรียน:**\n`;
+                    d.anomalies.filter(a => !a.error).slice(0, 3).forEach(a => {
+                        reply += `- **${a.student_name} (${a.class_level}):** ${a.issues.join(', ')}\n`;
+                    });
+                }
+
+                if (stuIssues === 0 && subIssues === 0) {
+                    reply += `🎉 **ยอดเยี่ยมมากครับ!** ไม่พบข้อผิดปกติใดๆ ทั้งในระดับนักเรียนและระดับรายวิชา คุณครูสามารถเปิดดูภาพเอกสารด้านล่างเพื่อตรวจทานขั้นสุดท้ายได้เลยครับ`;
+                }
+
+                return reply;
+            }
+
+            // 6. เกรด 4 เฟ้อสูง
+            if (lower.includes('เกรด 4') || lower.includes('เฟ้อ') || lower.includes('ปล่อยเกรด')) {
+                return `สำหรับกฎ **"เกรด 4 เฟ้อสูงผิดปกติ"** ทางฝ่ายวิชาการได้ทำการ **ปิดการแจ้งเตือนนี้ออกแล้ว** ตามนโยบายของโรงเรียนครับ เพื่อไม่ให้รบกวนวิชาเลือกหรือห้องเรียนที่มีนักเรียนเก่งเป็นจำนวนมาก\n\nระบบจะตรวจเฉพาะกรณี **"ได้เกรดเดียวกัน 100% ทั้งห้อง"** (Zero Variance) หรือวิชาที่มี **"อัตราการตกสูงผิดปกติเกิน 35%"** เท่านั้นครับ!`;
+            }
+
+            // 7. General fallback with intelligent suggestion
+            return `ขออภัยครับ ผมอาจจะยังไม่เข้าใจคำถามนี้อย่างชัดเจน 😊 คุณครูสามารถลองถามเกี่ยวกับ:\n\n` +
+                   `- **"วิธีใช้งานระบบทำอย่างไร?"**\n` +
+                   `- **"กฎการตรวจแนวตั้งและแนวนอนมีอะไรบ้าง?"**\n` +
+                   `- **"ชื่อครูผู้สอนดึงมาจากไหน?"**\n` +
+                   `- **"สรุปผลการวิเคราะห์ไฟล์ที่อัปโหลดให้หน่อย"**\n` +
+                   `- หรือพิมพ์ชื่อวิชา/ชื่อห้องที่สงสัยมาได้เลยครับ!`;
         }
     </script>
 </body>
