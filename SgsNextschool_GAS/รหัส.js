@@ -589,6 +589,25 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify(syncResult)).setMimeType(ContentService.MimeType.JSON);
     }
     
+    // 🌟 1.5 คำสั่งลบนักเรียนออกจาก WP16_งานค้าง
+    if (data.action === "delete-wp16") {
+      var sheet = ss.getSheetByName("WP16_งานค้าง");
+      if (sheet && data.special_id) {
+        var allData = sheet.getDataRange().getValues();
+        var deletedRow = 0;
+        for (var i = allData.length - 1; i > 0; i--) {
+          if (String(allData[i][0] || "").trim() === String(data.special_id).trim()) {
+            sheet.deleteRow(i + 1);
+            deletedRow++;
+            break; // Assuming 1 unique special_id
+          }
+        }
+        SpreadsheetApp.flush();
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", deleted: deletedRow })).setMimeType(ContentService.MimeType.JSON);
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: "not_found" })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
     // 🌟 2. คำสั่งเดิม: บันทึกการส่งเกรด SGS & NextSchool (data.pairs)
     if (!data.pairs) {
       return ContentService.createTextOutput(JSON.stringify({
@@ -678,7 +697,16 @@ function doPost(e) {
       try {
         var errorCount = pair.results && pair.results.errors ? pair.results.errors.length : 0;
         var warningCount = pair.results && pair.results.warnings ? pair.results.warnings.length : 0;
-        var status = (errorCount > 0) ? "❌ ต้องแก้ไข" : (warningCount > 0 ? "⚠️ มีจุดสังเกต" : "✅ สมบูรณ์ 100%");
+        var status = "✅ สมบูรณ์ 100%";
+        if (errorCount > 0) {
+            status = "❌ ต้องแก้ไข";
+        } else if (warningCount > 0) {
+            if (data.round_type === "final" || data.round_type === "ปลายภาค") {
+                status = "✅ สมบูรณ์ (อนุมัติผ่าน)";
+            } else {
+                status = "⚠️ มีจุดสังเกต";
+            }
+        }
         
         var stats = pair.stats || {};
         var formatStats = function(obj) {
