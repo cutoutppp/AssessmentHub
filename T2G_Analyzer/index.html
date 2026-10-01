@@ -117,10 +117,10 @@
         </div>
     </div>
 
-    <script>
+        <script>
         function updateFileCount(event) {
             const count = event.target.files.length;
-            document.getElementById('fileCount').textContent = count > 0 ? ✅ เลือกแล้ว  + count +  ไฟล์ : 'ยังไม่ได้เลือกไฟล์';
+            document.getElementById('fileCount').textContent = count > 0 ? `✅ เลือกแล้ว ${count} ไฟล์` : 'ยังไม่ได้เลือกไฟล์';
             if(count > 0) {
                 document.getElementById('fileCount').className = "text-sm font-bold text-emerald-600 mt-3 bg-white px-4 py-1 rounded-full shadow-sm";
             } else {
@@ -128,7 +128,6 @@
             }
         }
 
-        
         const uploadForm = document.getElementById('uploadForm');
         uploadForm.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -149,7 +148,7 @@
             }
         });
 
-        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('fileInput');
             if (fileInput.files.length === 0) {
@@ -167,7 +166,6 @@
             document.getElementById('documentsSection').classList.add('hidden');
             
             try {
-                // Adjust the API URL if your backend runs on a different port
                 const apiUrl = 'https://teacherhub-api-zqhv.onrender.com/api/admin/t2g/analyze';
                 
                 const response = await fetch(apiUrl, {
@@ -193,94 +191,89 @@
             tbody.innerHTML = '';
             docContainer.innerHTML = '';
             
-            // Render Documents if present
             if (data.documents && data.documents.length > 0) {
                 data.documents.forEach(doc => {
                     const docDiv = document.createElement('div');
                     docDiv.className = 'border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow';
                     
-                    docDiv.innerHTML = 
+                    docDiv.innerHTML = `
                         <div class="bg-white px-5 py-3 border-b border-gray-100 font-semibold text-slate-700 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden')">
                             <div class="flex items-center gap-3">
                                 <span class="text-xl">📄</span>
-                                <span>\ <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full ml-2">ห้อง \</span></span>
+                                <span>${doc.filename} <span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full ml-2">ห้อง ${doc.class_level}</span></span>
                             </div>
                             <span class="text-xs font-medium bg-blue-50 text-blue-600 px-3 py-1 rounded-full">คลิกเพื่อดู/ซ่อน</span>
                         </div>
                         <div class="overflow-x-auto p-4 hidden bg-slate-50">
-                            \
+                            ${doc.html}
                         </div>
-                    ;
+                    `;
                     docContainer.appendChild(docDiv);
                 });
                 document.getElementById('documentsSection').classList.remove('hidden');
             }
 
-            
             let issuesCount = 0;
             if (data.anomalies) {
                 data.anomalies.forEach(item => {
                     if(!item.error) issuesCount++;
                 });
             }
+            
             if (issuesCount === 0) {
-                
+                document.getElementById('resultTitle').textContent = `ผลการวิเคราะห์ (ประมวลผล ${data.total_files_processed} ไฟล์) - ไม่พบความผิดปกติ 🎉`;
                 document.getElementById('resultTitle').className = "text-lg font-bold text-emerald-600 flex items-center gap-2";
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td colspan="6" class="px-6 py-6 text-center text-emerald-600 font-medium bg-emerald-50">ประมวลผลสำเร็จและไม่พบเกรดที่ผิดปกติ</td>`;
                 tbody.appendChild(tr);
             } else {
-                
+                document.getElementById('resultTitle').textContent = `ผลการวิเคราะห์ (พบ ${issuesCount} รายการผิดปกติ จาก ${data.total_files_processed} ไฟล์)`;
                 document.getElementById('resultTitle').className = "text-lg font-bold text-red-600 flex items-center gap-2";
             }
 
-            
-            
-            data.anomalies.forEach(item => {
-                if(item.error) return; // Skip files that couldn't be parsed
-                issuesCount++;
-                
-                const tr = document.createElement('tr');
-                
-                // Color coding based on issue type
-                let bgClass = 'hover:bg-gray-50';
-                if(item.issues.some(i => i.includes('เกรดเฉลี่ยสูง'))) bgClass = 'bg-red-50 hover:bg-red-100';
-                else if(item.issues.some(i => i.includes('เสี่ยงออก'))) bgClass = 'bg-yellow-50 hover:bg-yellow-100';
-                
-                tr.className = 	ransition-colors \;
-                
-                // Contacts HTML
-                let contactsHtml = '';
-                if(item.contacts && item.contacts.length > 0) {
-                    contactsHtml = item.contacts.map(c => 
-                        <div class="bg-orange-100 text-orange-800 px-3 py-1 mt-1 rounded-lg text-xs font-semibold inline-flex items-center gap-1">
-                            👤 \
-                        </div>
-                    ).join('');
-                }
+            if (data.anomalies) {
+                data.anomalies.forEach(item => {
+                    if(item.error) return;
+                    
+                    const tr = document.createElement('tr');
+                    
+                    let bgClass = 'hover:bg-gray-50';
+                    if(item.issues.some(i => i.includes('เกรดเฉลี่ย'))) bgClass = 'bg-red-50 hover:bg-red-100';
+                    else if(item.issues.some(i => i.includes('ขัดแย้ง') || i.includes('เสี่ยงออก') || i.includes('แกว่ง'))) bgClass = 'bg-yellow-50 hover:bg-yellow-100';
+                    
+                    tr.className = `transition-colors ${bgClass}`;
+                    
+                    let contactsHtml = '';
+                    if(item.contacts && item.contacts.length > 0) {
+                        contactsHtml = item.contacts.map(c => `
+                            <div class="bg-orange-100 text-orange-800 px-3 py-1 mt-1 rounded-lg text-xs font-semibold inline-flex items-center gap-1">
+                                👤 ${c}
+                            </div>
+                        `).join('');
+                    }
 
-                tr.innerHTML = 
-                    <td class="px-6 py-4">
-                        <div class="font-medium text-gray-900">\</div>
-                        <div class="text-xs text-gray-400 truncate w-24" title="\">\</div>
-                    </td>
-                    <td class="px-6 py-4 font-mono text-sm">\</td>
-                    <td class="px-6 py-4">\</td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-md font-bold text-sm border border-gray-200 shadow-sm">\</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-start gap-2">
-                            <span class="text-red-600 font-medium text-sm leading-relaxed">\</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">\</td>
-                ;
-                tbody.appendChild(tr);
-            });
+                    tr.innerHTML = `
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-gray-900">${item.class_level}</div>
+                            <div class="text-xs text-gray-400 truncate w-24" title="${item.file}">${item.file}</div>
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm">${item.student_id}</td>
+                        <td class="px-6 py-4">${item.student_name}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-md font-bold text-sm border border-gray-200 shadow-sm">${item.gpa}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-start gap-2">
+                                <span class="text-red-600 font-medium text-sm leading-relaxed">${item.issues.join('<br>')}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">${contactsHtml}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
-            
             document.getElementById('resultsSection').classList.remove('hidden');
         }
     </script>
