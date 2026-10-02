@@ -340,7 +340,7 @@ function App() {
       console.error(err);
       const isNetworkErr = err?.message?.includes('fetch') || err?.name === 'TypeError';
       const msg = isNetworkErr
-        ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (กรุณาตรวจสอบว่าเปิดโปรแกรมรัน Backend ที่พอร์ต 8000 อยู่หรือไม่)"
+        ? (isLocal ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (กรุณารัน Backend ที่พอร์ต 8000)" : "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (เซิร์ฟเวอร์อาจกำลังตื่น หรือเน็ตเวิร์กขัดข้อง กรุณารอสักครู่)")
         : ("เกิดข้อผิดพลาดในการประมวลผล: " + (err?.message || String(err)));
       setErrorMsg(msg);
       Swal.fire({
@@ -780,7 +780,7 @@ function App() {
 
         if (errMsg.includes('Failed to fetch') || errMsg.includes('NetworkError') || errMsg.includes('connection')) {
           friendlyReason = "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Backend หรือปลายทางได้ (เน็ตเวิร์กขัดข้อง หรือ เซิร์ฟเวอร์ Backend ปิดอยู่)";
-          suggestion = "กรุณาตรวจสอบว่าเซิร์ฟเวอร์ Backend (พอร์ต 8000) เปิดทำงานอยู่ และอินเทอร์เน็ตยังเชื่อมต่อได้ปกติ";
+          suggestion = isLocal ? "กรุณาตรวจสอบว่าเซิร์ฟเวอร์ Backend (พอร์ต 8000) เปิดทำงานอยู่" : "กรุณาตรวจสอบอินเทอร์เน็ต และรอสักครู่เพื่อให้เซิร์ฟเวอร์ตื่น (อาจใช้เวลา 1-2 นาที)";
         } else if (errMsg.includes('timeout') || errMsg.includes('timed out')) {
           friendlyReason = "Google Apps Script หรือ Google Drive ใช้เวลาตอบสนองนานเกินไป (Timeout)";
           suggestion = "ข้อมูลอาจกำลังประมวลผลอยู่เบื้องหลังใน Google Drive กรุณารอสักครู่แล้วตรวจสอบที่ Google Drive หรือส่งใหม่อีกครั้ง";
