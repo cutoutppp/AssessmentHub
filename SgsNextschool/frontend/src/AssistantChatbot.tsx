@@ -401,7 +401,7 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
         const botFallbackMsg: Message = {
           id: 'bot_' + Date.now(),
           sender: 'bot',
-          text: `ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างชัดเจน 🤔\n\nแต่คุณครูสามารถคลิกเลือกหัวข้อที่พบบ่อยจากด้านล่างนี้ได้เลยครับ:`,
+          text: `(อัปเดตใหม่) ขออภัยครับ ผมยังไม่เข้าใจคำถาม "${query}" อย่างชัดเจน 🤔\n\nแต่คุณครูสามารถคลิกเลือกหัวข้อที่พบบ่อยจากด้านล่างนี้ได้เลยครับ:`,
           time: getNowTime(),
           actions: [
             { label: "🔘 ทำไมปุ่มเป็นสีเทา (ล็อก)?", topicId: "grey_buttons" },
