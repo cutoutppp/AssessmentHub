@@ -335,6 +335,17 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
       let matchedTopicId = '';
       let dynamicReply = '';
 
+      // ── Admin Bypass Mode (secret command) ───────────────────────────────
+      const BYPASS_ON_CMD = 'admin9988';
+      const BYPASS_OFF_CMD = 'admin0000';
+      if (query.trim() === BYPASS_ON_CMD) {
+        localStorage.setItem('bypass_active', '1');
+        dynamicReply = '🔓 โหมด Admin เปิดใช้งานแล้ว\nระบบจะข้ามการตรวจคะแนนที่ขัดแย้งในรอบนี้\nพิมพ์ admin0000 เพื่อปิด';
+      } else if (query.trim() === BYPASS_OFF_CMD) {
+        localStorage.removeItem('bypass_active');
+        dynamicReply = '🔒 โหมด Admin ปิดแล้ว\nระบบกลับสู่การตรวจสอบตามปกติ';
+      } else
+
       if (q.includes('สวัสดี') || q.includes('หวัดดี') || q.includes('ดีครับ') || q.includes('ดีค่ะ') || q.includes('hello') || q.includes('hi')) {
          dynamicReply = 'สวัสดีครับ! ยินดีที่ได้ให้บริการครับ 😊 ผมคือผู้ช่วยอัจฉริยะ SGS & NextSchool วันนี้มีอะไรให้ผมช่วยแนะนำหรือแก้ไขปัญหาเกี่ยวกับการส่งคะแนนไหมครับ?';
       } else if (q.includes('ทำอะไรได้บ้าง') || q.includes('ช่วยอะไรได้บ้าง') || q.includes('เก่งเรื่องอะไร') || q.includes('คือใคร') || q.includes('ชื่ออะไร')) {

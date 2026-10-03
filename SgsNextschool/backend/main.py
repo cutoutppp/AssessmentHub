@@ -52,7 +52,8 @@ def read_root():
 async def compare_pdfs(
     files: list[UploadFile] = File(...),
     round_type: str = Form("final"),
-    master_scores: str = Form(None)
+    master_scores: str = Form(None),
+    bypass_secret: str = Form(None)
 ):
     if master_scores:
         load_scores_from_json(master_scores)
@@ -189,6 +190,15 @@ async def compare_pdfs(
         pair_results = []
         for sgs, ns in pairs:
             results = validate_scores(sgs["data"], ns["data"], round_type=round_type)
+
+            # ── Admin Bypass: แปลง errors ทั้งหมดเป็น warnings ──────────────
+            import os
+            _bypass_key = os.environ.get("BYPASS_SECRET", "admin9988")
+            if bypass_secret and bypass_secret == _bypass_key:
+                for err in results.get("errors", []):
+                    err["message"] = "⚡ [Bypass] " + err.get("message", "")
+                    results.setdefault("warnings", []).append(err)
+                results["errors"] = []
             
             sgs_images, sgs_pdf_b64 = render_annotated_pdf(sgs["content"], results.get("sgs_highlights", []))
             
