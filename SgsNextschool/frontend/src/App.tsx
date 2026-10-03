@@ -317,8 +317,9 @@ function App() {
     }
     formData.append("round_type", roundType)
     formData.append("master_scores", JSON.stringify(masterScores))
-    if (localStorage.getItem('bypass_active') === '1') {
-      formData.append("bypass_secret", "admin9988")
+    const _bypassVal = localStorage.getItem('bypass_secret_value');
+    if (_bypassVal) {
+      formData.append("bypass_secret", _bypassVal)
     }
 
     try {

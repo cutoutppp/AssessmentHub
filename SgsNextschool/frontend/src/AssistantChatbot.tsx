@@ -336,14 +336,15 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
       let dynamicReply = '';
 
       // ── Admin Bypass Mode (secret command) ───────────────────────────────
-      const BYPASS_ON_CMD = 'admin9988';
-      const BYPASS_OFF_CMD = 'admin0000';
-      if (query.trim() === BYPASS_ON_CMD) {
-        localStorage.setItem('bypass_active', '1');
-        dynamicReply = '🔓 โหมด Admin เปิดใช้งานแล้ว\nระบบจะข้ามการตรวจคะแนนที่ขัดแย้งในรอบนี้\nพิมพ์ admin0000 เพื่อปิด';
-      } else if (query.trim() === BYPASS_OFF_CMD) {
-        localStorage.removeItem('bypass_active');
+      // Frontend ไม่รู้รหัสจริง — แค่ส่งสิ่งที่พิมพ์ไปให้ Backend ตรวจสอบ
+      const BYPASS_OFF_CMD = 'bypass-off';
+      if (query.trim() === BYPASS_OFF_CMD) {
+        localStorage.removeItem('bypass_secret_value');
         dynamicReply = '🔒 โหมด Admin ปิดแล้ว\nระบบกลับสู่การตรวจสอบตามปกติ';
+      } else if (/^[a-zA-Z0-9]{6,20}$/.test(query.trim()) && !query.trim().includes(' ')) {
+        // ดูเหมือนรหัสลับ → เก็บไว้ส่ง backend ตรวจ (backend เท่านั้นที่รู้ว่าถูกหรือผิด)
+        localStorage.setItem('bypass_secret_value', query.trim());
+        dynamicReply = '🔑 ส่งรหัสไปตรวจสอบแล้ว\nหากถูกต้อง ระบบจะข้ามการตรวจคะแนนในรอบถัดไป\nพิมพ์ bypass-off เพื่อปิด';
       } else
 
       if (q.includes('สวัสดี') || q.includes('หวัดดี') || q.includes('ดีครับ') || q.includes('ดีค่ะ') || q.includes('hello') || q.includes('hi')) {
