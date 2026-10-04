@@ -87,6 +87,46 @@
             </div>
         </div>
 
+        <!-- Rules Guide Banner on Page -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚖️</span>
+                    <h2 class="text-base font-bold text-slate-800">เกณฑ์การตรวจความผิดปกติ ต.2ก (ระบบใหม่คำนวณแบบ % สัดส่วน)</h2>
+                </div>
+                <span class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-100">อัปเดตเกณฑ์ %</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="bg-red-50/60 p-3.5 rounded-xl border border-red-100 space-y-1">
+                    <div class="font-bold text-red-800 flex items-center gap-1.5 text-xs">
+                        <span>🚨</span> ติด 0/ร/มส สูงมากแต่มีวิชาเกรดดี
+                    </div>
+                    <p class="text-slate-600 leading-relaxed">
+                        • <strong>ติด 0/ร/มส &ge; 80%</strong> ของวิชาทั้งหมด (ขาดสอบ/ไม่มาเรียนยาว)<br>
+                        • <strong>แต่ดันมีวิชาได้เกรดดี (&ge; 2.5 ขึ้นไป)</strong> หลุดมา 1-2 วิชา (อาจใส่คะแนนผิดคน หรือให้เกรดผิดปกติ)
+                    </p>
+                </div>
+                <div class="bg-amber-50/60 p-3.5 rounded-xl border border-amber-100 space-y-1">
+                    <div class="font-bold text-amber-800 flex items-center gap-1.5 text-xs">
+                        <span>⚠️</span> เด็กเรียนดีสะดุดตกวิชาเดียว
+                    </div>
+                    <p class="text-slate-600 leading-relaxed">
+                        • <strong>สอบผ่าน &ge; 80%</strong> หรือ GPA &ge; 2.50<br>
+                        • <strong>แต่สะดุดติด 0/ร/มส เพียง &le; 20%</strong> (1-2 วิชา) (อาจลืมสอบปลายภาคหรือขาดส่งชิ้นงานสำคัญ)
+                    </p>
+                </div>
+                <div class="bg-purple-50/60 p-3.5 rounded-xl border border-purple-100 space-y-1">
+                    <div class="font-bold text-purple-800 flex items-center gap-1.5 text-xs">
+                        <span>🌟</span> เด็กเรียนร่วม (พิเศษ/LD)
+                    </div>
+                    <p class="text-slate-600 leading-relaxed">
+                        • <strong>ต้องมีผลการเรียน &ge; 1.0 ขึ้นไปทุกวิชา</strong><br>
+                        • <strong>ห้ามติด 0, ร, มส ในวิชาการ และห้าม มผ</strong> ในกิจกรรมพัฒนาผู้เรียน (ตามระเบียบ สพฐ./IEP)
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Upload Section -->
         <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
             <form id="uploadForm" class="border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/40 hover:bg-indigo-50/70 rounded-2xl p-8 md:p-12 flex flex-col items-center justify-center cursor-pointer transition-all group" onclick="document.getElementById('fileInput').click()">
@@ -302,12 +342,22 @@
             document.getElementById('resultsContainer').classList.add('hidden');
             
             try {
-                const apiUrl = 'https://teacherhub-api-zqhv.onrender.com/api/admin/t2g/analyze';
+                const PRIMARY_API = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/admin/t2g/analyze';
+                const FALLBACK_API = 'https://teacherhub-api-zqhv.onrender.com/api/admin/t2g/analyze';
                 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    body: formData
-                });
+                let response;
+                try {
+                    response = await fetch(PRIMARY_API, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch(e) {
+                    console.warn("Cloud Run failed, trying fallback Render", e);
+                    response = await fetch(FALLBACK_API, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
                 
                 if (!response.ok) {
                     const errText = await response.text();
@@ -814,9 +864,10 @@
                        `- **อัตราการตกสูงผิดปกติ:** นักเรียนติด 0, ร, มส, มผ เกิน 35% ของห้อง และมากกว่า 5 คนขึ้นไป\n` +
                        `- **ช่องเกรดตกหล่น (ฟันหลอ):** เพื่อนมีเกรดครบทุกคน แต่นักเรียน 1-3 คนช่องเกรดว่างเปล่า ไม่มีเกรดและไม่มี ร/มส\n` +
                        `- **ตัดเกรดผิดสเกล:** วิชากิจกรรมพัฒนาผู้เรียนแต่ใส่เกรดตัวเลข (0-4) หรือวิชาการมีหน่วยกิตแต่ใส่เป็น ผ/มผ\n\n` +
-                       `**2. การตรวจแนวนอน (ระดับนักเรียน / แนวนอน):**\n` +
-                       `- **เด็กเรียนดีสะดุดตกวิชาเดียว:** GPA ≥ 2.50 หรือเกรด 4 เกิน 30% ของวิชา แต่ติด 0/ร/มส เพียง 1-2 วิชา (อาจลืมสอบปลายภาคหรือขาดส่งงานชิ้นสุดท้าย)\n` +
-                       `- **เด็กเสี่ยงออกกลางคัน:** ติด 0/ร/มส เกือบทุกวิชา แต่ดันผ่านเพียง 1-2 วิชา (วิชาที่ผ่านอาจไม่ได้เช็คเวลาเรียนจริง)\n` +
+                       `**2. การตรวจแนวนอน (ระดับนักเรียน / แนวนอน - อัปเดตรูปแบบ %):**\n` +
+                       `- **ติด 0/ร/มส สูงมาก (≥ 80%) แต่มีวิชาเกรดดี:** นักเรียนขาดสอบหรือขาดเรียนยาว ติด 0/ร/มส ≥ 80% แต่ดันมีวิชาที่ได้เกรดดี (เกรด ≥ 2.5 หรือ 3-4) หลุดมา 1-2 วิชา (อาจใส่คะแนนผิดคน หรือให้เกรดผิดปกติ)\n` +
+                       `- **เด็กเรียนดีสะดุดตกวิชาเดียว:** สอบผ่าน ≥ 80% หรือ GPA ≥ 2.50 แต่สะดุดติด 0/ร/มส เพียง ≤ 20% (1-2 วิชา)\n` +
+                       `- **เด็กเสี่ยงออกกลางคัน:** ติด 0/ร/มส สูงถึง ≥ 75% และผ่านเพียง 1-2 วิชา\n` +
                        `- **เกรดแกว่งรุนแรง:** ได้เกรด 4 หลายวิชาสลับกับติด 0/ร/มส ในเทอมเดียวกัน\n` +
                        `- **ผ่านทุกวิชาแต่ตกกิจกรรม:** ผ่านวิชาการครบทุกวิชาแต่ได้ "มผ" ในกิจกรรมพัฒนาผู้เรียน ซึ่งทำให้ไม่จบหลักสูตรได้ครับ\n\n` +
                        `**3. กฎเฉพาะนักเรียนเรียนร่วม (บกพร่องทางการเรียนรู้และสติปัญญา / LD):**\n` +
