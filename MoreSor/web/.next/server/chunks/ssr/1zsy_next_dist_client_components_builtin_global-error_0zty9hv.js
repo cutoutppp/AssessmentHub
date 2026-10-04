@@ -1,0 +1,3 @@
+module.exports=[16743,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(17371);a.n(d("[project]/Desktop/AntigravityProject/AssessmentHub/MoreSor/web/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},91469,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(17371);a.n(d("[project]/Desktop/AntigravityProject/AssessmentHub/MoreSor/web/node_modules/next/dist/client/components/builtin/global-error.js"))},49071,a=>{"use strict";a.i(16743);var b=a.i(91469);a.n(b)},41686,a=>{a.n(a.i(49071))}];
+
+//# sourceMappingURL=1zsy_next_dist_client_components_builtin_global-error_0zty9hv.js.map
