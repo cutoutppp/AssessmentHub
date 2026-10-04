@@ -103,15 +103,15 @@ const StudentWarningRow = ({ studentId, warnings }: { studentId: string, warning
   );
 };
 
+const PRIMARY_BACKEND = 'https://teacherhub-api-zqhv.onrender.com';
+const BACKUP_BACKEND = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app';
+
 const isLocal = window.location.hostname === 'localhost' || 
                 window.location.hostname === '127.0.0.1' || 
                 window.location.hostname.startsWith('192.168.') || 
                 window.location.hostname.startsWith('10.') || 
                 window.location.hostname.startsWith('172.');
 
-const BACKEND_URL = isLocal 
-  ? `http://${window.location.hostname || 'localhost'}:8000` 
-  : 'https://teacherhub-api-zqhv.onrender.com';
 
 function App() {
   const [files, setFiles] = useState<File[]>([])
@@ -137,6 +137,89 @@ function App() {
   const [dbConnected, setDbConnected] = useState(false)
   const [savedPairs, setSavedPairs] = useState<Record<number, boolean>>({})
   const [showPatchNotes, setShowPatchNotes] = useState(false)
+
+  // Active backend URL state with Google Cloud Run as resilient backup
+  const [backendUrl, setBackendUrl] = useState<string>(() => {
+    if (isLocal) return `http://${window.location.hostname || 'localhost'}:8000`;
+    // Use cached working backend or default to Cloud Run backup (since Render free bandwidth is currently exhausted)
+    return sessionStorage.getItem('active_backend_url') || BACKUP_BACKEND;
+  });
+
+  // Resilient fetch with automatic failover between Render and Google Cloud Run
+  const fetchWithFailover = async (endpoint: string, options?: RequestInit): Promise<Response> => {
+    const isLocalEnv = isLocal;
+    const alternateRemote = backendUrl === PRIMARY_BACKEND ? BACKUP_BACKEND : PRIMARY_BACKEND;
+    const candidates = isLocalEnv 
+      ? [`http://${window.location.hostname || 'localhost'}:8000`, backendUrl, alternateRemote]
+      : [backendUrl, alternateRemote];
+
+    let lastError: any = null;
+    for (let i = 0; i < candidates.length; i++) {
+      const base = candidates[i];
+      const fullUrl = endpoint.startsWith('http') ? endpoint : `${base}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        const res = await fetch(fullUrl, {
+          ...options,
+          signal: options?.signal || controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        // If server is 502/503/504 (Render suspended / down), switch to backup and retry
+        if ((res.status === 502 || res.status === 503 || res.status === 504) && i < candidates.length - 1) {
+          const nextBackend = candidates[i+1];
+          console.warn(`[Failover] Backend ${base} returned HTTP ${res.status}. Switching to backup: ${nextBackend}`);
+          setBackendUrl(nextBackend);
+          sessionStorage.setItem('active_backend_url', nextBackend);
+          continue;
+        }
+
+        // Successfully connected to backend
+        if (base !== backendUrl && !isLocalEnv) {
+          setBackendUrl(base);
+          sessionStorage.setItem('active_backend_url', base);
+        }
+        return res;
+      } catch (err: any) {
+        console.warn(`[Failover] Connection to ${fullUrl} failed:`, err);
+        lastError = err;
+        if (i < candidates.length - 1) {
+          const nextBackend = candidates[i+1];
+          console.warn(`[Failover] Switching to backup: ${nextBackend}`);
+          setBackendUrl(nextBackend);
+          sessionStorage.setItem('active_backend_url', nextBackend);
+        }
+      }
+    }
+    throw lastError || new Error("Failed to connect to any backend service");
+  };
+
+  // Healthcheck at startup: test primary Render, if 200 restore it, else keep Cloud Run backup active
+  useEffect(() => {
+    if (!isLocal) {
+      const pingPrimary = async () => {
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 2000);
+          const res = await fetch(`${PRIMARY_BACKEND}/`, { signal: ctrl.signal });
+          clearTimeout(tid);
+          if (res.status === 200) {
+            console.log('[Backend] Primary Render is active');
+            setBackendUrl(PRIMARY_BACKEND);
+            sessionStorage.setItem('active_backend_url', PRIMARY_BACKEND);
+            return;
+          }
+        } catch (_) {}
+        // If primary is down or 503, use Cloud Run backup
+        console.log('[Backend] Primary Render offline (503/exhausted). Active: Cloud Run backup');
+        setBackendUrl(BACKUP_BACKEND);
+        sessionStorage.setItem('active_backend_url', BACKUP_BACKEND);
+      };
+      pingPrimary();
+    }
+  }, []);
 
   const fetchDbData = async () => {
     if (!webAppUrl) return;
@@ -165,7 +248,7 @@ function App() {
 
   const fetchSavedWorks = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/works`);
+      const res = await fetchWithFailover('/api/works');
       const data = await res.json();
       if (data.status === 'success') {
          setSavedWorksDb(data.data);
@@ -323,7 +406,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/compare`, {
+      const response = await fetchWithFailover('/api/compare', {
         method: "POST",
         body: formData,
       })
@@ -677,7 +760,7 @@ function App() {
         let backendSaved = false;
         let driveFolderUrl = "https://drive.google.com/drive/folders/1U2m3mnYaJvq4e4e3iGR5QOPrZoDUNPYj";
         try {
-          const res = await fetch(`${BACKEND_URL}/api/queue_save`, {
+          const res = await fetchWithFailover('/api/queue_save', {
             method: "POST",
             body: JSON.stringify({
               webhookUrl: webhookUrl,
@@ -756,7 +839,7 @@ function App() {
 
         // Save to Local DB
         try {
-           await fetch(`${BACKEND_URL}/api/save_work`, {
+           await fetchWithFailover('/api/save_work', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -828,7 +911,7 @@ function App() {
         ? { group_name: teacherName, head_name: extraData?.head_name, teachers: extraData?.teachers || (Array.isArray(extraData) ? extraData : []) } 
         : { teacher_name: teacherName, subject_group: extraData?.subject_group, mock_subjects: extraData?.mock_subjects };
 
-      const response = await fetch(`${BACKEND_URL}/api/export/${type}/saved`, {
+      const response = await fetchWithFailover(`/api/export/${type}/saved`, {
         method: "POST",
         body: JSON.stringify(bodyPayload),
         headers: {
@@ -862,7 +945,7 @@ function App() {
       setLoading(true);
       const payload = customPairs ? { ...results, pairs: customPairs } : results;
       
-      const response = await fetch(`${BACKEND_URL}/api/export/${type}`, {
+      const response = await fetchWithFailover(`/api/export/${type}`, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
@@ -935,7 +1018,7 @@ function App() {
             academicYear={academicYear}
             semester={semester}
             roundType={roundType}
-            backendUrl={BACKEND_URL}
+            backendUrl={backendUrl}
             webAppUrl={webAppUrl}
             downloadSavedDoc={downloadSavedDoc}
           />

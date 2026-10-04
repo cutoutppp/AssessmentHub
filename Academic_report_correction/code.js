@@ -702,7 +702,8 @@ function checkTeacherId(idCard) {
 
 function verifyPinLogin(idCard, pin) {
   try {
-    const url = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
+    const primaryUrl = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
+    const backupUrl = "https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login";
     const payload = {
       "idCard": String(idCard).trim(),
       "pin": String(pin).trim()
@@ -713,7 +714,15 @@ function verifyPinLogin(idCard, pin) {
       "payload": JSON.stringify(payload),
       "muteHttpExceptions": true
     };
-    const response = UrlFetchApp.fetch(url, options);
+    let response;
+    try {
+      response = UrlFetchApp.fetch(primaryUrl, options);
+      if (response.getResponseCode() !== 200) {
+        response = UrlFetchApp.fetch(backupUrl, options);
+      }
+    } catch (netErr) {
+      response = UrlFetchApp.fetch(backupUrl, options);
+    }
     const result = JSON.parse(response.getContentText());
     
     if (response.getResponseCode() === 200) {

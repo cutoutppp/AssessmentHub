@@ -225,7 +225,7 @@ function DashboardContent() {
         formData.append('file', currentFile);
 
         // 1. Parse PDF
-        const uploadRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf', {
+        const uploadRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/upload-pdf', {
           method: 'POST',
           body: formData
         });
@@ -238,7 +238,7 @@ function DashboardContent() {
         }
 
         // 2. Fetch Masterdata
-        const mdRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/masterdata', {
+        const mdRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/masterdata', {
           method: 'POST',
           
           body: JSON.stringify({
@@ -307,7 +307,7 @@ function DashboardContent() {
 
     try {
       // 1. Parse PDF using the external Render backend
-      const uploadRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/upload-pdf', {
+      const uploadRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/upload-pdf', {
         method: 'POST',
         body: formData
       });
@@ -325,7 +325,7 @@ function DashboardContent() {
       });
 
       // 2. Fetch Masterdata
-      const mdRes = await fetch('https://teacherhub-api-zqhv.onrender.com/api/moresor/masterdata', {
+      const mdRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/masterdata', {
         method: 'POST',
         
         body: JSON.stringify({

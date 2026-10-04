@@ -1,0 +1,3 @@
+module.exports=[17552,a=>{"use strict";var b=a.i(59782);a.s(["default",0,function({children:a}){return(0,b.jsxs)("html",{lang:"en",className:"h-full antialiased",children:[(0,b.jsx)("head",{children:(0,b.jsx)("meta",{charSet:"utf-8"})}),(0,b.jsx)("body",{className:"min-h-full flex flex-col font-sans text-slate-900 bg-slate-50",children:a})]})},"metadata",0,{title:"AssessmentHub MoreSor",description:"AssessmentHub MoreSor System"}])},22913,a=>{a.n(a.i(17552))}];
+
+//# sourceMappingURL=Desktop_AntigravityProject_AssessmentHub_MoreSor_web_app_layout_0kc5-n1.js.map
