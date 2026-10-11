@@ -2529,10 +2529,13 @@
                 <p class="text-xs text-indigo-200 mt-0.5">ตรวจสอบรายการ "พร้อมทำงาน" และดูรายงานความสำเร็จ/สาเหตุที่ผิดพลาดจากทุกอุปกรณ์</p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="copyMobileSgsBookmarklet()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
-                  <i class="material-icons-round text-sm">smartphone</i>
-                  <span>คัดลอกบุ๊กมาร์กซิงค์บนมือถือ</span>
-                </button>
+                <a id="sgsDragBookmarkletLink" href="#" onclick="event.preventDefault(); copyMobileSgsBookmarklet();" class="bg-amber-400 hover:bg-amber-300 text-slate-900 px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 cursor-grab no-underline" title="บนคอม: ลากปุ่มนี้ไปวางบนแถบบุ๊กมาร์กด้านบน | บนมือถือ: แตะเพื่อคัดลอกโค้ด">
+                  <span>🤖 ซิงค์เกรด SGS (ลากวางบุ๊กมาร์ก / แตะคัดลอก)</span>
+                </a>
+                <a href="https://sgs.bopp-obec.info/sgs/TblTranscripts/Edit-TblTranscripts-TableAll.aspx" target="_blank" rel="noopener" class="bg-emerald-500 hover:bg-emerald-400 text-white px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 no-underline">
+                  <i class="material-icons-round text-sm">open_in_new</i>
+                  <span>เปิดหน้าแก้ผลการเรียน SGS</span>
+                </a>
                 <button type="button" onclick="refreshSgsSyncDashboardData()" class="bg-white/15 hover:bg-white/25 text-white px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1 cursor-pointer">
                   <i class="material-icons-round text-sm">refresh</i>
                   <span>รีเฟรช</span>
@@ -2571,6 +2574,8 @@
           </div>
         `;
         document.body.appendChild(modal);
+        const dragLink = document.getElementById('sgsDragBookmarkletLink');
+        if (dragLink) dragLink.href = getSgsBookmarkletCode();
       } else {
         modal.classList.remove('hidden');
       }
