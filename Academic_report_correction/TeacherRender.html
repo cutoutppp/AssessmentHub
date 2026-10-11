@@ -972,6 +972,47 @@
       showLoginStep('idCardStep');
     };
 
+    async function verifyTeacherPin(idCard, pin) {
+      const cleanId = String(idCard || '').replace(/[-\s]/g, '').trim();
+      const cleanPin = String(pin || '').trim();
+      const cloudRunUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login';
+
+      // 1. ลองเชื่อมต่อ Cloud Run API โดยตรงก่อน (ความเร็ว ~0.15s, รองรับ CORS จาก cutoutppp.github.io 100%)
+      try {
+        const res = await fetch(cloudRunUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idCard: cleanId, pin: cleanPin })
+        });
+        const result = await res.json().catch(() => null);
+        if (res.ok && result && result.teacher) {
+          const t = result.teacher;
+          const tName = t.name || ((t.prefix || '') + (t.firstname || '') + ' ' + (t.lastname || '')).trim();
+          const isAdmin = checkIsSuperuser(t, cleanId);
+          return { success: true, name: tName, isAdmin, teacher: t };
+        }
+        if (result && result.detail) {
+          if (result.detail === 'FIRST_TIME_LOGIN') {
+            return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };
+          }
+          return { success: false, message: result.detail === 'Incorrect username or password' ? 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' : result.detail };
+        }
+      } catch (err) {
+        console.warn('[verifyTeacherPin] Direct Cloud Run fetch failed, trying GAS fallback:', err);
+      }
+
+      // 2. สำรอง: เรียกผ่าน backend GAS (ถ้า Cloud Run ไม่ตอบสนอง)
+      try {
+        const gasRes = await callBackend('verify-pin', { idCard: cleanId, pin: cleanPin });
+        if (gasRes && gasRes.success) return gasRes;
+        if (gasRes && gasRes.message) return gasRes;
+      } catch (gasErr) {
+        console.warn('[verifyTeacherPin] GAS fallback failed:', gasErr);
+      }
+
+      return { success: false, message: 'ไม่สามารถตรวจสอบรหัสผ่านได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง' };
+    }
+
     async function autoLoginWithCred(cred) {
       TEMP_IDCARD = cred.id;
       const cachedName = localStorage.getItem('last_teacher_name');
@@ -988,7 +1029,7 @@
       }
 
       try {
-        const res = await callBackend('verify-pin', { idCard: cred.id, pin: cred.pin });
+        const res = await verifyTeacherPin(cred.id, cred.pin);
         if (res.success) {
           CURRENT_TEACHER = res.name;
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, cred.id);
@@ -1002,7 +1043,6 @@
         } else {
           hideLoader();
           localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name');
-          localStorage.removeItem('last_teacher_name');
           document.getElementById('mainScreen').classList.add('hidden');
           showLoginStep('idCardStep');
         }
@@ -1042,17 +1082,18 @@
       }
     }
 
-        async function loginWithPin() {
+    async function loginWithPin() {
       const pin = document.getElementById('pinInput').value.trim();
       if(!pin || pin.length < 6) return showDialog('แจ้งเตือน', 'กรุณากรอกรหัส PIN ให้ครบ 6 หลัก', 'warning');
       showLoader('กำลังตรวจสอบรหัส...');
       
       try {
-        const res = await callBackend('verify-pin', { idCard: TEMP_IDCARD, pin });
+        const res = await verifyTeacherPin(TEMP_IDCARD, pin);
         if(res.success) {
           localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin }));
           CURRENT_TEACHER = res.name; 
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, TEMP_IDCARD); 
+          localStorage.setItem('last_teacher_name', res.name);
           localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
           document.getElementById('loginScreen').classList.add('hidden'); 
           setupDashboard();
