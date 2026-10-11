@@ -794,8 +794,8 @@
                 // GAS ส่ง HTML กลับมา — อาจเป็น cold start หรือ quota
                 const isHtmlError = text.trim().startsWith('<') || res.status === 404 || text.includes('window[\'ppConfig\']');
                 if (isHtmlError) {
-                  // ถ้ายังมี retry เหลือ และไม่ใช่ write action ให้ลองใหม่
-                  if (attempt < MAX_RETRIES && !isWriteAction) {
+                  // ลองใหม่อัตโนมัติ (ทั้ง read และ write ที่เป็น idempotent เช่น submit-grades, approve)
+                  if (attempt < MAX_RETRIES) {
                     return { ok: false, retry: true, isHtml: true, text };
                   }
                   let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
@@ -808,7 +808,7 @@
               }
             } catch(e) {
               // Network error — อาจเป็น timeout ให้ retry ได้
-              if (attempt < MAX_RETRIES && !isWriteAction) {
+              if (attempt < MAX_RETRIES) {
                 return { ok: false, retry: true, error: e };
               }
               return { ok: false, retry: false, error: e };
@@ -1172,7 +1172,7 @@
       
       try {
          const tasks = await callBackend('tasks', { mode, keyword });
-         renderTasks(tasks);
+         renderTasks(tasks, hasCached);
          try { sessionStorage.setItem(cacheKey, JSON.stringify(tasks || [])); } catch(e) {}
       } catch (e) { 
         hideLoader(); 
@@ -1295,18 +1295,29 @@
       tbody.innerHTML = rows;
     }
 
-    function renderTasks(tasks) {
+    function renderTasks(tasks, preserveState = false) {
       hideLoader();
       if (!tasks) tasks = [];
       ALL_TASKS = tasks;
       document.getElementById('taskCount').innerText = tasks.length;
-      PENDING_DATA = {};
+
+      const validRowIds = new Set(tasks.map(t => String(t.rowId)));
+      if (preserveState) {
+        // คงค่าเกรดที่ครูเลือกค้างไว้ใน PENDING_DATA (ไม่ล้างทิ้งเมื่อโหลดเบื้องหลังเสร็จ)
+        Object.keys(PENDING_DATA).forEach(k => {
+          if (!validRowIds.has(String(k))) delete PENDING_DATA[k];
+        });
+      } else {
+        PENDING_DATA = {};
+      }
       updateSubmitBar();
 
       const subjSelect = document.getElementById('subjectFilter');
+      const prevSubj = preserveState && subjSelect ? subjSelect.value : '';
+      const prevSearch = preserveState && document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
       const uniqueSubjs = [...new Set(tasks.map(t => t.subjCode + ' ' + t.subjName))];
-      subjSelect.innerHTML = '<option value="">-- กรองทุกรายวิชา --</option>' + uniqueSubjs.map(s => `<option value="${s}">${s}</option>`).join('');
-      document.getElementById('searchInput').value = '';
+      subjSelect.innerHTML = '<option value="">-- กรองทุกรายวิชา --</option>' + uniqueSubjs.map(s => `<option value="${s}" ${s === prevSubj ? 'selected' : ''}>${s}</option>`).join('');
+      document.getElementById('searchInput').value = prevSearch;
       onSubjectFilterChange();
     }
 
@@ -1480,7 +1491,17 @@
       if(!isConfirm) return;
       
       showLoader(`กำลังส่งผลการเรียน ${count} รายการ... (กรุณารอสักครู่)`);
-      let payload = Object.keys(PENDING_DATA).map(rowId => ({ rowId: parseInt(rowId), newGrade: PENDING_DATA[rowId] }));
+      let payload = Object.keys(PENDING_DATA).map(rowId => {
+        const rNum = parseInt(rowId, 10);
+        const taskObj = ALL_TASKS.find(t => t.rowId === rNum);
+        return {
+          rowId: rNum,
+          newGrade: PENDING_DATA[rowId],
+          specialId: taskObj ? (taskObj.specialId || `${taskObj.subjCode || ''}${taskObj.stuId || ''}`) : '',
+          stuId: taskObj ? (taskObj.stuId || '') : '',
+          subjCode: taskObj ? (taskObj.subjCode || '') : ''
+        };
+      });
       
       try {
         const res = await callBackend('submit-grades', { payload }, 'POST');
@@ -1495,8 +1516,9 @@
           filterTasks();
           saveTasksToCache();
 
-          // ลบ cache ประวัติ เพื่อให้เวลาสลับไปดูประวัติจะดึงข้อมูลใหม่
+          // ลบ cache ประวัติและรายการรออนุมัติ เพื่อให้เวลาสลับไปดูประวัติหรือหน้าอนุมัติจะดึงข้อมูลใหม่ทันที
           try {
+            sessionStorage.removeItem('approvals_cache');
             for (let i = sessionStorage.length - 1; i >= 0; i--) {
               const k = sessionStorage.key(i);
               if (k && k.startsWith('history_cache_')) sessionStorage.removeItem(k);
@@ -2466,14 +2488,16 @@
 
     async function fetchSgsDashboardDirectGvizFallback() {
       const sheetId = '1vfAjcf9whhVHVu_u4d-6yxyFNKIiTQ715Stz-yfRA4M';
-      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=StudentRecords&_t=${Date.now()}`;
+      const studentRecordsGid = '2143121488';
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=tsv&gid=${studentRecordsGid}&_t=${Date.now()}`;
       const res = await fetch(url, { method: 'GET', credentials: 'omit' });
       const text = await res.text();
-      const data = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-      const cols = (data.table.cols || []).map(c => (c.label || '').trim());
-      const rows = data.table.rows || [];
+      const lines = text.split(/\r?\n/);
+      if (lines.length < 2) return { success: true, readyCount: 0, readyTasks: [], logSuccessCount: 0, logErrorCount: 0, recentLogs: [] };
+
+      const cols = lines[0].split('\t').map(c => c.trim());
       const idx = n => cols.indexOf(n);
-      const getV = (r, c) => (c >= 0 && r && r.c && r.c[c]) ? String(r.c[c].v !== null && r.c[c].v !== undefined ? r.c[c].v : (r.c[c].f || '')).trim() : '';
+      const getV = (cells, c) => (c >= 0 && c < cells.length && cells[c] !== undefined) ? String(cells[c]).trim() : '';
 
       const iSubjCode = idx('รหัสวิชา'), iSubjName = idx('ชื่อวิชา'), iRoom = idx('ห้อง'), iGrade = idx('ชั้น'),
             iTeacher = idx('ครูผู้สอน'), iStuId = idx('เลขประจำตัว'), iStuName = idx('ชื่อ-นามสกุล'),
@@ -2481,24 +2505,37 @@
             iNewGrade = idx('ผลการเรียนใหม่'), iStatus = idx('สถานะระบบ'), iSpecialId = idx('เลขเฉพาะ');
 
       const readyTasks = [];
-      for (let i = 0; i < rows.length; i++) {
-        const r = rows[i];
-        if (getV(r, iStatus) !== 'พร้อมทำงาน') continue;
-        const stuId = getV(r, iStuId), subjCode = getV(r, iSubjCode), newGrade = getV(r, iNewGrade);
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const cells = lines[i].split('\t');
+        if (getV(cells, iStatus) !== 'พร้อมทำงาน') continue;
+
+        const subjCode = getV(cells, iSubjCode);
+        const specialId = getV(cells, iSpecialId);
+        let stuId = getV(cells, iStuId);
+        if (!stuId && specialId && subjCode && specialId.startsWith(subjCode)) {
+          stuId = specialId.slice(subjCode.length).trim();
+        }
+        const oldGrade = getV(cells, iOldGrade) || '0';
+        let newGrade = getV(cells, iNewGrade);
+        if (!newGrade && oldGrade === 'มผ') newGrade = 'ผ';
         if (!stuId || !subjCode || !newGrade) continue;
-        const g = getV(r, iGrade), rm = getV(r, iRoom);
+
+        const g = getV(cells, iGrade);
+        const rmRaw = getV(cells, iRoom);
+        const rm = rmRaw ? String(rmRaw).replace(/\.0+$/, '') : '';
         readyTasks.push({
-          rowId: i + 2,
-          specialId: getV(r, iSpecialId) || (subjCode + stuId),
+          rowId: i + 1,
+          specialId: specialId || (subjCode + stuId),
           stuId,
-          stuName: getV(r, iStuName),
+          stuName: getV(cells, iStuName),
           gradeRoom: g + (rm ? '/' + rm : ''),
           subjCode,
-          subjName: getV(r, iSubjName),
-          teacherName: getV(r, iTeacher),
-          year: getV(r, iYear),
-          term: getV(r, iTerm),
-          oldGrade: getV(r, iOldGrade) || '0',
+          subjName: getV(cells, iSubjName),
+          teacherName: getV(cells, iTeacher),
+          year: getV(cells, iYear).replace(/\.0+$/, ''),
+          term: getV(cells, iTerm).replace(/\.0+$/, ''),
+          oldGrade,
           newGrade
         });
       }
@@ -2559,11 +2596,11 @@
                 </div>
               </div>
               <div class="flex gap-2">
-                <button type="button" id="sgsTabBtnLogs" onclick="switchSgsDashTab('logs')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
-                  📊 ประวัติ & รายงานผล (SGS_Log)
-                </button>
-                <button type="button" id="sgsTabBtnReady" onclick="switchSgsDashTab('ready')" class="bg-white text-slate-600 border border-slate-200 px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
+                <button type="button" id="sgsTabBtnReady" onclick="switchSgsDashTab('ready')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
                   ⏳ คิวรอซิงค์ (พร้อมทำงาน)
+                </button>
+                <button type="button" id="sgsTabBtnLogs" onclick="switchSgsDashTab('logs')" class="bg-white text-slate-600 border border-slate-200 px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
+                  📊 ประวัติ & รายงานผล (SGS_Log)
                 </button>
               </div>
             </div>
@@ -2583,7 +2620,7 @@
     }
 
     let CURRENT_SGS_DASH_DATA = { readyTasks: [], recentLogs: [] };
-    let CURRENT_SGS_DASH_TAB = 'logs';
+    let CURRENT_SGS_DASH_TAB = 'ready';
 
     function switchSgsDashTab(tab) {
       CURRENT_SGS_DASH_TAB = tab;

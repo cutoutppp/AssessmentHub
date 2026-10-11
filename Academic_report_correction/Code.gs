@@ -934,26 +934,73 @@ function submitGrades(payload) {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(30000); 
+    bumpTaskCacheVersion_();
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheet = ss.getSheetByName('StudentRecords');
-    const headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 18)).getValues()[0].map(cleanStr_);
+    const lastRow = sheet.getLastRow();
+    const maxCols = Math.min(sheet.getLastColumn(), 18);
+    const headers = sheet.getRange(1, 1, 1, maxCols).getValues()[0].map(cleanStr_);
+    const idxSubjCode = headers.indexOf('รหัสวิชา');
+    const idxStuId = headers.indexOf('เลขประจำตัว');
+    const idxSpecialId = headers.indexOf('เลขเฉพาะ');
     const idxNewGrade = headers.indexOf('ผลการเรียนใหม่') + 1;
     const idxDate = headers.indexOf('วันที่แก้ไข') + 1;
     const idxStatus = headers.indexOf('สถานะระบบ') + 1;
     let today = new Date();
-    
-    payload.forEach(item => {
-      if (idxNewGrade > 0 && idxDate === idxNewGrade + 1 && idxStatus === idxDate + 1) {
-        // คอลัมน์ 13, 14, 15 อยู่ติดกัน บันทึกแบบ Batch ในคำสั่งเดียว เร็วกว่าเดิม 3 เท่า
-        sheet.getRange(item.rowId, idxNewGrade, 1, 3).setValues([[item.newGrade, today, 'รออนุมัติ']]);
-      } else {
-        if (idxNewGrade > 0) sheet.getRange(item.rowId, idxNewGrade).setValue(item.newGrade);
-        if (idxDate > 0) sheet.getRange(item.rowId, idxDate).setValue(today);
-        if (idxStatus > 0) sheet.getRange(item.rowId, idxStatus).setValue('รออนุมัติ');
+
+    let allData = null;
+    let updatedCount = 0;
+
+    (payload || []).forEach(item => {
+      let targetRow = parseInt(item.rowId, 10);
+      const reqSpecial = cleanStr_(item.specialId);
+      const reqStuId = cleanStr_(item.stuId);
+      const reqSubjCode = cleanStr_(item.subjCode);
+
+      // ตรวจสอบว่าแถวตรงกับนักเรียนจริงหรือไม่ (ป้องกันกรณีมีการลบ/แทรกแถวในชีตแล้ว rowId เลื่อน)
+      if ((reqSpecial || (reqStuId && reqSubjCode)) && targetRow >= 2 && targetRow <= lastRow) {
+        const rowVals = sheet.getRange(targetRow, 1, 1, maxCols).getValues()[0];
+        const rowSpecial = idxSpecialId >= 0 ? cleanStr_(rowVals[idxSpecialId]) : '';
+        const rowStuId = idxStuId >= 0 ? cleanStr_(rowVals[idxStuId]) : '';
+        const rowSubjCode = idxSubjCode >= 0 ? cleanStr_(rowVals[idxSubjCode]) : '';
+        const isMatch = (reqSpecial && rowSpecial === reqSpecial) || (reqStuId && reqSubjCode && rowStuId === reqStuId && rowSubjCode === reqSubjCode);
+        if (!isMatch) {
+          targetRow = -1;
+        }
+      }
+
+      if ((!targetRow || targetRow < 2 || targetRow > lastRow) && (reqSpecial || (reqStuId && reqSubjCode))) {
+        if (!allData && lastRow >= 2) {
+          allData = sheet.getRange(1, 1, lastRow, maxCols).getValues();
+        }
+        if (allData) {
+          for (let r = 1; r < allData.length; r++) {
+            const rSp = idxSpecialId >= 0 ? cleanStr_(allData[r][idxSpecialId]) : '';
+            const rStu = idxStuId >= 0 ? cleanStr_(allData[r][idxStuId]) : '';
+            const rSubj = idxSubjCode >= 0 ? cleanStr_(allData[r][idxSubjCode]) : '';
+            if ((reqSpecial && rSp === reqSpecial) || (reqStuId && reqSubjCode && rStu === reqStuId && rSubj === reqSubjCode)) {
+              targetRow = r + 1;
+              break;
+            }
+          }
+        }
+      }
+
+      if (targetRow >= 2) {
+        if (idxNewGrade > 0 && idxDate === idxNewGrade + 1 && idxStatus === idxDate + 1) {
+          sheet.getRange(targetRow, idxNewGrade, 1, 3).setValues([[item.newGrade, today, 'รออนุมัติ']]);
+        } else {
+          if (idxNewGrade > 0) sheet.getRange(targetRow, idxNewGrade).setValue(item.newGrade);
+          if (idxDate > 0) sheet.getRange(targetRow, idxDate).setValue(today);
+          if (idxStatus > 0) sheet.getRange(targetRow, idxStatus).setValue('รออนุมัติ');
+        }
+        updatedCount++;
       }
     });
-    SpreadsheetApp.flush(); 
-    return { success: true };
+    SpreadsheetApp.flush();
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+    return { success: true, updatedCount: updatedCount };
   } catch (e) {
     console.error('Error in submitGrades:', e); 
     return { success: false, message: 'ระบบใช้งานเยอะเกินไป กรุณาลองใหม่ ' + e.message };
@@ -1043,39 +1090,67 @@ function getPendingApprovals() {
 }
 
 function approveGrades(rowIds) {
-  clearDashboardCache();
-  bumpTaskCacheVersion_();
-  const ss = SpreadsheetApp.openById(SHEET_ID); 
-  const sheet = ss.getSheetByName('StudentRecords'); 
-  const headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 18)).getValues()[0].map(cleanStr_); 
-  const idxStatus = headers.indexOf('สถานะระบบ') + 1;
-  rowIds.forEach(rowId => { 
-    sheet.getRange(rowId, idxStatus).setValue('พร้อมทำงาน'); 
-  }); 
-  SpreadsheetApp.flush();
-  return { success: true };
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+    const ss = SpreadsheetApp.openById(SHEET_ID); 
+    const sheet = ss.getSheetByName('StudentRecords'); 
+    const headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 18)).getValues()[0].map(cleanStr_); 
+    const idxStatus = headers.indexOf('สถานะระบบ') + 1;
+    (rowIds || []).forEach(rowId => {
+      const r = parseInt(rowId, 10);
+      if (r >= 2 && idxStatus > 0) {
+        sheet.getRange(r, idxStatus).setValue('พร้อมทำงาน');
+      }
+    }); 
+    SpreadsheetApp.flush();
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+    return { success: true };
+  } catch (e) {
+    console.error('Error in approveGrades:', e);
+    return { success: false, message: e.message };
+  } finally {
+    try { lock.releaseLock(); } catch(e) {}
+  }
 }
 
 function rejectGrades(rowIds) {
-  clearDashboardCache();
-  bumpTaskCacheVersion_();
-  const ss = SpreadsheetApp.openById(SHEET_ID); 
-  const sheet = ss.getSheetByName('StudentRecords'); 
-  const headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 18)).getValues()[0].map(cleanStr_); 
-  const idxStatus = headers.indexOf('สถานะระบบ') + 1; 
-  const idxNewGrade = headers.indexOf('ผลการเรียนใหม่') + 1; 
-  const idxDate = headers.indexOf('วันที่แก้ไข') + 1;
-  rowIds.forEach(rowId => { 
-    if (idxNewGrade > 0 && idxDate === idxNewGrade + 1 && idxStatus === idxDate + 1) {
-      sheet.getRange(rowId, idxNewGrade, 1, 3).setValues([['', '', 'รอแก้ไข']]);
-    } else {
-      if (idxStatus > 0) sheet.getRange(rowId, idxStatus).setValue('รอแก้ไข'); 
-      if (idxNewGrade > 0) sheet.getRange(rowId, idxNewGrade).setValue(''); 
-      if (idxDate > 0) sheet.getRange(rowId, idxDate).setValue(''); 
-    }
-  }); 
-  SpreadsheetApp.flush();
-  return { success: true };
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+    const ss = SpreadsheetApp.openById(SHEET_ID); 
+    const sheet = ss.getSheetByName('StudentRecords'); 
+    const headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 18)).getValues()[0].map(cleanStr_); 
+    const idxStatus = headers.indexOf('สถานะระบบ') + 1; 
+    const idxNewGrade = headers.indexOf('ผลการเรียนใหม่') + 1; 
+    const idxDate = headers.indexOf('วันที่แก้ไข') + 1;
+    (rowIds || []).forEach(rowId => {
+      const r = parseInt(rowId, 10);
+      if (r >= 2) {
+        if (idxNewGrade > 0 && idxDate === idxNewGrade + 1 && idxStatus === idxDate + 1) {
+          sheet.getRange(r, idxNewGrade, 1, 3).setValues([['', '', 'รอแก้ไข']]);
+        } else {
+          if (idxStatus > 0) sheet.getRange(r, idxStatus).setValue('รอแก้ไข'); 
+          if (idxNewGrade > 0) sheet.getRange(r, idxNewGrade).setValue(''); 
+          if (idxDate > 0) sheet.getRange(r, idxDate).setValue(''); 
+        }
+      }
+    }); 
+    SpreadsheetApp.flush();
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+    return { success: true };
+  } catch (e) {
+    console.error('Error in rejectGrades:', e);
+    return { success: false, message: e.message };
+  } finally {
+    try { lock.releaseLock(); } catch(e) {}
+  }
 }
 
 // ==========================================

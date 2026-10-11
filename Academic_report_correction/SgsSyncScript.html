@@ -14,18 +14,20 @@
 
   const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec';
   const SHEET_ID = '1vfAjcf9whhVHVu_u4d-6yxyFNKIiTQ715Stz-yfRA4M';
+  const STUDENT_RECORDS_GID = '2143121488';
   const SGS_EDIT_ALL_PATH = '/sgs/TblTranscripts/Edit-TblTranscripts-TableAll.aspx';
 
-  // ดึงรายการ 'พร้อมทำงาน' โดยตรงจาก Google Sheets (gviz JSON) กรณี Web App ยังไม่ได้กดอัปเดตเวอร์ชัน
+  // ดึงรายการ 'พร้อมทำงาน' โดยตรงจาก Google Sheets (TSV Export) ครบทุกชนิดข้อมูล (รวมเกรด 'ผ' และรหัสนักเรียนที่เป็นข้อความ)
   async function fetchReadyTasksDirectFromGviz() {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=StudentRecords&_t=${Date.now()}`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=tsv&gid=${STUDENT_RECORDS_GID}&_t=${Date.now()}`;
     const res = await fetch(url, { method: 'GET', credentials: 'omit' });
     const text = await res.text();
-    const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-    const data = JSON.parse(jsonStr);
-    const cols = (data.table.cols || []).map(c => cleanStr(c.label));
-    const rows = data.table.rows || [];
+    const lines = text.split(/\r?\n/);
+    if (lines.length < 2) {
+      return { status: 'success', success: true, count: 0, tasks: [], fromDirectGviz: true };
+    }
 
+    const cols = lines[0].split('\t').map(c => cleanStr(c));
     const idx = name => cols.indexOf(name);
     const iSubjCode = idx('รหัสวิชา'),
           iSubjName = idx('ชื่อวิชา'),
@@ -42,41 +44,48 @@
           iStatus = idx('สถานะระบบ'),
           iSpecialId = idx('เลขเฉพาะ');
 
-    const getVal = (r, cIdx) => {
-      if (cIdx < 0 || !r || !r.c || !r.c[cIdx]) return '';
-      const cell = r.c[cIdx];
-      return cleanStr(cell.v !== null && cell.v !== undefined ? cell.v : cell.f);
+    const getVal = (cells, cIdx) => {
+      if (cIdx < 0 || !cells || cIdx >= cells.length || cells[cIdx] === undefined) return '';
+      return cleanStr(cells[cIdx]);
     };
 
     const tasks = [];
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i];
-      const status = getVal(r, iStatus);
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i]) continue;
+      const cells = lines[i].split('\t');
+      const status = getVal(cells, iStatus);
       if (status !== 'พร้อมทำงาน') continue;
 
-      const stuId = getVal(r, iStuId);
-      const subjCode = getVal(r, iSubjCode);
-      const newGrade = getVal(r, iNewGrade);
+      const subjCode = getVal(cells, iSubjCode);
+      const specialId = getVal(cells, iSpecialId);
+      let stuId = getVal(cells, iStuId);
+      if (!stuId && specialId && subjCode && specialId.startsWith(subjCode)) {
+        stuId = cleanStr(specialId.slice(subjCode.length));
+      }
+
+      const oldGrade = getVal(cells, iOldGrade) || '0';
+      let newGrade = getVal(cells, iNewGrade);
+      if (!newGrade && oldGrade === 'มผ') newGrade = 'ผ';
       if (!stuId || !subjCode || !newGrade) continue;
 
-      const oldGrade = getVal(r, iOldGrade) || '0';
-      const gradeStr = getVal(r, iGrade);
-      const roomStr = getVal(r, iRoom);
+      const gradeStr = getVal(cells, iGrade);
+      const roomRaw = getVal(cells, iRoom);
+      const roomStr = roomRaw ? roomRaw.replace(/\.0+$/, '') : '';
 
       tasks.push({
-        rowId: i + 2,
-        specialId: getVal(r, iSpecialId) || (subjCode + stuId),
+        rowId: i + 1,
+        specialId: specialId || (subjCode + stuId),
         stuId,
-        stuName: getVal(r, iStuName),
+        stuName: getVal(cells, iStuName),
         grade: gradeStr,
         room: roomStr,
         gradeRoom: gradeStr + (roomStr ? '/' + roomStr : ''),
         subjCode,
-        subjName: getVal(r, iSubjName),
-        teacher: getVal(r, iTeacher),
-        year: getVal(r, iYear),
-        term: getVal(r, iTerm),
-        oldScore: getVal(r, iOldScore),
+        subjName: getVal(cells, iSubjName),
+        teacher: getVal(cells, iTeacher),
+        year: getVal(cells, iYear).replace(/\.0+$/, ''),
+        term: getVal(cells, iTerm).replace(/\.0+$/, ''),
+        oldScore: getVal(cells, iOldScore),
         oldGrade,
         newGrade,
         targetBox: oldGrade === 'มส' ? 'RepeatGr' : 'ReGr',
