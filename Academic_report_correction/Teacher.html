@@ -78,6 +78,10 @@
             <span>หน้าอนุมัติผลการเรียน</span>
             <span id="adminApprovalBadge" class="hidden bg-rose-500 text-white text-[11px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-sm">0</span>
           </button>
+          <button onclick="openSgsSyncDashboardModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_5px_15px_-3px_rgba(16,185,129,0.4)] transition-all flex items-center gap-2 justify-center cursor-pointer">
+            <i class="material-icons-round text-sm">sync_alt</i>
+            <span>คิวซิงค์ SGS & รายงานผล</span>
+          </button>
         </div>
       </div>
 
@@ -737,13 +741,22 @@
             case 'sync-sgs':
               runner.syncFromSgsNextschool(params.items || params.payload);
               break;
+            case 'get-ready-sgs':
+              runner.getReadySgsTasks();
+              break;
+            case 'get-sgs-dashboard':
+              runner.getSgsSyncDashboard();
+              break;
+            case 'update-sgs-sync':
+              runner.updateSgsSyncResult(params);
+              break;
             default:
               reject(new Error('Unknown backend action: ' + action));
           }
         } else {
           // 🔄 Auto-Retry: ลองใหม่อัตโนมัติสูงสุด 3 ครั้ง เมื่อ GAS ส่ง error หรือ HTML กลับมา
           const MAX_RETRIES = 3;
-          const isWriteAction = ['approve','reject','submit-grades','update-pending-task','register-task','batch-register-tasks','batch-update-pending-tasks','sync-sgs'].includes(action);
+          const isWriteAction = ['approve','reject','submit-grades','update-pending-task','register-task','batch-register-tasks','batch-update-pending-tasks','sync-sgs','update-sgs-sync'].includes(action);
 
           const urlParams = new URLSearchParams();
           urlParams.append('action', action);
@@ -2428,6 +2441,259 @@
         `;
       });
       tbody.innerHTML = html;
+    }
+
+    // ==========================================
+    // 🤖 ระบบดูคิวซิงค์ SGS, รายงานผล SGS_Log และคัดลอก Bookmarklet สำหรับมือถือ
+    // ==========================================
+    function getSgsBookmarkletCode() {
+      const scriptUrl = 'https://cutoutppp.github.io/AssessmentHub/Academic_report_correction/sgs_grade_sync.js';
+      return `javascript:(function(){window.__NEXTSGS_BOOKMARKLET__=true;if(window.openNextSgsGradeSyncModal){window.openNextSgsGradeSyncModal();return;}var s=document.createElement('script');s.src='${scriptUrl}?t='+Date.now();document.body.appendChild(s);})();`;
+    }
+
+    function copyMobileSgsBookmarklet() {
+      const code = getSgsBookmarkletCode();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          showModal('success', 'คัดลอกโค้ดบุ๊กมาร์กสำเร็จ!', 'วิธีใช้บนมือถือ/iPad:\n1. บันทึกหน้าเว็บใดก็ได้เป็นบุ๊กมาร์ก ตั้งชื่อว่า "ซิงค์เกรด SGS"\n2. กดแก้ไขบุ๊กมาร์กนั้น แล้ววางโค้ดที่คัดลอกนี้ลงในช่อง URL\n3. เวลาเข้าเว็บ SGS บนมือถือ พิมพ์ชื่อบุ๊กมาร์ก "ซิงค์เกรด SGS" ที่ช่อง URL ด้านบน เพื่อเปิดแผงซิงค์และรีเช็คอัตโนมัติได้ทันที!');
+        }).catch(() => {
+          prompt('คัดลอกโค้ดด้านล่างนี้ไปใส่ในช่อง URL ของบุ๊กมาร์กบนมือถือ:', code);
+        });
+      } else {
+        prompt('คัดลอกโค้ดด้านล่างนี้ไปใส่ในช่อง URL ของบุ๊กมาร์กบนมือถือ:', code);
+      }
+    }
+
+    async function fetchSgsDashboardDirectGvizFallback() {
+      const sheetId = '1vfAjcf9whhVHVu_u4d-6yxyFNKIiTQ715Stz-yfRA4M';
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=StudentRecords&_t=${Date.now()}`;
+      const res = await fetch(url, { method: 'GET', credentials: 'omit' });
+      const text = await res.text();
+      const data = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      const cols = (data.table.cols || []).map(c => (c.label || '').trim());
+      const rows = data.table.rows || [];
+      const idx = n => cols.indexOf(n);
+      const getV = (r, c) => (c >= 0 && r && r.c && r.c[c]) ? String(r.c[c].v !== null && r.c[c].v !== undefined ? r.c[c].v : (r.c[c].f || '')).trim() : '';
+
+      const iSubjCode = idx('รหัสวิชา'), iSubjName = idx('ชื่อวิชา'), iRoom = idx('ห้อง'), iGrade = idx('ชั้น'),
+            iTeacher = idx('ครูผู้สอน'), iStuId = idx('เลขประจำตัว'), iStuName = idx('ชื่อ-นามสกุล'),
+            iYear = idx('ปีการศึกษา'), iTerm = idx('ภาคเรียนที่'), iOldGrade = idx('ผลการเรียนเดิม'),
+            iNewGrade = idx('ผลการเรียนใหม่'), iStatus = idx('สถานะระบบ'), iSpecialId = idx('เลขเฉพาะ');
+
+      const readyTasks = [];
+      for (let i = 0; i < rows.length; i++) {
+        const r = rows[i];
+        if (getV(r, iStatus) !== 'พร้อมทำงาน') continue;
+        const stuId = getV(r, iStuId), subjCode = getV(r, iSubjCode), newGrade = getV(r, iNewGrade);
+        if (!stuId || !subjCode || !newGrade) continue;
+        const g = getV(r, iGrade), rm = getV(r, iRoom);
+        readyTasks.push({
+          rowId: i + 2,
+          specialId: getV(r, iSpecialId) || (subjCode + stuId),
+          stuId,
+          stuName: getV(r, iStuName),
+          gradeRoom: g + (rm ? '/' + rm : ''),
+          subjCode,
+          subjName: getV(r, iSubjName),
+          teacherName: getV(r, iTeacher),
+          year: getV(r, iYear),
+          term: getV(r, iTerm),
+          oldGrade: getV(r, iOldGrade) || '0',
+          newGrade
+        });
+      }
+      return {
+        success: true,
+        readyCount: readyTasks.length,
+        readyTasks,
+        logSuccessCount: 0,
+        logErrorCount: 0,
+        recentLogs: []
+      };
+    }
+
+    async function openSgsSyncDashboardModal() {
+      let modal = document.getElementById('sgsSyncAdminModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'sgsSyncAdminModal';
+        modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[9999] flex items-center justify-center p-3 md:p-6';
+        modal.innerHTML = `
+          <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-teal-800 text-white p-4 md:p-6 flex flex-wrap justify-between items-center gap-3 shrink-0">
+              <div>
+                <h3 class="text-lg md:text-xl font-black flex items-center gap-2">
+                  <i class="material-icons-round text-emerald-400">sync_alt</i>
+                  <span>ศูนย์ควบคุมคิวซิงค์ SGS & รายงานผลรีเช็ค (SGS_Log)</span>
+                </h3>
+                <p class="text-xs text-indigo-200 mt-0.5">ตรวจสอบรายการ "พร้อมทำงาน" และดูรายงานความสำเร็จ/สาเหตุที่ผิดพลาดจากทุกอุปกรณ์</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="copyMobileSgsBookmarklet()" class="bg-amber-400 hover:bg-amber-300 text-slate-900 px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 cursor-pointer">
+                  <i class="material-icons-round text-sm">smartphone</i>
+                  <span>คัดลอกบุ๊กมาร์กซิงค์บนมือถือ</span>
+                </button>
+                <button type="button" onclick="refreshSgsSyncDashboardData()" class="bg-white/15 hover:bg-white/25 text-white px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1 cursor-pointer">
+                  <i class="material-icons-round text-sm">refresh</i>
+                  <span>รีเฟรช</span>
+                </button>
+                <button type="button" onclick="document.getElementById('sgsSyncAdminModal').classList.add('hidden')" class="bg-rose-500/30 hover:bg-rose-500/50 text-white px-3 py-2 rounded-xl font-black text-xs cursor-pointer">
+                  ✕ ปิด
+                </button>
+              </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div class="flex flex-wrap gap-2">
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 px-3.5 py-1.5 rounded-xl text-xs font-extrabold">
+                  📋 รอซิงค์ (พร้อมทำงาน): <span id="sgsDashReadyCount" class="text-sm font-black">0</span>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3.5 py-1.5 rounded-xl text-xs font-extrabold">
+                  ✅ บันทึกสำเร็จใน Log: <span id="sgsDashSuccessCount" class="text-sm font-black">0</span>
+                </div>
+                <div class="bg-rose-50 border border-rose-200 text-rose-800 px-3.5 py-1.5 rounded-xl text-xs font-extrabold">
+                  ❌ พบข้อผิดพลาดใน Log: <span id="sgsDashErrorCount" class="text-sm font-black">0</span>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button type="button" id="sgsTabBtnLogs" onclick="switchSgsDashTab('logs')" class="bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
+                  📊 ประวัติ & รายงานผล (SGS_Log)
+                </button>
+                <button type="button" id="sgsTabBtnReady" onclick="switchSgsDashTab('ready')" class="bg-white text-slate-600 border border-slate-200 px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer">
+                  ⏳ คิวรอซิงค์ (พร้อมทำงาน)
+                </button>
+              </div>
+            </div>
+
+            <div id="sgsDashContent" class="p-4 overflow-y-auto flex-1">
+              <div class="text-center py-12 text-slate-400 font-bold">กำลังโหลดข้อมูล...</div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      } else {
+        modal.classList.remove('hidden');
+      }
+      await refreshSgsSyncDashboardData();
+    }
+
+    let CURRENT_SGS_DASH_DATA = { readyTasks: [], recentLogs: [] };
+    let CURRENT_SGS_DASH_TAB = 'logs';
+
+    function switchSgsDashTab(tab) {
+      CURRENT_SGS_DASH_TAB = tab;
+      const btnLogs = document.getElementById('sgsTabBtnLogs');
+      const btnReady = document.getElementById('sgsTabBtnReady');
+      if (btnLogs && btnReady) {
+        if (tab === 'logs') {
+          btnLogs.className = 'bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer';
+          btnReady.className = 'bg-white text-slate-600 border border-slate-200 px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer';
+        } else {
+          btnReady.className = 'bg-indigo-600 text-white px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer';
+          btnLogs.className = 'bg-white text-slate-600 border border-slate-200 px-4 py-1.5 rounded-xl text-xs font-extrabold cursor-pointer';
+        }
+      }
+      renderSgsDashContent();
+    }
+
+    async function refreshSgsSyncDashboardData() {
+      const box = document.getElementById('sgsDashContent');
+      if (box) box.innerHTML = `<div class="text-center py-12 text-indigo-600 font-bold animate-pulse">🔄 กำลังดึงข้อมูลคิวซิงค์และประวัติ SGS_Log ล่าสุด...</div>`;
+      try {
+        let res = await callBackend('get-sgs-dashboard', {}, 'GET').catch(() => null);
+        if (!res || !res.success) {
+          res = await fetchSgsDashboardDirectGvizFallback();
+        }
+        CURRENT_SGS_DASH_DATA = res || { readyTasks: [], recentLogs: [] };
+        document.getElementById('sgsDashReadyCount').textContent = res.readyCount || 0;
+        document.getElementById('sgsDashSuccessCount').textContent = res.logSuccessCount || 0;
+        document.getElementById('sgsDashErrorCount').textContent = res.logErrorCount || 0;
+        renderSgsDashContent();
+      } catch (e) {
+        if (box) box.innerHTML = `<div class="text-center py-10 text-rose-600 font-bold">❌ โหลดข้อมูลไม่สำเร็จ: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    function renderSgsDashContent() {
+      const box = document.getElementById('sgsDashContent');
+      if (!box) return;
+
+      if (CURRENT_SGS_DASH_TAB === 'ready') {
+        const list = CURRENT_SGS_DASH_DATA.readyTasks || [];
+        if (list.length === 0) {
+          box.innerHTML = `<div class="text-center py-12 text-slate-400 font-bold">✨ ไม่มีรายการค้างสถานะ "พร้อมทำงาน" ในขณะนี้</div>`;
+          return;
+        }
+        box.innerHTML = `
+          <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full text-xs">
+              <thead class="bg-slate-100 text-slate-600 font-bold">
+                <tr>
+                  <th class="p-3 text-center">#</th>
+                  <th class="p-3 text-left">รหัสนักเรียน / ชื่อ-สกุล</th>
+                  <th class="p-3 text-center">ชั้น/ห้อง</th>
+                  <th class="p-3 text-left">วิชา / ครูผู้สอน</th>
+                  <th class="p-3 text-center">ปี/เทอม</th>
+                  <th class="p-3 text-center">ผลเดิม ➡️ ผลใหม่</th>
+                  <th class="p-3 text-center">ช่องที่จะกรอกใน SGS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${list.map((t, i) => `
+                  <tr class="hover:bg-slate-50">
+                    <td class="p-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="p-3"><div class="font-black text-slate-800">${escapeHtml(t.stuId)}</div><div class="text-slate-600 font-semibold">${escapeHtml(t.stuName)}</div></td>
+                    <td class="p-3 text-center font-bold text-slate-600">${escapeHtml(t.gradeRoom)}</td>
+                    <td class="p-3"><div class="font-bold text-indigo-900">${escapeHtml(t.subjCode)} ${escapeHtml(t.subjName)}</div><div class="text-[11px] text-slate-400">${escapeHtml(t.teacherName)}</div></td>
+                    <td class="p-3 text-center font-semibold text-slate-500">${escapeHtml(t.year)}/${escapeHtml(t.term)}</td>
+                    <td class="p-3 text-center"><span class="bg-rose-50 text-rose-600 px-2 py-0.5 rounded font-black">${escapeHtml(t.oldGrade)}</span> ➡️ <span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-black">${escapeHtml(t.newGrade)}</span></td>
+                    <td class="p-3 text-center font-bold">${String(t.oldGrade).trim() === 'มส' ? '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">เรียนซ้ำ (RepeatGr)</span>' : '<span class="bg-sky-100 text-sky-800 px-2 py-1 rounded-lg">แก้ตัว (ReGr)</span>'}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else {
+        const logs = CURRENT_SGS_DASH_DATA.recentLogs || [];
+        if (logs.length === 0) {
+          box.innerHTML = `<div class="text-center py-12 text-slate-400 font-bold">ยังไม่มีประวัติการซิงค์ในชีต SGS_Log</div>`;
+          return;
+        }
+        box.innerHTML = `
+          <div class="overflow-x-auto rounded-2xl border border-slate-200">
+            <table class="w-full text-xs">
+              <thead class="bg-slate-100 text-slate-600 font-bold">
+                <tr>
+                  <th class="p-3 text-left">วัน-เวลา</th>
+                  <th class="p-3 text-left">นักเรียน</th>
+                  <th class="p-3 text-left">วิชา (ปี/เทอม)</th>
+                  <th class="p-3 text-center">เดิม ➡️ ใหม่</th>
+                  <th class="p-3 text-center">ค่าที่รีเช็ค (ช่อง 8)</th>
+                  <th class="p-3 text-center">สถานะ</th>
+                  <th class="p-3 text-left">รายละเอียด / สาเหตุ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${logs.map(l => {
+                  const ok = l.status === 'สำเร็จ';
+                  return `
+                    <tr class="${ok ? 'bg-emerald-50/30' : 'bg-rose-50/40'}">
+                      <td class="p-3 text-slate-500 font-mono whitespace-nowrap">${escapeHtml(l.timestamp)}</td>
+                      <td class="p-3"><div class="font-black text-slate-800">${escapeHtml(l.stuId)} ${escapeHtml(l.stuName)}</div><div class="text-[11px] text-slate-400">${escapeHtml(l.gradeRoom)}</div></td>
+                      <td class="p-3"><div class="font-bold text-slate-800">${escapeHtml(l.subjCode)} ${escapeHtml(l.subjName)}</div><div class="text-[11px] text-slate-400">${escapeHtml(l.yearTerm)}</div></td>
+                      <td class="p-3 text-center font-bold">${escapeHtml(l.oldGrade)} ➡️ ${escapeHtml(l.newGrade)}</td>
+                      <td class="p-3 text-center font-black ${ok ? 'text-emerald-700' : 'text-rose-700'}">${escapeHtml(l.verifiedGrade || '-')}</td>
+                      <td class="p-3 text-center"><span class="px-2.5 py-1 rounded-full font-black ${ok ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${ok ? '✅ สำเร็จ' : '❌ ผิดพลาด'}</span></td>
+                      <td class="p-3 font-semibold ${ok ? 'text-emerald-800' : 'text-rose-700'}">${escapeHtml(l.message)}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
     }
 
 </script>
