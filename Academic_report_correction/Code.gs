@@ -243,12 +243,17 @@ function subjectGroupFromCode(code){
 function putCacheChunked_(key, str, expirationInSeconds) {
   try {
     var cache = CacheService.getScriptCache();
+    // 🚀 บีบอัดด้วย GZIP + Base64 (ลดขนาดจาก 2.5MB เหลือ ~200KB เพื่อให้บันทึกลง CacheService 1MB ได้สำเร็จ 100%)
+    var blob = Utilities.newBlob(str);
+    var gzipped = Utilities.gzip(blob);
+    var compressedBase64 = Utilities.base64Encode(gzipped.getBytes());
+
     var chunkSize = 85000;
-    var numChunks = Math.ceil(str.length / chunkSize);
+    var numChunks = Math.ceil(compressedBase64.length / chunkSize);
     var entries = {};
-    entries[key + '_chunks'] = String(numChunks);
+    entries[key + '_gz_chunks'] = String(numChunks);
     for (var i = 0; i < numChunks; i++) {
-      entries[key + '_' + i] = str.substr(i * chunkSize, chunkSize);
+      entries[key + '_gz_' + i] = compressedBase64.substr(i * chunkSize, chunkSize);
     }
     cache.putAll(entries, expirationInSeconds || 1800); // แคช 30 นาที
   } catch (e) {
@@ -259,22 +264,41 @@ function putCacheChunked_(key, str, expirationInSeconds) {
 function getCacheChunked_(key) {
   try {
     var cache = CacheService.getScriptCache();
-    var numChunksStr = cache.get(key + '_chunks');
-    if (!numChunksStr) return null;
+    var numChunksStr = cache.get(key + '_gz_chunks');
+    if (!numChunksStr) {
+      // Fallback สำหรับแคชแบบเดิม
+      numChunksStr = cache.get(key + '_chunks');
+      if (!numChunksStr) return null;
+      var numChunks = parseInt(numChunksStr, 10);
+      var keys = [];
+      for (var i = 0; i < numChunks; i++) keys.push(key + '_' + i);
+      var chunks = cache.getAll(keys);
+      var str = '';
+      for (var i = 0; i < numChunks; i++) {
+        var chunk = chunks[key + '_' + i];
+        if (!chunk) return null;
+        str += chunk;
+      }
+      return str;
+    }
+
     var numChunks = parseInt(numChunksStr, 10);
     var keys = [];
     for (var i = 0; i < numChunks; i++) {
-      keys.push(key + '_' + i);
+      keys.push(key + '_gz_' + i);
     }
     var chunks = cache.getAll(keys);
-    var str = '';
+    var base64Str = '';
     for (var i = 0; i < numChunks; i++) {
-      var chunk = chunks[key + '_' + i];
+      var chunk = chunks[key + '_gz_' + i];
       if (!chunk) return null;
-      str += chunk;
+      base64Str += chunk;
     }
-    return str;
+    var bytes = Utilities.base64Decode(base64Str);
+    var unzippedBlob = Utilities.ungzip(Utilities.newBlob(bytes, 'application/x-gzip'));
+    return unzippedBlob.getDataAsString();
   } catch (e) {
+    Logger.log('getCacheChunked_ error: ' + e.message);
     return null;
   }
 }

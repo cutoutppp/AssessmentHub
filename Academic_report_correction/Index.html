@@ -7,8 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <script src="https://www.gstatic.com/charts/loader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- 💡 เพิ่มตั้งค่า Tailwind เพื่อแก้บั๊กสีวิดเจ็ตเพี้ยนตามโหมดมือถือ -->
   <script>
@@ -497,8 +497,41 @@
     }
 
     async function loadInitialData() {
-      showDashboardSkeleton();
+      // 🚀 1. FAST PATH: โหลดข้อมูลจาก LocalStorage หรือ Snapshot ทันทีใน 0.05 วินาที ไม่ต้องรอหมุน!
+      let hasRenderedFast = false;
+      try {
+        const cachedRaw = localStorage.getItem('cached_dashboard_data');
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (cached && cached.filters && cached.stats) {
+            setupFilters(cached.filters);
+            renderAll(cached.stats);
+            if (loader) loader.classList.add('hidden');
+            hasRenderedFast = true;
+          }
+        } else {
+          // ถ้ายังไม่มี LocalStorage ให้ดึง Static Snapshot จาก GitHub Pages ทันทีใน 50ms
+          const staticResp = await fetch('./initial_data.json', { cache: 'no-cache' }).catch(() => null);
+          if (staticResp && staticResp.ok) {
+            const staticData = await staticResp.json().catch(() => null);
+            if (staticData && staticData.filters && staticData.stats) {
+              setupFilters(staticData.filters);
+              renderAll(staticData.stats);
+              if (loader) loader.classList.add('hidden');
+              hasRenderedFast = true;
+              localStorage.setItem('cached_dashboard_data', JSON.stringify(staticData));
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Instant cache error:', e);
+      }
 
+      if (!hasRenderedFast) {
+        showDashboardSkeleton();
+      }
+
+      // 🔄 2. BACKGROUND SYNC: ดึงข้อมูลสดใหม่ล่าสุดจาก Google Apps Script
       try {
         let res = null;
         if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -538,14 +571,21 @@
               }
             }
           }
-          if (!res) throw lastFetchErr || new Error('เชื่อมต่อ GAS ไม่สำเร็จ');
+          if (!res && !hasRenderedFast) throw lastFetchErr || new Error('เชื่อมต่อ GAS ไม่สำเร็จ');
         }
 
         if (res && res.filters) setupFilters(res.filters);
-        if (res && res.stats) renderAll(res.stats);
+        if (res && res.stats) {
+          renderAll(res.stats);
+          try {
+            localStorage.setItem('cached_dashboard_data', JSON.stringify(res));
+          } catch(e) {}
+        }
       } catch (err) {
         console.error('Failed to load initial dashboard data:', err);
-        showDashboardAlert('ยังโหลดข้อมูลไม่ได้', err.message);
+        if (!hasRenderedFast) {
+          showDashboardAlert('ยังโหลดข้อมูลไม่ได้', err.message);
+        }
       } finally {
         if (loader) loader.classList.add('hidden');
       }

@@ -82,6 +82,11 @@ function doGet(e) {
         let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
         return ContentService.createTextOutput(JSON.stringify(syncFromSgsNextschool(items))).setMimeType(ContentService.MimeType.JSON);
       }
+      if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
+        let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
+        let clearAll = (action === 'clean-sync-wp16') || (e.parameter.clearAll === 'true');
+        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
+      }
 
       // 🛑 กรณีส่ง action มาแต่ไม่ตรงกับ endpoint ใดๆ ให้ส่ง Error JSON เสมอ ป้องกันการหลุดไปเรนเดอร์หน้า HTML
       return ContentService.createTextOutput(JSON.stringify({
@@ -194,6 +199,11 @@ function doPost(e) {
       let items = params.items || params.payload || [];
       return ContentService.createTextOutput(JSON.stringify(syncFromSgsNextschool(items))).setMimeType(ContentService.MimeType.JSON);
     }
+    if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
+      let items = params.items || params.payload || [];
+      let clearAll = (action === 'clean-sync-wp16') || !!params.clearAll;
+      return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
+    }
     
     return ContentService.createTextOutput(JSON.stringify({success: false, message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
   } catch(err) {
@@ -233,12 +243,17 @@ function subjectGroupFromCode(code){
 function putCacheChunked_(key, str, expirationInSeconds) {
   try {
     var cache = CacheService.getScriptCache();
+    // 🚀 บีบอัดด้วย GZIP + Base64 (ลดขนาดจาก 2.5MB เหลือ ~200KB เพื่อให้บันทึกลง CacheService 1MB ได้สำเร็จ 100%)
+    var blob = Utilities.newBlob(str);
+    var gzipped = Utilities.gzip(blob);
+    var compressedBase64 = Utilities.base64Encode(gzipped.getBytes());
+
     var chunkSize = 85000;
-    var numChunks = Math.ceil(str.length / chunkSize);
+    var numChunks = Math.ceil(compressedBase64.length / chunkSize);
     var entries = {};
-    entries[key + '_chunks'] = String(numChunks);
+    entries[key + '_gz_chunks'] = String(numChunks);
     for (var i = 0; i < numChunks; i++) {
-      entries[key + '_' + i] = str.substr(i * chunkSize, chunkSize);
+      entries[key + '_gz_' + i] = compressedBase64.substr(i * chunkSize, chunkSize);
     }
     cache.putAll(entries, expirationInSeconds || 1800); // แคช 30 นาที
   } catch (e) {
@@ -249,22 +264,41 @@ function putCacheChunked_(key, str, expirationInSeconds) {
 function getCacheChunked_(key) {
   try {
     var cache = CacheService.getScriptCache();
-    var numChunksStr = cache.get(key + '_chunks');
-    if (!numChunksStr) return null;
+    var numChunksStr = cache.get(key + '_gz_chunks');
+    if (!numChunksStr) {
+      // Fallback สำหรับแคชแบบเดิม
+      numChunksStr = cache.get(key + '_chunks');
+      if (!numChunksStr) return null;
+      var numChunks = parseInt(numChunksStr, 10);
+      var keys = [];
+      for (var i = 0; i < numChunks; i++) keys.push(key + '_' + i);
+      var chunks = cache.getAll(keys);
+      var str = '';
+      for (var i = 0; i < numChunks; i++) {
+        var chunk = chunks[key + '_' + i];
+        if (!chunk) return null;
+        str += chunk;
+      }
+      return str;
+    }
+
     var numChunks = parseInt(numChunksStr, 10);
     var keys = [];
     for (var i = 0; i < numChunks; i++) {
-      keys.push(key + '_' + i);
+      keys.push(key + '_gz_' + i);
     }
     var chunks = cache.getAll(keys);
-    var str = '';
+    var base64Str = '';
     for (var i = 0; i < numChunks; i++) {
-      var chunk = chunks[key + '_' + i];
+      var chunk = chunks[key + '_gz_' + i];
       if (!chunk) return null;
-      str += chunk;
+      base64Str += chunk;
     }
-    return str;
+    var bytes = Utilities.base64Decode(base64Str);
+    var unzippedBlob = Utilities.ungzip(Utilities.newBlob(bytes, 'application/x-gzip'));
+    return unzippedBlob.getDataAsString();
   } catch (e) {
+    Logger.log('getCacheChunked_ error: ' + e.message);
     return null;
   }
 }
@@ -702,8 +736,7 @@ function checkTeacherId(idCard) {
 
 function verifyPinLogin(idCard, pin) {
   try {
-    const primaryUrl = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
-    const backupUrl = "https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login";
+    const url = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
     const payload = {
       "idCard": String(idCard).trim(),
       "pin": String(pin).trim()
@@ -714,15 +747,7 @@ function verifyPinLogin(idCard, pin) {
       "payload": JSON.stringify(payload),
       "muteHttpExceptions": true
     };
-    let response;
-    try {
-      response = UrlFetchApp.fetch(primaryUrl, options);
-      if (response.getResponseCode() !== 200) {
-        response = UrlFetchApp.fetch(backupUrl, options);
-      }
-    } catch (netErr) {
-      response = UrlFetchApp.fetch(backupUrl, options);
-    }
+    const response = UrlFetchApp.fetch(url, options);
     const result = JSON.parse(response.getContentText());
     
     if (response.getResponseCode() === 200) {
@@ -1243,6 +1268,114 @@ function syncFromSgsNextschool(items) {
   } catch (e) {
     console.error('Error in syncFromSgsNextschool:', e);
     return { success: false, message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 🌟 ระบบซิงค์ข้อมูลลงในแผ่นงาน WP16_งานค้าง (ตรงกับโครงสร้าง 13 หัวตาราง)
+function syncWp16Sheet(items, clearAll) {
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName('WP16_งานค้าง');
+    if (!sheet) {
+      sheet = ss.insertSheet('WP16_งานค้าง');
+    }
+
+    var expectedHeaders = [
+      'เลขเฉพาะ', 'ปี/เทอม', 'รหัสวิชา', 'ชื่อวิชา', 'ครูผู้สอน', 
+      'ชั้น/ห้อง', 'เลขประจำตัว', 'ชื่อ-นามสกุล', 'ผลเดิม', 'คะแนน', 
+      'งานค้าง/ภาระงาน', 'หมายเหตุ', 'วันที่บันทึก'
+    ];
+
+    // ตั้งค่าหัวตารางแถว 1 ให้ตรงกับ expectedHeaders เสมอ
+    sheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
+    sheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight("bold").setBackground("#e0f2fe");
+
+    var today = new Date();
+    var dateStr = Utilities.formatDate(today, "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss");
+
+    var processedRows = (items || []).map(function(it) {
+      var sp = cleanStr_(it.special_id || it.specialId || ((it.subject_code || it.subjCode || '') + (it.student_id || it.stuId || '')));
+      var termStr = cleanStr_(it.year_term || it.termStr);
+      if (!termStr) {
+        var yr = cleanStr_(it.academic_year || it.year || '2569');
+        var sem = cleanStr_(it.semester || it.term || '1');
+        termStr = (yr && sem) ? (yr + '/' + sem) : (yr || sem || '');
+      }
+      return [
+        sp,
+        termStr,
+        cleanStr_(it.subject_code || it.subjCode),
+        cleanStr_(it.subject_name || it.subjName),
+        cleanStr_(it.teacher_name || it.teacherName),
+        cleanStr_(it.class_level || it.classLevel),
+        cleanStr_(it.student_id || it.stuId),
+        cleanStr_(it.student_name || it.stuName),
+        cleanStr_(it.old_grade || it.oldGrade || it.grade || 'มส'),
+        (it.old_score !== undefined && it.old_score !== null) ? String(it.old_score) : (it.score !== undefined ? String(it.score) : ''),
+        (it.pending_task !== undefined && it.pending_task !== null) ? String(it.pending_task) : (it.task !== undefined ? String(it.task) : ''),
+        cleanStr_(it.remark),
+        cleanStr_(it.updated_at) || dateStr
+      ];
+    }).filter(function(r) { return r[0] !== ''; });
+
+    if (clearAll) {
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).clearContent();
+      }
+      if (processedRows.length > 0) {
+        sheet.getRange(2, 1, processedRows.length, expectedHeaders.length).setValues(processedRows);
+      }
+      SpreadsheetApp.flush();
+      return {
+        status: 'success',
+        success: true,
+        count: processedRows.length,
+        message: `ล้างและบันทึกข้อมูลคลีนลงใน WP16_งานค้าง เรียบร้อยแล้ว (${processedRows.length} รายการ ตรง 13 หัวตาราง)`
+      };
+    }
+
+    // กรณีซิงค์แบบ Incremental (Update / Insert ใน batch เดียว)
+    var data = sheet.getDataRange().getValues();
+    var rowMap = {};
+    for (var i = 1; i < data.length; i++) {
+      var spExisting = cleanStr_(data[i][0]);
+      if (spExisting) rowMap[spExisting] = i + 1;
+    }
+
+    var updatedCount = 0;
+    var newRows = [];
+    processedRows.forEach(function(rowVals) {
+      var sp = rowVals[0];
+      if (rowMap[sp]) {
+        sheet.getRange(rowMap[sp], 1, 1, rowVals.length).setValues([rowVals]);
+        updatedCount++;
+      } else {
+        newRows.push(rowVals);
+      }
+    });
+
+    if (newRows.length > 0) {
+      var nextRow = sheet.getLastRow() + 1;
+      sheet.getRange(nextRow, 1, newRows.length, expectedHeaders.length).setValues(newRows);
+    }
+
+    SpreadsheetApp.flush();
+    return {
+      status: 'success',
+      success: true,
+      count: processedRows.length,
+      updatedCount: updatedCount,
+      insertedCount: newRows.length,
+      message: `บันทึกสู่แผ่นงาน WP16_งานค้าง เรียบร้อยแล้ว (อัปเดต ${updatedCount} รายการ, เพิ่มใหม่ ${newRows.length} รายการ)`
+    };
+  } catch (e) {
+    console.error('Error in syncWp16Sheet:', e);
+    return { status: 'error', success: false, message: e.message };
   } finally {
     lock.releaseLock();
   }
