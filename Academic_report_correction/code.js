@@ -90,6 +90,20 @@ function doGet(e) {
       if (action === 'direct-fix-records') {
         return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
       }
+      if (action === 'get-ready-sgs') {
+        return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'get-sgs-dashboard') {
+        return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'update-sgs-sync') {
+        let payloadObj = e.parameter.payload ? JSON.parse(e.parameter.payload) : e.parameter;
+        return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(payloadObj))).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'sgs-sync-script') {
+        var jsContent = HtmlService.createHtmlOutputFromFile('SgsSyncScript').getContent();
+        return ContentService.createTextOutput(jsContent).setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
 
       // 🛑 กรณีส่ง action มาแต่ไม่ตรงกับ endpoint ใดๆ ให้ส่ง Error JSON เสมอ ป้องกันการหลุดไปเรนเดอร์หน้า HTML
       return ContentService.createTextOutput(JSON.stringify({
@@ -209,6 +223,15 @@ function doPost(e) {
     }
     if (action === 'direct-fix-records') {
       return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'get-ready-sgs') {
+      return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'get-sgs-dashboard') {
+      return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
+    }
+    if (action === 'update-sgs-sync') {
+      return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(params))).setMimeType(ContentService.MimeType.JSON);
     }
     
     return ContentService.createTextOutput(JSON.stringify({success: false, message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
@@ -718,10 +741,12 @@ function checkTeacherId(idCard) {
 
 function verifyPinLogin(idCard, pin) {
   try {
-    const url = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
+    const cleanId = String(idCard || '').replace(/[-\s]/g, '').trim();
+    const cleanPin = String(pin || '').trim();
+    const cloudRunUrl = "https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login";
     const payload = {
-      "idCard": String(idCard).trim(),
-      "pin": String(pin).trim()
+      "idCard": cleanId,
+      "pin": cleanPin
     };
     const options = {
       "method": "post",
@@ -729,22 +754,33 @@ function verifyPinLogin(idCard, pin) {
       "payload": JSON.stringify(payload),
       "muteHttpExceptions": true
     };
-    const response = UrlFetchApp.fetch(url, options);
-    const result = JSON.parse(response.getContentText());
     
-    if (response.getResponseCode() === 200) {
-       let tName = result.teacher.name;
+    let response = null;
+    let result = null;
+    try {
+      response = UrlFetchApp.fetch(cloudRunUrl, options);
+      const text = response.getContentText();
+      result = JSON.parse(text);
+    } catch(fetchErr) {
+      Logger.log("Cloud Run auth error: " + fetchErr.message);
+    }
+
+    const superCodes = ['444', '440', '242', '842', '234'];
+    const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+
+    if (response && response.getResponseCode() === 200 && result && result.teacher) {
+       let tName = result.teacher.name || ((result.teacher.prefix || '') + (result.teacher.firstname || '') + ' ' + (result.teacher.lastname || '')).trim();
        let tCode = String((result.teacher && result.teacher.teaccode) || '').trim();
-       let uId = String((result.teacher && result.teacher.userid) || idCard || '').replace(/[-\s]/g, '').trim();
-       const superCodes = ['444', '440', '242', '842', '234'];
-       const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+       let uId = String((result.teacher && result.teacher.userid) || cleanId).replace(/[-\s]/g, '').trim();
        let isAdmin = Boolean((result.teacher && result.teacher.is_admin) || superCodes.indexOf(tCode) !== -1 || superIds.indexOf(uId) !== -1);
        return { success: true, name: tName, isAdmin: isAdmin };
-    } else {
+    } else if (result && result.detail) {
        if (result.detail === "FIRST_TIME_LOGIN") {
            return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };
        }
        return { success: false, message: result.detail || 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' };
+    } else {
+       return { success: false, message: 'รหัส PIN ไม่ถูกต้อง หรือไม่สามารถยืนยันตัวตนได้ในขณะนี้' };
     }
   } catch (e) {
     return { success: false, message: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ยืนยันตัวตนได้: ' + e.message };
@@ -1711,5 +1747,264 @@ function batchRegisterTasks(rowIds) {
     return { success: false, message: e.message };
   } finally {
     try { lock.releaseLock(); } catch(e) {}
+  }
+}
+
+// ==========================================
+// 6. ระบบซิงค์ผลการเรียนเข้า SGS อัตโนมัติ + รีเช็คความถูกต้อง (SGS Auto-Sync & Verification)
+// ==========================================
+function getReadySgsTasks() {
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName('StudentRecords');
+    if (!sheet) return { status: 'error', success: false, message: 'ไม่พบชีต StudentRecords', tasks: [] };
+
+    var lastRow = sheet.getLastRow();
+    if (lastRow < 2) return { status: 'success', success: true, count: 0, tasks: [] };
+
+    var maxCols = Math.min(sheet.getLastColumn(), 20);
+    var data = sheet.getRange(1, 1, lastRow, maxCols).getValues();
+    var headers = data[0].map(cleanStr_);
+
+    var idxSubjCode = headers.indexOf('รหัสวิชา'),
+        idxSubjName = headers.indexOf('ชื่อวิชา'),
+        idxRoom = headers.indexOf('ห้อง'),
+        idxGrade = headers.indexOf('ชั้น'),
+        idxTeacher = headers.indexOf('ครูผู้สอน'),
+        idxStuId = headers.indexOf('เลขประจำตัว'),
+        idxStuName = headers.indexOf('ชื่อ-นามสกุล'),
+        idxYear = headers.indexOf('ปีการศึกษา'),
+        idxTerm = headers.indexOf('ภาคเรียนที่'),
+        idxOldScore = headers.indexOf('คะแนนเดิม'),
+        idxOldGrade = headers.indexOf('ผลการเรียนเดิม'),
+        idxNewGrade = headers.indexOf('ผลการเรียนใหม่'),
+        idxDate = headers.indexOf('วันที่แก้ไข'),
+        idxStatus = headers.indexOf('สถานะระบบ'),
+        idxSpecialId = headers.indexOf('เลขเฉพาะ');
+
+    var tasks = [];
+    for (var i = 1; i < data.length; i++) {
+      var stuId = cleanStr_(data[i][idxStuId]);
+      if (!stuId) continue;
+
+      var statusSys = cleanStr_(data[i][idxStatus]);
+      if (statusSys === 'พร้อมทำงาน') {
+        var subjCode = cleanStr_(data[i][idxSubjCode]);
+        var sp = (idxSpecialId >= 0 ? cleanStr_(data[i][idxSpecialId]) : '') || (subjCode + stuId);
+        var dVal = idxDate >= 0 ? data[i][idxDate] : '';
+        var dateStr = '';
+        if (dVal instanceof Date) {
+          dateStr = Utilities.formatDate(dVal, "Asia/Bangkok", "dd/MM/yyyy");
+        } else if (dVal) {
+          dateStr = cleanStr_(dVal);
+        }
+
+        tasks.push({
+          rowId: i + 1,
+          specialId: sp,
+          subjCode: subjCode,
+          subjName: cleanStr_(data[i][idxSubjName]),
+          stuId: stuId,
+          stuName: cleanStr_(data[i][idxStuName]),
+          grade: cleanStr_(data[i][idxGrade]),
+          room: cleanStr_(data[i][idxRoom]),
+          gradeRoom: cleanStr_(data[i][idxGrade]) + '/' + cleanStr_(data[i][idxRoom]),
+          year: cleanStr_(data[i][idxYear]),
+          term: cleanStr_(data[i][idxTerm]),
+          oldScore: cleanStr_(data[i][idxOldScore]),
+          oldGrade: cleanStr_(data[i][idxOldGrade]),
+          newGrade: cleanStr_(data[i][idxNewGrade]),
+          teacherName: cleanStr_(data[i][idxTeacher]),
+          editDate: dateStr
+        });
+      }
+    }
+
+    return {
+      status: 'success',
+      success: true,
+      count: tasks.length,
+      tasks: tasks
+    };
+  } catch (e) {
+    console.error('Error in getReadySgsTasks:', e);
+    return { status: 'error', success: false, message: e.message, tasks: [] };
+  }
+}
+
+function ensureSgsLogSheet_(ss) {
+  var logSheet = ss.getSheetByName('SGS_Log');
+  var expectedHeaders = [
+    'วัน-เวลา', 'เลขประจำตัว', 'ชื่อ-นามสกุล', 'ชั้น/ห้อง',
+    'รหัสวิชา', 'ชื่อวิชา', 'ปี/เทอม', 'ผลเดิม',
+    'ผลใหม่ที่ส่ง', 'ค่าที่รีเช็คใน SGS', 'ผลการซิงค์', 'รายละเอียด/สาเหตุ', 'เลขเฉพาะ'
+  ];
+  if (!logSheet) {
+    logSheet = ss.insertSheet('SGS_Log');
+    logSheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
+    logSheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight('bold').setBackground('#e0e7ff');
+  } else if (logSheet.getLastRow() === 0) {
+    logSheet.getRange(1, 1, 1, expectedHeaders.length).setValues([expectedHeaders]);
+    logSheet.getRange(1, 1, 1, expectedHeaders.length).setFontWeight('bold').setBackground('#e0e7ff');
+  }
+  return logSheet;
+}
+
+function updateSgsSyncResult(params) {
+  clearDashboardCache();
+  bumpTaskCacheVersion_();
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(25000);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName('StudentRecords');
+    if (!sheet) return { status: 'error', success: false, message: 'ไม่พบชีต StudentRecords' };
+
+    var logSheet = ensureSgsLogSheet_(ss);
+    var headers = sheet.getRange(1, 1, 1, Math.min(sheet.getLastColumn(), 20)).getValues()[0].map(cleanStr_);
+    var idxStatus = headers.indexOf('สถานะระบบ') + 1;
+    var idxStuId = headers.indexOf('เลขประจำตัว') + 1;
+    var idxSubjCode = headers.indexOf('รหัสวิชา') + 1;
+    var idxSpecialId = headers.indexOf('เลขเฉพาะ') + 1;
+
+    var items = params.items && Array.isArray(params.items) ? params.items : [params];
+    var nowStr = Utilities.formatDate(new Date(), "Asia/Bangkok", "dd/MM/yyyy HH:mm:ss");
+    var updatedCount = 0;
+    var logRows = [];
+
+    items.forEach(function(item) {
+      if (!item) return;
+      var stuId = cleanStr_(item.stuId || item.studentId);
+      var subjCode = cleanStr_(item.subjCode || item.subjectCode);
+      var sp = cleanStr_(item.specialId) || (subjCode + stuId);
+      var isSuccess = (item.success === true || item.success === 'true' || item.status === 'สำเร็จ' || item.status === 'ซิงค์แล้ว');
+      var targetRow = item.rowId ? parseInt(item.rowId) : null;
+
+      if (isSuccess && idxStatus > 0) {
+        var rowVerified = false;
+        if (targetRow && targetRow >= 2 && targetRow <= sheet.getLastRow()) {
+          var rowStuId = idxStuId > 0 ? cleanStr_(sheet.getRange(targetRow, idxStuId).getValue()) : '';
+          var rowSubj = idxSubjCode > 0 ? cleanStr_(sheet.getRange(targetRow, idxSubjCode).getValue()) : '';
+          if ((!stuId || rowStuId === stuId) && (!subjCode || rowSubj === subjCode)) {
+            rowVerified = true;
+          }
+        }
+        // Fallback: ค้นหาจาก เลขเฉพาะ หรือ (รหัสวิชา + เลขประจำตัว) กรณีแถวมีการเลื่อน
+        if (!rowVerified && sp) {
+          var lastR = sheet.getLastRow();
+          if (lastR >= 2) {
+            var allVals = sheet.getRange(2, 1, lastR - 1, Math.max(idxStatus, idxSpecialId, idxStuId, idxSubjCode)).getValues();
+            for (var r = 0; r < allVals.length; r++) {
+              var rSp = idxSpecialId > 0 ? cleanStr_(allVals[r][idxSpecialId - 1]) : '';
+              var rSubj = idxSubjCode > 0 ? cleanStr_(allVals[r][idxSubjCode - 1]) : '';
+              var rStu = idxStuId > 0 ? cleanStr_(allVals[r][idxStuId - 1]) : '';
+              if ((rSp && rSp === sp) || (rSubj === subjCode && rStu === stuId)) {
+                targetRow = r + 2;
+                rowVerified = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (rowVerified && targetRow >= 2) {
+          sheet.getRange(targetRow, idxStatus).setValue('ซิงค์แล้ว');
+          updatedCount++;
+        }
+      }
+
+      var yearTerm = (cleanStr_(item.year) && cleanStr_(item.term))
+        ? (cleanStr_(item.year) + '/' + cleanStr_(item.term))
+        : cleanStr_(item.yearTerm || '');
+
+      logRows.push([
+        nowStr,
+        stuId,
+        cleanStr_(item.stuName || item.studentName),
+        cleanStr_(item.gradeRoom),
+        subjCode,
+        cleanStr_(item.subjName || item.subjectName),
+        yearTerm,
+        cleanStr_(item.oldGrade),
+        cleanStr_(item.newGrade),
+        cleanStr_(item.verifiedGrade),
+        isSuccess ? 'สำเร็จ' : 'ผิดพลาด',
+        cleanStr_(item.message || item.reason || (isSuccess ? 'รีเช็คตาราง SGS ตรงกับเกรดใหม่ 100%' : 'ไม่ทราบสาเหตุ')),
+        sp
+      ]);
+    });
+
+    if (logRows.length > 0) {
+      var nextLogRow = logSheet.getLastRow() + 1;
+      logSheet.getRange(nextLogRow, 1, logRows.length, logRows[0].length).setValues(logRows);
+    }
+
+    SpreadsheetApp.flush();
+    return {
+      status: 'success',
+      success: true,
+      updatedCount: updatedCount,
+      loggedCount: logRows.length,
+      timestamp: nowStr
+    };
+  } catch (e) {
+    console.error('Error in updateSgsSyncResult:', e);
+    return { status: 'error', success: false, message: e.message };
+  } finally {
+    try { lock.releaseLock(); } catch(e) {}
+  }
+}
+
+function getSgsSyncDashboard() {
+  try {
+    var readyRes = getReadySgsTasks();
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var logSheet = ss.getSheetByName('SGS_Log');
+    var recentLogs = [];
+    var logSuccessCount = 0;
+    var logErrorCount = 0;
+
+    if (logSheet && logSheet.getLastRow() >= 2) {
+      var lastRow = logSheet.getLastRow();
+      var startRow = Math.max(2, lastRow - 149); // ดึงสูงสุด 150 รายการล่าสุด
+      var numRows = lastRow - startRow + 1;
+      var vals = logSheet.getRange(startRow, 1, numRows, Math.min(logSheet.getLastColumn(), 13)).getValues();
+      for (var i = vals.length - 1; i >= 0; i--) {
+        var r = vals[i];
+        var ts = r[0] instanceof Date ? Utilities.formatDate(r[0], "Asia/Bangkok", "dd/MM/yyyy HH:mm:ss") : cleanStr_(r[0]);
+        var st = cleanStr_(r[10]);
+        if (st === 'สำเร็จ') logSuccessCount++;
+        else if (st) logErrorCount++;
+
+        recentLogs.push({
+          timestamp: ts,
+          stuId: cleanStr_(r[1]),
+          stuName: cleanStr_(r[2]),
+          gradeRoom: cleanStr_(r[3]),
+          subjCode: cleanStr_(r[4]),
+          subjName: cleanStr_(r[5]),
+          yearTerm: cleanStr_(r[6]),
+          oldGrade: cleanStr_(r[7]),
+          newGrade: cleanStr_(r[8]),
+          verifiedGrade: cleanStr_(r[9]),
+          status: st,
+          message: cleanStr_(r[11]),
+          specialId: cleanStr_(r[12])
+        });
+      }
+    }
+
+    return {
+      status: 'success',
+      success: true,
+      readyCount: readyRes.count || 0,
+      readyTasks: readyRes.tasks || [],
+      logSuccessCount: logSuccessCount,
+      logErrorCount: logErrorCount,
+      recentLogs: recentLogs
+    };
+  } catch (e) {
+    console.error('Error in getSgsSyncDashboard:', e);
+    return { status: 'error', success: false, message: e.message, readyTasks: [], recentLogs: [] };
   }
 }

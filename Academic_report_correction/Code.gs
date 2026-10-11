@@ -741,10 +741,12 @@ function checkTeacherId(idCard) {
 
 function verifyPinLogin(idCard, pin) {
   try {
-    const url = "https://teacherhub-api-zqhv.onrender.com/api/auth/login";
+    const cleanId = String(idCard || '').replace(/[-\s]/g, '').trim();
+    const cleanPin = String(pin || '').trim();
+    const cloudRunUrl = "https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login";
     const payload = {
-      "idCard": String(idCard).trim(),
-      "pin": String(pin).trim()
+      "idCard": cleanId,
+      "pin": cleanPin
     };
     const options = {
       "method": "post",
@@ -752,22 +754,33 @@ function verifyPinLogin(idCard, pin) {
       "payload": JSON.stringify(payload),
       "muteHttpExceptions": true
     };
-    const response = UrlFetchApp.fetch(url, options);
-    const result = JSON.parse(response.getContentText());
     
-    if (response.getResponseCode() === 200) {
-       let tName = result.teacher.name;
+    let response = null;
+    let result = null;
+    try {
+      response = UrlFetchApp.fetch(cloudRunUrl, options);
+      const text = response.getContentText();
+      result = JSON.parse(text);
+    } catch(fetchErr) {
+      Logger.log("Cloud Run auth error: " + fetchErr.message);
+    }
+
+    const superCodes = ['444', '440', '242', '842', '234'];
+    const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+
+    if (response && response.getResponseCode() === 200 && result && result.teacher) {
+       let tName = result.teacher.name || ((result.teacher.prefix || '') + (result.teacher.firstname || '') + ' ' + (result.teacher.lastname || '')).trim();
        let tCode = String((result.teacher && result.teacher.teaccode) || '').trim();
-       let uId = String((result.teacher && result.teacher.userid) || idCard || '').replace(/[-\s]/g, '').trim();
-       const superCodes = ['444', '440', '242', '842', '234'];
-       const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+       let uId = String((result.teacher && result.teacher.userid) || cleanId).replace(/[-\s]/g, '').trim();
        let isAdmin = Boolean((result.teacher && result.teacher.is_admin) || superCodes.indexOf(tCode) !== -1 || superIds.indexOf(uId) !== -1);
        return { success: true, name: tName, isAdmin: isAdmin };
-    } else {
+    } else if (result && result.detail) {
        if (result.detail === "FIRST_TIME_LOGIN") {
            return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };
        }
        return { success: false, message: result.detail || 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' };
+    } else {
+       return { success: false, message: 'รหัส PIN ไม่ถูกต้อง หรือไม่สามารถยืนยันตัวตนได้ในขณะนี้' };
     }
   } catch (e) {
     return { success: false, message: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ยืนยันตัวตนได้: ' + e.message };
