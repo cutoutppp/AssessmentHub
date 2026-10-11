@@ -242,95 +242,93 @@
       backdrop-filter: blur(4px);
       display: flex;
       flex-direction: column;
-      padding: 10px;
+      padding: 6px;
       font-family: 'Prompt', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
       box-sizing: border-box;
     `;
 
     modal.innerHTML = `
-      <div style="background:#ffffff; border-radius:18px; width:100%; height:100%; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.4); border:1px solid #e2e8f0;">
+      <div style="background:#ffffff; border-radius:16px; width:100%; height:100%; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.45); border:1px solid #cbd5e1;">
         <!-- Header -->
-        <div style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color:#fff; padding:12px 18px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; flex-shrink:0;">
+        <div style="background:linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color:#fff; padding:10px 16px; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0;">
           <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:22px;">🤖</span>
+            <span style="font-size:20px;">🤖</span>
             <div>
-              <div style="font-size:15px; font-weight:800; letter-spacing:0.2px;">ระบบซิงค์แก้ 0, ร, มส, มผ อัตโนมัติ + รีเช็คความถูกต้อง</div>
-              <div style="font-size:11px; color:#c7d2fe;">ดึงข้อมูล "พร้อมทำงาน" จาก Google Sheets ➡️ กรอก SGS ➡️ รีเช็คช่องที่ 8 (Grade) ➡️ อัปเดต "ซิงค์แล้ว"</div>
+              <div style="font-size:14.5px; font-weight:800; letter-spacing:0.2px;">ระบบซิงค์แก้ 0, ร, มส, มผ อัตโนมัติ + รีเช็คความถูกต้อง (แบ่งจอ ซ้าย-ขวา)</div>
+              <div style="font-size:11px; color:#c7d2fe;">ฝั่งซ้าย: คิวรายการ "พร้อมทำงาน" จาก Google Sheets | ฝั่งขวา: หน้าจอปฏิบัติการ SGS สด + รีเช็คช่องที่ 8 (Grade)</div>
             </div>
           </div>
-          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
-            <button id="nsgs-btn-reload" type="button" style="background:rgba(255,255,255,0.15); hover:background:rgba(255,255,255,0.25); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:10px; padding:7px 13px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+            <button id="nsgs-btn-reload" type="button" style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:9px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;">
               🔄 ดึงรายการ "พร้อมทำงาน"
             </button>
-            <button id="nsgs-btn-start" type="button" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.4); display:flex; align-items:center; gap:6px;">
+            <button id="nsgs-btn-start" type="button" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; border:none; border-radius:9px; padding:7px 15px; font-size:12.5px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.4); display:flex; align-items:center; gap:6px;">
               ▶ เริ่มซิงค์ + รีเช็คอัตโนมัติ
             </button>
-            <button id="nsgs-btn-stop" type="button" style="display:none; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; border:none; border-radius:10px; padding:8px 16px; font-size:13px; font-weight:800; cursor:pointer; align-items:center; gap:6px;">
+            <button id="nsgs-btn-stop" type="button" style="display:none; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#fff; border:none; border-radius:9px; padding:7px 15px; font-size:12.5px; font-weight:800; cursor:pointer; align-items:center; gap:6px;">
               ⏸ หยุดพัก
             </button>
-            <button id="nsgs-btn-toggle-frame" type="button" style="background:rgba(255,255,255,0.12); color:#e0e7ff; border:1px solid rgba(255,255,255,0.2); border-radius:10px; padding:7px 11px; font-size:11px; font-weight:600; cursor:pointer;">
+            <button id="nsgs-btn-ratio" type="button" title="สลับสัดส่วนหน้าจอซ้าย-ขวา" style="background:rgba(255,255,255,0.12); color:#e0e7ff; border:1px solid rgba(255,255,255,0.2); border-radius:9px; padding:6px 10px; font-size:11px; font-weight:700; cursor:pointer;">
+              ⇄ สัดส่วน 50:50
+            </button>
+            <button id="nsgs-btn-toggle-frame" type="button" style="background:rgba(255,255,255,0.12); color:#e0e7ff; border:1px solid rgba(255,255,255,0.2); border-radius:9px; padding:6px 10px; font-size:11px; font-weight:600; cursor:pointer;">
               👁️ ซ่อน/แสดงจอ SGS
             </button>
-            <button id="nsgs-btn-close" type="button" style="background:rgba(239,68,68,0.25); color:#fecaca; border:1px solid rgba(239,68,68,0.4); border-radius:10px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer;">
+            <button id="nsgs-btn-close" type="button" style="background:rgba(239,68,68,0.25); color:#fecaca; border:1px solid rgba(239,68,68,0.4); border-radius:9px; padding:6px 11px; font-size:12px; font-weight:800; cursor:pointer;">
               ✕ ย่อหน้าต่าง
             </button>
           </div>
         </div>
 
         <!-- Status & Summary Bar -->
-        <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:10px 18px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0;">
-          <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-            <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:5px 12px; border-radius:10px; font-size:12px; font-weight:700;">
+        <div style="background:#f8fafc; border-bottom:1px solid #e2e8f0; padding:8px 16px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; flex-shrink:0;">
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; padding:4px 11px; border-radius:8px; font-size:12px; font-weight:700;">
               📋 รอซิงค์: <span id="nsgs-stat-pending">0</span>
             </div>
-            <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:5px 12px; border-radius:10px; font-size:12px; font-weight:700;">
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:4px 11px; border-radius:8px; font-size:12px; font-weight:700;">
               ✅ สำเร็จ (รีเช็คผ่าน): <span id="nsgs-stat-success">0</span>
             </div>
-            <div style="background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:5px 12px; border-radius:10px; font-size:12px; font-weight:700;">
+            <div style="background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:4px 11px; border-radius:8px; font-size:12px; font-weight:700;">
               ❌ ผิดพลาด: <span id="nsgs-stat-error">0</span>
             </div>
           </div>
-          <div id="nsgs-live-status" style="font-size:12.5px; font-weight:700; color:#334155; background:#fff; border:1px solid #cbd5e1; padding:6px 14px; border-radius:999px; flex:1; min-width:240px; max-width:560px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+          <div id="nsgs-live-status" style="font-size:12px; font-weight:700; color:#334155; background:#fff; border:1px solid #cbd5e1; padding:5px 14px; border-radius:999px; flex:1; min-width:240px; max-width:620px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             ⏳ พร้อมทำงาน — กด "ดึงรายการ พร้อมทำงาน" เพื่อโหลดคิวล่าสุด
           </div>
         </div>
 
-        <!-- Main Body Split: Queue Table (Top) + SGS Live Worker Frame (Bottom) -->
-        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0;">
-          <!-- Queue Table Container -->
-          <div id="nsgs-table-panel" style="flex:1; overflow-y:auto; padding:12px 16px; min-height:180px;">
-            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+        <!-- Main Body Split: Left (Queue Table) + Right (SGS Live Worker Frame) -->
+        <div id="nsgs-split-body" style="flex:1; display:flex; flex-direction:row; overflow:hidden; min-height:0; width:100%;">
+          <!-- Left Half: Queue Table Container -->
+          <div id="nsgs-table-panel" style="width:50%; height:100%; overflow-y:auto; overflow-x:auto; padding:10px 12px; box-sizing:border-box; background:#ffffff;">
+            <table style="width:100%; border-collapse:collapse; font-size:11.5px;">
               <thead>
                 <tr style="background:#f1f5f9; color:#475569; text-align:left; border-bottom:2px solid #cbd5e1; position:sticky; top:0; z-index:2;">
-                  <th style="padding:8px; width:36px; text-align:center;"><input type="checkbox" id="nsgs-chk-all" checked style="cursor:pointer;" /></th>
-                  <th style="padding:8px; width:44px; text-align:center;">#</th>
-                  <th style="padding:8px;">รหัสนักเรียน</th>
-                  <th style="padding:8px;">ชื่อ-นามสกุล</th>
-                  <th style="padding:8px;">ชั้น/ห้อง</th>
-                  <th style="padding:8px;">รหัสวิชา / ชื่อวิชา</th>
-                  <th style="padding:8px; text-align:center;">ปี/เทอม</th>
-                  <th style="padding:8px; text-align:center;">ผลเดิม</th>
-                  <th style="padding:8px; text-align:center;">ผลใหม่</th>
-                  <th style="padding:8px; text-align:center;">ช่องที่กรอก</th>
-                  <th style="padding:8px; text-align:center;">ค่าที่รีเช็ค (ช่อง 8)</th>
-                  <th style="padding:8px;">สถานะ / รายงานผล</th>
+                  <th style="padding:7px 5px; width:28px; text-align:center;"><input type="checkbox" id="nsgs-chk-all" checked style="cursor:pointer;" /></th>
+                  <th style="padding:7px 5px; width:32px; text-align:center;">#</th>
+                  <th style="padding:7px 6px;">นักเรียน (รหัส / ชื่อ / ชั้น)</th>
+                  <th style="padding:7px 6px;">วิชา (ปี/เทอม)</th>
+                  <th style="padding:7px 6px; text-align:center;">เดิม ➡️ ใหม่</th>
+                  <th style="padding:7px 6px; text-align:center;">รีเช็ค (ช่อง 8)</th>
+                  <th style="padding:7px 6px;">สถานะ / รายงานผล</th>
                 </tr>
               </thead>
               <tbody id="nsgs-queue-tbody">
                 <tr>
-                  <td colspan="12" style="padding:30px; text-align:center; color:#64748b;">กำลังโหลดข้อมูลจาก Google Sheets...</td>
+                  <td colspan="7" style="padding:30px; text-align:center; color:#64748b;">กำลังโหลดข้อมูลจาก Google Sheets...</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Live SGS Worker Frame Container -->
-          <div id="nsgs-worker-container" style="height:44%; min-height:220px; border-top:3px solid #4f46e5; display:flex; flex-direction:column; background:#0f172a; flex-shrink:0;">
-            <div style="background:#1e293b; color:#cbd5e1; padding:5px 14px; font-size:11px; font-weight:600; display:flex; justify-content:space-between; align-items:center;">
-              <span>🖥️ หน้าจอปฏิบัติการ SGS สด (ค้นหา ➡️ กรอกเกรด ➡️ กดบันทึก ➡️ รีเช็คคอลัมน์ที่ 8)</span>
+          <!-- Right Half: Live SGS Worker Frame Container -->
+          <div id="nsgs-worker-container" style="width:50%; height:100%; border-left:3px solid #4f46e5; display:flex; flex-direction:column; background:#0f172a; flex-shrink:0; box-sizing:border-box;">
+            <div style="background:#1e293b; color:#cbd5e1; padding:6px 12px; font-size:11px; font-weight:600; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+              <span>🖥️ หน้าจอ SGS สด (ค้นหา ➡️ กรอกเกรด ➡️ บันทึก ➡️ รีเช็คช่อง 8)</span>
               <span id="nsgs-frame-url-indicator" style="color:#94a3b8; font-size:10px;">${SGS_EDIT_ALL_PATH}</span>
             </div>
-            <iframe id="nsgs-worker-frame" src="${SGS_EDIT_ALL_PATH}" style="width:100%; flex:1; border:none; background:#fff;"></iframe>
+            <iframe id="nsgs-worker-frame" src="${SGS_EDIT_ALL_PATH}" style="width:100%; flex:1; height:100%; border:none; background:#fff;"></iframe>
           </div>
         </div>
       </div>
@@ -356,10 +354,41 @@
       setLiveStatus('🛑 กำลังหยุดพักหลังจบนักเรียนคนปัจจุบัน...', '#b45309');
     };
 
-    document.getElementById('nsgs-btn-toggle-frame').onclick = () => {
+    let currentRatioMode = 0; // 0 = 50:50, 1 = 42:58, 2 = 58:42
+    document.getElementById('nsgs-btn-ratio').onclick = () => {
+      const tp = document.getElementById('nsgs-table-panel');
       const wc = document.getElementById('nsgs-worker-container');
-      if (!wc) return;
-      wc.style.display = wc.style.display === 'none' ? 'flex' : 'none';
+      const btn = document.getElementById('nsgs-btn-ratio');
+      if (!tp || !wc) return;
+      wc.style.display = 'flex';
+      currentRatioMode = (currentRatioMode + 1) % 3;
+      if (currentRatioMode === 0) {
+        tp.style.width = '50%';
+        wc.style.width = '50%';
+        if (btn) btn.textContent = '⇄ สัดส่วน 50:50';
+      } else if (currentRatioMode === 1) {
+        tp.style.width = '40%';
+        wc.style.width = '60%';
+        if (btn) btn.textContent = '⇄ สัดส่วน 40:60';
+      } else {
+        tp.style.width = '60%';
+        wc.style.width = '40%';
+        if (btn) btn.textContent = '⇄ สัดส่วน 60:40';
+      }
+    };
+
+    document.getElementById('nsgs-btn-toggle-frame').onclick = () => {
+      const tp = document.getElementById('nsgs-table-panel');
+      const wc = document.getElementById('nsgs-worker-container');
+      if (!wc || !tp) return;
+      if (wc.style.display === 'none') {
+        wc.style.display = 'flex';
+        tp.style.width = '50%';
+        wc.style.width = '50%';
+      } else {
+        wc.style.display = 'none';
+        tp.style.width = '100%';
+      }
     };
 
     document.getElementById('nsgs-btn-close').onclick = () => {
@@ -419,7 +448,7 @@
     setLiveStatus('🔄 กำลังดึงรายการ "พร้อมทำงาน" จาก Google Sheets...', '#2563eb');
     const tbody = document.getElementById('nsgs-queue-tbody');
     if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="12" style="padding:30px; text-align:center; color:#2563eb; font-weight:700;">🔄 กำลังเชื่อมต่อ Google Sheets (StudentRecords)...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; text-align:center; color:#2563eb; font-weight:700;">🔄 กำลังเชื่อมต่อ Google Sheets (StudentRecords)...</td></tr>`;
     }
 
     try {
@@ -448,7 +477,7 @@
     } catch (err) {
       setLiveStatus('❌ โหลดข้อมูลไม่สำเร็จ: ' + err.message, '#dc2626');
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="12" style="padding:24px; text-align:center; color:#dc2626; font-weight:700;">❌ เกิดข้อผิดพลาด: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:24px; text-align:center; color:#dc2626; font-weight:700;">❌ เกิดข้อผิดพลาด: ${err.message}</td></tr>`;
       }
     }
   }
@@ -460,7 +489,7 @@
     if (syncQueue.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="12" style="padding:32px; text-align:center; color:#64748b; font-size:13px;">
+          <td colspan="7" style="padding:32px; text-align:center; color:#64748b; font-size:13px;">
             ไม่มีรายการที่มีสถานะ <b>"พร้อมทำงาน"</b> ในชีต StudentRecords<br>
             <span style="font-size:11px; color:#94a3b8;">(กรุณาไปที่หน้าอนุมัติผลการเรียนเพื่อกดอนุมัติให้เป็น "พร้อมทำงาน" ก่อน)</span>
           </td>
@@ -472,8 +501,8 @@
     tbody.innerHTML = syncQueue.map((item, idx) => {
       const isMs = cleanStr(item.oldGrade) === 'มส';
       const targetBoxLabel = isMs
-        ? `<span style="background:#fef3c7; color:#92400e; padding:2px 7px; border-radius:6px; font-weight:700; font-size:11px;">เรียนซ้ำ (RepeatGr)</span>`
-        : `<span style="background:#e0f2fe; color:#0369a1; padding:2px 7px; border-radius:6px; font-weight:700; font-size:11px;">แก้ตัว (ReGr)</span>`;
+        ? `<span style="background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:4px; font-weight:700; font-size:10px;">RepeatGr</span>`
+        : `<span style="background:#e0f2fe; color:#0369a1; padding:1px 6px; border-radius:4px; font-weight:700; font-size:10px;">ReGr</span>`;
 
       let rowBg = '#ffffff';
       let statusBadge = `<span style="color:#64748b; font-weight:600;">${item.statusMessage}</span>`;
@@ -490,20 +519,28 @@
 
       return `
         <tr id="nsgs-row-${idx}" style="background:${rowBg}; border-bottom:1px solid #e2e8f0; transition:background 0.2s;">
-          <td style="padding:7px 8px; text-align:center;">
+          <td style="padding:6px 4px; text-align:center;">
             <input type="checkbox" class="nsgs-item-chk" data-idx="${idx}" ${item.selected ? 'checked' : ''} ${item.syncStatus === 'success' ? 'disabled' : ''} style="cursor:pointer;" />
           </td>
-          <td style="padding:7px 8px; text-align:center; color:#64748b; font-weight:700;">${idx + 1}</td>
-          <td style="padding:7px 8px; font-weight:800; color:#1e293b; font-family:monospace; font-size:12.5px;">${item.stuId}</td>
-          <td style="padding:7px 8px; font-weight:600; color:#1e293b;">${item.stuName}</td>
-          <td style="padding:7px 8px; color:#475569;">${item.gradeRoom || '-'}</td>
-          <td style="padding:7px 8px;"><b style="color:#312e81;">${item.subjCode}</b> <span style="color:#64748b; font-size:11px;">${item.subjName || ''}</span></td>
-          <td style="padding:7px 8px; text-align:center; color:#475569;">${item.year || '-'}/${item.term || '-'}</td>
-          <td style="padding:7px 8px; text-align:center;"><span style="background:#fee2e2; color:#991b1b; padding:2px 8px; border-radius:6px; font-weight:800;">${item.oldGrade}</span></td>
-          <td style="padding:7px 8px; text-align:center;"><span style="background:#dcfce7; color:#166534; padding:2px 8px; border-radius:6px; font-weight:800;">${item.newGrade}</span></td>
-          <td style="padding:7px 8px; text-align:center;">${targetBoxLabel}</td>
-          <td style="padding:7px 8px; text-align:center; font-weight:800; font-size:13px; color:${item.syncStatus === 'success' ? '#15803d' : (item.syncStatus === 'error' ? '#b91c1c' : '#64748b')};">${item.verifiedGrade || '-'}</td>
-          <td style="padding:7px 8px;">${statusBadge}</td>
+          <td style="padding:6px 4px; text-align:center; color:#64748b; font-weight:700;">${idx + 1}</td>
+          <td style="padding:6px 6px;">
+            <div style="font-weight:800; color:#1e293b;"><span style="font-family:monospace; color:#312e81;">${item.stuId}</span> ${item.stuName}</div>
+            <div style="font-size:10.5px; color:#64748b;">ชั้น ${item.gradeRoom || '-'}</div>
+          </td>
+          <td style="padding:6px 6px;">
+            <div><b style="color:#312e81;">${item.subjCode}</b> <span style="color:#475569; font-size:11px;">${item.subjName || ''}</span></div>
+            <div style="font-size:10.5px; color:#64748b;">ปี ${item.year || '-'} / เทอม ${item.term || '-'}</div>
+          </td>
+          <td style="padding:6px 6px; text-align:center; white-space:nowrap;">
+            <div>
+              <span style="background:#fee2e2; color:#991b1b; padding:1px 6px; border-radius:5px; font-weight:800;">${item.oldGrade}</span>
+              <span style="color:#94a3b8; font-size:10px;">➡️</span>
+              <span style="background:#dcfce7; color:#166534; padding:1px 6px; border-radius:5px; font-weight:800;">${item.newGrade}</span>
+            </div>
+            <div style="margin-top:2px;">${targetBoxLabel}</div>
+          </td>
+          <td style="padding:6px 6px; text-align:center; font-weight:900; font-size:13px; color:${item.syncStatus === 'success' ? '#15803d' : (item.syncStatus === 'error' ? '#b91c1c' : '#64748b')};">${item.verifiedGrade || '-'}</td>
+          <td style="padding:6px 6px; font-size:11px; line-height:1.35;">${statusBadge}</td>
         </tr>
       `;
     }).join('');
@@ -524,16 +561,19 @@
         const win = iframe.contentWindow;
         const doc = iframe.contentDocument || (win && win.document);
         if (win && doc && doc.readyState === 'complete') {
-          // ดักจับ alert / confirm อัตโนมัติไม่ให้ค้าง
-          win.alert = function (msg) {
-            console.log('[SGS Worker Alert]', msg);
-            lastAlertMsg = String(msg || '');
-            return true;
-          };
-          win.confirm = function (msg) {
-            console.log('[SGS Worker Confirm]', msg);
-            return true;
-          };
+          // ดักจับ alert / confirm และปลดล็อก submitcount อัตโนมัติไม่ให้ค้าง
+          try {
+            win.alert = function (msg) {
+              console.log('[SGS Worker Alert]', msg);
+              lastAlertMsg = String(msg || '');
+              return true;
+            };
+            win.confirm = function (msg) {
+              console.log('[SGS Worker Confirm]', msg);
+              return true;
+            };
+            win.submitcount = 0;
+          } catch (e) {}
 
           let inAsync = false;
           if (win.Sys && win.Sys.WebForms && win.Sys.WebForms.PageRequestManager) {
@@ -547,7 +587,7 @@
           }
         }
       } catch (e) {}
-      await sleep(200);
+      await sleep(120);
     }
     throw new Error('หน้าเว็บ SGS ใช้เวลาโหลดนานเกินกำหนด (Timeout)');
   }
@@ -555,6 +595,17 @@
   // ตั้งค่าช่องค้นหาใน SGS โดยปลดล็อก ASP.NET TextBoxWatermarkBehavior อย่างถูกต้อง
   function setSgsSearchField(win, doc, inputId, watermarkId, clientStateId, value) {
     const strVal = cleanStr(value);
+    const inp = doc.getElementById(inputId);
+    if (!inp) return;
+
+    // 1. กระตุ้น focus และ keypress ก่อน เพื่อปลดล็อก Watermark ของ AjaxControlToolkit
+    try {
+      inp.focus();
+      inp.dispatchEvent(new Event('focus', { bubbles: false }));
+      inp.dispatchEvent(new KeyboardEvent('keypress', { key: strVal[0] || '0', keyCode: 48, charCode: 48, bubbles: true }));
+    } catch (e) {}
+
+    // 2. เรียกผ่าน AjaxControlToolkit API โดยตรง
     try {
       if (win && typeof win.$find === 'function') {
         const wm = win.$find(watermarkId);
@@ -566,27 +617,22 @@
 
     try {
       if (win && win.Sys && win.Sys.Extended && win.Sys.Extended.UI && win.Sys.Extended.UI.TextBoxWrapper) {
-        const el = doc.getElementById(inputId);
-        if (el) {
-          const wrapper = win.Sys.Extended.UI.TextBoxWrapper.get_Wrapper(el);
-          if (wrapper) {
-            wrapper.set_IsWatermarked(false);
-            wrapper.set_Value(strVal);
-          }
+        const wrapper = win.Sys.Extended.UI.TextBoxWrapper.get_Wrapper(inp);
+        if (wrapper) {
+          wrapper.set_IsWatermarked(false);
+          if (typeof wrapper.set_Current === 'function') wrapper.set_Current(strVal);
+          if (typeof wrapper.set_Value === 'function') wrapper.set_Value(strVal);
         }
       }
     } catch (e) {}
 
-    const inp = doc.getElementById(inputId);
-    if (inp) {
-      inp.focus();
-      inp.classList.remove('Search_InputHint');
-      inp.value = strVal;
-      const cs = doc.getElementById(clientStateId);
-      if (cs) cs.value = '';
-      inp.dispatchEvent(new Event('input', { bubbles: true }));
-      inp.dispatchEvent(new Event('change', { bubbles: true }));
-    }
+    // 3. กำหนดค่าลงใน DOM input โดยตรงอีกครั้ง
+    inp.classList.remove('Search_InputHint');
+    inp.value = strVal;
+    const cs = doc.getElementById(clientStateId);
+    if (cs) cs.value = '';
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+    inp.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
   // ค้นหาแถวนักเรียนในตารางผลลัพธ์ของ SGS
@@ -668,21 +714,39 @@
       task.subjCode
     );
 
-    await sleep(150);
+    await sleep(100);
 
-    const searchBtn = doc.getElementById('ctl00_PageContent_TblTranscriptsSearchButton');
+    // ทำเครื่องหมายตารางเดิมก่อนกดค้นหา เพื่อตรวจจับเมื่อตารางใหม่โหลดเสร็จจริง
+    const oldMarker = doc.getElementById('ctl00_PageContent_TblTranscriptsToggleAll') || doc.querySelector('.tre table');
+    if (oldMarker) oldMarker.setAttribute('data-nsgs-stale', '1');
+    try { win.submitcount = 0; } catch (e) {}
+
+    // ปุ่มค้นหาใน Edit-TblTranscripts-TableAll.aspx ใช้ ID: ctl00_PageContent_TblTranscriptsSearchButton__Button
+    const searchBtn =
+      doc.getElementById('ctl00_PageContent_TblTranscriptsSearchButton__Button') ||
+      doc.getElementById('ctl00_PageContent_TblTranscriptsSearchButton_Button') ||
+      doc.getElementById('ctl00_PageContent_TblTranscriptsSearchButton') ||
+      doc.querySelector('a[id*="TblTranscriptsSearchButton"], input[id*="TblTranscriptsSearchButton"], a[href*="TblTranscriptsSearchButton"]');
+
     if (searchBtn) {
       searchBtn.click();
-    } else if (typeof win.__doPostBack === 'function') {
-      win.__doPostBack('ctl00$PageContent$TblTranscriptsSearchButton', '');
+    } else if (win && typeof win.__doPostBack === 'function') {
+      win.__doPostBack('ctl00$PageContent$TblTranscriptsSearchButton$_Button', '');
     } else {
-      throw new Error('ไม่พบปุ่มค้นหา (#ctl00_PageContent_TblTranscriptsSearchButton)');
+      throw new Error('ไม่พบปุ่มค้นหา (#ctl00_PageContent_TblTranscriptsSearchButton__Button)');
     }
 
-    // รอให้ UpdatePanel โหลดผลลัพธ์การค้นหาเสร็จ
-    await sleep(650);
-    ({ win, doc } = await waitForWorkerReady(iframe));
-    await sleep(450);
+    // รอจนกว่าตารางผลลัพธ์ใหม่จะถูกอัปเดตกลับมาจริงจากเซิร์ฟเวอร์ SGS
+    const waitStart = Date.now();
+    while (Date.now() - waitStart < 10000) {
+      await sleep(120);
+      ({ win, doc } = await waitForWorkerReady(iframe));
+      const curMarker = doc.getElementById('ctl00_PageContent_TblTranscriptsToggleAll') || doc.querySelector('.tre table');
+      if (curMarker && curMarker.getAttribute('data-nsgs-stale') !== '1') {
+        break;
+      }
+    }
+    await sleep(150);
     return { win, doc };
   }
 
@@ -755,7 +819,7 @@
     gradeInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', code: 'Tab', keyCode: 9, bubbles: true }));
     gradeInput.blur();
 
-    await sleep(350);
+    await sleep(250);
 
     // 5. กดปุ่มบันทึก (#ctl00_PageContent_TblTranscriptsSaveButton)
     task.statusMessage = `กำลังกดบันทึกและรอรีเช็ค...`;
@@ -772,7 +836,11 @@
       };
     }
 
-    // ดักจับการโหลดหน้าใหม่ของ iframe หลังกดปุ่มบันทึก (Full PostBack)
+    // ทำเครื่องหมายตารางเดิมและดักจับการโหลดหน้าใหม่ของ iframe หลังกดปุ่มบันทึก
+    const oldSaveMarker = doc.getElementById('ctl00_PageContent_TblTranscriptsToggleAll') || doc.querySelector('.tre table');
+    if (oldSaveMarker) oldSaveMarker.setAttribute('data-nsgs-stale', '1');
+    try { win.submitcount = 0; } catch (e) {}
+
     let frameReloaded = false;
     const onLoadHandler = () => { frameReloaded = true; };
     iframe.addEventListener('load', onLoadHandler, { once: true });
@@ -781,12 +849,20 @@
 
     // รอให้หน้าเว็บเริ่มและจบการโหลดหลังกด Save
     const waitSaveStart = Date.now();
-    while (!frameReloaded && Date.now() - waitSaveStart < 6000) {
-      await sleep(200);
+    while (Date.now() - waitSaveStart < 10000) {
+      await sleep(150);
+      if (frameReloaded) break;
+      try {
+        const curDoc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+        const curMarker = curDoc && (curDoc.getElementById('ctl00_PageContent_TblTranscriptsToggleAll') || curDoc.querySelector('.tre table'));
+        if (curMarker && curMarker.getAttribute('data-nsgs-stale') !== '1') {
+          break;
+        }
+      } catch (e) {}
     }
-    await sleep(500);
+    await sleep(250);
     ({ win, doc } = await waitForWorkerReady(iframe));
-    await sleep(400);
+    await sleep(200);
 
     // 6. รีเช็คความถูกต้อง (Verification) จากคอลัมน์ที่ 8 (td.ttc:eq(8))
     task.statusMessage = `กำลังรีเช็คค่าในตาราง (คอลัมน์ที่ 8)...`;
