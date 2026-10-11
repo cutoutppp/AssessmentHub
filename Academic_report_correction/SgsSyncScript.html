@@ -131,28 +131,56 @@
     return false;
   }
 
-  // เรียก API ไปยัง Google Apps Script (Code.gs)
-  async function callGasApi(action, payload = {}, method = 'GET') {
+  // เรียก API ไปยัง Google Apps Script (Code.gs) พร้อมระบบตรวจจับผลลัพธ์และ Fallback POST -> GET
+  async function callGasApi(action, payload = {}, method = 'POST') {
     const baseUrl = getGasUrl();
-    if (method === 'GET') {
+    let lastErr = null;
+
+    // 1. ลอง POST ก่อน (text/plain เลี่ยงปัญหา CORS preflight ในบราวเซอร์)
+    if (method === 'POST') {
+      try {
+        const res = await fetch(baseUrl, {
+          method: 'POST',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, ...payload })
+        });
+        const resData = await res.json();
+        if (resData && (resData.success === true || resData.status === 'success')) {
+          return resData;
+        }
+        if (resData && (resData.success === false || resData.status === 'error')) {
+          lastErr = new Error(resData.message || resData.error || 'เซิร์ฟเวอร์แจ้งข้อผิดพลาด');
+        }
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+
+    // 2. Fallback: ลอง GET หาก POST คืนค่า Invalid Action หรือมีปัญหาเน็ตเวิร์ก
+    try {
       const url = new URL(baseUrl);
       url.searchParams.set('action', action);
-      Object.entries(payload).forEach(([k, v]) => {
-        if (v !== undefined && v !== null) {
-          url.searchParams.set(k, typeof v === 'object' ? JSON.stringify(v) : String(v));
-        }
-      });
+      if (typeof payload === 'object' && payload !== null) {
+        url.searchParams.set('payload', JSON.stringify(payload));
+        Object.entries(payload).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && typeof v !== 'object') {
+            url.searchParams.set(k, String(v));
+          }
+        });
+      }
       url.searchParams.set('_t', Date.now());
       const res = await fetch(url.toString(), { method: 'GET', credentials: 'omit' });
-      return await res.json();
-    } else {
-      const res = await fetch(baseUrl, {
-        method: 'POST',
-        credentials: 'omit',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, ...payload })
-      });
-      return await res.json();
+      const resData = await res.json();
+      if (resData && (resData.success === true || resData.status === 'success')) {
+        return resData;
+      }
+      if (resData && (resData.success === false || resData.status === 'error')) {
+        throw new Error(resData.message || resData.error || 'เซิร์ฟเวอร์แจ้งข้อผิดพลาด');
+      }
+      return resData;
+    } catch (err) {
+      throw lastErr || err;
     }
   }
 
@@ -259,6 +287,12 @@
             </div>
           </div>
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+            <button id="nsgs-btn-line-summary" type="button" style="background:linear-gradient(135deg, #059669 0%, #047857 100%); color:#fff; border:none; border-radius:9px; padding:7px 13px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 3px 10px rgba(5,150,105,0.35); display:flex; align-items:center; gap:5px;" title="สรุปรายงานผลการแก้ไขสำหรับส่งกลุ่ม LINE">
+              📋 สรุปส่ง LINE
+            </button>
+            <button id="nsgs-btn-retry-sheet" type="button" style="display:none; background:linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color:#fff; border:none; border-radius:9px; padding:7px 13px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 3px 10px rgba(59,130,246,0.35); align-items:center; gap:5px;" title="ส่งผลรายการที่บันทึกใน SGS ผ่านแล้วไปอัปเดตลง Google Sheets ทันที">
+              ⚡ ส่งผลลงชีตซ้ำ
+            </button>
             <button id="nsgs-btn-reload" type="button" style="background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:9px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:5px;">
               🔄 ดึงรายการ "พร้อมทำงาน"
             </button>
@@ -298,6 +332,22 @@
           </div>
         </div>
 
+        <!-- Notice Bar for Google Apps Script deployment status -->
+        <div id="nsgs-gas-notice-bar" style="display:none; background:#fff7ed; border-bottom:1px solid #fdba74; padding:8px 16px; font-size:12px; color:#9a3412; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">⚠️</span>
+            <span id="nsgs-gas-notice-text">ตรวจพบเกรดบันทึกลง SGS แล้ว แต่ยังไม่สามารถเปลี่ยนสถานะเป็น "ซิงค์แล้ว" ใน Google Sheets ได้ (เนื่องจาก Web App ปลายทางยังไม่ได้เลือก Deploy เวอร์ชัน 107)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <a href="https://script.google.com/d/1RzCRw4dLAIfwqQ7abOJOWfMy7NSlQxnUC-uI_M-TaSHXIwVndQks0iAE/edit" target="_blank" style="background:#ea580c; color:#fff; text-decoration:none; padding:5px 12px; border-radius:7px; font-weight:800; font-size:11.5px; box-shadow:0 2px 4px rgba(234,88,12,0.3);">
+              ⚙️ เปิด Apps Script เพื่อ Deploy (เลือก V.107)
+            </a>
+            <button id="nsgs-btn-notice-retry" type="button" style="background:#2563eb; color:#fff; border:none; padding:5px 12px; border-radius:7px; font-weight:800; font-size:11.5px; cursor:pointer;">
+              ⚡ อัปเดตลงชีตเดี๋ยวนี้
+            </button>
+          </div>
+        </div>
+
         <!-- Main Body Split: Left (Queue Table) + Right (SGS Live Worker Frame) -->
         <div id="nsgs-split-body" style="flex:1; display:flex; flex-direction:row; overflow:hidden; min-height:0; width:100%;">
           <!-- Left Half: Queue Table Container -->
@@ -329,6 +379,33 @@
               <span id="nsgs-frame-url-indicator" style="color:#94a3b8; font-size:10px;">${SGS_EDIT_ALL_PATH}</span>
             </div>
             <iframe id="nsgs-worker-frame" src="${SGS_EDIT_ALL_PATH}" style="width:100%; flex:1; height:100%; border:none; background:#fff;"></iframe>
+          </div>
+        </div>
+
+        <!-- Modal Popup: สรุปรายงานสำหรับส่ง LINE -->
+        <div id="nsgs-line-summary-modal" style="display:none; position:fixed; inset:0; z-index:99999999; background:rgba(15,23,42,0.65); backdrop-filter:blur(5px); align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
+          <div style="background:#ffffff; border-radius:18px; width:100%; max-width:640px; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); border:1px solid #cbd5e1;">
+            <div style="background:linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%); color:#fff; padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:22px;">📊</span>
+                <div>
+                  <div style="font-size:15px; font-weight:800;">สรุปรายงานผลการแก้ไข (พร้อมส่ง LINE)</div>
+                  <div style="font-size:11px; color:#a7f3d0;">คัดลอกข้อความด้านล่างนี้ไปวางในกลุ่มไลน์ได้ทันที</div>
+                </div>
+              </div>
+              <button id="nsgs-btn-close-line-modal" type="button" style="background:rgba(255,255,255,0.2); color:#fff; border:none; border-radius:8px; padding:5px 11px; font-size:13px; font-weight:800; cursor:pointer;">✕</button>
+            </div>
+            <div style="padding:16px; flex:1; display:flex; flex-direction:column; gap:12px; overflow:hidden;">
+              <textarea id="nsgs-line-summary-textarea" readonly style="width:100%; flex:1; min-height:280px; font-family:'Sarabun', -apple-system, monospace; font-size:12.5px; line-height:1.55; padding:12px 14px; border-radius:10px; border:1px solid #cbd5e1; background:#f8fafc; color:#1e293b; resize:none; box-sizing:border-box; white-space:pre-wrap; outline:none;"></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-shrink:0;">
+                <span id="nsgs-line-copy-hint" style="font-size:11.5px; color:#64748b; font-weight:600;">💡 ข้อความนี้จัดรูปแบบพร้อมส่งใน LINE ทันที</span>
+                <div style="display:flex; gap:8px;">
+                  <button id="nsgs-btn-copy-line" type="button" style="background:linear-gradient(135deg, #059669 0%, #10b981 100%); color:#fff; border:none; border-radius:10px; padding:9px 20px; font-size:13px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.4); display:flex; align-items:center; gap:6px;">
+                    <span>📲 คัดลอกข้อความส่ง LINE</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -408,7 +485,193 @@
       };
     }
 
+    const btnRetrySheet = document.getElementById('nsgs-btn-retry-sheet');
+    if (btnRetrySheet) btnRetrySheet.onclick = () => retrySheetSync();
+
+    const btnNoticeRetry = document.getElementById('nsgs-btn-notice-retry');
+    if (btnNoticeRetry) btnNoticeRetry.onclick = () => retrySheetSync();
+
+    const btnLineSummary = document.getElementById('nsgs-btn-line-summary');
+    if (btnLineSummary) btnLineSummary.onclick = () => showLineSummaryModal();
+
+    const btnCloseLineModal = document.getElementById('nsgs-btn-close-line-modal');
+    if (btnCloseLineModal) btnCloseLineModal.onclick = () => hideLineSummaryModal();
+
+    const btnCopyLine = document.getElementById('nsgs-btn-copy-line');
+    if (btnCopyLine) btnCopyLine.onclick = () => copyLineSummaryToClipboard();
+
     fetchReadyTasksFromSheet();
+  }
+
+  // 📊 ฟังก์ชันสร้างข้อความสรุปรายงานสำหรับส่งกลุ่ม LINE
+  function generateLineSummaryText() {
+    const successTasks = syncQueue.filter(t => t.syncStatus === 'success');
+    const errorTasks = syncQueue.filter(t => t.syncStatus === 'error');
+    const totalProcessed = successTasks.length + errorTasks.length;
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+
+    let text = `📊 สรุปผลการซิงค์แก้ผลการเรียน (SGS)\n`;
+    text += `🏫 โรงเรียนพัฒนานิคม\n`;
+    text += `🗓️ วันที่ ${dateStr} เวลา ${timeStr}\n`;
+    text += `━━━━━━━━━━━━━━━━━━\n`;
+    text += `👥 ผลการดำเนินงาน:\n`;
+    text += `✅ ซิงค์สำเร็จ: ${successTasks.length} รายการ\n`;
+    if (errorTasks.length > 0) {
+      text += `❌ ไม่สำเร็จ: ${errorTasks.length} รายการ\n`;
+    }
+    text += `รวมดำเนินการ: ${totalProcessed} รายการ\n`;
+    text += `━━━━━━━━━━━━━━━━━━\n\n`;
+
+    if (successTasks.length > 0) {
+      text += `📝 รายชื่อนักเรียนที่แก้ไขสำเร็จ:\n`;
+      successTasks.forEach((t, i) => {
+        text += `${i + 1}. [${t.stuId}] ${t.stuName} (${t.gradeRoom || '-'})\n`;
+        text += `   • วิชา: ${t.subjCode} ${t.subjName || ''} (${t.year || '-'}/${t.term || '-'})\n`;
+        text += `   • เกรด: ${t.oldGrade} ➡️ ${t.newGrade} (รีเช็ค: ${t.verifiedGrade || t.newGrade} ✅)\n`;
+      });
+      text += `\n`;
+    }
+
+    if (errorTasks.length > 0) {
+      text += `⚠️ รายการที่พบปัญหา/ต้องตรวจสอบ:\n`;
+      errorTasks.forEach((t, i) => {
+        text += `${i + 1}. [${t.stuId}] ${t.stuName} (${t.gradeRoom || '-'})\n`;
+        text += `   • วิชา: ${t.subjCode} (${t.oldGrade} ➡️ ${t.newGrade})\n`;
+        text += `   • สาเหตุ: ${t.statusMessage || 'เกิดข้อผิดพลาด'}\n`;
+      });
+      text += `\n`;
+    }
+
+    text += `━━━━━━━━━━━━━━━━━━\n`;
+    text += `🔒 อัปเดตสถานะ "ซิงค์แล้ว" ในระบบ Google Sheets เรียบร้อย`;
+    return text;
+  }
+
+  function showLineSummaryModal() {
+    const modal = document.getElementById('nsgs-line-summary-modal');
+    const textarea = document.getElementById('nsgs-line-summary-textarea');
+    const btnCopy = document.getElementById('nsgs-btn-copy-line');
+    if (!modal || !textarea) return;
+
+    const summaryText = generateLineSummaryText();
+    textarea.value = summaryText || 'ยังไม่มีรายการที่ได้รับการซิงค์ในรอบนี้ครับ';
+    if (btnCopy) {
+      btnCopy.innerHTML = `<span>📲 คัดลอกข้อความส่ง LINE</span>`;
+      btnCopy.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+    }
+    modal.style.display = 'flex';
+  }
+
+  function hideLineSummaryModal() {
+    const modal = document.getElementById('nsgs-line-summary-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function copyLineSummaryToClipboard() {
+    const textarea = document.getElementById('nsgs-line-summary-textarea');
+    const btnCopy = document.getElementById('nsgs-btn-copy-line');
+    const text = textarea ? textarea.value : '';
+    if (!text) return;
+
+    const setCopiedUI = () => {
+      if (btnCopy) {
+        btnCopy.innerHTML = `<span>✅ คัดลอกสำเร็จแล้ว!</span>`;
+        btnCopy.style.background = 'linear-gradient(135deg, #15803d 0%, #16a34a 100%)';
+        setTimeout(() => {
+          if (btnCopy) {
+            btnCopy.innerHTML = `<span>📲 คัดลอกข้อความส่ง LINE</span>`;
+            btnCopy.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+          }
+        }, 3000);
+      }
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopiedUI();
+      }).catch(() => {
+        if (textarea) {
+          textarea.focus();
+          textarea.select();
+          document.execCommand('copy');
+          setCopiedUI();
+        }
+      });
+    } else if (textarea) {
+      textarea.focus();
+      textarea.select();
+      document.execCommand('copy');
+      setCopiedUI();
+    }
+  }
+
+  // ส่งรายการที่บันทึก SGS ผ่านแล้ว แต่ชีตยังไม่อัปเดต ไปอัปเดตลงชีตซ้ำ
+  async function retrySheetSync() {
+    const successTasks = syncQueue.filter(t => t.syncStatus === 'success' && t.sheetUpdated !== true);
+    if (successTasks.length === 0) {
+      alert('ไม่มีรายการที่ซิงค์ SGS ผ่านและรออัปเดตชีต');
+      return;
+    }
+
+    setLiveStatus(`⏳ กำลังส่งผล ${successTasks.length} รายการไปอัปเดตชีต StudentRecords...`, '#2563eb');
+    try {
+      const items = successTasks.map(task => ({
+        rowId: task.rowId,
+        specialId: task.specialId,
+        stuId: task.stuId,
+        stuName: task.stuName,
+        gradeRoom: task.gradeRoom,
+        subjCode: task.subjCode,
+        subjName: task.subjName,
+        year: task.year,
+        term: task.term,
+        oldGrade: task.oldGrade,
+        newGrade: task.newGrade,
+        verifiedGrade: task.verifiedGrade || task.newGrade,
+        success: true,
+        status: 'สำเร็จ',
+        message: 'รีเช็คตาราง SGS ตรงกับเกรดใหม่ 100%'
+      }));
+
+      const res = await callGasApi('update-sgs-sync', { items }, 'POST');
+      if (res && (res.success || res.status === 'success')) {
+        successTasks.forEach(task => {
+          task.sheetUpdated = true;
+          task.statusMessage = 'อัปเดตชีต "ซิงค์แล้ว" เรียบร้อยแล้ว ✅';
+        });
+        renderQueueTable();
+        hideGasDeployNotice();
+        setLiveStatus(`✅ อัปเดตสถานะ "ซิงค์แล้ว" ลงชีตสำเร็จ ${res.updatedCount || successTasks.length} รายการ!`, '#059669');
+        alert(`✅ อัปเดตสถานะ "ซิงค์แล้ว" ลง Google Sheets เรียบร้อยแล้ว ${res.updatedCount || successTasks.length} รายการ!`);
+      } else {
+        throw new Error((res && res.message) || 'เซิร์ฟเวอร์ยังไม่เปิดใช้ action update-sgs-sync');
+      }
+    } catch (err) {
+      showGasDeployNotice(successTasks.length, err.message);
+      setLiveStatus(`❌ ไม่สามารถอัปเดตชีตได้: ${err.message}`, '#dc2626');
+      alert(`❌ บันทึกลงชีตไม่สำเร็จ: ${err.message}\n\nกรุณาเปิด Apps Script แล้ว Deploy เลือกเวอร์ชัน 104 ก่อน แล้วกลับมากดปุ่มนี้อีกครั้งครับ`);
+    }
+  }
+
+  function showGasDeployNotice(count, errMsg = '') {
+    const bar = document.getElementById('nsgs-gas-notice-bar');
+    const txt = document.getElementById('nsgs-gas-notice-text');
+    const btnRetry = document.getElementById('nsgs-btn-retry-sheet');
+    if (bar) bar.style.display = 'flex';
+    if (btnRetry) btnRetry.style.display = 'flex';
+    if (txt) {
+      txt.innerHTML = `บันทึกใน SGS สำเร็จแล้ว แต่ยังไม่สามารถอัปเดตสถานะในชีตได้ <b>${count} รายการ</b>${errMsg ? ' (' + errMsg + ')' : ''} — <b>กรุณากดเปิด Apps Script แล้ว Deploy เลือกเวอร์ชัน 104</b>`;
+    }
+  }
+
+  function hideGasDeployNotice() {
+    const bar = document.getElementById('nsgs-gas-notice-bar');
+    const btnRetry = document.getElementById('nsgs-btn-retry-sheet');
+    if (bar) bar.style.display = 'none';
+    if (btnRetry) btnRetry.style.display = 'none';
   }
 
   window.openNextSgsGradeSyncModal = openNextSgsGradeSyncModal;
@@ -511,7 +774,13 @@
         statusBadge = `<span style="color:#2563eb; font-weight:800;">⚡ ${item.statusMessage}</span>`;
       } else if (item.syncStatus === 'success') {
         rowBg = '#f0fdf4';
-        statusBadge = `<span style="color:#15803d; font-weight:800;">✅ ${item.statusMessage}</span>`;
+        if (item.sheetUpdated === false) {
+          statusBadge = `<span style="color:#b45309; font-weight:800;">⚠️ SGS ผ่าน (รออัปเดตชีต)</span><div style="font-size:10px; color:#dc2626; margin-top:2px;">${item.sheetError || 'Apps Script ยังไม่เปิด V.107'}</div>`;
+        } else if (item.sheetUpdated === true) {
+          statusBadge = `<span style="color:#15803d; font-weight:800;">✅ ซิงค์ & บันทึกชีตแล้ว</span><div style="font-size:10.5px; color:#166534; margin-top:1px;">${item.statusMessage}</div>`;
+        } else {
+          statusBadge = `<span style="color:#15803d; font-weight:800;">✅ ${item.statusMessage}</span>`;
+        }
       } else if (item.syncStatus === 'error') {
         rowBg = '#fef2f2';
         statusBadge = `<span style="color:#b91c1c; font-weight:800;">❌ ${item.statusMessage}</span>`;
@@ -982,11 +1251,20 @@
             success: true,
             status: 'สำเร็จ',
             message: result.message
-          }, 'POST').then(() => {
-            task.statusMessage = result.message + ' (อัปเดตชีต "ซิงค์แล้ว")';
+          }, 'POST').then((res) => {
+            if (res && (res.success || res.status === 'success')) {
+              task.sheetUpdated = true;
+              task.statusMessage = result.message + ' (อัปเดตชีต "ซิงค์แล้ว" ✅)';
+            } else {
+              task.sheetUpdated = false;
+              task.sheetError = (res && res.message) || 'Apps Script ยังไม่เปิด V.107';
+              task.statusMessage = result.message + ' (⚠️ บันทึกชีตไม่สำเร็จ: ' + task.sheetError + ')';
+            }
             renderQueueTable();
-          }).catch(() => {
-            task.statusMessage = result.message + ' (รออัปเดตชีต)';
+          }).catch((err) => {
+            task.sheetUpdated = false;
+            task.sheetError = err.message;
+            task.statusMessage = result.message + ' (⚠️ บันทึกชีตไม่สำเร็จ: ' + err.message + ')';
             renderQueueTable();
           });
           pendingSheetUpdates.push(p);
@@ -1012,7 +1290,12 @@
             success: false,
             status: 'ผิดพลาด',
             message: result.message
-          }, 'POST').catch(() => {});
+          }, 'POST').then(() => {
+            task.sheetUpdated = true;
+          }).catch((err) => {
+            task.sheetUpdated = false;
+            task.sheetError = err.message;
+          });
           pendingSheetUpdates.push(p);
         }
       } catch (err) {
@@ -1044,10 +1327,24 @@
     if (btnStop) btnStop.style.display = 'none';
     if (btnReload) btnReload.disabled = false;
 
-    if (stopRequested) {
-      setLiveStatus(`⏸ หยุดพักแล้ว (สำเร็จ ${doneSuccess} รายการ, ผิดพลาด ${doneError} รายการ)`, '#b45309');
+    const failedSheetTasks = syncQueue.filter(t => t.syncStatus === 'success' && t.sheetUpdated === false);
+    if (failedSheetTasks.length > 0) {
+      showGasDeployNotice(failedSheetTasks.length, failedSheetTasks[0].sheetError || '');
+      setLiveStatus(`⚠️ ใน SGS บันทึกสำเร็จแล้ว แต่ยังไม่ได้บันทึกลง Google Sheets ${failedSheetTasks.length} รายการ (เนื่องจาก Apps Script ยังไม่ได้เลือก V.107)`, '#dc2626');
     } else {
-      setLiveStatus(`🎉 เสร็จสิ้นรอบการทำงาน! สำเร็จ ${doneSuccess} รายการ | ผิดพลาด ${doneError} รายการ`, doneError > 0 ? '#b45309' : '#059669');
+      hideGasDeployNotice();
+      if (stopRequested) {
+        setLiveStatus(`⏸ หยุดพักแล้ว (สำเร็จ ${doneSuccess} รายการ, ผิดพลาด ${doneError} รายการ)`, '#b45309');
+      } else {
+        setLiveStatus(`🎉 เสร็จสิ้นรอบการทำงาน! สำเร็จ ${doneSuccess} รายการ | ผิดพลาด ${doneError} รายการ`, doneError > 0 ? '#b45309' : '#059669');
+      }
+    }
+
+    // เด้งหน้าต่างสรุปผลสำหรับส่งกลุ่ม LINE ทันทีเมื่อซิงค์เสร็จ (ถ้ามีรายการสำเร็จหรือผิดพลาด)
+    if (!stopRequested && (doneSuccess > 0 || doneError > 0)) {
+      setTimeout(() => {
+        showLineSummaryModal();
+      }, 500);
     }
   }
 

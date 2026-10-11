@@ -1489,13 +1489,17 @@ function directFixStudentRecords() {
     var lastCol = sheet.getLastColumn();
     if (lastRow < 2) return { success: false, message: 'ไม่มีข้อมูลในชีต' };
 
-    // 1. ปรับปรุง Data Validation ของคอลัมน์ D (ชั้น) ให้ครอบคลุม ม.1 - ม.6
-    var gradeRange = sheet.getRange(2, 4, lastRow - 1, 1);
-    var rule = SpreadsheetApp.newDataValidation()
-      .requireValueInList(['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'], true)
-      .setAllowInvalid(true)
-      .build();
-    gradeRange.setDataValidation(rule);
+    // 1. ปรับปรุง Data Validation ของคอลัมน์ D (ชั้น) ให้ครอบคลุม ม.1 - ม.6 (ดักจับข้อยกเว้นสำหรับ Smart Table)
+    try {
+      var gradeRange = sheet.getRange(2, 4, lastRow - 1, 1);
+      var rule = SpreadsheetApp.newDataValidation()
+        .requireValueInList(['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'], true)
+        .setAllowInvalid(true)
+        .build();
+      gradeRange.setDataValidation(rule);
+    } catch(valErr) {
+      console.warn('Smart table column type, skipping setDataValidation:', valErr);
+    }
 
     // 2. ดึงข้อมูลและแปลงข้อความตัวเลขให้เป็น Number แท้ๆ ป้องกันการเตือน "ค่านี้ไม่ตรงกับประเภทคอลัมน์: ตัวเลข"
     var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();
@@ -1526,11 +1530,39 @@ function directFixStudentRecords() {
         }
       });
     }
-    if (convertedNumbersCount > 0) {
+
+    // 2.1 เพิ่มคำนำหน้านักเรียน (เด็กชาย, เด็กหญิง, นาย, นางสาว) ตามทะเบียนทางการอย่างระมัดระวัง
+    var knownPrefixes = ['เด็กชาย', 'เด็กหญิง', 'ด.ช.', 'ด.ญ.', 'นาย', 'นางสาว', 'น.ส.', 'ด.ช', 'ด.ญ'];
+    var prefixUpdatedCount = 0;
+    if (typeof STUDENT_PREFIX_MAP !== 'undefined' && idxStuName >= 0 && idxStuId >= 0) {
+      for (var r = 1; r < data.length; r++) {
+        var sid = cleanStr_(data[r][idxStuId]);
+        var sName = cleanStr_(data[r][idxStuName]);
+        if (!sid || !sName) continue;
+        
+        var hasPref = false;
+        for (var p = 0; p < knownPrefixes.length; p++) {
+          if (sName.indexOf(knownPrefixes[p]) === 0) {
+            hasPref = true;
+            break;
+          }
+        }
+        
+        if (!hasPref && STUDENT_PREFIX_MAP[sid]) {
+          var officialPref = STUDENT_PREFIX_MAP[sid];
+          data[r][idxStuName] = officialPref + sName;
+          prefixUpdatedCount++;
+        }
+      }
+    }
+
+    if (convertedNumbersCount > 0 || prefixUpdatedCount > 0) {
       sheet.getRange(1, 1, lastRow, lastCol).setValues(data);
     }
 
+    // 3. รายชื่อนักเรียนขาดนาน/ลาออก ที่ต้องตัดออกจากระบบแก้ไขผลการเรียน (รวม 20498 นายธงชัย พุชชงค์)
     var dropoutList = [
+      '20498', // ธงชัย พุชชงค์ (ลาออก)
       '20028','20038','20466','20079','20080','20090','20157','20158','20168','20427',
       '20511','20179','20184','20178','19325','19424','19434','19462','19496','18742',
       '19537','19861','19864','20497','18739','18760','18791','18844','18878','18882',
@@ -1565,7 +1597,7 @@ function directFixStudentRecords() {
       sheet.deleteRow(rowsToDelete[d]);
     }
 
-    // 3. อัปเดตจำนวนนักเรียนในชีต Totalstudent อัตโนมัติ
+    // 4. อัปเดตจำนวนนักเรียนในชีต Totalstudent อัตโนมัติ
     try {
       updateTotalStudent2569();
     } catch(totErr) {
@@ -1579,11 +1611,12 @@ function directFixStudentRecords() {
     return {
       success: true,
       validationUpdated: true,
+      prefixUpdatedCount: prefixUpdatedCount,
       totalStudentsUpdated: 1845,
       deletedCount: deletedDetails.length,
       deletedDetails: deletedDetails,
       remainingRows: sheet.getLastRow() - 1,
-      message: 'จัดการปรับปรุง Data Validation คอลัมน์ ชั้น (ม.1-ม.6), อัปเดตยอดนักเรียน 55 ห้อง (1,845 คน) ในชีต Totalstudent และลบเด็กขาดนาน/ลาออกจำนวน ' + deletedDetails.length + ' แถวเรียบร้อยแล้ว'
+      message: 'จัดการเพิ่มคำนำหน้านักเรียน ' + prefixUpdatedCount + ' แถว, ปรับปรุงยอดนักเรียน 55 ห้อง (1,845 คน) ในชีต Totalstudent และตัดเด็กขาดนาน/ลาออกจำนวน ' + deletedDetails.length + ' แถวเรียบร้อยแล้ว'
     };
   } catch(e) {
     console.error('Error in directFixStudentRecords:', e);
