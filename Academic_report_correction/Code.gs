@@ -1537,6 +1537,65 @@ function directFixStudentRecords() {
       }
     }
 
+    // 1.1 แปลงค่าข้อความให้เป็นตัวเลขแท้ๆ ในแต่ละคอลัมน์ที่เป็น Number ตามข้อกำหนดของ Smart Table
+    var numericCols = ['ห้อง', 'เลขประจำตัว', 'เลขที่', 'ปีการศึกษา', 'ภาคเรียนที่'];
+    var convertedSummary = [];
+    numericCols.forEach(function(colName) {
+      var cIdx = headers.indexOf(colName);
+      if (cIdx >= 0) {
+        try {
+          var numRange = sheet.getRange(2, cIdx + 1, lastRow - 1, 1);
+          var numVals = numRange.getValues();
+          var changedCount = 0;
+          for (var r = 0; r < numVals.length; r++) {
+            var v = numVals[r][0];
+            if (v !== '' && v !== null && v !== undefined && typeof v !== 'number') {
+              var parsedNum = Number(v);
+              if (!isNaN(parsedNum)) {
+                numVals[r][0] = parsedNum;
+                changedCount++;
+              }
+            }
+          }
+          if (changedCount > 0) {
+            numRange.setValues(numVals);
+            convertedSummary.push(colName + ' (' + changedCount + ')');
+          }
+        } catch(cErr) {
+          console.warn('Skip converting ' + colName + ':', cErr.message);
+        }
+      }
+    });
+
+    // 1.2 แปลงวันที่แก้ไข ให้เป็น Date object แท้ๆ
+    var idxEditDate = headers.indexOf('วันที่แก้ไข');
+    if (idxEditDate >= 0) {
+      try {
+        var dRange = sheet.getRange(2, idxEditDate + 1, lastRow - 1, 1);
+        var dVals = dRange.getValues();
+        var dChanged = 0;
+        for (var r = 0; r < dVals.length; r++) {
+          var dv = dVals[r][0];
+          if (typeof dv === 'string' && dv.trim()) {
+            var parts = dv.trim().split(/[\/\-]/);
+            if (parts.length === 3) {
+              var d = parseInt(parts[0]), m = parseInt(parts[1]) - 1, y = parseInt(parts[2]);
+              if (!isNaN(d) && !isNaN(m) && !isNaN(y) && y > 1900) {
+                dVals[r][0] = new Date(y, m, d);
+                dChanged++;
+              }
+            }
+          }
+        }
+        if (dChanged > 0) {
+          dRange.setValues(dVals);
+          convertedSummary.push('วันที่แก้ไข (' + dChanged + ')');
+        }
+      } catch(dErr) {
+        console.warn('Skip converting วันที่แก้ไข:', dErr.message);
+      }
+    }
+
     // 2. รายชื่อนักเรียนขาดนาน/ลาออก ที่ต้องตัดออกจากระบบแก้ไขผลการเรียน (รวม 20498 นายธงชัย พุชชงค์)
     var dropoutList = [
       '20498', // ธงชัย พุชชงค์ (ลาออก)
