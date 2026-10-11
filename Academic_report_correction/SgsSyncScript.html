@@ -205,11 +205,10 @@
 
     document.body.appendChild(fab);
 
-    // ถ้าอยู่หน้า Edit-TblTranscripts-TableAll.aspx ให้เช็คจำนวนรายการ 'พร้อมทำงาน' อัตโนมัติ
+    // ถ้าอยู่หน้า Edit-TblTranscripts-TableAll.aspx ให้เช็คจำนวนรายการ 'พร้อมทำงาน' อัตโนมัติ (ดึงตรงจาก TSV เร็ว 0.5 วินาที)
     if (isGradeCorrectionPage()) {
-      callGasApi('get-ready-sgs', {}, 'GET')
-        .then(res => (res && res.success) ? res : fetchReadyTasksDirectFromGviz())
-        .catch(() => fetchReadyTasksDirectFromGviz())
+      fetchReadyTasksDirectFromGviz()
+        .catch(() => callGasApi('get-ready-sgs', {}, 'GET'))
         .then(res => {
           if (res && res.success && Array.isArray(res.tasks)) {
             const badge = document.getElementById('nextsgs-fab-ready-badge');
@@ -424,9 +423,9 @@
     }
 
     try {
-      let res = await callGasApi('get-ready-sgs', {}, 'GET').catch(() => null);
+      let res = await fetchReadyTasksDirectFromGviz().catch(() => null);
       if (!res || !res.success) {
-        res = await fetchReadyTasksDirectFromGviz();
+        res = await callGasApi('get-ready-sgs', {}, 'GET');
       }
 
       syncQueue = (res.tasks || []).map((t, idx) => ({
@@ -864,6 +863,7 @@
 
     let doneSuccess = 0;
     let doneError = 0;
+    const pendingSheetUpdates = [];
 
     for (let i = 0; i < syncQueue.length; i++) {
       if (stopRequested) break;
@@ -886,10 +886,11 @@
           task.syncStatus = 'success';
           task.selected = false;
           task.statusMessage = result.message + ' — กำลังบันทึกสถานะลงชีต...';
+          doneSuccess++;
           renderQueueTable();
 
-          // ส่งผลไปอัปเดตสถานะเป็น 'ซิงค์แล้ว' และบันทึกลง SGS_Log ใน Google Sheets ทันที
-          await callGasApi('update-sgs-sync', {
+          // ส่งผลไปอัปเดตสถานะเป็น 'ซิงค์แล้ว' และบันทึกลง SGS_Log แบบพื้นหลัง (ไม่ต้องรอก่อนข้ามไปคนถัดไป)
+          const p = callGasApi('update-sgs-sync', {
             rowId: task.rowId,
             specialId: task.specialId,
             stuId: task.stuId,
@@ -905,17 +906,21 @@
             success: true,
             status: 'สำเร็จ',
             message: result.message
-          }, 'POST');
-
-          task.statusMessage = result.message + ' (อัปเดตชีต "ซิงค์แล้ว")';
-          doneSuccess++;
+          }, 'POST').then(() => {
+            task.statusMessage = result.message + ' (อัปเดตชีต "ซิงค์แล้ว")';
+            renderQueueTable();
+          }).catch(() => {
+            task.statusMessage = result.message + ' (รออัปเดตชีต)';
+            renderQueueTable();
+          });
+          pendingSheetUpdates.push(p);
         } else {
           task.syncStatus = 'error';
           task.statusMessage = result.message;
           doneError++;
 
-          // บันทึกสาเหตุความผิดพลาดลง SGS_Log ใน Google Sheets ทันที
-          await callGasApi('update-sgs-sync', {
+          // บันทึกสาเหตุความผิดพลาดลง SGS_Log แบบพื้นหลัง
+          const p = callGasApi('update-sgs-sync', {
             rowId: task.rowId,
             specialId: task.specialId,
             stuId: task.stuId,
@@ -932,6 +937,7 @@
             status: 'ผิดพลาด',
             message: result.message
           }, 'POST').catch(() => {});
+          pendingSheetUpdates.push(p);
         }
       } catch (err) {
         task.syncStatus = 'error';
@@ -948,7 +954,12 @@
 
       renderQueueTable();
       updateSummaryCounts();
-      await sleep(300);
+      await sleep(150);
+    }
+
+    if (pendingSheetUpdates.length > 0) {
+      setLiveStatus(`⏳ กำลังรอบันทึกสถานะลง Google Sheets ให้ครบทุกแถว...`, '#2563eb');
+      await Promise.allSettled(pendingSheetUpdates);
     }
 
     isSyncRunning = false;
