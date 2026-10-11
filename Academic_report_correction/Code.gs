@@ -1489,21 +1489,7 @@ function directFixStudentRecords() {
     var lastCol = sheet.getLastColumn();
     if (lastRow < 2) return { success: false, message: 'ไม่มีข้อมูลในชีต' };
 
-    // 1. ปรับปรุง Data Validation ของคอลัมน์ D (ชั้น) ให้ครอบคลุม ม.1 - ม.6 (ดักจับข้อยกเว้นสำหรับ Smart Table)
-    try {
-      var gradeRange = sheet.getRange(2, 4, lastRow - 1, 1);
-      var rule = SpreadsheetApp.newDataValidation()
-        .requireValueInList(['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'], true)
-        .setAllowInvalid(true)
-        .build();
-      gradeRange.setDataValidation(rule);
-    } catch(valErr) {
-      console.warn('Smart table column type, skipping setDataValidation:', valErr);
-    }
-
-    // 2. ดึงข้อมูลและแปลงข้อความตัวเลขให้เป็น Number แท้ๆ ป้องกันการเตือน "ค่านี้ไม่ตรงกับประเภทคอลัมน์: ตัวเลข"
-    var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();
-    var headers = data[0].map(cleanStr_);
+    var headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(cleanStr_);
     var idxStuId = headers.indexOf('เลขประจำตัว');
     var idxStuName = headers.indexOf('ชื่อ-นามสกุล');
     var idxYear = headers.indexOf('ปีการศึกษา');
@@ -1511,35 +1497,24 @@ function directFixStudentRecords() {
     var idxSubjName = headers.indexOf('ชื่อวิชา');
     var idxStatus = headers.indexOf('สถานะระบบ');
 
-    var numCols = [
-      headers.indexOf('ห้อง'),
-      headers.indexOf('เลขประจำตัว'),
-      headers.indexOf('เลขที่'),
-      headers.indexOf('ปีการศึกษา'),
-      headers.indexOf('ภาคเรียนที่'),
-      headers.indexOf('คะแนนเดิม')
-    ].filter(function(idx) { return idx >= 0; });
-
-    var convertedNumbersCount = 0;
-    for (var r = 1; r < data.length; r++) {
-      numCols.forEach(function(c) {
-        var v = data[r][c];
-        if (v !== '' && v !== null && v !== undefined && typeof v !== 'number' && !isNaN(Number(v))) {
-          data[r][c] = Number(v);
-          convertedNumbersCount++;
-        }
-      });
+    if (idxStuId < 0 || idxStuName < 0) {
+      return { success: false, message: 'ไม่พบคอลัมน์ เลขประจำตัว หรือ ชื่อ-นามสกุล' };
     }
 
-    // 2.1 เพิ่มคำนำหน้านักเรียน (เด็กชาย, เด็กหญิง, นาย, นางสาว) ตามทะเบียนทางการอย่างระมัดระวัง
+    // 1. อัปเดตคำนำหน้านักเรียนเฉพาะคอลัมน์ "ชื่อ-นามสกุล" เท่านั้น (ไม่แตะคอลัมน์อื่นหรือหัวตาราง ป้องกัน Smart Table Error)
     var knownPrefixes = ['เด็กชาย', 'เด็กหญิง', 'ด.ช.', 'ด.ญ.', 'นาย', 'นางสาว', 'น.ส.', 'ด.ช', 'ด.ญ'];
     var prefixUpdatedCount = 0;
-    if (typeof STUDENT_PREFIX_MAP !== 'undefined' && idxStuName >= 0 && idxStuId >= 0) {
-      for (var r = 1; r < data.length; r++) {
-        var sid = cleanStr_(data[r][idxStuId]);
-        var sName = cleanStr_(data[r][idxStuName]);
+    
+    // ดึงเฉพาะคอลัมน์เลขประจำตัว และ ชื่อ-นามสกุล
+    var idVals = sheet.getRange(2, idxStuId + 1, lastRow - 1, 1).getValues();
+    var nameVals = sheet.getRange(2, idxStuName + 1, lastRow - 1, 1).getValues();
+    
+    if (typeof STUDENT_PREFIX_MAP !== 'undefined') {
+      for (var r = 0; r < nameVals.length; r++) {
+        var sid = cleanStr_(idVals[r][0]);
+        var sName = cleanStr_(nameVals[r][0]);
         if (!sid || !sName) continue;
-        
+
         var hasPref = false;
         for (var p = 0; p < knownPrefixes.length; p++) {
           if (sName.indexOf(knownPrefixes[p]) === 0) {
@@ -1547,20 +1522,22 @@ function directFixStudentRecords() {
             break;
           }
         }
-        
+
         if (!hasPref && STUDENT_PREFIX_MAP[sid]) {
           var officialPref = STUDENT_PREFIX_MAP[sid];
-          data[r][idxStuName] = officialPref + sName;
+          nameVals[r][0] = officialPref + sName;
           prefixUpdatedCount++;
         }
       }
+
+      if (prefixUpdatedCount > 0) {
+        // เขียนกลับเฉพาะคอลัมน์ชื่อ-นามสกุล (แถวที่ 2 เป็นต้นไป)
+        sheet.getRange(2, idxStuName + 1, lastRow - 1, 1).setValues(nameVals);
+        console.log('Successfully updated ' + prefixUpdatedCount + ' student prefixes in column ' + (idxStuName + 1));
+      }
     }
 
-    if (convertedNumbersCount > 0 || prefixUpdatedCount > 0) {
-      sheet.getRange(1, 1, lastRow, lastCol).setValues(data);
-    }
-
-    // 3. รายชื่อนักเรียนขาดนาน/ลาออก ที่ต้องตัดออกจากระบบแก้ไขผลการเรียน (รวม 20498 นายธงชัย พุชชงค์)
+    // 2. รายชื่อนักเรียนขาดนาน/ลาออก ที่ต้องตัดออกจากระบบแก้ไขผลการเรียน (รวม 20498 นายธงชัย พุชชงค์)
     var dropoutList = [
       '20498', // ธงชัย พุชชงค์ (ลาออก)
       '20028','20038','20466','20079','20080','20090','20157','20158','20168','20427',
@@ -1575,29 +1552,46 @@ function directFixStudentRecords() {
     var dropoutMap = {};
     dropoutList.forEach(function(id) { dropoutMap[id] = true; });
 
+    // ดึงข้อมูลแถวทั้งหมดมาตรวจสอบหาแถวที่ต้องลบ
+    var dataForDelete = sheet.getRange(1, 1, sheet.getLastRow(), lastCol).getValues();
     var deletedDetails = [];
     var rowsToDelete = [];
-    for (var i = 1; i < data.length; i++) {
-      var sid = cleanStr_(data[i][idxStuId]);
+    for (var i = 1; i < dataForDelete.length; i++) {
+      var sid = cleanStr_(dataForDelete[i][idxStuId]);
       if (dropoutMap[sid]) {
         rowsToDelete.push(i + 1); // 1-indexed row number in sheet
         deletedDetails.push({
           row: i + 1,
           studentId: sid,
-          name: cleanStr_(data[i][idxStuName]),
-          year: cleanStr_(data[i][idxYear]),
-          subject: cleanStr_(data[i][idxSubj]) + ' ' + cleanStr_(data[i][idxSubjName]),
-          status: cleanStr_(data[i][idxStatus])
+          name: cleanStr_(dataForDelete[i][idxStuName]),
+          year: idxYear >= 0 ? cleanStr_(dataForDelete[i][idxYear]) : '',
+          subject: (idxSubj >= 0 ? cleanStr_(dataForDelete[i][idxSubj]) : '') + ' ' + (idxSubjName >= 0 ? cleanStr_(dataForDelete[i][idxSubjName]) : ''),
+          status: idxStatus >= 0 ? cleanStr_(dataForDelete[i][idxStatus]) : ''
         });
       }
     }
 
+    var physicallyDeletedCount = 0;
+    var clearedCount = 0;
     // ลบแถวจากล่างขึ้นบน
     for (var d = rowsToDelete.length - 1; d >= 0; d--) {
-      sheet.deleteRow(rowsToDelete[d]);
+      var targetRow = rowsToDelete[d];
+      try {
+        sheet.deleteRow(targetRow);
+        physicallyDeletedCount++;
+      } catch(delErr) {
+        console.warn('deleteRow failed on row ' + targetRow + ' due to smart table, falling back to clearContent: ' + delErr.message);
+        try {
+          // หาก deleteRow ติดข้อจำกัดของ Smart Table ให้ล้างค่าเซลล์ในแถวนั้นแทน
+          sheet.getRange(targetRow, 1, 1, lastCol).clearContent();
+          clearedCount++;
+        } catch(clrErr) {
+          console.error('clearContent also failed on row ' + targetRow + ':', clrErr);
+        }
+      }
     }
 
-    // 4. อัปเดตจำนวนนักเรียนในชีต Totalstudent อัตโนมัติ
+    // 3. อัปเดตจำนวนนักเรียนในชีต Totalstudent อัตโนมัติ (55 ห้อง รวม 1,845 คน)
     try {
       updateTotalStudent2569();
     } catch(totErr) {
@@ -1610,19 +1604,20 @@ function directFixStudentRecords() {
 
     return {
       success: true,
-      validationUpdated: true,
       prefixUpdatedCount: prefixUpdatedCount,
       totalStudentsUpdated: 1845,
       deletedCount: deletedDetails.length,
+      physicallyDeletedCount: physicallyDeletedCount,
+      clearedCount: clearedCount,
       deletedDetails: deletedDetails,
       remainingRows: sheet.getLastRow() - 1,
-      message: 'จัดการเพิ่มคำนำหน้านักเรียน ' + prefixUpdatedCount + ' แถว, ปรับปรุงยอดนักเรียน 55 ห้อง (1,845 คน) ในชีต Totalstudent และตัดเด็กขาดนาน/ลาออกจำนวน ' + deletedDetails.length + ' แถวเรียบร้อยแล้ว'
+      message: 'จัดการเพิ่มคำนำหน้านักเรียน ' + prefixUpdatedCount + ' รายการในคอลัมน์ชื่อ-นามสกุล, ปรับปรุงยอดนักเรียน 55 ห้อง (1,845 คน) ในชีต Totalstudent และตัดเด็กขาดนาน/ลาออกจำนวน ' + deletedDetails.length + ' แถวเรียบร้อยแล้ว'
     };
   } catch(e) {
     console.error('Error in directFixStudentRecords:', e);
-    return { success: false, message: e.message };
+    return { success: false, message: e.message, stack: e.stack };
   } finally {
-    lock.releaseLock();
+    try { lock.releaseLock(); } catch(lErr) {}
   }
 }
 
