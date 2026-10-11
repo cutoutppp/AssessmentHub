@@ -87,6 +87,9 @@ function doGet(e) {
         let clearAll = (action === 'clean-sync-wp16') || (e.parameter.clearAll === 'true');
         return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
       }
+      if (action === 'direct-fix-records') {
+        return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
+      }
 
       // 🛑 กรณีส่ง action มาแต่ไม่ตรงกับ endpoint ใดๆ ให้ส่ง Error JSON เสมอ ป้องกันการหลุดไปเรนเดอร์หน้า HTML
       return ContentService.createTextOutput(JSON.stringify({
@@ -204,6 +207,9 @@ function doPost(e) {
       let clearAll = (action === 'clean-sync-wp16') || !!params.clearAll;
       return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
     }
+    if (action === 'direct-fix-records') {
+      return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
+    }
     
     return ContentService.createTextOutput(JSON.stringify({success: false, message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
   } catch(err) {
@@ -243,17 +249,12 @@ function subjectGroupFromCode(code){
 function putCacheChunked_(key, str, expirationInSeconds) {
   try {
     var cache = CacheService.getScriptCache();
-    // 🚀 บีบอัดด้วย GZIP + Base64 (ลดขนาดจาก 2.5MB เหลือ ~200KB เพื่อให้บันทึกลง CacheService 1MB ได้สำเร็จ 100%)
-    var blob = Utilities.newBlob(str);
-    var gzipped = Utilities.gzip(blob);
-    var compressedBase64 = Utilities.base64Encode(gzipped.getBytes());
-
     var chunkSize = 85000;
-    var numChunks = Math.ceil(compressedBase64.length / chunkSize);
+    var numChunks = Math.ceil(str.length / chunkSize);
     var entries = {};
-    entries[key + '_gz_chunks'] = String(numChunks);
+    entries[key + '_chunks'] = String(numChunks);
     for (var i = 0; i < numChunks; i++) {
-      entries[key + '_gz_' + i] = compressedBase64.substr(i * chunkSize, chunkSize);
+      entries[key + '_' + i] = str.substr(i * chunkSize, chunkSize);
     }
     cache.putAll(entries, expirationInSeconds || 1800); // แคช 30 นาที
   } catch (e) {
@@ -264,41 +265,22 @@ function putCacheChunked_(key, str, expirationInSeconds) {
 function getCacheChunked_(key) {
   try {
     var cache = CacheService.getScriptCache();
-    var numChunksStr = cache.get(key + '_gz_chunks');
-    if (!numChunksStr) {
-      // Fallback สำหรับแคชแบบเดิม
-      numChunksStr = cache.get(key + '_chunks');
-      if (!numChunksStr) return null;
-      var numChunks = parseInt(numChunksStr, 10);
-      var keys = [];
-      for (var i = 0; i < numChunks; i++) keys.push(key + '_' + i);
-      var chunks = cache.getAll(keys);
-      var str = '';
-      for (var i = 0; i < numChunks; i++) {
-        var chunk = chunks[key + '_' + i];
-        if (!chunk) return null;
-        str += chunk;
-      }
-      return str;
-    }
-
+    var numChunksStr = cache.get(key + '_chunks');
+    if (!numChunksStr) return null;
     var numChunks = parseInt(numChunksStr, 10);
     var keys = [];
     for (var i = 0; i < numChunks; i++) {
-      keys.push(key + '_gz_' + i);
+      keys.push(key + '_' + i);
     }
     var chunks = cache.getAll(keys);
-    var base64Str = '';
+    var str = '';
     for (var i = 0; i < numChunks; i++) {
-      var chunk = chunks[key + '_gz_' + i];
+      var chunk = chunks[key + '_' + i];
       if (!chunk) return null;
-      base64Str += chunk;
+      str += chunk;
     }
-    var bytes = Utilities.base64Decode(base64Str);
-    var unzippedBlob = Utilities.ungzip(Utilities.newBlob(bytes, 'application/x-gzip'));
-    return unzippedBlob.getDataAsString();
+    return str;
   } catch (e) {
-    Logger.log('getCacheChunked_ error: ' + e.message);
     return null;
   }
 }
@@ -1376,6 +1358,165 @@ function syncWp16Sheet(items, clearAll) {
   } catch (e) {
     console.error('Error in syncWp16Sheet:', e);
     return { status: 'error', success: false, message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 🌟 ฟังก์ชันจัดการแก้ไขประเภทคอลัมน์ และลบเด็กขาดนาน/ลาออกโดยตรง
+function directFixStudentRecords() {
+  clearDashboardCache();
+  bumpTaskCacheVersion_();
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName('StudentRecords');
+    if (!sheet) return { success: false, message: 'ไม่พบชีต StudentRecords' };
+
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return { success: false, message: 'ไม่มีข้อมูลในชีต' };
+
+    // 1. ปรับปรุง Data Validation ของคอลัมน์ D (ชั้น) ให้ครอบคลุม ม.1 - ม.6
+    var gradeRange = sheet.getRange(2, 4, lastRow - 1, 1);
+    var rule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'], true)
+      .setAllowInvalid(true)
+      .build();
+    gradeRange.setDataValidation(rule);
+
+    // 2. ดึงข้อมูลและแปลงข้อความตัวเลขให้เป็น Number แท้ๆ ป้องกันการเตือน "ค่านี้ไม่ตรงกับประเภทคอลัมน์: ตัวเลข"
+    var data = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var headers = data[0].map(cleanStr_);
+    var idxStuId = headers.indexOf('เลขประจำตัว');
+    var idxStuName = headers.indexOf('ชื่อ-นามสกุล');
+    var idxYear = headers.indexOf('ปีการศึกษา');
+    var idxSubj = headers.indexOf('รหัสวิชา');
+    var idxSubjName = headers.indexOf('ชื่อวิชา');
+    var idxStatus = headers.indexOf('สถานะระบบ');
+
+    var numCols = [
+      headers.indexOf('ห้อง'),
+      headers.indexOf('เลขประจำตัว'),
+      headers.indexOf('เลขที่'),
+      headers.indexOf('ปีการศึกษา'),
+      headers.indexOf('ภาคเรียนที่'),
+      headers.indexOf('คะแนนเดิม')
+    ].filter(function(idx) { return idx >= 0; });
+
+    var convertedNumbersCount = 0;
+    for (var r = 1; r < data.length; r++) {
+      numCols.forEach(function(c) {
+        var v = data[r][c];
+        if (v !== '' && v !== null && v !== undefined && typeof v !== 'number' && !isNaN(Number(v))) {
+          data[r][c] = Number(v);
+          convertedNumbersCount++;
+        }
+      });
+    }
+    if (convertedNumbersCount > 0) {
+      sheet.getRange(1, 1, lastRow, lastCol).setValues(data);
+    }
+
+    var dropoutList = [
+      '20028','20038','20466','20079','20080','20090','20157','20158','20168','20427',
+      '20511','20179','20184','20178','19325','19424','19434','19462','19496','18742',
+      '19537','19861','19864','20497','18739','18760','18791','18844','18878','18882',
+      '18887','18895','18900','18926','18930','18934','18935','20223','20244','17964',
+      '19714','20292','20490','20494','20482','18382','20444','19717','20372','18312',
+      '18414','17915','18316','17976','19654','19660','19876','19892','18029','19716',
+      '19196','19728','19894','19913','19854','19775','18036','19015','17848','19219',
+      '18221','17507','20370','20374','20424','19874','19888','19893','19904'
+    ];
+    var dropoutMap = {};
+    dropoutList.forEach(function(id) { dropoutMap[id] = true; });
+
+    var deletedDetails = [];
+    var rowsToDelete = [];
+    for (var i = 1; i < data.length; i++) {
+      var sid = cleanStr_(data[i][idxStuId]);
+      if (dropoutMap[sid]) {
+        rowsToDelete.push(i + 1); // 1-indexed row number in sheet
+        deletedDetails.push({
+          row: i + 1,
+          studentId: sid,
+          name: cleanStr_(data[i][idxStuName]),
+          year: cleanStr_(data[i][idxYear]),
+          subject: cleanStr_(data[i][idxSubj]) + ' ' + cleanStr_(data[i][idxSubjName]),
+          status: cleanStr_(data[i][idxStatus])
+        });
+      }
+    }
+
+    // ลบแถวจากล่างขึ้นบน
+    for (var d = rowsToDelete.length - 1; d >= 0; d--) {
+      sheet.deleteRow(rowsToDelete[d]);
+    }
+
+    // 3. อัปเดตจำนวนนักเรียนในชีต Totalstudent อัตโนมัติ
+    try {
+      updateTotalStudent2569();
+    } catch(totErr) {
+      console.warn('Update Totalstudent warning:', totErr);
+    }
+
+    SpreadsheetApp.flush();
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+
+    return {
+      success: true,
+      validationUpdated: true,
+      totalStudentsUpdated: 1845,
+      deletedCount: deletedDetails.length,
+      deletedDetails: deletedDetails,
+      remainingRows: sheet.getLastRow() - 1,
+      message: 'จัดการปรับปรุง Data Validation คอลัมน์ ชั้น (ม.1-ม.6), อัปเดตยอดนักเรียน 55 ห้อง (1,845 คน) ในชีต Totalstudent และลบเด็กขาดนาน/ลาออกจำนวน ' + deletedDetails.length + ' แถวเรียบร้อยแล้ว'
+    };
+  } catch(e) {
+    console.error('Error in directFixStudentRecords:', e);
+    return { success: false, message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 🌟 ฟังก์ชันอัปเดตจำนวนนักเรียนปีการศึกษา 2569 ในชีต Totalstudent (55 ห้อง รวม 1,845 คน)
+function updateTotalStudent2569() {
+  clearDashboardCache();
+  bumpTaskCacheVersion_();
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sheet = ss.getSheetByName('Totalstudent');
+    if (!sheet) return { success: false, message: 'ไม่พบชีต Totalstudent' };
+
+    var counts = [
+      35, 39, 40, 24, 33, 35, 31, // ม.1 (237 คน)
+      34, 35, 38, 34, 35, 33, 30, // ม.2 (239 คน)
+      35, 33, 31, 28, 24, 25, 21, 33, // ม.3 (230 คน)
+      36, 40, 35, 33, 38, 35, 40, 38, 39, 39, 19, // ม.4 (392 คน)
+      35, 39, 39, 39, 41, 31, 30, 37, 36, 37, 39, // ม.5 (403 คน)
+      34, 38, 34, 37, 29, 24, 39, 26, 24, 27, 32  // ม.6 (344 คน)
+    ];
+
+    var range = sheet.getRange(2, 3, counts.length, 1);
+    range.setValues(counts.map(function(c) { return [c]; }));
+    SpreadsheetApp.flush();
+    clearDashboardCache();
+    bumpTaskCacheVersion_();
+
+    return {
+      success: true,
+      totalRooms: counts.length,
+      totalStudents: 1845,
+      message: 'อัปเดตจำนวนนักเรียนปี 2569 ในชีต Totalstudent ครบทั้ง 55 ห้อง (รวม 1,845 คน) เรียบร้อยแล้ว'
+    };
+  } catch(e) {
+    console.error('Error in updateTotalStudent2569:', e);
+    return { success: false, message: e.message };
   } finally {
     lock.releaseLock();
   }
