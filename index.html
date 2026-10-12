@@ -58,7 +58,34 @@
             targetGrid.appendChild(planCard);
           }
 
-          // 3. Inject T2G Analyzer card if not present
+          // 3. Inject NextSGS Chrome Web Store extension card if not present
+          if (!document.getElementById('nextsgs-extension-injected-card')) {
+            const extCard = document.createElement('a');
+            extCard.id = 'nextsgs-extension-injected-card';
+            extCard.href = 'https://chromewebstore.google.com/detail/nextsgs-%E0%B8%9E%E0%B8%B1%E0%B8%92%E0%B8%99%E0%B8%B2%E0%B8%99%E0%B8%B4%E0%B8%84%E0%B8%A1-assessm/halnlgmkmmdmfggkaeekmhgicocafimc';
+            extCard.target = '_blank';
+            extCard.rel = 'noopener noreferrer';
+            extCard.className = 'group bg-white rounded-xl p-3.5 border border-slate-200/80 hover:border-emerald-500/40 cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between block text-left decoration-transparent';
+            extCard.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4"></circle><line x1="21.17" y1="8" x2="12" y2="8"></line><line x1="3.95" y1="6.06" x2="8.54" y2="14"></line><line x1="10.88" y1="21.94" x2="15.46" y2="14"></line></svg>
+                  </div>
+                  <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-200">Chrome Store</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">ส่วนขยาย NextSGS</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">หยอดคะแนน ปพ.5 สู่ SGS อัตโนมัติ (ติดตั้งง่ายเพียงกด "เพิ่มใน Chrome")</p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-emerald-600">
+                <span>ติดตั้งส่วนขยาย (คลิกเดียว)</span>
+                <span>↗</span>
+              </div>
+            `;
+            targetGrid.appendChild(extCard);
+          }
+
+          // 4. Inject T2G Analyzer card if not present
           if (!document.getElementById('t2g-injected-card')) {
             const card = document.createElement('a');
             card.id = 't2g-injected-card';
