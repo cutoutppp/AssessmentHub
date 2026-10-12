@@ -13,3 +13,13 @@ schoolen_helper_extracted/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Sensitive student records and data spreadsheets (PDPA protection)
+*.xlsx
+*.xls
+*.csv
+*initial_data.json
+*official_ms_list.json
+*wp16_pending_tasks.json
+*work_db.json
+*.har
