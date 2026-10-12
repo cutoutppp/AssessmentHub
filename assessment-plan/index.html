@@ -820,15 +820,21 @@
       const input = document.getElementById('inputNewTeacher');
       const datalist = document.getElementById('allTeachersDatalist');
 
-      // Populate autocomplete datalist from all school teachers in COURSES_DB
-      if (datalist && typeof COURSES_DB !== 'undefined') {
+      // Populate autocomplete datalist from all school teachers (วก.1, วก.2, and departmental roster)
+      if (datalist) {
         const teacherSet = new Set();
-        Object.values(COURSES_DB).forEach(list => {
-          (list || []).forEach(c => {
-            (c.teachers || []).forEach(t => {
+        if (window.SCHOOL_TEACHERS_BY_AREA) {
+          Object.values(window.SCHOOL_TEACHERS_BY_AREA).forEach(list => {
+            (list || []).forEach(t => {
               const clean = String(t || '').trim();
               if (clean && !isPlaceholderTeacher(clean)) teacherSet.add(clean);
             });
+          });
+        }
+        Object.values(allCourses || {}).forEach(c => {
+          (c.teachers || []).forEach(t => {
+            const clean = String(t || '').trim();
+            if (clean && !isPlaceholderTeacher(clean)) teacherSet.add(clean);
           });
         });
         datalist.innerHTML = Array.from(teacherSet)
@@ -897,6 +903,18 @@
       }, 3500);
     }
 
+    function findTeacherLearningArea(tName) {
+      if (!tName) return '';
+      const found = Object.values(allCourses).find(c => c.teachers && c.teachers.includes(tName));
+      if (found && found.learning_area) return found.learning_area;
+      if (window.SCHOOL_TEACHERS_BY_AREA) {
+        for (const [area, list] of Object.entries(window.SCHOOL_TEACHERS_BY_AREA)) {
+          if (Array.isArray(list) && list.includes(tName)) return area;
+        }
+      }
+      return '';
+    }
+
     // Filter Dropdowns Setup (Learning Area, Cascading Teacher, and Visual Cards Grid)
     function setupFilterDropdowns() {
       const areaSelect = document.getElementById('filterAreaSelect');
@@ -930,6 +948,16 @@
         teacherSelect.innerHTML = '<option value="">-- คุณครูทุกคน (ทั้งหมด) --</option>';
 
         const teacherSet = new Set();
+        if (window.SCHOOL_TEACHERS_BY_AREA) {
+          Object.entries(window.SCHOOL_TEACHERS_BY_AREA).forEach(([area, list]) => {
+            if (!selectedArea || area === selectedArea) {
+              (list || []).forEach(t => {
+                const cleanT = String(t || '').trim();
+                if (cleanT && !cleanT.includes('...')) teacherSet.add(cleanT);
+              });
+            }
+          });
+        }
         Object.values(allCourses).forEach(c => {
           if (!selectedArea || c.learning_area === selectedArea) {
             if (c.teachers && Array.isArray(c.teachers)) {
@@ -969,14 +997,19 @@
       });
 
       teacherSelect.addEventListener('change', () => {
-        // If teacher selected but no area selected, auto-select teacher's area
-        if (teacherSelect.value && !areaSelect.value) {
+        // If teacher selected, sync learning area dropdown if needed
+        if (teacherSelect.value) {
           const tName = teacherSelect.value;
-          const found = Object.values(allCourses).find(c => c.teachers && c.teachers.includes(tName));
-          if (found && found.learning_area) {
-            areaSelect.value = found.learning_area;
-            populateTeacherDropdown(found.learning_area);
+          const tArea = findTeacherLearningArea(tName);
+          if (tArea && !areaSelect.value) {
+            areaSelect.value = tArea;
+            populateTeacherDropdown(tArea);
             teacherSelect.value = tName;
+          }
+          // If a course is already open and has no teacher assigned yet, pre-fill this teacher
+          if (currentCourse && (currentCourse.teachers || []).every(isPlaceholderTeacher)) {
+            currentCourse.teachers = [tName];
+            renderTeacherTags();
           }
         }
         updateFilteredCourses();
@@ -1019,14 +1052,41 @@
         list = list.filter(c => c.learning_area === area);
       }
       if (teacher) {
-        list = list.filter(c => c.teachers && c.teachers.includes(teacher));
+        const directMatches = list.filter(c => c.teachers && c.teachers.includes(teacher));
+        if (directMatches.length > 0) {
+          list = directMatches;
+        } else {
+          // Department-level fallback for teachers in วก. whose individual courses aren't mapped yet (e.g. คณิตศาสตร์ / สุขศึกษา)
+          const tArea = findTeacherLearningArea(teacher);
+          if (tArea) {
+            list = list.filter(c => c.learning_area === tArea);
+          }
+        }
       }
       if (q) {
-        list = list.filter(c => 
+        const hasDirectCourseMatch = list.some(c =>
           c.course_code.toLowerCase().includes(q) ||
           c.course_name.toLowerCase().includes(q) ||
           (c.teachers && c.teachers.some(t => t.toLowerCase().includes(q)))
         );
+        if (hasDirectCourseMatch) {
+          list = list.filter(c =>
+            c.course_code.toLowerCase().includes(q) ||
+            c.course_name.toLowerCase().includes(q) ||
+            (c.teachers && c.teachers.some(t => t.toLowerCase().includes(q)))
+          );
+        } else if (window.SCHOOL_TEACHERS_BY_AREA) {
+          const matchedAreas = Object.entries(window.SCHOOL_TEACHERS_BY_AREA)
+            .filter(([_, tList]) => Array.isArray(tList) && tList.some(t => t.toLowerCase().includes(q)))
+            .map(([a]) => a);
+          if (matchedAreas.length > 0) {
+            list = list.filter(c => matchedAreas.includes(c.learning_area));
+          } else {
+            list = [];
+          }
+        } else {
+          list = [];
+        }
       }
 
       // Sort: Term 2 first, then by course code
@@ -1221,12 +1281,20 @@
         updateFilteredCourses(); // Instantly filter visual grid as user types
         if (q.length > 0) {
           clearBtn.classList.remove('hidden');
-          const matches = Object.values(allCourses).filter(c => 
+          let matches = Object.values(allCourses).filter(c => 
             c.course_code.toLowerCase().includes(q) ||
             c.course_name.toLowerCase().includes(q) ||
-            c.teachers.some(t => t.toLowerCase().includes(q))
-          ).slice(0, 15);
-          renderDropdown(matches);
+            (c.teachers && c.teachers.some(t => t.toLowerCase().includes(q)))
+          );
+          if (matches.length === 0 && window.SCHOOL_TEACHERS_BY_AREA) {
+            const matchedAreas = Object.entries(window.SCHOOL_TEACHERS_BY_AREA)
+              .filter(([_, tList]) => Array.isArray(tList) && tList.some(t => t.toLowerCase().includes(q)))
+              .map(([a]) => a);
+            if (matchedAreas.length > 0) {
+              matches = Object.values(allCourses).filter(c => matchedAreas.includes(c.learning_area));
+            }
+          }
+          renderDropdown(matches.slice(0, 15));
         } else {
           clearBtn.classList.add('hidden');
           dropdown.classList.add('hidden');
@@ -1482,6 +1550,12 @@
       document.getElementById('viewCourseName').textContent = c.course_name;
       document.getElementById('viewCourseMeta').textContent = `ชั้น${c.grade_level} • ภาคเรียนที่ 2/2569 • ${c.total_hours} คาบ (${c.credits.toFixed(1)} หน่วยกิต)`;
       
+      // If a teacher is currently selected in the filter dropdown and this course has no assigned teacher yet, pre-fill them
+      const selectedFilterTeacher = document.getElementById('filterTeacherSelect')?.value?.trim();
+      if (selectedFilterTeacher && (currentCourse.teachers || []).every(isPlaceholderTeacher)) {
+        currentCourse.teachers = [selectedFilterTeacher];
+      }
+
       // Render Teacher Tags
       renderTeacherTags();
 
