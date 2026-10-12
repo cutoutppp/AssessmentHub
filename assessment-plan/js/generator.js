@@ -1306,31 +1306,47 @@ async function generateAndDownloadDocx() {
     const p = allParagraphs[i];
     const txt = (p.textContent || "").trim();
 
-    // Remove empty paragraphs that create uneven gaps or blank pages
-    if (txt.length === 0) {
+    // Preserve paragraphs that contain images/drawings (e.g. School Logo at the top of page 1)
+    const hasDrawing = p.getElementsByTagName("w:drawing").length > 0 || p.getElementsByTagName("w:pict").length > 0;
+    if (txt.length === 0 && !hasDrawing) {
       paragraphsToRemove.push(p);
       continue;
     }
+    if (hasDrawing) {
+      let pPr = p.getElementsByTagName("w:pPr")[0];
+      if (!pPr) {
+        pPr = xmlDoc.createElementNS(W_NS, "w:pPr");
+        p.insertBefore(pPr, p.firstChild);
+      }
+      if (pPr.getElementsByTagName("w:keepNext").length === 0) {
+        pPr.insertBefore(xmlDoc.createElementNS(W_NS, "w:keepNext"), pPr.firstChild);
+      }
+      continue;
+    }
 
-    // 0. Document Title
+    const headerLeftText1 = `รหัสวิชา ${c.course_code} รายวิชา ${c.course_name}`;
+    const headerRightText1 = `กลุ่มสาระการเรียนรู้${c.learning_area}`;
+    const isLongHeader = (headerLeftText1.length + headerRightText1.length) > 82;
+    const headerLeftIndent = isLongHeader ? 0 : 590;
+    const headerRightTabPos = isLongHeader ? PAGE_TEXT_WIDTH : 9480;
+
+    // 0. Document Title (18pt bold, centered, no underline — matching template)
     if (txt.includes("แผนการวัดและประเมินผลการเรียนรู้")) {
-      setParagraphFormat(p, { keepNext: true, before: 0, after: 40, left: 0, right: 0, firstLine: 0, jc: 'center' });
+      setParagraphFormat(p, { keepNext: true, before: 0, after: 0, left: 0, right: 0, firstLine: 0, jc: 'center' });
       while (p.firstChild && p.lastChild.nodeName !== "w:pPr") {
         p.removeChild(p.lastChild);
       }
-      p.appendChild(createRun("แผนการวัดและประเมินผลการเรียนรู้", true, 32, null, true));
+      p.appendChild(createRun("แผนการวัดและประเมินผลการเรียนรู้", true, 36, null, false));
     }
     // 1. Header Line 1: Course Code, Course Name, Learning Area
     else if (txt.includes("รหัสวิชา") && txt.includes("กลุ่มสาระการเรียนรู้")) {
-      const leftText = `รหัสวิชา ${c.course_code} รายวิชา ${c.course_name}`;
-      const rightText = `กลุ่มสาระการเรียนรู้${c.learning_area}`;
-      const lineSz = (leftText.length + rightText.length > 98) ? 30 : 32;
+      const lineSz = (headerLeftText1.length + headerRightText1.length > 98) ? 30 : 32;
       setXmlParagraphText(
         p,
-        `${leftText}\t${rightText}`,
+        `${headerLeftText1}\t${headerRightText1}`,
         true,
         lineSz,
-        { keepNext: true, tabs: [{ val: 'right', pos: PAGE_TEXT_WIDTH }], before: 0, after: 0, left: 0, right: 0, firstLine: 0, jc: 'left' }
+        { keepNext: true, tabs: [{ val: 'right', pos: headerRightTabPos }], before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
       );
     }
     // 2. Header Line 2: Grade Level, Term, Year, Hours, Credits
@@ -1339,10 +1355,10 @@ async function generateAndDownloadDocx() {
       const creditsVal = typeof c.credits === 'number' ? c.credits.toFixed(1) : parseFloat(c.credits || 1).toFixed(1);
       setXmlParagraphText(
         p,
-        `ระดับชั้น${gradeText} ภาคเรียนที่ 2 ปีการศึกษา 2569\tเวลา ${c.total_hours} คาบ/ภาคเรียน จำนวน ${creditsVal} หน่วยกิต`,
+        `ระดับชั้น${gradeText} ภาคเรียนที่ 2 ปีการศึกษา 2569   เวลา ${c.total_hours} คาบ/ภาคเรียน จำนวน ${creditsVal} หน่วยกิต`,
         true,
         32,
-        { keepNext: true, tabs: [{ val: 'right', pos: PAGE_TEXT_WIDTH }], before: 0, after: 0, left: 0, right: 0, firstLine: 0, jc: 'left' }
+        { keepNext: true, before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
       );
     }
     // 3. Header Line 3: Teachers
@@ -1352,7 +1368,7 @@ async function generateAndDownloadDocx() {
         `ครูผู้สอน ${tStr}`,
         true,
         32,
-        { keepNext: true, before: 0, after: 0, left: 0, right: 0, firstLine: 0, jc: 'left' }
+        { keepNext: true, before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
       );
     }
     // 3b. Header Dotted Separator Line (single non-wrapping centered line)
@@ -1360,7 +1376,7 @@ async function generateAndDownloadDocx() {
       setXmlParagraphText(
         p,
         "…".repeat(58),
-        true,
+        false,
         32,
         { keepNext: true, before: 0, after: 60, left: 0, right: 0, firstLine: 0, jc: 'center' }
       );

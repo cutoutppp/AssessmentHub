@@ -1,4 +1,4 @@
-const COURSES_DATA = {
+window.COURSES_DATA = {
   "ง21102": {
     "course_code": "ง21102",
     "course_name": "การงานอาชีพ 1",
