@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจัดทำแผนการวัดและประเมินผลการเรียนรู้ (แบบ วผ.19) - โรงเรียนพัฒนานิคม</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'sans-serif'],
+            sarabun: ['Sarabun', 'sans-serif'],
+          },
+          colors: {
+            primary: '#4F46E5', // Indigo 600
+            secondary: '#10B981', // Emerald 500
+            accent: '#06B6D4',
+            dark: '#1E293B',
+            light: '#F8FAFC',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- JSZip & FileSaver for client-side Word .docx manipulation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <style>
+    body { background-color: #F8FAFC; font-family: 'Prompt', sans-serif; }
+    .glass-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="../index.html" class="flex items-center space-x-2 text-slate-500 hover:text-primary transition-colors p-2 rounded-lg hover:bg-slate-100">
+          <i class="ri-arrow-left-line text-xl"></i>
+          <span class="text-sm font-medium hidden sm:inline">กลับหน้าหลัก</span>
+        </a>
+        <div class="h-6 w-px bg-slate-200"></div>
+        <div class="flex items-center space-x-2">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-100">
+            <i class="ri-file-text-line text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ระบบจัดทำแผนวัดผล (แบบ วผ.19)</h1>
+            <p class="text-[11px] text-slate-500 font-medium">โรงเรียนพัฒนานิคม ภาคเรียนที่ 2/2569</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <i class="ri-checkbox-circle-fill mr-1 text-emerald-500"></i> เกณฑ์วัดผล 2/2569
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Step 1: Course Search Bar & Filter Controls -->
+    <div class="glass-card rounded-2xl p-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <i class="ri-search-eye-line text-primary"></i> 1. ค้นหาและเลือกรหัสวิชา
+          </h2>
+          <p class="text-sm text-slate-500 mt-0.5">เลือกจากกลุ่มสาระ / ครูผู้สอน หรือพิมพ์ค้นหาด้วยรหัสวิชาได้ทันที</p>
+        </div>
+        <!-- Quick Search Bar -->
+        <div class="w-full lg:max-w-md relative">
+          <div class="relative">
+            <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+            <input type="text" id="courseSearchInput" placeholder="พิมพ์ค้นหา เช่น ส31103, พีรวัฒน์..."
+              class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium">
+            <button id="clearSearchBtn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <i class="ri-close-circle-fill text-lg"></i>
+            </button>
+          </div>
+          <!-- Dropdown Results -->
+          <div id="searchResultsDropdown" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-80 overflow-y-auto custom-scrollbar z-40">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Filter Dropdowns Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-100">
+        <!-- 1. Learning Area Filter -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <i class="ri-bookmark-3-line text-indigo-500"></i> กลุ่มสาระการเรียนรู้
+          </label>
+          <select id="filterAreaSelect" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer">
+            <option value="">-- ทุกกลุ่มสาระการเรียนรู้ --</option>
+          </select>
+        </div>
+
+        <!-- 2. Teacher Filter -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+            <i class="ri-user-star-line text-indigo-500"></i> ครูผู้สอน (ตารางสอน 2/2569)
+          </label>
+          <select id="filterTeacherSelect" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer">
+            <option value="">-- คุณครูทุกคน (ทั้งหมด) --</option>
+          </select>
+        </div>
+
+        <!-- 3. Course Selector Dropdown -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center justify-between">
+            <span class="flex items-center gap-1"><i class="ri-book-open-line text-indigo-500"></i> เลือกรหัสวิชา</span>
+            <span id="filteredCountBadge" class="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">548 รายวิชา</span>
+          </label>
+          <select id="filteredCourseSelect" class="w-full px-3 py-2 text-xs bg-indigo-50/60 border border-indigo-200 rounded-xl text-indigo-950 font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer">
+            <option value="">-- คลิกเลือกรายวิชาที่ต้องการ --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Select Visual Course Cards Grid -->
+      <div id="courseCardsSection" class="mt-4 pt-3 border-t border-slate-100">
+        <div class="flex items-center justify-between mb-2.5">
+          <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ri-layout-grid-line text-indigo-500"></i> คลิกเลือกรายวิชาที่ต้องการจัดทำทันที:
+          </span>
+          <button id="btnResetFilters" type="button" class="text-[11px] text-slate-500 hover:text-rose-600 transition-colors flex items-center gap-1 font-medium bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg">
+            <i class="ri-refresh-line"></i> ล้างตัวกรองทั้งหมด
+          </button>
+        </div>
+        <div id="filteredCoursesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-72 overflow-y-auto custom-scrollbar p-1">
+          <!-- Dynamically populated cards -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Course Detail & Customization Section -->
+    <div id="courseContainer" class="hidden space-y-6">
+
+      <!-- Course Header Overview Banner -->
+      <div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none">
+          <i class="ri-book-open-line text-9xl"></i>
+        </div>
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span id="badgeCourseCode" class="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-lg border border-white/20">ส33205</span>
+              <span id="badgeLearningArea" class="bg-white/10 text-white/90 text-xs font-medium px-2.5 py-1 rounded-lg">กลุ่มสาระการเรียนรู้สังคมศึกษาฯ</span>
+              <button type="button" id="badgeType" onclick="toggleCourseType()" title="คลิกเพื่อสลับระหว่างวิชาพื้นฐาน / วิชาเพิ่มเติม" class="bg-amber-400/90 hover:bg-amber-400 text-amber-950 text-xs font-bold px-2.5 py-0.5 rounded-md transition-all flex items-center gap-1 cursor-pointer shadow-sm">
+                <span id="badgeTypeText">วิชาเพิ่มเติม</span>
+                <i class="ri-arrow-up-down-line text-[10px] opacity-75"></i>
+              </button>
+            </div>
+            <h2 id="viewCourseName" class="text-2xl sm:text-3xl font-black tracking-tight">การเงินและการลงทุน</h2>
+            <p id="viewCourseMeta" class="text-white/80 text-sm font-normal">
+              ชั้นมัธยมศึกษาปีที่ 6 • ภาคเรียนที่ 2/2569 • 40 คาบ (1.0 หน่วยกิต)
+            </p>
+          </div>
+          
+          <!-- Teacher Management Box -->
+          <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 flex flex-col gap-2.5 lg:min-w-[360px]">
+            <div class="flex items-center justify-between">
+              <div class="text-[11px] text-white/80 font-semibold flex items-center gap-1.5">
+                <i class="ri-user-star-line text-amber-300"></i> ครูผู้สอน (ดึงจากตารางสอน วก.1 อัตโนมัติ)
+              </div>
+              <button id="btnOpenAddTeacher" class="text-[11px] bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded-lg transition-colors flex items-center gap-1 font-medium">
+                <i class="ri-user-add-line"></i> + เพิ่ม/แก้ไขครูผู้สอน
+              </button>
+            </div>
+            <!-- Teacher Tags List -->
+            <div id="teachersTagContainer" class="flex flex-wrap gap-1.5 min-h-[28px] items-center">
+              <!-- Dynamically populated tags -->
+            </div>
+            <!-- Inline Add Teacher Form -->
+            <div id="addTeacherBox" class="hidden pt-2 border-t border-white/15 flex gap-1.5">
+              <input type="text" id="inputNewTeacher" list="allTeachersDatalist" placeholder="พิมพ์หรือเลือกชื่อ-สกุลครู เช่น นาย..." 
+                class="flex-1 px-2.5 py-1 text-xs rounded-lg bg-white text-slate-800 placeholder-slate-400 focus:outline-none font-medium">
+              <datalist id="allTeachersDatalist"></datalist>
+              <button id="btnConfirmAddTeacher" class="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg transition-colors">
+                บันทึก
+              </button>
+              <button id="btnCancelAddTeacher" class="px-2 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded-lg transition-colors">
+                ยกเลิก
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 Column Layout: Settings & Table -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Left Column: Guidelines & Key Assignments (1 col) -->
+        <div class="space-y-6">
+
+          <!-- 50:50 Hour Balancer Widget -->
+          <div class="glass-card rounded-2xl p-5">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="ri-time-line text-primary"></i> การแบ่งเวลาเรียนตามเกณฑ์ (50 : 50)
+              </h3>
+              <span id="status5050Badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1">
+                <i class="ri-checkbox-circle-fill"></i> ผ่านเกณฑ์
+              </span>
+            </div>
+            
+            <div class="space-y-3">
+              <!-- Pre-midterm -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-slate-600">1. ก่อนกลางภาค (10 สัปดาห์)</span>
+                  <span id="labelPreHours" class="text-indigo-600">19 ชม. (เป้าหมาย 19)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div id="barPreHours" class="bg-indigo-600 h-2 rounded-full transition-all" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <!-- Midterm -->
+              <div class="flex justify-between text-xs py-1.5 px-2.5 bg-slate-50 rounded-lg text-slate-600 border border-slate-100">
+                <span>2. การวัดผลกลางภาค</span>
+                <span class="font-bold text-slate-800">1 ชั่วโมง</span>
+              </div>
+
+              <!-- Post-midterm -->
+              <div>
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-slate-600">3. หลังกลางภาค (10 สัปดาห์)</span>
+                  <span id="labelPostHours" class="text-indigo-600">19 ชม. (เป้าหมาย 19)</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div id="barPostHours" class="bg-indigo-600 h-2 rounded-full transition-all" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <!-- Final -->
+              <div class="flex justify-between text-xs py-1.5 px-2.5 bg-slate-50 rounded-lg text-slate-600 border border-slate-100">
+                <span>4. การวัดผลปลายภาค</span>
+                <span class="font-bold text-slate-800">1 ชั่วโมง</span>
+              </div>
+            </div>
+
+            <!-- Midterm Cutoff Selector -->
+            <div class="mt-4 pt-3 border-t border-slate-100">
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="selectMidtermCutoff" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <i class="ri-scissors-cut-line text-indigo-500"></i> จุดตัดสอบกลางภาค (จบหน่วยที่)
+                </label>
+                <span id="badgeCutoffRatio" class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+                  แบ่ง 2 : 1 หน่วย
+                </span>
+              </div>
+              <select id="selectMidtermCutoff" class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-semibold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary cursor-pointer">
+                <!-- Dynamically populated -->
+              </select>
+              <p class="text-[11px] text-slate-400 mt-1">
+                * เลือกหน่วยที่สิ้นสุดช่วงสอบกลางภาค เพื่อแยกสัดส่วน 50:50 ตามบริบทวิชา
+              </p>
+            </div>
+
+            <!-- Auto Balance Button (visible if uneven) -->
+            <button id="btnAutoBalance" class="hidden mt-4 w-full py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5">
+              <i class="ri-magic-line text-amber-600"></i> ปรับเกลี่ยชั่วโมงให้เป็น 50:50 อัตโนมัติ
+            </button>
+          </div>
+
+          <!-- Exam Duration Widget (ข้อ 3 เวลาในการสอบ) -->
+          <div class="glass-card rounded-2xl p-5 border-l-4 border-l-amber-500">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="ri-timer-line text-amber-600"></i> เวลาในการสอบ (ข้อ 3 ในเอกสาร)
+              </h3>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                กลางภาค / ปลายภาค
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-3">กำหนดระยะเวลาในการสอบ (พิมพ์จำนวนนาทีได้อิสระ ไม่จำกัดเฉพาะตัวเลือก)</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="inputMidExamDuration" class="block text-xs font-bold text-slate-700 mb-1">
+                  สอบกลางภาค (นาที)
+                </label>
+                <div class="relative">
+                  <input type="number" id="inputMidExamDuration" min="10" max="300" step="5" value="60"
+                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary pr-10"
+                    placeholder="เช่น 60">
+                  <span class="absolute right-2.5 top-1.5 text-[11px] text-slate-400 font-bold">นาที</span>
+                </div>
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                  <button type="button" onclick="setExamDuration('mid', 50)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">50 น.</button>
+                  <button type="button" onclick="setExamDuration('mid', 60)" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold transition-colors">60 น.</button>
+                  <button type="button" onclick="setExamDuration('mid', 90)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">90 น.</button>
+                  <button type="button" onclick="setExamDuration('mid', 120)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">120 น.</button>
+                </div>
+              </div>
+              <div>
+                <label for="inputFinExamDuration" class="block text-xs font-bold text-slate-700 mb-1">
+                  สอบปลายภาค (นาที)
+                </label>
+                <div class="relative">
+                  <input type="number" id="inputFinExamDuration" min="10" max="300" step="5" value="60"
+                    class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary pr-10"
+                    placeholder="เช่น 60">
+                  <span class="absolute right-2.5 top-1.5 text-[11px] text-slate-400 font-bold">นาที</span>
+                </div>
+                <div class="flex items-center gap-1 mt-1.5 flex-wrap">
+                  <button type="button" onclick="setExamDuration('fin', 50)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">50 น.</button>
+                  <button type="button" onclick="setExamDuration('fin', 60)" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold transition-colors">60 น.</button>
+                  <button type="button" onclick="setExamDuration('fin', 90)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">90 น.</button>
+                  <button type="button" onclick="setExamDuration('fin', 120)" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">120 น.</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Assignments (ข้อ 6.2 & ตารางที่ 3) -->
+          <div class="glass-card rounded-2xl p-5 border-l-4 border-l-primary">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5 mb-1">
+              <i class="ri-attachment-line text-primary"></i> ชิ้นงานสำคัญ (เงื่อนไขติด ร ในข้อ 6.2 และตารางที่ 3)
+            </h3>
+            <p class="text-xs text-slate-500 mb-4">กำหนดชื่อชิ้นงาน กำหนดมอบหมายงาน และกำหนดส่ง (ลงตารางที่ 3)</p>
+
+            <div class="space-y-4">
+              <!-- Task 1 -->
+              <div class="p-3 bg-slate-50/70 rounded-xl border border-slate-200/80 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-slate-800">
+                    ชิ้นงานสำคัญที่ 1 (ช่วงก่อนกลางภาค)
+                  </label>
+                  <span class="text-[10px] bg-indigo-100 text-indigo-700 font-bold px-1.5 py-0.5 rounded">ลำดับ 1.1</span>
+                </div>
+                <input type="text" id="inputTask1" 
+                  class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary font-medium"
+                  placeholder="เช่น จำลองการลงทุน">
+                
+                <!-- Task 1 Dates: Assign & Due -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                  <!-- กำหนดมอบหมายงาน -->
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1">
+                      <i class="ri-calendar-line text-indigo-500"></i> กำหนดมอบหมายงาน
+                    </label>
+                    <input type="text" id="inputTask1Assign" 
+                      class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 font-medium mb-1"
+                      placeholder="เช่น 1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)">
+                    <input type="date" id="datePickerTask1Assign" 
+                      class="w-full px-2 py-1 text-[11px] bg-indigo-50/60 border border-indigo-200 rounded-lg text-indigo-900 font-semibold focus:outline-none cursor-pointer">
+                  </div>
+                  <!-- กำหนดส่ง -->
+                  <div>
+                    <label class="block text-[11px] font-semibold text-emerald-700 mb-1 flex items-center gap-1">
+                      <i class="ri-calendar-check-line text-emerald-500"></i> กำหนดส่ง (ส่งงาน)
+                    </label>
+                    <input type="text" id="inputTask1Due" 
+                      class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 font-medium mb-1"
+                      placeholder="เช่น 18 ธ.ค. 69 (สัปดาห์ที่ 8)">
+                    <input type="date" id="datePickerTask1Due" 
+                      class="w-full px-2 py-1 text-[11px] bg-emerald-50/60 border border-emerald-200 rounded-lg text-emerald-900 font-semibold focus:outline-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Task 2 (Optional) -->
+              <div class="p-3 bg-slate-50/70 rounded-xl border border-slate-200/80 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <label class="block text-xs font-bold text-slate-800">
+                    ชิ้นงานสำคัญที่ 2 (ช่วงหลังกลางภาค - ถ้ามี)
+                  </label>
+                  <span class="text-[10px] bg-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded">ลำดับ 1.2</span>
+                </div>
+                <input type="text" id="inputTask2" 
+                  class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary font-medium"
+                  placeholder="เช่น แผนการออมเงิน (เว้นว่างได้ถ้าไม่มี)">
+                
+                <!-- Task 2 Dates: Assign & Due -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                  <!-- กำหนดมอบหมายงาน -->
+                  <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1">
+                      <i class="ri-calendar-line text-indigo-500"></i> กำหนดมอบหมายงาน
+                    </label>
+                    <input type="text" id="inputTask2Assign" 
+                      class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 font-medium mb-1"
+                      placeholder="เช่น 26 - 30 ม.ค. 70 (สัปดาห์ที่ 14)">
+                    <input type="date" id="datePickerTask2Assign" 
+                      class="w-full px-2 py-1 text-[11px] bg-indigo-50/60 border border-indigo-200 rounded-lg text-indigo-900 font-semibold focus:outline-none cursor-pointer">
+                  </div>
+                  <!-- กำหนดส่ง -->
+                  <div>
+                    <label class="block text-[11px] font-semibold text-emerald-700 mb-1 flex items-center gap-1">
+                      <i class="ri-calendar-check-line text-emerald-500"></i> กำหนดส่ง (ส่งงาน)
+                    </label>
+                    <input type="text" id="inputTask2Due" 
+                      class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg text-slate-700 font-medium mb-1"
+                      placeholder="เช่น 12 ก.พ. 70 (สัปดาห์ที่ 16)">
+                    <input type="date" id="datePickerTask2Due" 
+                      class="w-full px-2 py-1 text-[11px] bg-emerald-50/60 border border-emerald-200 rounded-lg text-emerald-900 font-semibold focus:outline-none cursor-pointer">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Official Signatures Notice -->
+          <div class="glass-card rounded-2xl p-5 bg-slate-50/50">
+            <h3 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 mb-2">
+              <i class="ri-shield-check-line text-emerald-600"></i> บล็อกลายเซ็นชุดใหม่ (ภาค 2/2569)
+            </h3>
+            <ul class="text-xs space-y-1.5 text-slate-600 font-medium">
+              <li class="flex items-center gap-1.5">
+                <i class="ri-check-line text-emerald-500"></i> ครูผู้สอน: <span id="sigTeacherName" class="font-bold text-slate-800">นายพีรวัฒน์ แสงเงิน</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i class="ri-check-line text-emerald-500"></i> หัวหน้างานวัดผลฯ: <span class="text-slate-800">นางสาวอโรชา สลุงใหญ่</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i class="ri-check-line text-emerald-500"></i> หัวหน้าวิชาการ: <span class="font-bold text-indigo-700">นายพงศธร แสนเมือง</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i class="ri-check-line text-emerald-500"></i> รอง ผอ.วิชาการ: <span class="text-slate-800">นางสาวกมลชนก สุวรรณประเวก</span>
+              </li>
+              <li class="flex items-center gap-1.5">
+                <i class="ri-check-line text-emerald-500"></i> ผอ.โรงเรียน: <span class="text-slate-800">นายธีรพงษ์ ภูธร</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Assessment Matrix & Generate Button (2 cols) -->
+        <div class="lg:col-span-2 space-y-6">
+
+          <!-- Table 1: Matrix Table -->
+          <div class="glass-card rounded-2xl p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-slate-100 gap-2">
+              <div>
+                <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <i class="ri-table-line text-primary"></i> ตารางที่ 1: การวัดและประเมินผลการเรียนรู้
+                </h3>
+                <p class="text-xs text-slate-500">ตรวจสอบและปรับแต่งชั่วโมงหรือคะแนน K, P, A ได้ตามต้องการ</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="text-right">
+                  <span class="text-xs text-slate-400 font-medium">สัดส่วน K : P : A</span>
+                  <div id="labelKPARatio" class="text-sm font-black text-indigo-600">67 : 19 : 14</div>
+                </div>
+                <div class="text-right border-l pl-3 border-slate-200">
+                  <span class="text-xs text-slate-400 font-medium">คะแนนรวม</span>
+                  <div id="labelGrandTotal" class="text-sm font-black text-emerald-600">100 คะแนน</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Score Alert Banner (Dynamic) -->
+            <div id="scoreAlertBanner" class="hidden mb-3 p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all">
+              <div class="flex items-center gap-2">
+                <i id="scoreAlertIcon" class="ri-alert-line text-base"></i>
+                <span id="scoreAlertText" class="font-semibold">คะแนนรวมยังไม่ครบ 100 คะแนน</span>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button id="btnAutoSplitOver15" type="button" class="hidden px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                  <i class="ri-split-cells-vertical"></i> แยกแถวคะแนน > 15 ให้อัตโนมัติ
+                </button>
+                <button id="btnAutoBalanceScores" type="button" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-colors flex items-center gap-1 shadow-sm">
+                  <i class="ri-scales-3-line"></i> ปรับเกลี่ยคะแนนให้ครบ 100
+                </button>
+              </div>
+            </div>
+
+            <!-- Table responsive container -->
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 border-y border-slate-200 text-slate-600 font-bold">
+                    <th class="py-2.5 px-2 text-center w-10">หน่วย</th>
+                    <th class="py-2.5 px-3 min-w-[160px]">ชื่อหน่วยการเรียนรู้</th>
+                    <th class="py-2.5 px-2 text-center w-14">เวลา (ชม.)</th>
+                    <th class="py-2.5 px-3 min-w-[210px]">วิธีการวัดและประเมินผล (คลิกเลือกไกด์ไลน์ได้)</th>
+                    <th class="py-2.5 px-2 text-center w-11">K</th>
+                    <th class="py-2.5 px-2 text-center w-11">P</th>
+                    <th class="py-2.5 px-2 text-center w-11">A</th>
+                    <th class="py-2.5 px-2 text-center w-14">รวม</th>
+                  </tr>
+                </thead>
+                <tbody id="matrixTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-3 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-400 gap-2">
+              <span id="sgsLimitNotice">* ทุกช่องคะแนนไม่เกิน 15 คะแนน (สอดคล้องกับข้อจำกัดระบบ SGS)</span>
+              <div class="flex items-center gap-2">
+                <span id="scoreValidationText" class="font-bold text-emerald-600 flex items-center gap-1">
+                  <i class="ri-check-line"></i> คะแนนรวม 100 คะแนนพอดี
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 1 Outcomes Preview -->
+          <div class="glass-card rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2 mb-2">
+              <i class="ri-list-check-2 text-primary"></i> หัวข้อที่ 1: ผลการเรียนรู้ / ตัวชี้วัด (ตามหลักสูตร)
+            </h3>
+            <div id="outcomesContainer" class="bg-slate-50 rounded-xl p-3.5 border border-slate-100 text-xs text-slate-600 space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar font-sarabun">
+              <!-- Dynamically populated outcomes -->
+            </div>
+          </div>
+
+          <!-- Action Floating Bar / Export Button -->
+          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="text-sm font-bold text-slate-900">พร้อมจัดทำเอกสารแผนวัดผล วผ.19</div>
+              <div class="text-xs text-slate-500">ฟอร์แมต A4 มาตรฐาน • ฝังคำสั่งลบเส้นแดงขีดใต้ • จัดหน้าสวยงาม 100%</div>
+            </div>
+            <button id="btnGenerateDocx" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-primary to-indigo-600 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2 text-sm">
+              <i class="ri-download-cloud-2-line text-lg"></i>
+              <span>ดาวน์โหลดเอกสาร วผ.19 (.docx)</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Empty State Prompt -->
+    <div id="emptyState" class="glass-card rounded-2xl p-12 text-center max-w-lg mx-auto my-12">
+      <div class="w-16 h-16 bg-indigo-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+        <i class="ri-book-read-line"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">ยังไม่ได้เลือกรายวิชา</h3>
+      <p class="text-sm text-slate-500">พิมพ์ค้นหารหัสวิชา (เช่น ส33205, ท21102) ในช่องค้นหาด้านบน เพื่อเริ่มต้นจัดทำแผนวัดผล</p>
+    </div>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 text-sm">
+      <i id="toastIcon" class="ri-checkbox-circle-fill text-emerald-400 text-lg"></i>
+      <span id="toastMsg" class="font-medium">ข้อความแจ้งเตือน</span>
+    </div>
+  </div>
+
+  <!-- Offline Data Fallbacks (allows opening directly via double-click without web server) -->
+  <script src="data/courses_2_2569.js"></script>
+  <script src="templates/template_base64.js"></script>
+  <script src="js/generator.js"></script>
+
+  <!-- Main Application Logic & Docx Generator -->
+  <script>
+    let allCourses = {};
+    let currentCourse = null;
+
+    // Load compiled courses data
+    async function loadData() {
+      if (window.COURSES_DATA) {
+        allCourses = window.COURSES_DATA;
+        console.log(`Loaded ${Object.keys(allCourses).length} courses from offline bundle.`);
+        return;
+      }
+      try {
+        const res = await fetch('data/courses_2_2569.json');
+        allCourses = await res.json();
+        console.log(`Loaded ${Object.keys(allCourses).length} courses successfully.`);
+      } catch (err) {
+        console.error("Failed to load courses data:", err);
+        showToast("ไม่สามารถโหลดฐานข้อมูลรายวิชาได้", "error");
+      }
+    }
+
+    // Thai Date Formatter Helper
+    function formatThaiDate(dateStr, weekNum) {
+      if (!dateStr) return "";
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      const y = parseInt(parts[0]);
+      const m = parseInt(parts[1]);
+      const d = parseInt(parts[2]);
+      const thMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+      const month = thMonths[m - 1] || "";
+      const yearBE = y + 543;
+      const shortYear = String(yearBE).slice(-2);
+      const weekText = weekNum ? ` (สัปดาห์ที่ ${weekNum})` : "";
+      return `${d} ${month} ${shortYear}${weekText}`;
+    }
+
+    // Initialize UI
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadData();
+      setupSearch();
+      setupFilterDropdowns();
+      setupCutoffSelector();
+      setupDatePickers();
+      setupExamDurationListeners();
+      setupTeacherManagement();
+      setupGenerator();
+
+      // Check if URL has ?code=
+      const urlParams = new URLSearchParams(window.location.search);
+      const codeParam = urlParams.get('code');
+      if (codeParam && allCourses[codeParam]) {
+        selectCourse(codeParam);
+      }
+    });
+
+    // Calendar Pickers Listener (Assign and Due Dates for Key Tasks)
+    function setupDatePickers() {
+      const dp1Assign = document.getElementById('datePickerTask1Assign');
+      const in1Assign = document.getElementById('inputTask1Assign');
+      if (dp1Assign) {
+        dp1Assign.addEventListener('change', (e) => {
+          if (e.target.value) {
+            in1Assign.value = formatThaiDate(e.target.value, 6);
+          }
+        });
+      }
+
+      const dp1Due = document.getElementById('datePickerTask1Due');
+      const in1Due = document.getElementById('inputTask1Due');
+      if (dp1Due) {
+        dp1Due.addEventListener('change', (e) => {
+          if (e.target.value) {
+            in1Due.value = formatThaiDate(e.target.value, 8);
+          }
+        });
+      }
+
+      const dp2Assign = document.getElementById('datePickerTask2Assign');
+      const in2Assign = document.getElementById('inputTask2Assign');
+      if (dp2Assign) {
+        dp2Assign.addEventListener('change', (e) => {
+          if (e.target.value) {
+            in2Assign.value = formatThaiDate(e.target.value, 14);
+          }
+        });
+      }
+
+      const dp2Due = document.getElementById('datePickerTask2Due');
+      const in2Due = document.getElementById('inputTask2Due');
+      if (dp2Due) {
+        dp2Due.addEventListener('change', (e) => {
+          if (e.target.value) {
+            in2Due.value = formatThaiDate(e.target.value, 16);
+          }
+        });
+      }
+    }
+
+    function isBasicCourse(course) {
+      if (!course) return false;
+      if (course._userToggledBasic !== undefined) return course._userToggledBasic;
+      const m = (course.course_code || '').match(/^[ก-ฮA-Za-z]+\d\d([12])\d{2}/);
+      if (m) return m[1] === '1';
+      return course.is_basic === true;
+    }
+
+    function toggleCourseType() {
+      if (!currentCourse) return;
+      const current = isBasicCourse(currentCourse);
+      currentCourse._userToggledBasic = !current;
+      currentCourse.is_basic = !current;
+      updateBadgeType();
+      updateOutcomesPreview();
+      renderMatrixTable();
+      const typeStr = currentCourse.is_basic ? "วิชาพื้นฐาน" : "วิชาเพิ่มเติม";
+      showToast(`เปลี่ยนประเภทเป็น: ${typeStr}`, "info");
+    }
+
+    function updateBadgeType() {
+      if (!currentCourse) return;
+      const isBasic = isBasicCourse(currentCourse);
+      const badge = document.getElementById('badgeType');
+      const badgeText = document.getElementById('badgeTypeText');
+      if (badge && badgeText) {
+        if (isBasic) {
+          badge.className = "bg-emerald-400/90 hover:bg-emerald-400 text-emerald-950 text-xs font-bold px-2.5 py-0.5 rounded-md transition-all flex items-center gap-1 cursor-pointer shadow-sm";
+          badgeText.textContent = "วิชาพื้นฐาน";
+        } else {
+          badge.className = "bg-amber-400/90 hover:bg-amber-400 text-amber-950 text-xs font-bold px-2.5 py-0.5 rounded-md transition-all flex items-center gap-1 cursor-pointer shadow-sm";
+          badgeText.textContent = "วิชาเพิ่มเติม";
+        }
+      }
+    }
+
+    function setExamDuration(type, mins) {
+      const el = document.getElementById(type === 'mid' ? 'inputMidExamDuration' : 'inputFinExamDuration');
+      if (el) {
+        el.value = mins;
+        if (currentCourse) renderMatrixTable();
+        showToast(`เปลี่ยนเวลาสอบ${type === 'mid' ? 'กลางภาค' : 'ปลายภาค'}เป็น: ${mins} นาที`, "success");
+      }
+    }
+
+    function setupExamDurationListeners() {
+      const midIn = document.getElementById('inputMidExamDuration');
+      const finIn = document.getElementById('inputFinExamDuration');
+      if (midIn) {
+        midIn.addEventListener('input', () => {
+          if (currentCourse) renderMatrixTable();
+        });
+        midIn.addEventListener('change', () => {
+          if (currentCourse) renderMatrixTable();
+          showToast(`เปลี่ยนเวลาสอบกลางภาคเป็น: ${midIn.value} นาที`, "success");
+        });
+      }
+      if (finIn) {
+        finIn.addEventListener('input', () => {
+          if (currentCourse) renderMatrixTable();
+        });
+        finIn.addEventListener('change', () => {
+          if (currentCourse) renderMatrixTable();
+          showToast(`เปลี่ยนเวลาสอบปลายภาคเป็น: ${finIn.value} นาที`, "success");
+        });
+      }
+    }
+
+    // Teacher Management (Tags, Add, Edit & Remove)
+    let editingTeacherIdx = null;
+    function isPlaceholderTeacher(name) {
+      return !name || /^[.\s…\-_]+$/.test(String(name).trim());
+    }
+
+    function formatTeachersDisplay(list) {
+      const valid = (list || []).map(t => String(t || "").trim()).filter(t => !isPlaceholderTeacher(t));
+      if (valid.length === 0) return '.....................................................';
+      if (valid.length === 1) return valid[0];
+      if (valid.length === 2) return `${valid[0]} และ${valid[1]}`;
+      return `${valid.slice(0, -1).join(' ')} และ${valid[valid.length - 1]}`;
+    }
+
+    function renderTeacherTags() {
+      const cont = document.getElementById('teachersTagContainer');
+      cont.innerHTML = '';
+      if (!currentCourse.teachers || currentCourse.teachers.length === 0) {
+        currentCourse.teachers = ['.....................................................'];
+      }
+      currentCourse.teachers.forEach((t, idx) => {
+        const isPlaceholder = isPlaceholderTeacher(t);
+        const tag = document.createElement('span');
+        tag.className = isPlaceholder
+          ? 'inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/25 border border-amber-300/40 text-amber-100 rounded-lg text-xs font-semibold cursor-pointer hover:bg-amber-500/35 transition-colors'
+          : 'inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/20 text-white rounded-lg text-xs font-semibold backdrop-blur-sm';
+        if (isPlaceholder) {
+          tag.title = 'คลิกเพื่อระบุชื่อครูผู้สอน';
+          tag.onclick = () => editTeacher(idx);
+          tag.innerHTML = `
+            <i class="ri-user-add-line text-[11px]"></i>
+            <span>ยังไม่ระบุครูผู้สอน (คลิกเพื่อเพิ่ม)</span>
+          `;
+        } else {
+          tag.innerHTML = `
+            <i class="ri-user-line text-[11px] opacity-75"></i>
+            <span class="cursor-pointer hover:underline" title="คลิกเพื่อแก้ไขชื่อครู" onclick="editTeacher(${idx})">${escapeHtml(t)}</span>
+            <button type="button" class="hover:text-rose-300 text-white/70 ml-0.5" title="ลบรายชื่อนี้" onclick="removeTeacher(${idx})"><i class="ri-close-line"></i></button>
+          `;
+        }
+        cont.appendChild(tag);
+      });
+      document.getElementById('sigTeacherName').textContent = formatTeachersDisplay(currentCourse.teachers);
+    }
+
+    function editTeacher(idx) {
+      if (!currentCourse) return;
+      const box = document.getElementById('addTeacherBox');
+      const input = document.getElementById('inputNewTeacher');
+      const curVal = currentCourse.teachers[idx] || '';
+      editingTeacherIdx = idx;
+      input.value = isPlaceholderTeacher(curVal) ? '' : curVal;
+      box.classList.remove('hidden');
+      input.focus();
+      input.select();
+    }
+
+    function removeTeacher(idx) {
+      if (!currentCourse) return;
+      const removed = currentCourse.teachers.splice(idx, 1);
+      if (currentCourse.teachers.length === 0) {
+        currentCourse.teachers = ['.....................................................'];
+      }
+      renderTeacherTags();
+      showToast(`ลบ ${removed[0]} แล้ว`, "info");
+    }
+
+    function setupTeacherManagement() {
+      const box = document.getElementById('addTeacherBox');
+      const openBtn = document.getElementById('btnOpenAddTeacher');
+      const confirmBtn = document.getElementById('btnConfirmAddTeacher');
+      const cancelBtn = document.getElementById('btnCancelAddTeacher');
+      const input = document.getElementById('inputNewTeacher');
+      const datalist = document.getElementById('allTeachersDatalist');
+
+      // Populate autocomplete datalist from all school teachers in COURSES_DB
+      if (datalist && typeof COURSES_DB !== 'undefined') {
+        const teacherSet = new Set();
+        Object.values(COURSES_DB).forEach(list => {
+          (list || []).forEach(c => {
+            (c.teachers || []).forEach(t => {
+              const clean = String(t || '').trim();
+              if (clean && !isPlaceholderTeacher(clean)) teacherSet.add(clean);
+            });
+          });
+        });
+        datalist.innerHTML = Array.from(teacherSet)
+          .sort((a, b) => a.localeCompare(b, 'th'))
+          .map(t => `<option value="${escapeHtml(t)}"></option>`)
+          .join('');
+      }
+
+      openBtn.onclick = () => {
+        editingTeacherIdx = null;
+        input.value = '';
+        box.classList.remove('hidden');
+        input.focus();
+      };
+      cancelBtn.onclick = () => {
+        editingTeacherIdx = null;
+        box.classList.add('hidden');
+        input.value = '';
+      };
+      confirmBtn.onclick = () => {
+        const val = input.value.trim();
+        if (val && !isPlaceholderTeacher(val)) {
+          if (editingTeacherIdx !== null && editingTeacherIdx >= 0 && editingTeacherIdx < currentCourse.teachers.length) {
+            currentCourse.teachers[editingTeacherIdx] = val;
+            showToast(`อัปเดตครูผู้สอนเป็น ${val} เรียบร้อยแล้ว`, "success");
+          } else {
+            // Remove any placeholder dots before adding real teacher
+            currentCourse.teachers = (currentCourse.teachers || []).filter(t => !isPlaceholderTeacher(t));
+            if (!currentCourse.teachers.includes(val)) {
+              currentCourse.teachers.push(val);
+            }
+            showToast(`เพิ่ม ${val} เรียบร้อยแล้ว`, "success");
+          }
+          editingTeacherIdx = null;
+          renderTeacherTags();
+          input.value = '';
+          box.classList.add('hidden');
+        }
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          confirmBtn.click();
+        } else if (e.key === 'Escape') {
+          cancelBtn.click();
+        }
+      };
+    }
+
+    // Toast utility
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      toastMsg.textContent = msg;
+      if (type === "success") {
+        toastIcon.className = "ri-checkbox-circle-fill text-emerald-400 text-lg";
+      } else if (type === "info") {
+        toastIcon.className = "ri-information-fill text-sky-400 text-lg";
+      } else {
+        toastIcon.className = "ri-error-warning-fill text-rose-400 text-lg";
+      }
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    // Filter Dropdowns Setup (Learning Area, Cascading Teacher, and Visual Cards Grid)
+    function setupFilterDropdowns() {
+      const areaSelect = document.getElementById('filterAreaSelect');
+      const teacherSelect = document.getElementById('filterTeacherSelect');
+      const courseSelect = document.getElementById('filteredCourseSelect');
+      const resetBtn = document.getElementById('btnResetFilters');
+
+      // Populate unique learning areas
+      const areas = [
+        'ภาษาไทย',
+        'คณิตศาสตร์',
+        'วิทยาศาสตร์และเทคโนโลยี',
+        'สังคมศึกษา ศาสนา และวัฒนธรรม',
+        'สุขศึกษาและพลศึกษา',
+        'ศิลปะ',
+        'การงานอาชีพ',
+        'ภาษาต่างประเทศ',
+        'กิจกรรมพัฒนาผู้เรียน',
+        'การสื่อสารและการนำเสนอ (IS)'
+      ];
+      areas.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a;
+        opt.textContent = a;
+        areaSelect.appendChild(opt);
+      });
+
+      // Helper to populate teacher dropdown based on selected learning area
+      function populateTeacherDropdown(selectedArea = '') {
+        const currentTeacherVal = teacherSelect.value;
+        teacherSelect.innerHTML = '<option value="">-- คุณครูทุกคน (ทั้งหมด) --</option>';
+
+        const teacherSet = new Set();
+        Object.values(allCourses).forEach(c => {
+          if (!selectedArea || c.learning_area === selectedArea) {
+            if (c.teachers && Array.isArray(c.teachers)) {
+              c.teachers.forEach(t => {
+                const cleanT = t.trim();
+                if (cleanT && !cleanT.includes('...')) {
+                  teacherSet.add(cleanT);
+                }
+              });
+            }
+          }
+        });
+
+        const sortedTeachers = Array.from(teacherSet).sort((a, b) => a.localeCompare(b, 'th'));
+        sortedTeachers.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t;
+          opt.textContent = t;
+          teacherSelect.appendChild(opt);
+        });
+
+        // Retain previous value if still valid, otherwise reset
+        if (teacherSet.has(currentTeacherVal)) {
+          teacherSelect.value = currentTeacherVal;
+        } else {
+          teacherSelect.value = '';
+        }
+      }
+
+      // Initial populate teachers
+      populateTeacherDropdown('');
+
+      // Event listeners
+      areaSelect.addEventListener('change', () => {
+        populateTeacherDropdown(areaSelect.value);
+        updateFilteredCourses();
+      });
+
+      teacherSelect.addEventListener('change', () => {
+        // If teacher selected but no area selected, auto-select teacher's area
+        if (teacherSelect.value && !areaSelect.value) {
+          const tName = teacherSelect.value;
+          const found = Object.values(allCourses).find(c => c.teachers && c.teachers.includes(tName));
+          if (found && found.learning_area) {
+            areaSelect.value = found.learning_area;
+            populateTeacherDropdown(found.learning_area);
+            teacherSelect.value = tName;
+          }
+        }
+        updateFilteredCourses();
+      });
+
+      courseSelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+          selectCourse(e.target.value);
+        }
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          areaSelect.value = '';
+          populateTeacherDropdown('');
+          teacherSelect.value = '';
+          const searchInput = document.getElementById('courseSearchInput');
+          if (searchInput) searchInput.value = '';
+          const clearBtn = document.getElementById('clearSearchBtn');
+          if (clearBtn) clearBtn.classList.add('hidden');
+          updateFilteredCourses();
+          showToast("ล้างตัวกรองทั้งหมดแล้ว", "success");
+        });
+      }
+
+      // Initial populate
+      updateFilteredCourses();
+    }
+
+    function updateFilteredCourses() {
+      const area = document.getElementById('filterAreaSelect').value;
+      const teacher = document.getElementById('filterTeacherSelect').value;
+      const searchInput = document.getElementById('courseSearchInput');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const courseSelect = document.getElementById('filteredCourseSelect');
+      const badge = document.getElementById('filteredCountBadge');
+
+      let list = Object.values(allCourses);
+      if (area) {
+        list = list.filter(c => c.learning_area === area);
+      }
+      if (teacher) {
+        list = list.filter(c => c.teachers && c.teachers.includes(teacher));
+      }
+      if (q) {
+        list = list.filter(c => 
+          c.course_code.toLowerCase().includes(q) ||
+          c.course_name.toLowerCase().includes(q) ||
+          (c.teachers && c.teachers.some(t => t.toLowerCase().includes(q)))
+        );
+      }
+
+      // Sort: Term 2 first, then by course code
+      list.sort((a, b) => {
+        if (a.is_scheduled_term2 && !b.is_scheduled_term2) return -1;
+        if (!a.is_scheduled_term2 && b.is_scheduled_term2) return 1;
+        return a.course_code.localeCompare(b.course_code, 'th');
+      });
+
+      badge.textContent = `${list.length} รายวิชา`;
+      courseSelect.innerHTML = `<option value="">-- คลิกเลือกรหัสวิชา (${list.length} รายการ) --</option>`;
+
+      list.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.course_code;
+        const term2Mark = c.is_scheduled_term2 ? ' [เปิดสอน 2/69]' : '';
+        opt.textContent = `${c.course_code} - ${c.course_name} (${c.grade_level}${term2Mark})`;
+        courseSelect.appendChild(opt);
+      });
+
+      if (currentCourse && allCourses[currentCourse.course_code]) {
+        courseSelect.value = currentCourse.course_code;
+      }
+
+      renderFilteredCoursesGrid(list);
+    }
+
+    function renderFilteredCoursesGrid(list) {
+      const grid = document.getElementById('filteredCoursesGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-8 text-center text-slate-400 text-xs">
+            <i class="ri-search-line text-2xl mb-1 block opacity-50"></i>
+            ไม่พบรายวิชาที่ตรงกับตัวกรอง ลองเปลี่ยนกลุ่มสาระ หรือคลิก "ล้างตัวกรองทั้งหมด"
+          </div>
+        `;
+        return;
+      }
+
+      // Display up to 36 cards to keep UI fast & lightweight
+      const displayList = list.slice(0, 36);
+      const activeCode = currentCourse ? currentCourse.course_code : '';
+
+      displayList.forEach(c => {
+        const isSelected = (c.course_code === activeCode);
+        const card = document.createElement('div');
+        const activeClass = isSelected
+          ? 'ring-2 ring-primary border-primary bg-indigo-50/50 shadow-sm'
+          : 'border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md';
+
+        card.className = `p-3 rounded-xl border cursor-pointer transition-all flex flex-col justify-between gap-2 text-left group ${activeClass}`;
+
+        const teacherDisplay = (c.teachers && c.teachers.length > 0 && !c.teachers[0].includes('...'))
+          ? c.teachers.join(', ')
+          : 'ครูผู้สอนตามกลุ่มสาระ';
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="font-extrabold text-xs text-primary group-hover:text-indigo-700 transition-colors">${c.course_code}</span>
+              ${c.is_scheduled_term2 
+                ? '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/50">เปิดสอน 2/69</span>' 
+                : `<span class="text-[10px] text-slate-400 font-medium">${c.grade_level}</span>`}
+            </div>
+            <div class="font-bold text-xs text-slate-800 line-clamp-1 group-hover:text-primary transition-colors">${escapeHtml(c.course_name)}</div>
+            <div class="text-[11px] text-slate-500 mt-0.5 line-clamp-1">${escapeHtml(c.learning_area)}</div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1.5 border-t border-slate-100">
+            <span>${c.total_hours} คาบ (${c.credits.toFixed(1)} นก.)</span>
+            <span class="text-slate-600 font-medium truncate max-w-[120px]" title="${escapeHtml(teacherDisplay)}">${escapeHtml(teacherDisplay)}</span>
+          </div>
+        `;
+
+        card.onclick = () => {
+          selectCourse(c.course_code);
+          const container = document.getElementById('courseContainer');
+          if (container) {
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        };
+
+        grid.appendChild(card);
+      });
+
+      if (list.length > 36) {
+        const moreInfo = document.createElement('div');
+        moreInfo.className = 'col-span-full py-2 text-center text-xs text-slate-400';
+        moreInfo.textContent = `... และอีก ${list.length - 36} รายวิชา (สามารถเลือกรหัสผ่านดรอปดาวน์ด้านบน หรือพิมพ์ค้นหา)`;
+        grid.appendChild(moreInfo);
+      }
+    }
+
+    // Optimal Cutoff Calculator for 50:50 hour distribution
+    function getOptimalCutoff(units, targetPreHours) {
+      if (!units || units.length <= 1) return 1;
+      const N = units.length;
+      let bestCutoff = 1;
+      let minDiff = Infinity;
+
+      const totalSum = units.reduce((s, u) => s + (u.hours || 0), 0);
+      const target = (targetPreHours && targetPreHours > 0) ? targetPreHours : Math.round(totalSum / 2);
+
+      let accHours = 0;
+      for (let k = 1; k < N; k++) {
+        accHours += (units[k - 1].hours || 0);
+        const diff = Math.abs(accHours - target);
+        if (diff < minDiff) {
+          minDiff = diff;
+          bestCutoff = k;
+        } else if (diff === minDiff) {
+          // Tie-breaker: choose split closest to half
+          const half = N / 2;
+          if (Math.abs(k - half) < Math.abs(bestCutoff - half)) {
+            bestCutoff = k;
+          }
+        }
+      }
+      return bestCutoff;
+    }
+    window.getOptimalCutoff = getOptimalCutoff;
+
+    // Midterm Cutoff Selector Setup
+    function setupCutoffSelector() {
+      const select = document.getElementById('selectMidtermCutoff');
+      select.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value);
+        if (val && currentCourse) {
+          currentCourse.midterm_cutoff = val;
+          initExamScores();
+          renderMatrixTable();
+          updateHourValidation();
+          const N = currentCourse.units.length;
+          document.getElementById('badgeCutoffRatio').textContent = `แบ่ง ${val} : ${N - val} หน่วย`;
+          showToast(`เปลี่ยนจุดตัดสอบกลางภาคเป็น: จบหน่วยที่ ${val}`, "success");
+        }
+      });
+    }
+
+    function updateCutoffSelector() {
+      const select = document.getElementById('selectMidtermCutoff');
+      const badge = document.getElementById('badgeCutoffRatio');
+      select.innerHTML = '';
+
+      if (!currentCourse || !currentCourse.units || currentCourse.units.length <= 1) {
+        select.innerHTML = '<option value="1">หน่วยที่ 1 (วิชานี้มีหน่วยเดียว)</option>';
+        badge.textContent = '1 หน่วย';
+        return;
+      }
+
+      const N = currentCourse.units.length;
+      const target = currentCourse.target_pre_hours;
+      const optimal = getOptimalCutoff(currentCourse.units, target);
+      if (!currentCourse.midterm_cutoff || currentCourse.midterm_cutoff >= N) {
+        currentCourse.midterm_cutoff = optimal;
+      }
+      const curCutoff = currentCourse.midterm_cutoff;
+
+      badge.textContent = `แบ่ง ${curCutoff} : ${N - curCutoff} หน่วย`;
+
+      for (let k = 1; k < N; k++) {
+        const preH = currentCourse.units.slice(0, k).reduce((s, u) => s + (u.hours || 0), 0);
+        const postH = currentCourse.units.slice(k).reduce((s, u) => s + (u.hours || 0), 0);
+        const isExact5050 = (preH === target && postH === target);
+        const isOpt = (k === optimal);
+
+        let tag = '';
+        if (isExact5050) {
+          tag = ' ✨ [ตรงเกณฑ์ 50:50 พอดี]';
+        } else if (isOpt) {
+          tag = ' ✨ [แนะนำ ใกล้ 50:50 ที่สุด]';
+        }
+
+        const opt = document.createElement('option');
+        opt.value = k;
+        opt.textContent = `จบหน่วยที่ ${k}: ${currentCourse.units[k - 1].unit_name} (ก่อน ${preH} ชม. / หลัง ${postH} ชม.)${tag}`;
+        if (k === curCutoff) opt.selected = true;
+        select.appendChild(opt);
+      }
+    }
+
+    // Search logic
+    function setupSearch() {
+      const input = document.getElementById('courseSearchInput');
+      const dropdown = document.getElementById('searchResultsDropdown');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      input.addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        updateFilteredCourses(); // Instantly filter visual grid as user types
+        if (q.length > 0) {
+          clearBtn.classList.remove('hidden');
+          const matches = Object.values(allCourses).filter(c => 
+            c.course_code.toLowerCase().includes(q) ||
+            c.course_name.toLowerCase().includes(q) ||
+            c.teachers.some(t => t.toLowerCase().includes(q))
+          ).slice(0, 15);
+          renderDropdown(matches);
+        } else {
+          clearBtn.classList.add('hidden');
+          dropdown.classList.add('hidden');
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        dropdown.classList.add('hidden');
+        updateFilteredCourses();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.add('hidden');
+        }
+      });
+    }
+
+    function renderDropdown(matches) {
+      const dropdown = document.getElementById('searchResultsDropdown');
+      dropdown.innerHTML = '';
+      if (matches.length === 0) {
+        dropdown.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">ไม่พบรายวิชาที่ตรงกับการค้นหา</div>';
+        dropdown.classList.remove('hidden');
+        return;
+      }
+
+      matches.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'p-3 hover:bg-slate-50 cursor-pointer border-b border-slate-100 last:border-none flex items-center justify-between transition-colors';
+        item.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-xs text-primary">${c.course_code}</span>
+              <span class="font-semibold text-xs text-slate-800">${escapeHtml(c.course_name)}</span>
+            </div>
+            <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(c.learning_area)} • ครู: ${escapeHtml(c.teachers.join(', '))}</div>
+          </div>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded ${c.is_scheduled_term2 ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}">
+            ${c.is_scheduled_term2 ? 'เปิดสอน 2/69' : c.grade_level}
+          </span>
+        `;
+        item.addEventListener('click', () => {
+          selectCourse(c.course_code);
+          dropdown.classList.add('hidden');
+        });
+        dropdown.appendChild(item);
+      });
+      dropdown.classList.remove('hidden');
+    }
+
+    // Initialize exam scores evenly across units in each exam cycle
+    function initExamScores() {
+      if (!currentCourse || !currentCourse.units) return;
+      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const preUnits = currentCourse.units.slice(0, cutoff);
+      const postUnits = currentCourse.units.slice(cutoff);
+
+      if (!currentCourse.midExamScores || currentCourse.midExamScores.length !== preUnits.length) {
+        const per = Math.floor(15 / preUnits.length);
+        const rem = 15 - (per * preUnits.length);
+        currentCourse.midExamScores = preUnits.map((_, i) => per + (i < rem ? 1 : 0));
+      }
+
+      if (!currentCourse.finExamScores || currentCourse.finExamScores.length !== postUnits.length) {
+        if (postUnits.length > 0) {
+          const per = Math.floor(15 / postUnits.length);
+          const rem = 15 - (per * postUnits.length);
+          currentCourse.finExamScores = postUnits.map((_, i) => per + (i < rem ? 1 : 0));
+        } else {
+          currentCourse.finExamScores = [];
+        }
+      }
+    }
+
+    function formatExamDurationHour(mins) {
+      mins = parseInt(mins) || 60;
+      if (mins === 60) return "1 ชั่วโมง";
+      if (mins === 120) return "2 ชั่วโมง";
+      if (mins === 90) return "1.5 ชั่วโมง";
+      return `${mins} นาที`;
+    }
+
+    // Initialize sub-assessments per unit to support SGS ≤ 15 points constraint
+    function syncUnitScores(u) {
+      if (!u.assessments || u.assessments.length === 0) return;
+      u.score_k = u.assessments.reduce((s, a) => s + (parseInt(a.score_k) || 0), 0);
+      u.score_p = u.assessments.reduce((s, a) => s + (parseInt(a.score_p) || 0), 0);
+      u.score_a = u.assessments.reduce((s, a) => s + (parseInt(a.score_a) || 0), 0);
+      u.score_total = u.score_k + u.score_p + u.score_a;
+      u.evaluation_methods = u.assessments.map(a => a.eval_methods).join('\n---\n');
+    }
+
+    function initUnitAssessments() {
+      if (!currentCourse || !currentCourse.units) return;
+      currentCourse.units.forEach(u => {
+        if (!u.assessments || !Array.isArray(u.assessments) || u.assessments.length === 0) {
+          // If unit total score > 15, automatically split into multiple assessment rows so each is ≤ 15
+          if (u.score_total > 15) {
+            const numRows = Math.ceil(u.score_total / 15);
+            const targetPerRow = Math.floor(u.score_total / numRows);
+            const rem = u.score_total - (targetPerRow * numRows);
+            
+            u.assessments = [];
+            for (let r = 0; r < numRows; r++) {
+              const rowTarget = targetPerRow + (r < rem ? 1 : 0);
+              const k = Math.min(15, Math.max(1, Math.round(rowTarget * 0.55)));
+              const p = Math.min(15, Math.max(1, Math.round(rowTarget * 0.30)));
+              const a = Math.max(0, rowTarget - k - p);
+              
+              const defaultEval = (r === 0)
+                ? "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม"
+                : "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน/ภาระงาน";
+
+              u.assessments.push({
+                eval_methods: defaultEval,
+                score_k: k,
+                score_p: p,
+                score_a: a,
+                score_total: k + p + a
+              });
+            }
+          } else {
+            u.assessments = [
+              {
+                eval_methods: u.evaluation_methods || "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+                score_k: u.score_k || 0,
+                score_p: u.score_p || 0,
+                score_a: u.score_a || 0,
+                score_total: u.score_total || ((u.score_k || 0) + (u.score_p || 0) + (u.score_a || 0))
+              }
+            ];
+          }
+        }
+        syncUnitScores(u);
+      });
+    }
+
+    function splitUnitAssessment(uIdx) {
+      const u = currentCourse.units[uIdx];
+      if (!u) return;
+      const curTot = u.score_total || 20;
+      const half = Math.ceil(curTot / 2);
+      const rem = curTot - half;
+
+      const k1 = Math.min(15, Math.ceil((u.score_k || 0) / 2));
+      const k2 = Math.min(15, (u.score_k || 0) - k1);
+      const p1 = Math.min(15, Math.ceil((u.score_p || 0) / 2));
+      const p2 = Math.min(15, (u.score_p || 0) - p1);
+      const a1 = Math.max(0, half - k1 - p1);
+      const a2 = Math.max(0, rem - k2 - p2);
+
+      u.assessments = [
+        {
+          eval_methods: "- การสังเกตพฤติกรรม\n- การประเมินเอกสารประกอบการเรียนรู้",
+          score_k: k1,
+          score_p: p1,
+          score_a: a1,
+          score_total: k1 + p1 + a1
+        },
+        {
+          eval_methods: "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
+          score_k: k2,
+          score_p: p2,
+          score_a: a2,
+          score_total: k2 + p2 + a2
+        }
+      ];
+      syncUnitScores(u);
+      renderMatrixTable();
+      updateHourValidation();
+      showToast(`แยกแถวประเมินในหน่วยที่ ${u.unit_no} เป็น 2 แถวเรียบร้อยแล้ว`, "success");
+    }
+
+    function addAssessmentRow(uIdx) {
+      const u = currentCourse.units[uIdx];
+      if (!u) return;
+      if (!u.assessments) u.assessments = [];
+      u.assessments.push({
+        eval_methods: "- การทดสอบระหว่างเรียน / ชิ้นงานเพิ่มเติม",
+        score_k: 0,
+        score_p: 0,
+        score_a: 0,
+        score_total: 0
+      });
+      syncUnitScores(u);
+      renderMatrixTable();
+      updateHourValidation();
+      showToast(`เพิ่มแถวประเมินในหน่วยที่ ${u.unit_no} เรียบร้อยแล้ว`, "success");
+    }
+
+    function removeAssessmentRow(uIdx, aIdx) {
+      const u = currentCourse.units[uIdx];
+      if (!u || !u.assessments || u.assessments.length <= 1) return;
+      u.assessments.splice(aIdx, 1);
+      syncUnitScores(u);
+      renderMatrixTable();
+      updateHourValidation();
+      showToast(`ลบแถวประเมินแล้ว`, "success");
+    }
+
+    function updateAssessmentScore(uIdx, aIdx, field, val) {
+      const u = currentCourse.units[uIdx];
+      if (!u || !u.assessments || !u.assessments[aIdx]) return;
+      const num = parseInt(val) || 0;
+      u.assessments[aIdx][field] = num;
+      u.assessments[aIdx].score_total = (parseInt(u.assessments[aIdx].score_k) || 0) + (parseInt(u.assessments[aIdx].score_p) || 0) + (parseInt(u.assessments[aIdx].score_a) || 0);
+      syncUnitScores(u);
+      renderMatrixTable();
+      updateHourValidation();
+    }
+
+    function updateAssessmentEval(uIdx, aIdx, val) {
+      const u = currentCourse.units[uIdx];
+      if (!u || !u.assessments || !u.assessments[aIdx]) return;
+      u.assessments[aIdx].eval_methods = val;
+      syncUnitScores(u);
+    }
+
+    function appendAssessmentEvalMethod(uIdx, aIdx, methodText) {
+      const u = currentCourse.units[uIdx];
+      if (!u || !u.assessments || !u.assessments[aIdx]) return;
+      const a = u.assessments[aIdx];
+      let cur = (a.eval_methods || '').trim();
+      const line = `- ${methodText}`;
+      if (cur.includes(methodText)) {
+        const lines = cur.split('\n').filter(l => !l.includes(methodText));
+        a.eval_methods = lines.join('\n');
+      } else {
+        a.eval_methods = cur ? `${cur}\n${line}` : line;
+      }
+      syncUnitScores(u);
+      renderMatrixTable();
+    }
+
+    // Select course & populate data
+    function selectCourse(code) {
+      const c = allCourses[code];
+      if (!c) return;
+      currentCourse = JSON.parse(JSON.stringify(c)); // deep copy
+      if (typeof ensureCourseUnits === 'function') ensureCourseUnits(currentCourse);
+
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('courseContainer').classList.remove('hidden');
+
+      // Banner Info
+      document.getElementById('badgeCourseCode').textContent = c.course_code;
+      document.getElementById('badgeLearningArea').textContent = c.learning_area;
+      currentCourse.is_basic = isBasicCourse(c);
+      updateBadgeType();
+      document.getElementById('viewCourseName').textContent = c.course_name;
+      document.getElementById('viewCourseMeta').textContent = `ชั้น${c.grade_level} • ภาคเรียนที่ 2/2569 • ${c.total_hours} คาบ (${c.credits.toFixed(1)} หน่วยกิต)`;
+      
+      // Render Teacher Tags
+      renderTeacherTags();
+
+      // Optimal Cutoff & Cutoff selector
+      currentCourse.midterm_cutoff = getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      updateCutoffSelector();
+
+      // Initialize exam scores & sub-assessments
+      initExamScores();
+      initUnitAssessments();
+
+      // Reset Exam Durations to 60 mins default
+      if (document.getElementById('inputMidExamDuration')) {
+        document.getElementById('inputMidExamDuration').value = "60";
+      }
+      if (document.getElementById('inputFinExamDuration')) {
+        document.getElementById('inputFinExamDuration').value = "60";
+      }
+
+      // Smart Defaults for Key Assignment (Assign & Due Dates)
+      const cutoff = currentCourse.midterm_cutoff;
+      const uPre = currentCourse.units[cutoff - 1] || currentCourse.units[0];
+      const defaultTask1Name = uPre ? `ชิ้นงานสรุปองค์ความรู้เรื่อง${uPre.unit_name}` : `ชิ้นงานสำคัญเรื่อง${c.course_name}`;
+      
+      document.getElementById('inputTask1').value = (c.course_code === "ส33205") ? "จำลองการลงทุน" : defaultTask1Name;
+      document.getElementById('inputTask1Assign').value = "1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)";
+      document.getElementById('datePickerTask1Assign').value = "2026-12-01";
+      document.getElementById('inputTask1Due').value = "18 ธ.ค. 69 (สัปดาห์ที่ 8)";
+      document.getElementById('datePickerTask1Due').value = "2026-12-18";
+
+      if (c.course_code === "ส33205") {
+        document.getElementById('inputTask2').value = "วางแผนวิธีการหาเงิน การวางแผนการใช้จ่ายเงิน การออมเงิน และประโยชน์ของการออมเงิน";
+        document.getElementById('inputTask2Assign').value = "25 - 29 ม.ค. 70 (สัปดาห์ที่ 14)";
+        document.getElementById('datePickerTask2Assign').value = "2027-01-25";
+        document.getElementById('inputTask2Due').value = "12 ก.พ. 70 (สัปดาห์ที่ 16)";
+        document.getElementById('datePickerTask2Due').value = "2027-02-12";
+      } else {
+        document.getElementById('inputTask2').value = "";
+        document.getElementById('inputTask2Assign').value = "";
+        document.getElementById('datePickerTask2Assign').value = "";
+        document.getElementById('inputTask2Due').value = "";
+        document.getElementById('datePickerTask2Due').value = "";
+      }
+
+      // Sync filter dropdowns and visual card highlight
+      const courseSelect = document.getElementById('filteredCourseSelect');
+      if (courseSelect && courseSelect.value !== code) {
+        courseSelect.value = code;
+      }
+      updateFilteredCourses();
+
+      // Outcomes Preview
+      updateOutcomesPreview();
+
+      renderMatrixTable();
+      updateHourValidation();
+    }
+
+    function updateOutcomesPreview() {
+      if (!currentCourse) return;
+      const outCont = document.getElementById('outcomesContainer');
+      if (!outCont) return;
+      outCont.innerHTML = '';
+      const isBasic = isBasicCourse(currentCourse);
+      const titleEl = document.querySelector('#outcomesContainer')?.parentElement?.querySelector('h3');
+      if (titleEl) {
+        titleEl.innerHTML = `<i class="ri-list-check-2 text-primary"></i> หัวข้อที่ 1: ${isBasic ? 'มาตรฐานการเรียนรู้ / ตัวชี้วัด (วิชาพื้นฐาน)' : 'ผลการเรียนรู้ (วิชาเพิ่มเติม)'}`;
+      }
+
+      if (isBasic) {
+        const courseStds = (typeof getCourseStandards === 'function') 
+          ? getCourseStandards(currentCourse) 
+          : [];
+        const cleanInds = (typeof getCourseCleanBasicIndicators === 'function') 
+          ? getCourseCleanBasicIndicators(currentCourse) 
+          : [];
+
+        const wrap = document.createElement('div');
+        wrap.className = 'space-y-3 text-xs leading-relaxed font-sarabun text-slate-700';
+
+        // Standards Section
+        if (courseStds.length > 0) {
+          const stdSection = document.createElement('div');
+          stdSection.className = 'space-y-1.5';
+          courseStds.forEach((stdObj, idx) => {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-[70px_1fr] items-start gap-2';
+            if (idx === 0) {
+              row.innerHTML = `<span class="font-bold text-slate-900 shrink-0">มาตรฐาน</span><div><span class="font-bold text-primary mr-1.5">${escapeHtml(stdObj.code)}</span><span>${escapeHtml(stdObj.desc)}</span></div>`;
+            } else {
+              row.innerHTML = `<span></span><div><span class="font-bold text-primary mr-1.5">${escapeHtml(stdObj.code)}</span><span>${escapeHtml(stdObj.desc)}</span></div>`;
+            }
+            stdSection.appendChild(row);
+          });
+          wrap.appendChild(stdSection);
+        }
+
+        // Indicators Section
+        if (cleanInds.length > 0) {
+          const indSection = document.createElement('div');
+          indSection.className = 'space-y-1.5 pt-1 border-t border-slate-200/60';
+          cleanInds.forEach((indText, idx) => {
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-[70px_1fr] items-start gap-2';
+            if (idx === 0) {
+              row.innerHTML = `<span class="font-bold text-slate-900 shrink-0">ตัวชี้วัด</span><div>${escapeHtml(indText)}</div>`;
+            } else {
+              row.innerHTML = `<span></span><div>${escapeHtml(indText)}</div>`;
+            }
+            indSection.appendChild(row);
+          });
+          wrap.appendChild(indSection);
+        }
+
+        outCont.appendChild(wrap);
+      } else {
+        // Elective course: merged items split, renumbered 1., 2., 3., ...; uncovered outcomes flagged
+        const outcomes = splitElectiveOutcomes(currentCourse.indicators);
+        const covered = new Set(currentCourse.units.flatMap((_, i) => getUnitOutcomeNos(currentCourse, i)));
+        const wrap = document.createElement('div');
+        wrap.className = 'space-y-1.5 text-xs text-slate-700 font-sarabun';
+        outcomes.forEach((text, i) => {
+          const n = i + 1;
+          const d = document.createElement('div');
+          d.className = "p-1.5 rounded hover:bg-white transition-colors flex items-start gap-2";
+          const warn = covered.has(n) ? '' :
+            '<span class="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800" title="ยังไม่มีหน่วยใดเลือกผลการเรียนรู้ข้อนี้">ยังไม่ผูกหน่วย</span>';
+          d.innerHTML = `<span class="font-bold text-primary shrink-0">${n}.</span><span class="flex-1">${escapeHtml(text)}</span>${warn}`;
+          wrap.appendChild(d);
+        });
+        outCont.appendChild(wrap);
+      }
+    }
+
+    // Elective: clickable chips to choose which learning outcomes a unit covers
+    function renderOutcomeChips(uIdx) {
+      if (!currentCourse || isBasicCourse(currentCourse)) return '';
+      const N = splitElectiveOutcomes(currentCourse.indicators).length;
+      if (N === 0) return '';
+      const selected = new Set(getUnitOutcomeNos(currentCourse, uIdx));
+      const chips = Array.from({ length: N }, (_, i) => {
+        const n = i + 1;
+        const on = selected.has(n);
+        return `<button type="button" onclick="toggleUnitOutcome(${uIdx}, ${n})" title="ผลการเรียนรู้ข้อ ${n}"
+          class="w-6 h-6 rounded text-[10px] font-bold transition-colors ${on ? 'bg-primary text-white shadow-sm' : 'bg-slate-100 text-slate-400 hover:bg-indigo-100 hover:text-primary'}">${n}</button>`;
+      }).join('');
+      return `<div class="mt-1.5 flex flex-wrap items-center gap-1"><span class="text-[10px] text-slate-500 font-medium mr-0.5">ผลการเรียนรู้ข้อ:</span>${chips}</div>`;
+    }
+
+    function toggleUnitOutcome(uIdx, n) {
+      const u = currentCourse && currentCourse.units[uIdx];
+      if (!u) return;
+      const cur = new Set(getUnitOutcomeNos(currentCourse, uIdx));
+      if (cur.has(n)) {
+        if (cur.size === 1) {
+          showToast("แต่ละหน่วยต้องมีผลการเรียนรู้อย่างน้อย 1 ข้อ", "error");
+          return;
+        }
+        cur.delete(n);
+      } else {
+        cur.add(n);
+      }
+      // Materialize every unit's current mapping so later edits don't shift the defaults
+      currentCourse.units.forEach((uu, i) => {
+        if (!Array.isArray(uu.outcome_nos) || uu.outcome_nos.length === 0) {
+          uu.outcome_nos = getUnitOutcomeNos(currentCourse, i);
+        }
+      });
+      u.outcome_nos = [...cur].sort((a, b) => a - b);
+      renderMatrixTable();
+      updateOutcomesPreview();
+    }
+
+    // Render Matrix Table
+    function renderMatrixTable() {
+      const tbody = document.getElementById('matrixTableBody');
+      tbody.innerHTML = '';
+
+      const N = currentCourse.units.length;
+      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const preUnits = currentCourse.units.slice(0, cutoff);
+      const postUnits = currentCourse.units.slice(cutoff);
+
+      const preRange = (cutoff === 1) ? "หน่วยที่ 1" : `หน่วยที่ 1 - ${cutoff}`;
+      const postRange = (cutoff + 1 === N) ? `หน่วยที่ ${N}` : `หน่วยที่ ${cutoff + 1} - ${N}`;
+
+      const midDur = document.getElementById('inputMidExamDuration')?.value || 60;
+      const midDurText = formatExamDurationHour(midDur);
+      const finDur = document.getElementById('inputFinExamDuration')?.value || 60;
+      const finDurText = formatExamDurationHour(finDur);
+
+      // Section 1: ก่อนกลางภาค
+      appendSectionHeader(tbody, `1. การวัดผลก่อนสอบกลางภาค (${preRange})`, "bg-indigo-50/70 text-indigo-900");
+      preUnits.forEach((u, idx) => appendUnitRows(tbody, u, idx));
+      appendSubtotalRow(tbody, "รวมคะแนนวัดผลก่อนสอบกลางภาค", calculateSubtotal(preUnits));
+
+      // Section 2: กลางภาค
+      appendSectionHeader(tbody, `2. การวัดผลกลางภาค (${midDurText}) [ครอบคลุม ${preRange}]`, "bg-amber-50/70 text-amber-900");
+      preUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'mid', preUnits.length));
+      const midTot = (currentCourse.midExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
+      appendSubtotalRow(tbody, "รวมคะแนนวัดผลกลางภาค", { k: midTot, p: 0, a: 0, tot: midTot });
+
+      // Section 3: หลังกลางภาค
+      if (postUnits.length > 0) {
+        appendSectionHeader(tbody, `3. การวัดผลหลังสอบกลางภาค (${postRange})`, "bg-indigo-50/70 text-indigo-900");
+        postUnits.forEach((u, idx) => appendUnitRows(tbody, u, cutoff + idx));
+        appendSubtotalRow(tbody, "รวมคะแนนวัดผลหลังสอบกลางภาค", calculateSubtotal(postUnits));
+      }
+
+      // Section 4: ปลายภาค
+      appendSectionHeader(tbody, `4. การวัดผลปลายภาค (${finDurText}) [ครอบคลุม ${postRange}]`, "bg-amber-50/70 text-amber-900");
+      postUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'fin', postUnits.length));
+      const finTot = (currentCourse.finExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
+      appendSubtotalRow(tbody, "รวมคะแนนวัดผลปลายภาค", { k: finTot, p: 0, a: 0, tot: finTot });
+
+      // Grand Total
+      appendGrandTotalRow(tbody, calculateGrandTotal(preUnits, postUnits));
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function appendSectionHeader(tbody, text, colorClass) {
+      const tr = document.createElement('tr');
+      tr.className = `${colorClass} font-bold text-xs`;
+      tr.innerHTML = `<td colspan="8" class="py-1.5 px-3">${text}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    function appendUnitRows(tbody, u, uIdx) {
+      if (!u.assessments || !Array.isArray(u.assessments) || u.assessments.length === 0) {
+        initUnitAssessments();
+      }
+
+      u.assessments.forEach((ass, aIdx) => {
+        const tr = document.createElement('tr');
+        tr.className = (aIdx === 0) 
+          ? "hover:bg-slate-50/80 transition-colors border-t border-slate-200/70" 
+          : "bg-slate-50/40 hover:bg-slate-50 transition-colors border-dashed border-t border-slate-200/50";
+
+        if (aIdx === 0) {
+          // Primary row for the unit
+          const canSplitPrompt = (ass.score_total > 15) ? `
+            <button type="button" onclick="splitUnitAssessment(${uIdx})" class="mt-1 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 transition-colors" title="คะแนนรวมเกิน 15 คะแนน แนะนำให้แยกเป็น 2 แถวเพื่อบันทึก SGS ได้">
+              <i class="ri-split-cells-vertical"></i> แยกคะแนน 2 แถว (เกณฑ์ SGS)
+            </button>
+          ` : `
+            <button type="button" onclick="addAssessmentRow(${uIdx})" class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors" title="เพิ่มช่องประเมิน/แถวย่อยในหน่วยเดียวกัน">
+              <i class="ri-add-line"></i> + เพิ่มแถวประเมินในหน่วยนี้
+            </button>
+          `;
+
+          tr.innerHTML = `
+            <td class="py-2.5 px-2 text-center font-bold text-slate-600 align-top pt-3">${u.unit_no}</td>
+            <td class="py-2.5 px-3 align-top">
+              <input type="text" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-primary rounded px-1 font-semibold text-slate-800 text-xs" 
+                value="${escapeHtml(u.unit_name)}" onchange="currentCourse.units[${uIdx}].unit_name=this.value;">
+              <div class="mt-1">${canSplitPrompt}</div>
+              ${renderOutcomeChips(uIdx)}
+            </td>
+            <td class="py-2.5 px-2 text-center align-top pt-2.5">
+              <input type="number" min="1" max="40" class="w-12 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-bold text-slate-700" 
+                value="${u.hours}" onchange="currentCourse.units[${uIdx}].hours=parseInt(this.value)||0; updateHourValidation();">
+            </td>
+            <td class="py-2 px-3">
+              <div class="space-y-1.5">
+                <textarea rows="2" class="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-primary text-slate-700 leading-relaxed font-sans resize-y"
+                  onchange="updateAssessmentEval(${uIdx}, 0, this.value);">${escapeHtml(ass.eval_methods)}</textarea>
+                <div class="flex flex-wrap gap-1 items-center">
+                  <span class="text-[10px] text-slate-400 font-medium">ไกด์ไลน์:</span>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'กิจกรรม/ใบงาน')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ ใบงาน</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'แบบทดสอบย่อย')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ ทดสอบย่อย</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'การสังเกตพฤติกรรม')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ สังเกตพฤติกรรม</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'ชิ้นงานสำคัญ')" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium transition-colors">+ ชิ้นงานสำคัญ</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'แบบทดสอบภาคปฏิบัติ')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ สอบปฏิบัติ</button>
+                </div>
+              </div>
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_k > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_k}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_k', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_p > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_p}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_p', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_a > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_a}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_a', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center font-bold align-top pt-3 ${ass.score_total > 15 ? 'text-rose-600 font-black' : 'text-indigo-700'}">${ass.score_total}</td>
+          `;
+        } else {
+          // Sub-row under the same unit
+          tr.innerHTML = `
+            <td class="py-2 px-2 text-center font-bold text-indigo-500 align-top pt-2.5">
+              <span class="inline-block bg-indigo-50 text-indigo-600 px-1 py-0.5 rounded text-[10px]">↳ ต่อ</span>
+            </td>
+            <td class="py-2 px-3 align-top">
+              <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium py-1">
+                <span>ประเมินช่องที่ ${aIdx + 1} (ในหน่วยที่ ${u.unit_no})</span>
+                <button type="button" onclick="removeAssessmentRow(${uIdx}, ${aIdx})" class="text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold flex items-center gap-0.5 transition-colors">
+                  <i class="ri-delete-bin-line"></i> ลบแถวย่อย
+                </button>
+              </div>
+            </td>
+            <td class="py-2 px-2 text-center text-slate-300 font-bold align-top pt-2.5">-</td>
+            <td class="py-2 px-3">
+              <div class="space-y-1.5">
+                <textarea rows="2" class="w-full text-[11px] bg-white border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-primary text-slate-700 leading-relaxed font-sans resize-y"
+                  onchange="updateAssessmentEval(${uIdx}, ${aIdx}, this.value);">${escapeHtml(ass.eval_methods)}</textarea>
+                <div class="flex flex-wrap gap-1 items-center">
+                  <span class="text-[10px] text-slate-400 font-medium">ไกด์ไลน์:</span>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, ${aIdx}, 'กิจกรรม/ใบงาน')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ ใบงาน</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, ${aIdx}, 'แบบทดสอบย่อย')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ ทดสอบย่อย</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, ${aIdx}, 'การสังเกตพฤติกรรม')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ สังเกตพฤติกรรม</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, ${aIdx}, 'ชิ้นงานสำคัญ')" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium transition-colors">+ ชิ้นงานสำคัญ</button>
+                  <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, ${aIdx}, 'แบบทดสอบภาคปฏิบัติ')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ สอบปฏิบัติ</button>
+                </div>
+              </div>
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-white border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_k > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_k}" onchange="updateAssessmentScore(${uIdx}, ${aIdx}, 'score_k', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-white border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_p > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_p}" onchange="updateAssessmentScore(${uIdx}, ${aIdx}, 'score_p', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center align-top pt-2.5">
+              <input type="number" min="0" max="15" class="w-10 text-center bg-white border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_a > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_a}" onchange="updateAssessmentScore(${uIdx}, ${aIdx}, 'score_a', this.value)">
+            </td>
+            <td class="py-2 px-2 text-center font-bold align-top pt-3 ${ass.score_total > 15 ? 'text-rose-600 font-black' : 'text-indigo-700'}">${ass.score_total}</td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+    }
+
+    function appendExamUnitRow(tbody, u, idx, type, totalUnitsInCycle) {
+      const tr = document.createElement('tr');
+      tr.className = "bg-amber-50/20 hover:bg-amber-50/40 transition-colors text-slate-700";
+      const isLast = (idx === totalUnitsInCycle - 1);
+      const durVal = type === 'mid' ? (document.getElementById('inputMidExamDuration')?.value || 60) : (document.getElementById('inputFinExamDuration')?.value || 60);
+      const durText = formatExamDurationHour(durVal);
+      const uName = isLast ? `${escapeHtml(u.unit_name)} (${durText})` : escapeHtml(u.unit_name);
+      const hoursText = isLast ? (parseInt(durVal) >= 60 ? Math.round(parseInt(durVal)/60) : durVal + " น.") : "-";
+      const evalMethod = type === 'mid' 
+        ? "- แบบทดสอบวัดผลกลางภาคเรียน (แบบปรนัย/อัตนัย)"
+        : "- แบบทดสอบวัดผลปลายภาคเรียน (แบบปรนัย/อัตนัย)";
+
+      const scores = type === 'mid' ? (currentCourse.midExamScores || []) : (currentCourse.finExamScores || []);
+      const sc = scores[idx] !== undefined ? scores[idx] : 0;
+      const isOver15 = sc > 15;
+
+      tr.innerHTML = `
+        <td class="py-2 px-2 text-center font-bold text-amber-700">${u.unit_no}</td>
+        <td class="py-2 px-3 font-medium text-slate-800">${uName}</td>
+        <td class="py-2 px-2 text-center font-bold text-slate-400">${hoursText}</td>
+        <td class="py-2 px-3 text-[11px] text-slate-600 font-normal">${evalMethod}</td>
+        <td class="py-2 px-2 text-center">
+          <input type="number" min="0" max="15" 
+            class="w-10 text-center bg-amber-50/90 border border-amber-300 rounded px-1 py-0.5 text-xs font-bold text-amber-950 focus:ring-1 focus:ring-amber-500 ${isOver15 ? 'border-rose-500 text-rose-600 bg-rose-50' : ''}" 
+            value="${sc}" 
+            onchange="updateExamScore('${type}', ${idx}, this.value)">
+        </td>
+        <td class="py-2 px-2 text-center text-slate-300">-</td>
+        <td class="py-2 px-2 text-center text-slate-300">-</td>
+        <td class="py-2 px-2 text-center font-bold text-amber-800">${sc}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function updateExamScore(type, idx, val) {
+      const num = parseInt(val) || 0;
+      if (type === 'mid') {
+        if (!currentCourse.midExamScores) initExamScores();
+        currentCourse.midExamScores[idx] = num;
+      } else {
+        if (!currentCourse.finExamScores) initExamScores();
+        currentCourse.finExamScores[idx] = num;
+      }
+      renderMatrixTable();
+      updateHourValidation();
+    }
+
+    function appendSubtotalRow(tbody, label, sub) {
+      const tr = document.createElement('tr');
+      tr.className = "bg-slate-50/60 font-bold text-slate-800 text-[11px] border-b border-slate-200";
+      tr.innerHTML = `
+        <td colspan="4" class="py-2 px-3 text-right text-slate-500">${label}</td>
+        <td class="py-2 px-2 text-center">${sub.k}</td>
+        <td class="py-2 px-2 text-center">${sub.p}</td>
+        <td class="py-2 px-2 text-center">${sub.a}</td>
+        <td class="py-2 px-2 text-center text-indigo-700 font-black">${sub.tot}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function appendGrandTotalRow(tbody, g) {
+      const tr = document.createElement('tr');
+      tr.className = "bg-slate-900 text-white font-bold text-xs";
+      tr.innerHTML = `
+        <td colspan="4" class="py-2.5 px-3 text-right">รวมคะแนนทั้งหมดตลอดภาคเรียน</td>
+        <td class="py-2.5 px-2 text-center">${g.k}</td>
+        <td class="py-2.5 px-2 text-center">${g.p}</td>
+        <td class="py-2.5 px-2 text-center">${g.a}</td>
+        <td class="py-2.5 px-2 text-center text-emerald-400 font-black text-sm">${g.tot}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function calculateSubtotal(units) {
+      let k = 0, p = 0, a = 0;
+      units.forEach(u => {
+        if (u.assessments && Array.isArray(u.assessments) && u.assessments.length > 0) {
+          u.assessments.forEach(ass => {
+            k += (parseInt(ass.score_k) || 0);
+            p += (parseInt(ass.score_p) || 0);
+            a += (parseInt(ass.score_a) || 0);
+          });
+        } else {
+          k += (parseInt(u.score_k) || 0);
+          p += (parseInt(u.score_p) || 0);
+          a += (parseInt(u.score_a) || 0);
+        }
+      });
+      return { k, p, a, tot: k + p + a };
+    }
+
+    function calculateGrandTotal(pre, post) {
+      const subPre = calculateSubtotal(pre);
+      const subPost = calculateSubtotal(post);
+      const midTot = (currentCourse.midExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
+      const finTot = (currentCourse.finExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
+      const k = subPre.k + midTot + subPost.k + finTot;
+      const p = subPre.p + subPost.p;
+      const a = subPre.a + subPost.a;
+      return { k, p, a, tot: k + p + a, midTot, finTot, subPre, subPost };
+    }
+
+    function updateHourValidation() {
+      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const preUnits = currentCourse.units.slice(0, cutoff);
+      const postUnits = currentCourse.units.slice(cutoff);
+
+      const preH = preUnits.reduce((sum, u) => sum + (u.hours || 0), 0);
+      const postH = postUnits.reduce((sum, u) => sum + (u.hours || 0), 0);
+
+      const target = currentCourse.target_pre_hours;
+      document.getElementById('labelPreHours').textContent = `${preH} ชม. (เป้าหมาย ${target})`;
+      document.getElementById('labelPostHours').textContent = `${postH} ชม. (เป้าหมาย ${target})`;
+
+      document.getElementById('barPreHours').style.width = `${Math.min(100, (preH/target)*100)}%`;
+      document.getElementById('barPostHours').style.width = `${Math.min(100, (postH/target)*100)}%`;
+
+      const badge = document.getElementById('status5050Badge');
+      const btnAuto = document.getElementById('btnAutoBalance');
+
+      if (preH === target && postH === target) {
+        badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1";
+        badge.innerHTML = '<i class="ri-checkbox-circle-fill"></i> ผ่านเกณฑ์ 50:50';
+        btnAuto.classList.add('hidden');
+      } else {
+        badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 flex items-center gap-1";
+        badge.innerHTML = '<i class="ri-alert-line"></i> ยังไม่ตรงเกณฑ์ 50:50';
+        btnAuto.classList.remove('hidden');
+        btnAuto.onclick = autoBalanceHours;
+      }
+
+      // Grand totals update & validation
+      const g = calculateGrandTotal(preUnits, postUnits);
+      document.getElementById('labelKPARatio').textContent = `${g.k} : ${g.p} : ${g.a}`;
+      
+      const labelGrandTotal = document.getElementById('labelGrandTotal');
+      const scoreValidationText = document.getElementById('scoreValidationText');
+      const scoreAlertBanner = document.getElementById('scoreAlertBanner');
+      const scoreAlertIcon = document.getElementById('scoreAlertIcon');
+      const scoreAlertText = document.getElementById('scoreAlertText');
+      const btnAutoBalanceScores = document.getElementById('btnAutoBalanceScores');
+      const btnAutoSplitOver15 = document.getElementById('btnAutoSplitOver15');
+      const sgsLimitNotice = document.getElementById('sgsLimitNotice');
+
+      labelGrandTotal.textContent = `${g.tot} คะแนน`;
+
+      // Check cell > 15 limit (SGS limit)
+      let over15Items = [];
+      currentCourse.units.forEach((u) => {
+        (u.assessments || []).forEach((a, aIdx) => {
+          const rowTag = (u.assessments.length > 1) ? `หน่วยที่ ${u.unit_no} (แถวที่ ${aIdx + 1})` : `หน่วยที่ ${u.unit_no}`;
+          if (a.score_total > 15) {
+            over15Items.push(`${rowTag} รวม=${a.score_total}`);
+          } else {
+            if (a.score_k > 15) over15Items.push(`${rowTag} K=${a.score_k}`);
+            if (a.score_p > 15) over15Items.push(`${rowTag} P=${a.score_p}`);
+            if (a.score_a > 15) over15Items.push(`${rowTag} A=${a.score_a}`);
+          }
+        });
+      });
+      (currentCourse.midExamScores || []).forEach((sc, i) => {
+        if (sc > 15) over15Items.push(`สอบกลางภาคหน่วยที่ ${preUnits[i] ? preUnits[i].unit_no : i+1} (${sc})`);
+      });
+      (currentCourse.finExamScores || []).forEach((sc, i) => {
+        if (sc > 15) over15Items.push(`สอบปลายภาคหน่วยที่ ${postUnits[i] ? postUnits[i].unit_no : i+1} (${sc})`);
+      });
+
+      if (over15Items.length > 0) {
+        sgsLimitNotice.className = "text-rose-600 font-bold flex items-center gap-1";
+        sgsLimitNotice.innerHTML = `<i class="ri-error-warning-fill"></i> มีช่องคะแนนเกิน 15: ${over15Items.join(', ')} (ระบบ SGS บันทึกได้สูงสุดช่องละ 15)`;
+        if (btnAutoSplitOver15) {
+          btnAutoSplitOver15.classList.remove('hidden');
+          btnAutoSplitOver15.onclick = autoSplitAllOver15;
+        }
+      } else {
+        sgsLimitNotice.className = "text-slate-400";
+        sgsLimitNotice.innerHTML = "* ทุกช่องคะแนนไม่เกิน 15 คะแนน (สอดคล้องกับข้อจำกัดระบบ SGS)";
+        if (btnAutoSplitOver15) {
+          btnAutoSplitOver15.classList.add('hidden');
+        }
+      }
+
+      if (btnAutoBalanceScores) {
+        btnAutoBalanceScores.onclick = autoBalanceScores;
+      }
+
+      if (g.tot === 100) {
+        labelGrandTotal.className = "text-sm font-black text-emerald-600";
+        scoreValidationText.className = "font-bold text-emerald-600 flex items-center gap-1";
+        scoreValidationText.innerHTML = '<i class="ri-check-line text-base"></i> คะแนนรวม 100 คะแนนพอดี (ตรงตามระเบียบวัดผล)';
+        
+        if (over15Items.length > 0) {
+          scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs";
+          scoreAlertIcon.className = "ri-error-warning-fill text-rose-600 text-lg";
+          scoreAlertText.innerHTML = `<span><strong>แจ้งเตือน SGS:</strong> มีช่องคะแนนเกิน 15 คะแนน (${over15Items.join(', ')}) ซึ่งระบบ SGS ไม่สามารถบันทึกได้ กดปุ่มแยกแถวประเมินเพื่อแก้ไขทันที</span>`;
+          scoreAlertBanner.classList.remove('hidden');
+        } else {
+          scoreAlertBanner.classList.add('hidden');
+        }
+      } else if (g.tot < 100) {
+        const diff = 100 - g.tot;
+        labelGrandTotal.className = "text-sm font-black text-amber-600";
+        scoreValidationText.className = "font-bold text-amber-600 flex items-center gap-1";
+        scoreValidationText.innerHTML = `<i class="ri-alert-line text-base"></i> ขาดอีก ${diff} คะแนน (ปัจจุบัน ${g.tot}/100)`;
+        
+        scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm";
+        scoreAlertIcon.className = "ri-alert-fill text-amber-600 text-lg";
+        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมยังไม่ครบ:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (ขาดอีก <strong class="text-amber-700">${diff}</strong> คะแนน) ปรับเพิ่มในตารางหรือคลิกปุ่มปรับเกลี่ย</span>`;
+        scoreAlertBanner.classList.remove('hidden');
+      } else {
+        const diff = g.tot - 100;
+        labelGrandTotal.className = "text-sm font-black text-rose-600";
+        scoreValidationText.className = "font-bold text-rose-600 flex items-center gap-1";
+        scoreValidationText.innerHTML = `<i class="ri-close-circle-line text-base"></i> เกินมา ${diff} คะแนน (ปัจจุบัน ${g.tot}/100)`;
+        
+        scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-rose-300 bg-rose-50 text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm";
+        scoreAlertIcon.className = "ri-error-warning-fill text-rose-600 text-lg";
+        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมเกินกำหนด:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (เกินมา <strong class="text-rose-700">${diff}</strong> คะแนน) ให้ลดคะแนนหรือคลิกปุ่มปรับเกลี่ย</span>`;
+        scoreAlertBanner.classList.remove('hidden');
+      }
+    }
+
+    // Auto-balance scores to exact 100 with SGS max 15 per entry constraint
+    function autoBalanceScores() {
+      if (!currentCourse || !currentCourse.units || currentCourse.units.length === 0) return;
+
+      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const preUnits = currentCourse.units.slice(0, cutoff);
+      const postUnits = currentCourse.units.slice(cutoff);
+
+      // 1. Balance Midterm Exam Scores (sum = 15)
+      const perMid = Math.floor(15 / preUnits.length);
+      const remMid = 15 - (perMid * preUnits.length);
+      currentCourse.midExamScores = preUnits.map((_, i) => perMid + (i < remMid ? 1 : 0));
+
+      // 2. Balance Final Exam Scores (sum = 15)
+      if (postUnits.length > 0) {
+        const perFin = Math.floor(15 / postUnits.length);
+        const remFin = 15 - (perFin * postUnits.length);
+        currentCourse.finExamScores = postUnits.map((_, i) => perFin + (i < remFin ? 1 : 0));
+      } else {
+        currentCourse.finExamScores = [];
+      }
+
+      // 3. Balance Formative Units (sum = 70)
+      const numUnits = currentCourse.units.length;
+      const targetPerUnit = Math.floor(70 / numUnits);
+      const remUnits = 70 - (targetPerUnit * numUnits);
+
+      currentCourse.units.forEach((u, i) => {
+        const unitTarget = targetPerUnit + (i < remUnits ? 1 : 0);
+        
+        // Auto-split into multiple assessment rows if unitTarget > 15
+        const numRows = Math.ceil(unitTarget / 15);
+        const perRow = Math.floor(unitTarget / numRows);
+        const remRow = unitTarget - (perRow * numRows);
+
+        u.assessments = [];
+        for (let r = 0; r < numRows; r++) {
+          const rowTarget = perRow + (r < remRow ? 1 : 0);
+          let k = Math.min(15, Math.max(1, Math.round(rowTarget * 0.55)));
+          let p = Math.min(15, Math.max(1, Math.round(rowTarget * 0.30)));
+          let a = Math.max(0, rowTarget - k - p);
+
+          const defaultEval = (r === 0)
+            ? "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม"
+            : "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน";
+
+          u.assessments.push({
+            eval_methods: defaultEval,
+            score_k: k,
+            score_p: p,
+            score_a: a,
+            score_total: k + p + a
+          });
+        }
+        syncUnitScores(u);
+      });
+
+      renderMatrixTable();
+      updateHourValidation();
+      showToast("ปรับเกลี่ยคะแนนให้ได้ 100 คะแนนเรียบร้อยแล้ว ✅ (เก็บ 70 + กลางภาค 15 + ปลายภาค 15 ทุกช่อง ≤ 15)", "success");
+    }
+
+    function autoSplitAllOver15() {
+      if (!currentCourse || !currentCourse.units) return;
+      let count = 0;
+      currentCourse.units.forEach((u, uIdx) => {
+        let hasOver = false;
+        (u.assessments || []).forEach(a => {
+          if (a.score_total > 15 || a.score_k > 15 || a.score_p > 15 || a.score_a > 15) {
+            hasOver = true;
+          }
+        });
+        if (hasOver || (u.score_total > 15 && (!u.assessments || u.assessments.length <= 1))) {
+          splitUnitAssessment(uIdx);
+          count++;
+        }
+      });
+      if (count > 0) {
+        showToast(`แยกแถวคะแนนให้หน่วยที่เกิน 15 เรียบร้อยแล้ว ${count} หน่วย`, "success");
+      }
+    }
+
+    function autoBalanceHours() {
+      const target = currentCourse.target_pre_hours;
+      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      
+      // Balance pre-midterm
+      balanceSlice(currentCourse.units.slice(0, cutoff), target);
+      // Balance post-midterm
+      balanceSlice(currentCourse.units.slice(cutoff), target);
+
+      updateCutoffSelector();
+      renderMatrixTable();
+      updateHourValidation();
+      showToast("ปรับเกลี่ยชั่วโมงให้เป็น 50:50 เรียบร้อยแล้ว ✅", "success");
+    }
+
+    function balanceSlice(units, target) {
+      if (units.length === 0) return;
+      const curSum = units.reduce((acc, u) => acc + (u.hours || 0), 0);
+      if (curSum === 0) {
+        const per = Math.floor(target / units.length);
+        units.forEach((u, i) => u.hours = (i === units.length - 1) ? target - (per * (units.length - 1)) : per);
+        return;
+      }
+      let acc = 0;
+      units.forEach((u, i) => {
+        if (i === units.length - 1) {
+          u.hours = target - acc;
+        } else {
+          u.hours = Math.max(1, Math.round((u.hours / curSum) * target));
+          acc += u.hours;
+        }
+      });
+    }
+
+    // Client-side Word Docx Generator
+    function setupGenerator() {
+      document.getElementById('btnGenerateDocx').addEventListener('click', async () => {
+        const btn = document.getElementById('btnGenerateDocx');
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ri-loader-4-line animate-spin text-lg"></i> กำลังสร้างเอกสาร...';
+
+        try {
+          await generateAndDownloadDocx();
+          showToast("สร้างเอกสาร วผ.19 สำเร็จแล้ว!", "success");
+        } catch (err) {
+          console.error("Docx generation error:", err);
+          showToast("เกิดข้อผิดพลาดในการสร้างเอกสาร: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
