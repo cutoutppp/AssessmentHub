@@ -654,30 +654,32 @@
       const cells = tr.querySelectorAll('td.ttc');
       const cellSubj = cleanStr(cells[3] ? cells[3].innerText : '');
       const cellStuId = cleanStr(cells[5] ? cells[5].innerText : '');
-      const stuOk = !targetStuId || cellStuId.includes(targetStuId);
-      const subjOk = !targetSubj || cellSubj.includes(targetSubj);
+      const stuOk = !targetStuId || cellStuId === targetStuId;
+      const subjOk = !targetSubj || cellSubj === targetSubj;
       return stuOk && subjOk;
     });
 
     if (matches.length === 0) {
-      if (dataRows.length === 1 && dataRows[0].innerText.includes(targetStuId) && dataRows[0].innerText.includes(targetSubj)) {
+      if (dataRows.length === 1 && cleanStr(dataRows[0].innerText).includes(targetStuId) && cleanStr(dataRows[0].innerText).includes(targetSubj)) {
         return dataRows[0];
       }
       return null;
     }
-    if (matches.length === 1) return matches[0];
 
-    // กรณีพบหลายแถว ให้เลือกแถวที่ตรงกับ ปีการศึกษา และ ภาคเรียน
+    // กรณีพบแถวข้อมูล ให้ค้นหาแถวที่ตรงกับ ปีการศึกษา และ ภาคเรียน
+    const normTargetYr = targetYear ? targetYear.split('/')[0].trim() : '';
     const exactTerm = matches.find(tr => {
       const cells = tr.querySelectorAll('td.ttc');
-      const cellYr = cleanStr(cells[0] ? cells[0].innerText : '');
+      const cellYr = cleanStr(cells[0] ? cells[0].innerText : '').split('/')[0].trim();
       const cellTr = cleanStr(cells[1] ? cells[1].innerText : '');
-      const yrOk = !targetYear || cellYr === targetYear;
+      const yrOk = !normTargetYr || cellYr === normTargetYr;
       const trOk = !targetTerm || cellTr === targetTerm;
       return yrOk && trOk;
     });
 
-    return exactTerm || matches[0];
+    if (exactTerm) return exactTerm;
+    if (matches.length === 1 && !normTargetYr && !targetTerm) return matches[0];
+    return null;
   }
 
   // สั่งค้นหา เลขประจำตัว + รหัสวิชา ใน iframe
