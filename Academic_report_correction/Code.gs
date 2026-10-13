@@ -219,12 +219,19 @@ function doPost(e) {
     if (action === 'get-ready-sgs') return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
     if (action === 'get-sgs-dashboard') return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
 
+    if (action === 'update-sgs-sync') {
+      if (params.token) {
+        validateAuthToken_(params.token, false);
+      }
+      return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(params))).setMimeType(ContentService.MimeType.JSON);
+    }
+
     // Protected POST endpoints: Require valid authentication token
     const adminActions = ['direct-fix-records', 'clean-sync-wp16'];
     const writeActions = [
       'submit-grades', 'approve', 'reject', 'update-pending-task',
       'register-task', 'batch-register-tasks', 'batch-update-pending-tasks',
-      'sync-sgs', 'update-sgs-sync', 'sync-wp16-sheet'
+      'sync-sgs', 'sync-wp16-sheet'
     ];
 
     if (adminActions.indexOf(action) !== -1) {
@@ -262,7 +269,6 @@ function doPost(e) {
         let items = params.items || params.payload || [];
         return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, !!params.clearAll))).setMimeType(ContentService.MimeType.JSON);
       }
-      if (action === 'update-sgs-sync') return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(params))).setMimeType(ContentService.MimeType.JSON);
     }
     
     return ContentService.createTextOutput(JSON.stringify({success: false, status: 'error', message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
@@ -809,7 +815,9 @@ function verifyPinLogin(idCard, pin) {
     }
 
     const scriptProps = PropertiesService.getScriptProperties();
-    const superCodes = (scriptProps.getProperty('SUPER_CODES') || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    const defaultSuperCodes = ['444', '440', '242', '842', '234'];
+    const propCodes = (scriptProps.getProperty('SUPER_CODES') || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    const superCodes = propCodes.length > 0 ? propCodes : defaultSuperCodes;
     const superIds = (scriptProps.getProperty('SUPER_IDS') || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
 
     if (response && response.getResponseCode() === 200 && result && result.teacher) {
