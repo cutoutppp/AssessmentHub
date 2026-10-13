@@ -244,11 +244,22 @@ function getAppUrl() { return ScriptApp.getService().getUrl(); }
 function cleanStr_(v) { return v == null ? '' : String(v).trim(); }
 function parseDateSafe(val) {
   if (!val) return null;
-  if (val instanceof Date) return val;
+  if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
   let s = String(val).trim();
   if (s.includes('/')) {
     let p = s.split(' ')[0].split('/');
-    if (p.length === 3) return new Date(p[2], p[1]-1, p[0]);
+    if (p.length === 3) {
+      let d = parseInt(p[0], 10), m = parseInt(p[1], 10) - 1, y = parseInt(p[2], 10);
+      if (!isNaN(d) && !isNaN(m) && !isNaN(y) && m >= 0 && m <= 11 && d >= 1 && d <= 31) {
+        if (y >= 2400) y -= 543;
+        else if (y <= 99) y = (2500 + y) - 543;
+        let dt = new Date(y, m, d);
+        if (!isNaN(dt.getTime()) && dt.getMonth() === m && dt.getDate() === d) {
+          return dt;
+        }
+      }
+      return null;
+    }
   }
   let d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
@@ -518,9 +529,9 @@ function summarize(filters, preloaded) {
   const f = { year: filters?.year || '', grade: filters?.grade || '', room: filters?.room || '', subjectGroup: filters?.subjectGroup || '', teacher: filters?.teacher || '' };
 
   let allYears = recVals.map(row => cleanStr_(row[headers.indexOf('ปีการศึกษา')])).filter(Boolean);
-  let maxYear = '2568';
+  let maxYear = '2569';
   if(allYears.length > 0) { allYears.sort((a,b) => Number(b) - Number(a)); maxYear = allYears[0]; }
-  const targetRiskYear = f.year || maxYear; 
+  const targetRiskYear = String(f.year || maxYear).split('/')[0].trim(); 
 
   let totalPop = 0;
   if (f.grade && f.room) totalPop = popRoomMap[f.grade + '/' + f.room] || 0;
@@ -549,13 +560,15 @@ function summarize(filters, preloaded) {
     let r = {}; headers.forEach((h, i) => r[h] = row[i]);
     if (!cleanStr_(r['เลขประจำตัว']) && !cleanStr_(r['ชื่อ-นามสกุล'])) return; 
 
-    let year = cleanStr_(r['ปีการศึกษา']); let term = cleanStr_(r['ภาคเรียนที่']); let subjCode = cleanStr_(r['รหัสวิชา']);
+    let rawYear = cleanStr_(r['ปีการศึกษา']);
+    let year = rawYear.split('/')[0].trim();
+    let term = cleanStr_(r['ภาคเรียนที่']); let subjCode = cleanStr_(r['รหัสวิชา']);
     let rawTeacher = cleanStr_(r['ครูผู้สอน']).replace(/\s+/g, ' '); let firstTeacher = rawTeacher.split(',')[0].trim();
     let teacherNameClean = firstTeacher.replace(/^(นาย|นาง|นางสาว|สาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.)/, '').trim() || '(ไม่ระบุ)';
     let subjGrp = teacherDeptMap[firstTeacher] || teacherDeptMap[teacherNameClean] || subjectGroupFromCode(subjCode);
     let grade = cleanStr_(r['ชั้น']), room = cleanStr_(r['ห้อง']), oldG = cleanStr_(r['ผลการเรียนเดิม']);
 
-    if (f.year && year !== f.year) return;
+    if (f.year && year !== String(f.year).split('/')[0].trim()) return;
     if (f.grade && grade !== f.grade) return;
     if (f.room && room !== f.room) return;
     if (f.subjectGroup && subjGrp !== f.subjectGroup) return;
