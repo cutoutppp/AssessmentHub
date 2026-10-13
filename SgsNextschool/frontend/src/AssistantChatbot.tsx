@@ -334,18 +334,6 @@ export const AssistantChatbot: React.FC<AssistantChatbotProps> = ({
       const q = query.toLowerCase();
       let matchedTopicId = '';
       let dynamicReply = '';
-
-      // ── Admin Bypass Mode (secret command, ต้องมี // นำหน้า) ──────────
-      // Frontend ไม่รู้รหัสจริง — แค่ส่งสิ่งที่พิมพ์ไปให้ Backend ตรวจสอบ
-      if (query.trim() === '//bypass-off') {
-        localStorage.removeItem('bypass_secret_value');
-        dynamicReply = '🔒 โหมด Admin ปิดแล้ว\nระบบกลับสู่การตรวจสอบตามปกติ';
-      } else if (query.trim().startsWith('//') && query.trim().length > 2) {
-        const secret = query.trim().slice(2);
-        localStorage.setItem('bypass_secret_value', secret);
-        dynamicReply = '🔑 ส่งรหัสไปตรวจสอบแล้ว\nหากถูกต้อง ระบบจะข้ามการตรวจคะแนนในรอบถัดไป\nพิมพ์ //bypass-off เพื่อปิด';
-      } else
-
       if (q.includes('สวัสดี') || q.includes('หวัดดี') || q.includes('ดีครับ') || q.includes('ดีค่ะ') || q.includes('hello') || q.includes('hi')) {
          dynamicReply = 'สวัสดีครับ! ยินดีที่ได้ให้บริการครับ 😊 ผมคือผู้ช่วยอัจฉริยะ SGS & NextSchool วันนี้มีอะไรให้ผมช่วยแนะนำหรือแก้ไขปัญหาเกี่ยวกับการส่งคะแนนไหมครับ?';
       } else if (q.includes('ทำอะไรได้บ้าง') || q.includes('ช่วยอะไรได้บ้าง') || q.includes('เก่งเรื่องอะไร') || q.includes('คือใคร') || q.includes('ชื่ออะไร')) {

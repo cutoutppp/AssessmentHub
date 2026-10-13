@@ -193,8 +193,8 @@ async def compare_pdfs(
 
             # ── Admin Bypass: แปลง errors ทั้งหมดเป็น warnings ──────────────
             import os
-            _bypass_key = os.environ.get("BYPASS_SECRET", "admin9988")
-            if bypass_secret and bypass_secret == _bypass_key:
+            _bypass_key = os.environ.get("BYPASS_SECRET")
+            if _bypass_key and bypass_secret and bypass_secret == _bypass_key:
                 for err in results.get("errors", []):
                     err["message"] = "⚡ [Bypass] " + err.get("message", "")
                     results.setdefault("warnings", []).append(err)
