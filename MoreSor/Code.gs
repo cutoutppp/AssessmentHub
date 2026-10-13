@@ -3,6 +3,13 @@
 // ==========================================
 
 const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
+const MORESOR_SECRET_KEY = PropertiesService.getScriptProperties().getProperty('MORESOR_SECRET_KEY') || 'moresor_sync_secret_key_2569';
+
+function validateAuth_(payload, parameter) {
+  var token = (payload && (payload.token || payload.secret || payload.apiKey)) || 
+              (parameter && (parameter.token || parameter.secret || parameter.apiKey));
+  return token === MORESOR_SECRET_KEY;
+}
 
 function getSheetByNameFallback_(ss, primaryName, fallbacks) {
   if (!ss) return null;
@@ -18,6 +25,10 @@ function getSheetByNameFallback_(ss, primaryName, fallbacks) {
 function doGet(e) {
   try {
     const action = e.parameter ? e.parameter.action : null;
+    if (!validateAuth_(null, e.parameter)) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Unauthorized: Invalid token' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     
     if (action === 'getDashboardData') {
       return handleGetDashboardData();
@@ -57,6 +68,11 @@ function doPost(e) {
         }
     } else {
         payload = e.parameter;
+    }
+
+    if (!validateAuth_(payload, e.parameter)) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Unauthorized: Invalid token' }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
     
     const action = payload ? payload.action : null;

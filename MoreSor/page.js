@@ -5,6 +5,7 @@ import { UploadCloud, CheckCircle2, AlertTriangle, XCircle, FileSpreadsheet, Loa
 import Link from 'next/link';
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwEwZ_8ZKA7K9qeeUX1b00ddGWNtOM1Hd2wcoqGfOsPaKlu4pl9oDSczsW4ckZsoEHz/exec';
+const MORESOR_SECRET_KEY = 'moresor_sync_secret_key_2569';
 
 function DashboardContent() {
   const [file, setFile] = useState(null);
@@ -57,8 +58,8 @@ function DashboardContent() {
   const fetchDashboardData = async () => {
     try {
       const [dashRes, configRes] = await Promise.all([
-        fetch(`${GAS_URL}?action=getDashboardData`),
-        fetch(`${GAS_URL}?action=getConfig`)
+        fetch(`${GAS_URL}?action=getDashboardData&token=${MORESOR_SECRET_KEY}`),
+        fetch(`${GAS_URL}?action=getConfig&token=${MORESOR_SECRET_KEY}`)
       ]);
       
       const json = await dashRes.json();
@@ -169,7 +170,7 @@ function DashboardContent() {
     try {
       const res = await fetch(GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'getTeacherReport', teacherName: loggedInTeacher })
+        body: JSON.stringify({ action: 'getTeacherReport', teacherName: loggedInTeacher, token: MORESOR_SECRET_KEY })
       });
       const json = await res.json();
       if (json.success) {
@@ -281,7 +282,8 @@ function DashboardContent() {
                 classRoom: uploadData.classRoom,
                 teacherName: mData.teacherName,
                 submissionMode: submissionMode || 1,
-                subjectGroup: mData.subjectGroup || "อื่นๆ"
+                subjectGroup: mData.subjectGroup || "อื่นๆ",
+                token: MORESOR_SECRET_KEY
             })
         });
         const driveData = await driveRes.json();
@@ -526,7 +528,8 @@ function DashboardContent() {
           data: payload,
           courseCode: metaData.courseCode,
           classRoom: metaData.classRoom,
-          teacherName: masterData?.teacherName || ''
+          teacherName: masterData?.teacherName || '',
+          token: MORESOR_SECRET_KEY
         })
       });
       
@@ -557,7 +560,8 @@ function DashboardContent() {
           classRoom,
           studentId,
           allowExam,
-          remark
+          remark,
+          token: MORESOR_SECRET_KEY
         })
       });
       const data = await res.json();
