@@ -392,11 +392,28 @@ async def api_save_work(request: Request):
             class_level = pair_data.get("class_level") or teacher_info.get("class_level") or sgs_info.get("grade_level", "Unknown Class")
             subject_name = pair_data.get("subject_name") or teacher_info.get("subject_name") or sgs_info.get("subject_name", "")
 
+            # Ensure both nested teacher_info and top-level fields are populated for doc_generator readers
+            pair_data["teacher_info"] = {
+                "teacher_name": teacher_name,
+                "subject_code": subject_code,
+                "subject_name": subject_name,
+                "class_level": class_level,
+                "subject_group": teacher_info.get("subject_group") or data.get("subject_group", "")
+            }
+            pair_data["teacher_name"] = teacher_name
+            pair_data["subject_code"] = subject_code
+            pair_data["subject_name"] = subject_name
+            pair_data["class_level"] = class_level
+
             # Save to work_db
             add_work(teacher_name, subject_code, class_level, pair_data)
 
             # Auto-extract failing students (0, ร, มส, มผ) or manual additions to WP16_งานค้าง
-            failing_list = list(explicit_failing)
+            pair_failing = pair_data.get("failing_students")
+            if pair_failing is not None:
+                failing_list = list(pair_failing)
+            else:
+                failing_list = [ef for ef in explicit_failing if not ef.get("subject_code") or ef.get("subject_code") == subject_code]
             seen_ids = {str(s.get("student_id")).strip() for s in failing_list if s.get("student_id")}
 
             raw = pair_data.get("raw_data") or {}
