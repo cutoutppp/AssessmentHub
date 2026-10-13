@@ -272,6 +272,8 @@ async def compare_pdfs(
                 "unmatched": unmatched_files
             }
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -291,6 +293,8 @@ async def export_wp16(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename=WP16.docx"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -308,6 +312,8 @@ async def export_wp17(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename=WP17.docx"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -514,6 +520,8 @@ async def api_export_wp16_saved(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -629,6 +637,8 @@ async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2569", se
             media_type="application/zip",
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -675,6 +685,8 @@ async def api_export_wp17_saved(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -694,6 +706,8 @@ async def export_wp25(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename=WP25.docx"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -742,6 +756,8 @@ async def api_export_wp25_saved(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -771,6 +787,8 @@ async def api_export_wp25_group_saved(request: Request):
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_fn}"}
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -891,10 +909,6 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
                 if item.get("teacher_name") == teacher_name or item.get("subject_code") == subject_code:
                     recent_set.add(t)
 
-        print(f"[DEBUG WP16] Returning {len(students)} students for {subject_code} / {teacher_name}")
-        for s in students:
-            print(f"   - {s.get('student_id')} : {s.get('student_name')}")
-
         return {
             "status": "success",
             "teacher_name": teacher_name,
@@ -904,6 +918,8 @@ async def api_get_wp16_students(subject_code: str, teacher_name: str = ""):
             "students": students,
             "recent_tasks": list(recent_set),
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -923,6 +939,8 @@ async def api_save_wp16_tasks(request: Request):
 
         save_pending_tasks(teacher_name, subject_code, subject_name, students, academic_year, semester, webhook_url=webhook_url)
         return {"status": "success", "count": len(students)}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -946,6 +964,8 @@ async def api_add_wp16_student(request: Request):
         student["is_manual"] = True
         save_pending_tasks(teacher_name, subject_code, subject_name, [student], academic_year, semester, webhook_url=webhook_url)
         return {"status": "success", "student_id": student.get("student_id")}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -956,6 +976,8 @@ async def api_delete_wp16_student(subject_code: str, student_id: str, webhook_ur
     try:
         success = remove_pending_task(subject_code, student_id, webhook_url=webhook_url)
         return {"status": "success" if success else "not_found", "deleted": success}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
