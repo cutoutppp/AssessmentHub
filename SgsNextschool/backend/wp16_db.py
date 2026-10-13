@@ -1,12 +1,21 @@
 import json
 import os
+import tempfile
+from urllib.parse import urlparse
 import pandas as pd
 from datetime import datetime
 
-WP16_DB_FILE = os.path.join(os.path.dirname(__file__), 'wp16_pending_tasks.json')
-WP16_EXCEL_FILE = os.path.join(os.path.dirname(__file__), 'WP16_งานค้าง_ต้นทาง.xlsx')
+WP16_DB_FILE = os.environ.get("WP16_DB_FILE") or os.path.join(os.path.dirname(__file__), 'wp16_pending_tasks.json')
+WP16_EXCEL_FILE = os.environ.get("WP16_EXCEL_FILE") or os.path.join(os.path.dirname(__file__), 'WP16_งานค้าง_ต้นทาง.xlsx')
 GOOGLE_SPREADSHEET_ID = "1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ"
 GOOGLE_SPREADSHEET_URL = f"https://docs.google.com/spreadsheets/d/{GOOGLE_SPREADSHEET_ID}/edit?gid=1367227681#gid=1367227681"
+
+def is_valid_gas_url(url: str) -> bool:
+    """Ensure target GAS URL is safe and points to Google Apps Script"""
+    if not url or not isinstance(url, str):
+        return False
+    parsed = urlparse(url.strip())
+    return parsed.scheme == "https" and parsed.netloc in ("script.google.com", "script.googleusercontent.com") and parsed.path.startswith("/macros/s/")
 
 def _load_wp16_db():
     if not os.path.exists(WP16_DB_FILE):
@@ -14,12 +23,16 @@ def _load_wp16_db():
     try:
         with open(WP16_DB_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except Exception:
+    except Exception as e:
+        print(f"[wp16_db] Warning: Failed to read {WP16_DB_FILE}: {e}")
         return {}
 
 def _save_wp16_db(data):
-    with open(WP16_DB_FILE, 'w', encoding='utf-8') as f:
+    dir_name = os.path.dirname(WP16_DB_FILE)
+    fd, tmp_file = tempfile.mkstemp(dir=dir_name, prefix="wp16_tasks_", suffix=".tmp")
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    os.replace(tmp_file, WP16_DB_FILE)
     try:
         rows = []
         for k, v in data.items():
@@ -117,7 +130,11 @@ def save_pending_tasks(teacher_name, subject_code, subject_name, tasks_list, aca
 def sync_all_accumulated_tasks_to_gas(target_gas_url=None):
     """Sync all accumulated pending tasks from wp16_pending_tasks.json to Google Apps Script Web App (sgsnextschool)."""
     import requests
-    GAS_URL = target_gas_url or "https://script.google.com/macros/s/AKfycbxzpP9b_eBJUU5KaNX1CbMOLHygMsrUdO7earro-bQIs8lMS9H6YM6Z6mlamm3jJd1fDQ/exec"
+    DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxzpP9b_eBJUU5KaNX1CbMOLHygMsrUdO7earro-bQIs8lMS9H6YM6Z6mlamm3jJd1fDQ/exec"
+    if target_gas_url and is_valid_gas_url(target_gas_url):
+        GAS_URL = target_gas_url
+    else:
+        GAS_URL = os.environ.get("GAS_WEB_APP_URL") or DEFAULT_GAS_URL
 
     db = _load_wp16_db()
     items = []
@@ -159,8 +176,10 @@ def sync_all_accumulated_tasks_to_gas(target_gas_url=None):
     if not items:
         return {'status': 'empty', 'message': 'ไม่มีข้อมูลงานค้างที่ต้องซิงค์', 'count': 0}
 
+    sync_secret = os.environ.get("SYNC_SECRET_KEY", "sgs_ns_sync_default_key_2569")
     payload = json.dumps({
         'action': 'sync-wp16-sheet',
+        'secret': sync_secret,
         'spreadsheetId': GOOGLE_SPREADSHEET_ID,
         'sheetName': 'WP16_งานค้าง',
         'items': items

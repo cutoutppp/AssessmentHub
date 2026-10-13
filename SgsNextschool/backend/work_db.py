@@ -1,8 +1,9 @@
 import json
 import os
+import tempfile
 from datetime import datetime, timezone
 
-DB_FILE = "work_db.json"
+DB_FILE = os.path.join(os.path.dirname(__file__), "work_db.json")
 
 def _load_db():
     if not os.path.exists(DB_FILE):
@@ -10,12 +11,16 @@ def _load_db():
     try:
         with open(DB_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
-    except Exception:
+    except Exception as e:
+        print(f"[work_db] Warning: Failed to read {DB_FILE}: {e}")
         return {}
 
 def _save_db(data):
-    with open(DB_FILE, 'w', encoding='utf-8') as f:
+    dir_name = os.path.dirname(DB_FILE)
+    fd, tmp_file = tempfile.mkstemp(dir=dir_name, prefix="work_db_", suffix=".tmp")
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+    os.replace(tmp_file, DB_FILE)
 
 def add_work(teacher_name, subject_code, class_level, pair_data):
     db = _load_db()
@@ -35,10 +40,12 @@ def add_work(teacher_name, subject_code, class_level, pair_data):
 def get_works_for_teacher(teacher_name):
     db = _load_db()
     if not teacher_name or teacher_name not in db:
-        return db
+        return {}
     return {teacher_name: db.get(teacher_name, {})}
 
 def get_rooms_for_subject(teacher_name, subject_code=None):
+    if not teacher_name:
+        return []
     db = _load_db()
     teacher_data = db.get(teacher_name, {})
     if subject_code:

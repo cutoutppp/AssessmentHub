@@ -1,17 +1,30 @@
+import os
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Request
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 import io
 import base64
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 import re
-import pdfplumber
 from parser import parse_sgs_pdf, parse_nextschool_excel
 from validator import validate_scores
 from doc_generator import generate_wp16, generate_wp17, generate_wp25, generate_wp25_group
 from work_db import get_works_for_teacher, add_work, get_rooms_for_subject, get_rooms_for_group
 from score_db import load_scores_from_json
 from wp16_db import save_pending_tasks, get_pending_tasks_for_subject, get_all_pending_tasks, remove_pending_task
+
+def is_valid_webhook_url(url: str) -> bool:
+    """Validate webhook URL to prevent SSRF - only allow Google Apps Script URLs"""
+    if not url or not isinstance(url, str):
+        return False
+    parsed = urlparse(url.strip())
+    if parsed.scheme != "https":
+        return False
+    if parsed.netloc not in ("script.google.com", "script.googleusercontent.com"):
+        return False
+    if not parsed.path.startswith("/macros/s/"):
+        return False
+    return True
 
 def is_garbled_thai(name: str) -> bool:
     """ตรวจสอบว่าข้อความชื่อนักเรียนเป็นภาษาต่างดาวหรือข้อความที่อ่านไม่ออกหรือไม่"""
@@ -35,11 +48,26 @@ def is_garbled_thai(name: str) -> bool:
 
 app = FastAPI(title="SGS vs NextSchool Score Checker")
 
-# Allow CORS for frontend
+# Whitelist CORS for trusted frontend origins
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://cutoutppp.github.io",
+]
+_env_origins = os.environ.get("ALLOWED_ORIGINS")
+if _env_origins:
+    for _o in _env_origins.split(","):
+        if _o.strip() and _o.strip() not in ALLOWED_ORIGINS:
+            ALLOWED_ORIGINS.append(_o.strip())
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify frontend URL
-    allow_credentials=True,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -289,8 +317,12 @@ async def api_get_works(teacher_name: str = None):
     works = get_works_for_teacher(teacher_name)
     return {"status": "success", "data": works}
 
-@app.get("/api/clear_db")
-async def clear_db():
+@app.delete("/api/clear_db")
+async def clear_db(request: Request, token: str = None):
+    admin_secret = os.environ.get("ADMIN_API_KEY") or os.environ.get("ADMIN_TOKEN")
+    req_token = token or request.headers.get("x-admin-token") or request.headers.get("x-api-key")
+    if not admin_secret or req_token != admin_secret:
+        raise HTTPException(status_code=403, detail="Forbidden: Valid admin token required to clear database")
     import work_db
     work_db._save_db({})
     return {"status": "cleared"}
@@ -313,15 +345,19 @@ async def api_queue_save(request: Request):
         webhook_url = data.get("webhookUrl")
         payload = data.get("payload")
         if not webhook_url:
-            return {"status": "error", "message": "No webhookUrl provided"}
+            raise HTTPException(status_code=400, detail="No webhookUrl provided")
+        if not is_valid_webhook_url(webhook_url):
+            raise HTTPException(status_code=400, detail="Invalid webhookUrl: Only https://script.google.com/macros/s/ URLs are allowed")
         import requests
         resp = requests.post(webhook_url, json=payload, headers={"Content-Type": "text/plain;charset=utf-8"}, timeout=60)
         try:
             return resp.json()
         except Exception:
-            return {"status": "success", "raw": resp.text}
+            return {"status": "success", "received": True}
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        raise HTTPException(status_code=502, detail=f"Webhook connection error: {str(e)}")
 
 @app.post("/api/save_work")
 async def api_save_work(request: Request):
