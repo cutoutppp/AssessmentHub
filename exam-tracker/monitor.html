@@ -433,6 +433,16 @@
             if (badge) badge.textContent = auditLogs.length;
         }
 
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function openLogModal() {
             const c = document.getElementById('logContainer');
             c.innerHTML = '';
@@ -444,10 +454,10 @@
                     el.className = 'p-2 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs';
                     el.innerHTML = `
                         <div>
-                            <span class="font-bold text-slate-900">[วันที่ ${l.day}] ${l.action}:</span>
-                            <span class="text-slate-600 ml-1">${l.detail}</span>
+                            <span class="font-bold text-slate-900">[วันที่ ${escapeHtml(l.day)}] ${escapeHtml(l.action)}:</span>
+                            <span class="text-slate-600 ml-1">${escapeHtml(l.detail)}</span>
                         </div>
-                        <span class="text-slate-400 font-mono text-[11px] shrink-0">${l.time} น.</span>
+                        <span class="text-slate-400 font-mono text-[11px] shrink-0">${escapeHtml(l.time)} น.</span>
                     `;
                     c.appendChild(el);
                 });

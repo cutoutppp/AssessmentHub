@@ -368,6 +368,7 @@
     function renderStudentDashboard(data) {
       const student = data.student;
       const subjects = data.subjects || [];
+      window.CURRENT_STUDENT_SUBJECTS = subjects;
 
       // Update Header
       document.getElementById('studentNameDisplay').innerText = student.studentName || 'นักเรียน';
@@ -379,7 +380,7 @@
       const total = subjects.length;
       const registeredCount = subjects.filter(s => s.isRegistered).length;
       const unregisteredCount = total - registeredCount;
-      const completedCount = subjects.filter(s => s.status === 'อนุมัติแล้ว' || s.status === 'ซิงค์แล้ว').length;
+      const completedCount = subjects.filter(s => s.status === 'อนุมัติแล้ว' || s.status === 'ซิงค์แล้ว' || s.status === 'พร้อมทำงาน').length;
 
       document.getElementById('statTotalSubjects').innerText = total;
       document.getElementById('statRegistered').innerText = registeredCount;
@@ -437,7 +438,7 @@
                   </div>
                   <div>
                     <div class="text-xs font-black text-emerald-800">ลงทะเบียนรับทราบงานแล้ว</div>
-                    <div class="text-[11px] font-medium text-emerald-600">${s.taskDate ? 'บันทึกเมื่อ: ' + s.taskDate : 'ลงทะเบียนเรียบร้อย'}</div>
+                    <div class="text-[11px] font-medium text-emerald-600">${s.taskDate ? 'บันทึกเมื่อ: ' + escapeHtml(s.taskDate) : 'ลงทะเบียนเรียบร้อย'}</div>
                   </div>
                 </div>
                 <span class="text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 self-start sm:self-auto">
@@ -459,7 +460,7 @@
                 </div>
                 <button 
                   type="button" 
-                  onclick="confirmRegisterTask(${s.rowId}, '${escapeHtml(s.specialId)}', '${escapeHtml(s.subjName)}')"
+                  onclick="confirmRegisterTask(${s.rowId})"
                   class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
                 >
                   <i class="material-icons-round text-sm">draw</i>
@@ -471,18 +472,18 @@
 
           // Grade Repair Outcome Status
           let repairOutcomeHtml = '';
-          if (s.status === 'อนุมัติแล้ว' || s.status === 'ซิงค์แล้ว') {
+          if (s.status === 'อนุมัติแล้ว' || s.status === 'ซิงค์แล้ว' || s.status === 'พร้อมทำงาน') {
             repairOutcomeHtml = `
               <div class="mt-3 p-3 bg-indigo-50/80 rounded-xl border border-indigo-200 flex items-center gap-2 text-xs font-bold text-indigo-800">
                 <i class="material-icons-round text-base text-indigo-600">verified</i>
-                <span>ผลการเรียนใหม่: <strong>เกรด ${s.newGrade || '-'}</strong> (ฝ่ายวิชาการอนุมัติแล้ว)</span>
+                <span>ผลการเรียนใหม่: <strong>เกรด ${escapeHtml(s.newGrade || '-')}</strong> (ฝ่ายวิชาการอนุมัติแล้ว)</span>
               </div>
             `;
           } else if (s.status === 'รออนุมัติ') {
             repairOutcomeHtml = `
               <div class="mt-3 p-3 bg-blue-50/80 rounded-xl border border-blue-200 flex items-center gap-2 text-xs font-bold text-blue-800">
                 <i class="material-icons-round text-base text-blue-600">hourglass_top</i>
-                <span>ครูส่งผลแล้ว (เกรดใหม่: ${s.newGrade || '-'}) - อยู่ระหว่างรอฝ่ายวิชาการอนุมัติ</span>
+                <span>ครูส่งผลแล้ว (เกรดใหม่: ${escapeHtml(s.newGrade || '-')}) - อยู่ระหว่างรอฝ่ายวิชาการอนุมัติ</span>
               </div>
             `;
           }
@@ -492,19 +493,19 @@
               <!-- Top Row: Subject Title + Grade Pill -->
               <div class="flex flex-col sm:flex-row justify-between items-start gap-2 border-b border-slate-100 pb-3 mb-3">
                 <div>
-                  <div class="text-[11px] font-black text-blue-600 tracking-wider uppercase mb-0.5">${s.subjCode}</div>
-                  <h4 class="text-base sm:text-lg font-black text-slate-800">${s.subjName}</h4>
+                  <div class="text-[11px] font-black text-blue-600 tracking-wider uppercase mb-0.5">${escapeHtml(s.subjCode)}</div>
+                  <h4 class="text-base sm:text-lg font-black text-slate-800">${escapeHtml(s.subjName)}</h4>
                   <div class="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
                     <i class="material-icons-round text-xs text-slate-400">person</i>
-                    <span>ครูผู้สอน: <strong>${s.teacherName || '-'}</strong></span>
+                    <span>ครูผู้สอน: <strong>${escapeHtml(s.teacherName || '-')}</strong></span>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 self-start sm:self-auto">
                   <div class="text-center px-3 py-1 rounded-xl border font-black text-xs sm:text-sm ${oldGradeBadgeClass}">
-                    ผลเดิม: ${s.oldGrade}
+                    ผลเดิม: ${escapeHtml(s.oldGrade)}
                   </div>
                   <div class="text-center px-2.5 py-1 rounded-xl border border-slate-200 bg-slate-50 font-bold text-xs text-slate-600">
-                    คะแนนเดิม: ${s.oldScore || '0'}
+                    คะแนนเดิม: ${escapeHtml(s.oldScore || '0')}
                   </div>
                 </div>
               </div>
@@ -537,9 +538,16 @@
     }
 
     async function confirmRegisterTask(rowId, specialId, subjName) {
+      if (!specialId || !subjName) {
+        const item = (window.CURRENT_STUDENT_SUBJECTS || []).find(x => String(x.rowId) === String(rowId));
+        if (item) {
+          specialId = item.specialId;
+          subjName = item.subjName;
+        }
+      }
       const isConfirm = await showDialog(
         'ยืนยันการรับทราบงาน',
-        `วิชา: ${subjName}\n\nคุณยืนยันว่าได้รับทราบภาระงานที่ครูมอบหมาย และพร้อมที่จะปฏิบัติตามข้อกำหนดใช่หรือไม่?`,
+        `วิชา: ${subjName || ''}\n\nคุณยืนยันว่าได้รับทราบภาระงานที่ครูมอบหมาย และพร้อมที่จะปฏิบัติตามข้อกำหนดใช่หรือไม่?`,
         'warning',
         true,
         'ยืนยันรับงาน',

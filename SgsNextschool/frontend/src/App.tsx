@@ -4,6 +4,16 @@ import Swal from 'sweetalert2'
 import Dashboard from './Dashboard'
 import AssistantChatbot from './AssistantChatbot'
 
+function escapeHtml(str: any): string {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 const StudentErrorRow = ({ studentId, errors }: { studentId: string, errors: any[] }) => {
   const [expanded, setExpanded] = useState(true);
   const studentName = errors[0]?.name || '';
@@ -364,8 +374,8 @@ function App() {
         html: `
           <div class="text-left text-sm space-y-2">
             <p>ขณะนี้ท่านเพิ่งเลือกไฟล์เพียง <b>1 ไฟล์</b>:</p>
-            <div class="p-2.5 bg-slate-100 rounded-lg text-slate-700 font-mono text-xs">📄 ${singleFile.name}</div>
-            <p class="text-amber-800 font-semibold">⚠️ ขาดไฟล์คู่เทียบ: กรุณาเพิ่มไฟล์ <u>${missingType}</u> เพื่อนำมาตรวจเปรียบเทียบกัน</p>
+            <div class="p-2.5 bg-slate-100 rounded-lg text-slate-700 font-mono text-xs">📄 ${escapeHtml(singleFile.name)}</div>
+            <p class="text-amber-800 font-semibold">⚠️ ขาดไฟล์คู่เทียบ: กรุณาเพิ่มไฟล์ <u>${escapeHtml(missingType)}</u> เพื่อนำมาตรวจเปรียบเทียบกัน</p>
           </div>
         `,
         confirmButtonColor: '#f59e0b',
@@ -484,9 +494,9 @@ function App() {
               <ul class="divide-y divide-red-50 mt-1 max-h-36 overflow-y-auto text-xs">
                 ${officialMsErrors.map((e: any) => `
                   <li class="py-1.5">
-                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
-                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
-                    <span class="text-red-700">${e.message}</span>
+                    <span class="font-bold text-slate-800 font-mono">${escapeHtml(e.student_id)}</span> 
+                    <span class="text-slate-600 font-medium">${escapeHtml(e.name || '')}</span>: 
+                    <span class="text-red-700">${escapeHtml(e.message)}</span>
                   </li>
                 `).join('')}
               </ul>
@@ -507,9 +517,9 @@ function App() {
               <ul class="divide-y divide-amber-50 mt-1 max-h-36 overflow-y-auto text-xs">
                 ${unauthorizedMsErrors.map((e: any) => `
                   <li class="py-1.5">
-                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
-                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
-                    <span class="text-amber-700">${e.message}</span>
+                    <span class="font-bold text-slate-800 font-mono">${escapeHtml(e.student_id)}</span> 
+                    <span class="text-slate-600 font-medium">${escapeHtml(e.name || '')}</span>: 
+                    <span class="text-amber-700">${escapeHtml(e.message)}</span>
                   </li>
                 `).join('')}
               </ul>
@@ -530,9 +540,9 @@ function App() {
               <ul class="divide-y divide-slate-100 mt-1 max-h-36 overflow-y-auto text-xs">
                 ${mismatchErrors.map((e: any) => `
                   <li class="py-1.5">
-                    <span class="font-bold text-slate-800 font-mono">${e.student_id}</span> 
-                    <span class="text-slate-600 font-medium">${e.name || ''}</span>: 
-                    <span class="text-slate-700">${e.message}</span>
+                    <span class="font-bold text-slate-800 font-mono">${escapeHtml(e.student_id)}</span> 
+                    <span class="text-slate-600 font-medium">${escapeHtml(e.name || '')}</span>: 
+                    <span class="text-slate-700">${escapeHtml(e.message)}</span>
                   </li>
                 `).join('')}
               </ul>
@@ -576,8 +586,8 @@ function App() {
               <div class="max-h-40 overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs divide-y divide-slate-100">
                 ${missingList.map((m: any) => `
                   <div class="py-1.5 flex justify-between items-center">
-                    <span class="font-mono font-bold text-slate-800">${m.id}</span>
-                    <span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-medium border border-amber-200">ตกหล่นใน ${m.missing_in}</span>
+                    <span class="font-mono font-bold text-slate-800">${escapeHtml(m.id)}</span>
+                    <span class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-medium border border-amber-200">ตกหล่นใน ${escapeHtml(m.missing_in)}</span>
                   </div>
                 `).join('')}
               </div>

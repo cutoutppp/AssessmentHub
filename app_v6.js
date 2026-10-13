@@ -5,10 +5,20 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwBUdlvFBAgDH10Hmkjo1r1
 // ==========================================
 
 // global state
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 // UI Helper
 function renderImageLink(url) {
-    if(!url) return '';
-    return `<a href="${url}" target="_blank" class="img-badge inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg text-xs font-medium transition-colors border border-indigo-200 mr-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> ดูรูปภาพ</a>`;
+    if(!url || !/^https?:\/\//i.test(url)) return '';
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="img-badge inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg text-xs font-medium transition-colors border border-indigo-200 mr-2"><svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> ดูรูปภาพ</a>`;
 }
 let currentTeacherCode = sessionStorage.getItem('teac_code') || null;
 let currentTeacherGroup = sessionStorage.getItem('subject_group') || null;
@@ -412,14 +422,17 @@ function renderMyProjects(projects) {
         const tr = document.createElement('tr');
         const isCompleted = p.status === 'completed';
         const dateStr = new Date(p.created_at).toLocaleDateString('th-TH');
+        const safeSubjectCode = escapeHtml(p.subject_code);
+        const safeExamType = escapeHtml(p.exam_type);
+        const safeProjectId = escapeHtml(p.project_id);
         
         tr.innerHTML = `
             <td class="px-4 py-3 border-b text-sm">
                 <div class="font-medium text-gray-700 flex items-center gap-2">
-                    ${p.subject_code} 
-                    ${p.exam_type ? `<span class="text-[10px] font-normal text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded">${p.exam_type}</span>` : ''}
+                    ${safeSubjectCode} 
+                    ${p.exam_type ? `<span class="text-[10px] font-normal text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded">${safeExamType}</span>` : ''}
                 </div>
-                <div class="text-xs text-gray-500 mt-0.5">${dateStr}</div>
+                <div class="text-xs text-gray-500 mt-0.5">${escapeHtml(dateStr)}</div>
             </td>
             <td class="px-4 py-3 border-b text-sm">
                 <span class="px-2 py-1 rounded text-xs font-medium ${isCompleted ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
@@ -427,19 +440,23 @@ function renderMyProjects(projects) {
                 </span>
             </td>
             <td class="px-4 py-3 border-b text-sm font-mono text-xs text-gray-500 text-center">
-                ${p.project_id}
+                ${safeProjectId}
             </td>
             <td class="px-4 py-3 border-b text-sm text-center">
                 <div class="flex gap-1 justify-center">
-                    <button onclick="viewReport('${p.project_id}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded text-xs font-medium transition-colors border border-indigo-200">
+                    <button class="btn-view-report bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded text-xs font-medium transition-colors border border-indigo-200">
                         ดูรายงาน
                     </button>
-                        <button onclick="deleteProject('${p.project_id}')" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded text-xs font-medium transition-colors border border-red-200 ml-2">
-                            ลบ
-                        </button>
+                    <button class="btn-delete-project bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded text-xs font-medium transition-colors border border-red-200 ml-2">
+                        ลบ
+                    </button>
                 </div>
             </td>
         `;
+        const viewBtn = tr.querySelector('.btn-view-report');
+        if (viewBtn) viewBtn.onclick = () => viewReport(p.project_id);
+        const delBtn = tr.querySelector('.btn-delete-project');
+        if (delBtn) delBtn.onclick = () => deleteProject(p.project_id);
         tbody.appendChild(tr);
     });
 }
@@ -619,17 +636,21 @@ async function fetchPendingEvaluations(teacCode) {
                     el.className = 'flex items-center justify-between p-3 bg-red-50 border border-red-100 rounded-lg';
                     el.innerHTML = `
                         <div>
-                            <div class="font-medium text-red-800 text-sm">${p.project_name}</div>
-                            <div class="text-xs text-red-600">ครู: ${p.teacher_name}</div>
+                            <div class="font-medium text-red-800 text-sm">${escapeHtml(p.project_name)}</div>
+                            <div class="text-xs text-red-600">ครู: ${escapeHtml(p.teacher_name)}</div>
                         </div>
-                        <button onclick="openExpertReview('${p.project_id}')" class="text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors">
+                        <button class="btn-open-expert text-xs bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors">
                             ประเมินเลย
                         </button>
                     `;
+                    const btn = el.querySelector('.btn-open-expert');
+                    if (btn) btn.onclick = () => openExpertReview(p.project_id);
                     list.appendChild(el);
                 });
             }
         } else {
+            const container = document.getElementById('pendingEvaluationsContainer');
+            if(container) container.classList.add('hidden');
             if(badge1) badge1.classList.add('hidden');
             if(badge2) badge2.classList.add('hidden');
             if(list) list.innerHTML = '<div class="text-sm text-gray-500 p-3">ไม่มีรายการประเมินค้าง</div>';
@@ -1263,7 +1284,7 @@ function renderTable() {
     
     if(qCount) qCount.textContent = `ทั้งหมด ${parsedQuestions.length} ข้อ`;
     
-    let indOptionsHtml = indicatorOptions.map(ind => `<option value="${ind}">${ind}</option>`).join('');
+    let indOptionsHtml = indicatorOptions.map(ind => `<option value="${escapeHtml(ind)}">${escapeHtml(ind)}</option>`).join('');
     
     parsedQuestions.forEach((q, idx) => {
         const tr = document.createElement('tr');
@@ -1277,32 +1298,32 @@ function renderTable() {
                         <input type="radio" name="ans_${idx}" value="ก" ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'checked' : ''} onchange="updateAns(${idx}, 'ก'); renderTable();" class="sr-only">
                         <span class="text-sm font-medium ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800' : 'text-gray-700'} w-4">①</span>
                         <div class="flex-1 relative">
-                            <div id="c-view-${idx}-a" class="text-sm ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'a')">${q.choice_a || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-a" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'a', this.value)">${q.choice_a}</textarea>
+                            <div id="c-view-${idx}-a" class="text-sm ${q.correct_answer === 'ก' || q.correct_answer === 'a' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'a')">${q.choice_a ? escapeHtml(q.choice_a) : '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
+                            <textarea id="c-edit-${idx}-a" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'a', this.value)">${escapeHtml(q.choice_a || '')}</textarea>
                         </div>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
                         <input type="radio" name="ans_${idx}" value="ข" ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'checked' : ''} onchange="updateAns(${idx}, 'ข'); renderTable();" class="sr-only">
                         <span class="text-sm font-medium ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800' : 'text-gray-700'} w-4">②</span>
                         <div class="flex-1 relative">
-                            <div id="c-view-${idx}-b" class="text-sm ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'b')">${q.choice_b || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-b" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'b', this.value)">${q.choice_b}</textarea>
+                            <div id="c-view-${idx}-b" class="text-sm ${q.correct_answer === 'ข' || q.correct_answer === 'b' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'b')">${q.choice_b ? escapeHtml(q.choice_b) : '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
+                            <textarea id="c-edit-${idx}-b" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'b', this.value)">${escapeHtml(q.choice_b || '')}</textarea>
                         </div>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
                         <input type="radio" name="ans_${idx}" value="ค" ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'checked' : ''} onchange="updateAns(${idx}, 'ค'); renderTable();" class="sr-only">
                         <span class="text-sm font-medium ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800' : 'text-gray-700'} w-4">③</span>
                         <div class="flex-1 relative">
-                            <div id="c-view-${idx}-c" class="text-sm ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'c')">${q.choice_c || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-c" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'c', this.value)">${q.choice_c}</textarea>
+                            <div id="c-view-${idx}-c" class="text-sm ${q.correct_answer === 'ค' || q.correct_answer === 'c' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'c')">${q.choice_c ? escapeHtml(q.choice_c) : '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
+                            <textarea id="c-edit-${idx}-c" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'c', this.value)">${escapeHtml(q.choice_c || '')}</textarea>
                         </div>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer hover:bg-green-50 p-1.5 rounded transition-colors w-full border ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'bg-green-50 border-green-300' : 'border-transparent'}">
                         <input type="radio" name="ans_${idx}" value="ง" ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'checked' : ''} onchange="updateAns(${idx}, 'ง'); renderTable();" class="sr-only">
                         <span class="text-sm font-medium ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800' : 'text-gray-700'} w-4">④</span>
                         <div class="flex-1 relative">
-                            <div id="c-view-${idx}-d" class="text-sm ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'd')">${q.choice_d || '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
-                            <textarea id="c-edit-${idx}-d" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'd', this.value)">${q.choice_d}</textarea>
+                            <div id="c-view-${idx}-d" class="text-sm ${q.correct_answer === 'ง' || q.correct_answer === 'd' ? 'text-green-800 font-medium' : 'text-gray-700'} p-1 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[28px]" onclick="event.preventDefault(); event.stopPropagation(); editField('c', ${idx}, 'd')">${q.choice_d ? escapeHtml(q.choice_d) : '<span class="text-gray-400 italic">เพิ่มตัวเลือก...</span>'}</div>
+                            <textarea id="c-edit-${idx}-d" class="hidden w-full text-sm text-gray-700 p-1 border border-blue-500 rounded focus:outline-none resize-y min-h-[40px] absolute top-0 left-0 z-10" onclick="event.preventDefault(); event.stopPropagation();" onblur="saveField('c', ${idx}, 'd', this.value)">${escapeHtml(q.choice_d || '')}</textarea>
                         </div>
                     </label>
                 </div>
@@ -1315,8 +1336,8 @@ function renderTable() {
             <td class="px-4 py-4 text-center font-medium">${q.q_num || q.question_num || (idx + 1)}</td>
             <td class="px-4 py-4 align-top">
                 <div class="relative">
-                    <div id="q-view-${idx}" class="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap p-2 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[60px]" onclick="editField('q', ${idx})">${q.question_text || '<span class="text-gray-400 italic">เพิ่มโจทย์...</span>'}</div>
-                    <textarea id="q-edit-${idx}" class="hidden w-full text-sm font-medium text-gray-800 p-2 border border-blue-500 rounded focus:outline-none resize-y min-h-[80px] absolute top-0 left-0 z-10" onblur="saveField('q', ${idx}, '', this.value)">${q.question_text}</textarea>
+                    <div id="q-view-${idx}" class="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap p-2 border border-transparent hover:border-blue-300 hover:bg-blue-50 rounded cursor-text min-h-[60px]" onclick="editField('q', ${idx})">${q.question_text ? escapeHtml(q.question_text) : '<span class="text-gray-400 italic">เพิ่มโจทย์...</span>'}</div>
+                    <textarea id="q-edit-${idx}" class="hidden w-full text-sm font-medium text-gray-800 p-2 border border-blue-500 rounded focus:outline-none resize-y min-h-[80px] absolute top-0 left-0 z-10" onblur="saveField('q', ${idx}, '', this.value)">${escapeHtml(q.question_text || '')}</textarea>
                 </div>
                 <div class="mt-3 flex gap-2">
                     <button onclick="openMediaModal(${idx}, 'image')" class="text-xs bg-gray-50 hover:bg-gray-200 text-gray-700 py-1 px-2 rounded flex items-center gap-1 border">🖼️ แนบรูป</button>
@@ -1336,7 +1357,7 @@ function renderTable() {
                         <option value="">-- ระบุตัวชี้วัด --</option>
                         ${indOptionsHtml}
                     </select>
-                    ${q.indicator ? `<div class="mt-1 text-xs text-green-600 break-words font-medium px-2 py-1 bg-green-50 rounded">${q.indicator}</div>` : ''}
+                    ${q.indicator ? `<div class="mt-1 text-xs text-green-600 break-words font-medium px-2 py-1 bg-green-50 rounded">${escapeHtml(q.indicator)}</div>` : ''}
                 </div>
             </td>
         `;
@@ -1713,34 +1734,34 @@ function renderTinderCard() {
     if (q.choice_a) {
         choicesHtml = `
             <div class="mt-4 space-y-2 text-sm text-gray-700">
-                <div class="p-2 ${q.correct_choice === 'ก' ? 'bg-green-50 border border-green-200 rounded' : ''}">ก. ${q.choice_a}</div>
-                <div class="p-2 ${q.correct_choice === 'ข' ? 'bg-green-50 border border-green-200 rounded' : ''}">ข. ${q.choice_b}</div>
-                <div class="p-2 ${q.correct_choice === 'ค' ? 'bg-green-50 border border-green-200 rounded' : ''}">ค. ${q.choice_c}</div>
-                <div class="p-2 ${q.correct_choice === 'ง' ? 'bg-green-50 border border-green-200 rounded' : ''}">ง. ${q.choice_d}</div>
+                <div class="p-2 ${q.correct_choice === 'ก' ? 'bg-green-50 border border-green-200 rounded' : ''}">ก. ${escapeHtml(q.choice_a)}</div>
+                <div class="p-2 ${q.correct_choice === 'ข' ? 'bg-green-50 border border-green-200 rounded' : ''}">ข. ${escapeHtml(q.choice_b)}</div>
+                <div class="p-2 ${q.correct_choice === 'ค' ? 'bg-green-50 border border-green-200 rounded' : ''}">ค. ${escapeHtml(q.choice_c)}</div>
+                <div class="p-2 ${q.correct_choice === 'ง' ? 'bg-green-50 border border-green-200 rounded' : ''}">ง. ${escapeHtml(q.choice_d)}</div>
             </div>
         `;
     }
     
     let mediaHtml = '';
-    if(q.image_url) {
+    if(q.image_url && /^https?:\/\//i.test(q.image_url)) {
       mediaHtml += `<div class="mt-2">
-        <a href="${q.image_url}" target="_blank" class="inline-flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-indigo-200">
+        <a href="${escapeHtml(q.image_url)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-indigo-200">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
           ดูรูปภาพประกอบ (เปิดในแท็บใหม่)
         </a>
       </div>`;
     }
-    if(q.passage_text) mediaHtml += `<div class="mt-2 p-3 bg-gray-50 text-sm border rounded">${q.passage_text}</div>`;
+    if(q.passage_text) mediaHtml += `<div class="mt-2 p-3 bg-gray-50 text-sm border rounded">${escapeHtml(q.passage_text)}</div>`;
     
     card.innerHTML = `
         <div id="swipeStamp" class="absolute top-8 right-8 border-4 rounded-xl px-4 py-2 text-3xl font-bold opacity-0 transform transition-opacity duration-200 pointer-events-none z-10"></div>
-        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ข้อที่ ${q.question_id || (reviewIndex+1)}</div>
-        <div class="text-lg text-gray-800 font-medium whitespace-pre-wrap">${q.question_text}</div>
+        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ข้อที่ ${escapeHtml(q.question_id || (reviewIndex+1))}</div>
+        <div class="text-lg text-gray-800 font-medium whitespace-pre-wrap">${escapeHtml(q.question_text)}</div>
         ${mediaHtml}
         ${choicesHtml}
         <div class="mt-6 pt-4 border-t border-gray-100">
             <div class="text-xs text-gray-500 mb-1">ตัวชี้วัด / จุดประสงค์:</div>
-            <div class="text-sm font-medium text-blue-700 bg-blue-50 p-3 rounded-lg">${q.indicator || 'ไม่ระบุ'}</div>
+            <div class="text-sm font-medium text-blue-700 bg-blue-50 p-3 rounded-lg">${escapeHtml(q.indicator || 'ไม่ระบุ')}</div>
         </div>
         <div class="mt-4">
             <textarea id="reviewComment" class="w-full text-sm border-gray-300 rounded-lg p-3" placeholder="ข้อเสนอแนะเพิ่มเติม (ถ้ามี)..." rows="2"></textarea>
@@ -1904,22 +1925,22 @@ window.viewReport = async (projectId) => {
                     let sHtml = q.scores.map(s => `<span class="inline-block w-6 text-center ${s>0?'text-green-600':(s<0?'text-red-600':'text-gray-500')}">${s}</span>`).join('');
                     if(!sHtml) sHtml = '-';
                     
-                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${c}</div>`).join('');
+                    let cHtml = q.comments.map(c => `<div class="text-xs text-gray-500">- ${escapeHtml(c)}</div>`).join('');
 tr.innerHTML = `
-                        <td class="px-4 py-3 text-center border-b">${q.q_num}</td>
+                        <td class="px-4 py-3 text-center border-b">${escapeHtml(q.q_num)}</td>
                         <td class="px-4 py-3 border-b">
-                            <div class="text-sm text-gray-800 font-medium">${q.text}</div>
-                            ${q.ind ? `<div class="text-xs text-blue-600 mt-1">${q.ind}</div>` : ''}
+                            <div class="text-sm text-gray-800 font-medium">${escapeHtml(q.text)}</div>
+                            ${q.ind ? `<div class="text-xs text-blue-600 mt-1">${escapeHtml(q.ind)}</div>` : ''}
                         </td>
                         <td class="px-4 py-3 border-b">${cHtml}</td>
                         <td class="px-4 py-3 border-b">
                             <div class="flex gap-1 text-sm font-mono bg-gray-50 px-2 py-1 rounded border">${sHtml}</div>
                         </td>
-                        <td class="px-4 py-3 text-center font-medium border-b ${q.isPassed ? 'text-green-600' : 'text-red-600'}">${q.ioc}</td>
+                        <td class="px-4 py-3 text-center font-medium border-b ${q.isPassed ? 'text-green-600' : 'text-red-600'}">${escapeHtml(q.ioc)}</td>
                         <td class="px-4 py-3 text-center border-b">
                             <div class="flex items-center justify-center gap-2">
                                 ${badge}
-                                <button onclick="openEditQuestionModal('${q.question_id || q.q_num}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="แก้ไขข้อสอบ">
+                                <button onclick="openEditQuestionModal('${escapeHtml(q.question_id || q.q_num)}')" class="text-gray-400 hover:text-blue-500 transition-colors" title="แก้ไขข้อสอบ">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
                             </div>
@@ -1932,7 +1953,7 @@ tr.innerHTML = `
             
         } else {
             console.error("getProjectResults failed:", data);
-            if(tbody) tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-red-500">เกิดข้อผิดพลาด: ${data.message || 'ไม่ทราบสาเหตุ'}</td></tr>`;
+            if(tbody) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">เกิดข้อผิดพลาด: ${escapeHtml(data.message || 'ไม่ทราบสาเหตุ')}</td></tr>`;
         }
     } catch (error) {
         console.error('Fetch report error:', error);
@@ -2606,7 +2627,7 @@ document.getElementById('saveEditModalBtn')?.addEventListener('click', async () 
         console.error('Error saving question:', err);
         showToast('เกิดข้อผิดพลาดในการบันทึก: ' + err.message, 'error');
     } finally {
-        loader.classList.hidden('hidden');
+        loader.classList.add('hidden');
         btn.disabled = false;
     }
 });

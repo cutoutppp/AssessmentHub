@@ -1195,13 +1195,13 @@
          const cached = sessionStorage.getItem('teachers_dropdown_cache');
          if (cached) {
            const list = JSON.parse(cached);
-           let html = ''; if(list) list.forEach(t => html += `<option value="${t}">`);
+           let html = ''; if(list) list.forEach(t => html += `<option value="${escapeHtml(t)}">`);
            const el = document.getElementById('teacherDatalist');
            if (el) el.innerHTML = html;
            return;
          }
          const list = await callBackend('teachers');
-         let html = ''; if(list) list.forEach(t => html += `<option value="${t}">`);
+         let html = ''; if(list) list.forEach(t => html += `<option value="${escapeHtml(t)}">`);
          const el = document.getElementById('teacherDatalist');
          if (el) el.innerHTML = html;
          if (list && list.length > 0) {
@@ -1420,7 +1420,7 @@
       const prevSubj = preserveState && subjSelect ? subjSelect.value : '';
       const prevSearch = preserveState && document.getElementById('searchInput') ? document.getElementById('searchInput').value : '';
       const uniqueSubjs = [...new Set(tasks.map(t => t.subjCode + ' ' + t.subjName))];
-      subjSelect.innerHTML = '<option value="">-- กรองทุกรายวิชา --</option>' + uniqueSubjs.map(s => `<option value="${s}" ${s === prevSubj ? 'selected' : ''}>${s}</option>`).join('');
+      subjSelect.innerHTML = '<option value="">-- กรองทุกรายวิชา --</option>' + uniqueSubjs.map(s => `<option value="${escapeHtml(s)}" ${s === prevSubj ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
       document.getElementById('searchInput').value = prevSearch;
       onSubjectFilterChange();
     }
@@ -2045,7 +2045,13 @@
     function showToast(msg) {
       const toast = document.createElement('div');
       toast.className = 'fixed top-6 right-6 z-[10001] bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-300';
-      toast.innerHTML = `<i class="material-icons-round text-emerald-400 text-base">check_circle</i> <span>${msg}</span>`;
+      const icon = document.createElement('i');
+      icon.className = 'material-icons-round text-emerald-400 text-base';
+      icon.textContent = 'check_circle';
+      const span = document.createElement('span');
+      span.textContent = msg;
+      toast.appendChild(icon);
+      toast.appendChild(span);
       document.body.appendChild(toast);
       setTimeout(() => {
         toast.style.opacity = '0';
@@ -2200,10 +2206,10 @@
             </td>
             <td class="px-5 py-4 text-center">
               <div class="flex items-center justify-center gap-2">
-                <button type="button" onclick="approveSingle(${t.rowId}, '${jsStuName}')" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-black shadow-sm transition-all flex items-center gap-1 cursor-pointer transform hover:scale-105 active:scale-95 whitespace-nowrap" title="อนุมัติผลการเรียนคนนี้">
+                <button type="button" onclick="approveSingle(${t.rowId})" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-black shadow-sm transition-all flex items-center gap-1 cursor-pointer transform hover:scale-105 active:scale-95 whitespace-nowrap" title="อนุมัติผลการเรียนคนนี้">
                   <i class="material-icons-round text-base">check_circle</i> <span>อนุมัติ</span>
                 </button>
-                <button type="button" onclick="rejectSingle(${t.rowId}, '${jsStuName}')" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap" title="ส่งกลับให้ครูแก้ไข">
+                <button type="button" onclick="rejectSingle(${t.rowId})" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap" title="ส่งกลับให้ครูแก้ไข">
                   <i class="material-icons-round text-base">replay</i> <span>ตีกลับ</span>
                 </button>
               </div>
@@ -2254,6 +2260,10 @@
     }
 
     async function approveSingle(rowId, stuName) {
+      if (!stuName) {
+        const t = CURRENT_APPROVAL_TASKS.find(x => String(x.rowId) === String(rowId));
+        stuName = t ? t.stuName : '';
+      }
       const isConfirmed = await showDialog(
         'ยืนยันการอนุมัติ',
         `คุณต้องการอนุมัติผลการเรียนของ "${stuName}" ใช่หรือไม่?`,
@@ -2268,7 +2278,7 @@
       try {
         const res = await callBackend('approve', { rowIds: [rowId] }, 'GET');
         hideLoader();
-        if (res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic in-memory update
           CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => t.rowId !== rowId);
           try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}
@@ -2285,6 +2295,10 @@
     }
 
     async function rejectSingle(rowId, stuName) {
+      if (!stuName) {
+        const t = CURRENT_APPROVAL_TASKS.find(x => String(x.rowId) === String(rowId));
+        stuName = t ? t.stuName : '';
+      }
       const isConfirmed = await showDialog(
         'ยืนยันตีกลับเพื่อแก้ไข',
         `คุณต้องการตีกลับรายการของ "${stuName}" ให้ครูผู้สอนแก้ไขใหม่ใช่หรือไม่?`,
@@ -2299,7 +2313,7 @@
       try {
         const res = await callBackend('reject', { rowIds: [rowId] }, 'GET');
         hideLoader();
-        if (res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic in-memory update
           CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => t.rowId !== rowId);
           try { sessionStorage.setItem('approvals_cache', JSON.stringify(CURRENT_APPROVAL_TASKS)); } catch(e) {}

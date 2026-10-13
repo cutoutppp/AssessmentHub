@@ -395,6 +395,16 @@
             updateSelectAllCheckbox();
         }
 
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             
@@ -424,19 +434,19 @@
                 const isIndeterminate = someSelected && !allSelected;
                 
                 html += `
-                    <tr class="bg-slate-50 border-y border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleGroup('${key}')">
+                    <tr class="bg-slate-50 border-y border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer" onclick="toggleGroup('${escapeHtml(key)}')">
                         <td class="py-3 px-4 text-center" onclick="event.stopPropagation()">
                             <input type="checkbox" class="custom-checkbox mx-auto" 
                                    ${allSelected ? 'checked' : ''} 
-                                   ${isIndeterminate ? 'id="indet_'+key+'"' : ''}
-                                   onchange="toggleGroupSelect('${key}', this.checked)">
+                                   ${isIndeterminate ? 'id="indet_'+escapeHtml(key)+'"' : ''}
+                                   onchange="toggleGroupSelect('${escapeHtml(key)}', this.checked)">
                         </td>
                         <td colspan="7" class="py-3 px-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <i class="ri-arrow-${isExpanded ? 'down' : 'right'}-s-line text-slate-500 text-lg transition-transform"></i>
-                                    <span class="font-bold text-slate-800 text-[15px] font-sarabun">${group.title}</span>
-                                    ${group.subtitle ? `<span class="text-xs text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 ml-2">${group.subtitle}</span>` : ''}
+                                    <span class="font-bold text-slate-800 text-[15px] font-sarabun">${escapeHtml(group.title)}</span>
+                                    ${group.subtitle ? `<span class="text-xs text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 ml-2">${escapeHtml(group.subtitle)}</span>` : ''}
                                 </div>
                                 <div class="text-xs font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
                                     ${group.items.length} รายการ
@@ -468,37 +478,37 @@
                         if(item.grade_group === 'ม.3' || item.grade_group === 'ม.6') badgeColor = 'bg-amber-50 text-amber-700 border border-amber-200';
 
                         html += `
-                            <tr class="${rowClass}" id="tr_${item.id}">
+                            <tr class="${rowClass}" id="tr_${escapeHtml(item.id)}">
                                 <td class="py-2.5 px-4 text-center border-l-4 ${isSelected ? 'border-indigo-500' : 'border-transparent'}">
                                     <input type="checkbox" class="custom-checkbox mx-auto scale-90" 
                                            ${isSelected ? 'checked' : ''} 
-                                           onchange="toggleRow('${item.id}', this.checked)">
+                                           onchange="toggleRow('${escapeHtml(item.id)}', this.checked)">
                                 </td>
                                 <td class="py-2.5 px-4">
                                     <span class="px-2 py-0.5 rounded-md text-xs font-semibold shadow-sm ${badgeColor}">
-                                        ${item.class_name}
+                                        ${escapeHtml(item.class_name)}
                                     </span>
                                 </td>
                                 <td class="py-2.5 px-4">
-                                    <div class="font-medium text-slate-800 font-sarabun text-[14px]">${item.subj_name}</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">${item.subj_code}</div>
+                                    <div class="font-medium text-slate-800 font-sarabun text-[14px]">${escapeHtml(item.subj_name)}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(item.subj_code)}</div>
                                 </td>
                                 <td class="py-2.5 px-4">
-                                    <div class="text-[14px] text-slate-700 font-sarabun">${item.teacher_name || '-'}</div>
+                                    <div class="text-[14px] text-slate-700 font-sarabun">${escapeHtml(item.teacher_name || '-')}</div>
                                 </td>
                                 <td class="py-2.5 px-4">
-                                    <div class="text-[13px] text-slate-700 font-sarabun">${item.date_d} ${item.date_m} ${item.date_y}</div>
-                                    <div class="text-[11px] text-indigo-600 mt-0.5"><i class="ri-time-line align-text-bottom"></i> ${item.time} น.</div>
+                                    <div class="text-[13px] text-slate-700 font-sarabun">${escapeHtml(item.date_d)} ${escapeHtml(item.date_m)} ${escapeHtml(item.date_y)}</div>
+                                    <div class="text-[11px] text-indigo-600 mt-0.5"><i class="ri-time-line align-text-bottom"></i> ${escapeHtml(item.time)} น.</div>
                                 </td>
                                 <td class="py-2.5 px-4">
-                                    <input type="number" placeholder="จำนวน" value="${countVal}" 
+                                    <input type="number" placeholder="จำนวน" value="${escapeHtml(countVal)}" 
                                            class="table-input text-center text-[13px] bg-white h-8 w-20"
-                                           oninput="updateRowInput('${item.id}', 'count', this.value)">
+                                           oninput="updateRowInput('${escapeHtml(item.id)}', 'count', this.value)">
                                 </td>
                                 <td class="py-2.5 px-4">
-                                    <input type="text" placeholder="เบอร์โทร..." value="${phoneVal}" 
+                                    <input type="text" placeholder="เบอร์โทร..." value="${escapeHtml(phoneVal)}" 
                                            class="table-input text-[13px] bg-white h-8 w-28"
-                                           oninput="updateRowInput('${item.id}', 'phone', this.value)">
+                                           oninput="updateRowInput('${escapeHtml(item.id)}', 'phone', this.value)">
                                 </td>
                             </tr>
                         `;
