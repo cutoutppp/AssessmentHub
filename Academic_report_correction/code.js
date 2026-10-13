@@ -9,6 +9,29 @@ function doGet(e) {
     try {
       let action = e.parameter.action;
       if (action === 'get_stats') {
+        var reqTeacher = (e.parameter.teacher || '').trim();
+        if (reqTeacher && reqTeacher !== '444') {
+          var tTasks = getTasksForAdmin('teacher', reqTeacher);
+          var uniqueStus = {};
+          var subMap = {};
+          tTasks.forEach(function(t) {
+            if (t.stuId) uniqueStus[t.stuId] = true;
+            var sKey = [t.subjCode, t.subjName].filter(Boolean).join(' ') || 'ไม่ระบุวิชา';
+            if (!subMap[sKey]) subMap[sKey] = { subject: sKey, total: 0, fixed: 0, pending: 0 };
+            subMap[sKey].total++;
+            subMap[sKey].pending++;
+          });
+          var uniqueCount = Object.keys(uniqueStus).length;
+          var breakdown = Object.keys(subMap).map(function(k) { return subMap[k]; });
+          return ContentService.createTextOutput(JSON.stringify({
+            "status": "success",
+            "academic_issues": uniqueCount,
+            "total_academic_issues": uniqueCount,
+            "tasks_total": tTasks.length,
+            "subject_breakdown": breakdown
+          })).setMimeType(ContentService.MimeType.JSON);
+        }
+
         try {
           var cachedInitial = getCacheChunked_('dashboard_initial_data');
           if (cachedInitial) {
@@ -17,12 +40,14 @@ function doGet(e) {
               var s = parsed.stats;
               return ContentService.createTextOutput(JSON.stringify({
                 "status": "success",
+                "academic_issues": s.uniqueCount,
                 "total_academic_issues": s.uniqueCount,
                 "students_total": s.uniqueCount,
                 "students_fixed": s.fullyDone,
                 "sgs_progress": { "submitted": s.fixedTotal, "total": s.pendingTotal + s.fixedTotal, "percentage": s.successPctItem || 0 },
                 "ioc_progress": { "submitted": 85, "total": 98, "percentage": 86.7 },
-                "task_registration": s.taskStats
+                "task_registration": s.taskStats,
+                "subject_breakdown": []
               })).setMimeType(ContentService.MimeType.JSON);
             }
           }
@@ -31,12 +56,14 @@ function doGet(e) {
         const stats = summarize({ year: '' });
         var result = {
           "status": "success",
+          "academic_issues": stats.uniqueCount,
           "total_academic_issues": stats.uniqueCount,
           "students_total": stats.uniqueCount,
           "students_fixed": stats.fullyDone,
           "sgs_progress": { "submitted": stats.fixedTotal, "total": stats.pendingTotal + stats.fixedTotal, "percentage": stats.successPctItem || 0 },
           "ioc_progress": { "submitted": 85, "total": 98, "percentage": 86.7 },
-          "task_registration": stats.taskStats
+          "task_registration": stats.taskStats,
+          "subject_breakdown": []
         };
         return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
       }
