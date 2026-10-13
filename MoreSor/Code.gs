@@ -1,26 +1,38 @@
-﻿// ==========================================
+// ==========================================
 // Moresor - Google Sheets API (GAS)
 // ==========================================
 
 const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
 
+function getSheetByNameFallback_(ss, primaryName, fallbacks) {
+  if (!ss) return null;
+  var s = ss.getSheetByName(primaryName);
+  if (s) return s;
+  for (var i = 0; i < fallbacks.length; i++) {
+    s = ss.getSheetByName(fallbacks[i]);
+    if (s) return s;
+  }
+  return null;
+}
+
 function doGet(e) {
-  const action = e.parameter.action;
-  
-  if (action === 'getDashboardData') {
-    return handleGetDashboardData();
-  }
-  
-  if (action === 'getConfig') {
-    return handleGetConfig();
-  }
+  try {
+    const action = e.parameter ? e.parameter.action : null;
+    
+    if (action === 'getDashboardData') {
+      return handleGetDashboardData();
+    }
+    
+    if (action === 'getConfig') {
+      return handleGetConfig();
+    }
 
-  if (action === 'getAllStudentReports') {
-    return handleGetAllStudentReports();
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid action' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
-
-  return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Invalid action' }))
-    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function doPost(e) {
@@ -47,7 +59,7 @@ function doPost(e) {
         payload = e.parameter;
     }
     
-    const action = payload.action;
+    const action = payload ? payload.action : null;
 
     if (action === 'uploadPdfToDrive') {
       return handleUploadPdfToDrive(payload);
@@ -76,8 +88,18 @@ function doPost(e) {
 function handleGetDashboardData() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   
-  const courseSheet = ss.getSheetByName('Masterdata');
+  const courseSheet = getSheetByNameFallback_(ss, 'Masterdata', ['View_ClassTeacher', 'Teacherdata', 'MasterData']);
+  if (!courseSheet) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'ไม่พบชีต Masterdata หรือ View_ClassTeacher' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   const courseData = courseSheet.getDataRange().getValues();
+  if (courseData.length === 0) {
+    return ContentService.createTextOutput(JSON.stringify({ success: true, courses: [], statuses: [] }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   const courseHeaders = courseData[0];
   const courses = courseData.slice(1).map(row => {
     let obj = {};
@@ -85,7 +107,7 @@ function handleGetDashboardData() {
     return obj;
   });
 
-  const logSheet = ss.getSheetByName('Log_Submissions');
+  const logSheet = getSheetByNameFallback_(ss, 'Log_Submissions', ['Submission_Status', 'Log', 'Logs']);
   let statuses = [];
   if (logSheet) {
     const logData = logSheet.getDataRange().getValues();
@@ -107,31 +129,36 @@ function handleGetConfig() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const configSheet = ss.getSheetByName('Config');
   if (!configSheet) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'ไม่พบหน้า Config' })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'ไม่พบหน้า Config' }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
   const data = configSheet.getDataRange().getValues();
   const config = data.slice(1).map(row => ({ Key: row[0], Value: row[1] }));
-  return ContentService.createTextOutput(JSON.stringify({ success: true, config })).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify({ success: true, config }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleGetTeacherReport(payload) {
   const teacherName = payload.teacherName;
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName('Student_Reports');
+  const sheet = getSheetByNameFallback_(ss, 'Student_Reports', ['M.S. Report', 'MS_Report', 'StudentReports']);
   if (!sheet) {
-    return ContentService.createTextOutput(JSON.stringify({ success: true, data: [] })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ success: true, data: [] }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
+  const teacherIdx = headers.indexOf('ครูผู้สอน');
   
-  const report = data.slice(1).filter(row => row[headers.indexOf('ครูผู้สอน')] === teacherName).map(row => {
+  const report = data.slice(1).filter(row => teacherIdx > -1 && String(row[teacherIdx]).trim() === String(teacherName).trim()).map(row => {
     let obj = {};
     headers.forEach((h, i) => obj[h] = row[i]);
     return obj;
   });
   
-  return ContentService.createTextOutput(JSON.stringify({ success: true, data: report })).setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify({ success: true, data: report }))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleUploadPdfToDrive(payload) {
@@ -147,13 +174,14 @@ function handleUploadPdfToDrive(payload) {
   const fileUrl = file.getUrl();
 
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let logSheet = ss.getSheetByName('Log_Submissions');
+  let logSheet = getSheetByNameFallback_(ss, 'Log_Submissions', ['Submission_Status', 'Log']);
   if (!logSheet) {
     logSheet = ss.insertSheet('Log_Submissions');
     logSheet.appendRow(['Timestamp', 'ครูผู้สอน', 'รหัสวิชา', 'กลุ่ม-ห้อง', 'ลิงก์ไฟล์ PDF', 'สถานะการส่ง', 'รอบการส่ง']);
   }
   
-  const statusStr = submissionMode === 1 ? "ส่งแล้ว (รอบ 1)" : "ส่งแล้ว (รอบ 2)";
+  const sMode = Number(submissionMode) || 1;
+  const statusStr = sMode === 1 ? "ส่งแล้ว (รอบ 1)" : "ส่งแล้ว (รอบ 2)";
   
   logSheet.appendRow([
     new Date(),
@@ -162,7 +190,7 @@ function handleUploadPdfToDrive(payload) {
     classRoom,
     fileUrl,
     statusStr,
-    submissionMode || "-"
+    sMode
   ]);
   
   return ContentService.createTextOutput(JSON.stringify({ success: true, fileUrl }))
@@ -171,53 +199,89 @@ function handleUploadPdfToDrive(payload) {
 
 function handleSubmitReport(payload) {
   const { data, courseCode, classRoom, teacherName } = payload;
+  if (!data || !Array.isArray(data)) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Data must be an array' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let sheet = ss.getSheetByName('Student_Reports');
+  let sheet = getSheetByNameFallback_(ss, 'Student_Reports', ['M.S. Report', 'MS_Report']);
   if (!sheet) {
     sheet = ss.insertSheet('Student_Reports');
     sheet.appendRow(['Timestamp', 'ครูผู้สอน', 'รหัสวิชา', 'ชั้น', 'กลุ่ม-ห้อง', 'รหัสประจำตัว', 'ชื่อ-สกุล', 'เวลาเรียน(%)', 'หมายเหตุ', 'อนุญาตให้เข้าสอบ']);
   }
   
-  const timestamp = new Date();
+  const timestamp = Utilities.formatDate(new Date(), "Asia/Bangkok", "yyyy-MM-dd HH:mm:ss");
+  const levelPart = (classRoom || '').split('/')[0] || '';
+  const roomPart = (classRoom || '').split('/')[1] || '';
+
   data.forEach(s => {
+    const studentId = s['รหัสประจำตัว'] ?? s.studentId ?? '';
+    const studentName = s['ชื่อ - นามสกุล (ใส่คำนำหน้าเต็ม)'] ?? s['ชื่อ-สกุล'] ?? s.studentName ?? s.fullName ?? '';
+    const percentage = s['คิดเป็นร้อยละที่มาเรียน'] ?? s['เวลาเรียน(%)'] ?? s.percentage ?? '';
+    const remark = s['หมายเหตุ'] ?? s.remark ?? '';
+    const allowExam = s['อนุญาตให้เข้าสอบ'] !== undefined ? s['อนุญาตให้เข้าสอบ'] : (s.allowExam !== undefined ? s.allowExam : false);
+
     sheet.appendRow([
       timestamp,
       teacherName,
       courseCode,
-      classRoom.split('/')[0] || '',
-      classRoom.split('/')[1] || '',
-      s.studentId,
-      s.studentName,
-      s.percentage,
-      s.remark,
-      s.allowExam
+      levelPart,
+      roomPart,
+      studentId,
+      studentName,
+      percentage,
+      remark,
+      allowExam
     ]);
   });
   
-  return ContentService.createTextOutput(JSON.stringify({ success: true }))
+  return ContentService.createTextOutput(JSON.stringify({ success: true, count: data.length }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleUpdateStudentStatus(payload) {
-  const { studentId, courseCode, allowExam, remark } = payload;
+  const { studentId, courseCode, classRoom, allowExam, remark } = payload;
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName('Student_Reports');
+  const sheet = getSheetByNameFallback_(ss, 'Student_Reports', ['M.S. Report', 'MS_Report']);
   if (!sheet) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Sheet not found' })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Sheet not found' }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
   
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
   const stdIdIdx = headers.indexOf('รหัสประจำตัว');
   const courseIdx = headers.indexOf('รหัสวิชา');
+  const levelIdx = headers.indexOf('ชั้น');
+  const roomIdx = headers.indexOf('กลุ่ม-ห้อง');
   const allowExamIdx = headers.indexOf('อนุญาตให้เข้าสอบ');
   const remarkIdx = headers.indexOf('หมายเหตุ');
   
+  let targetLevel = '';
+  let targetRoom = '';
+  if (classRoom && classRoom.includes('/')) {
+    targetLevel = classRoom.split('/')[0].trim();
+    targetRoom = classRoom.split('/')[1].trim();
+  }
+
   let updated = false;
   for (let i = 1; i < data.length; i++) {
-    if (String(data[i][stdIdIdx]) === String(studentId) && String(data[i][courseIdx]) === String(courseCode)) {
-      sheet.getRange(i + 1, allowExamIdx + 1).setValue(allowExam);
-      if (remark !== undefined && remark !== null) {
+    const row = data[i];
+    const matchId = String(row[stdIdIdx]).trim() === String(studentId).trim();
+    const matchCourse = String(row[courseIdx]).trim() === String(courseCode).trim();
+    let matchClass = true;
+    if (targetLevel && targetRoom && levelIdx > -1 && roomIdx > -1) {
+      const rowLevel = String(row[levelIdx]).trim();
+      const rowRoom = String(row[roomIdx]).trim();
+      matchClass = (rowLevel === targetLevel && rowRoom === targetRoom);
+    }
+
+    if (matchId && matchCourse && matchClass) {
+      if (allowExamIdx > -1) {
+        sheet.getRange(i + 1, allowExamIdx + 1).setValue(allowExam);
+      }
+      if (remark !== undefined && remark !== null && remarkIdx > -1) {
         sheet.getRange(i + 1, remarkIdx + 1).setValue(remark);
       }
       updated = true;

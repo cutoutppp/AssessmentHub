@@ -131,16 +131,19 @@ function DashboardContent() {
         const log = dashboardData.statuses.find(s => {
           const isShifted = s['ครูผู้สอน'] === 'ส่งแล้ว';
           let sLevel = isShifted ? String(s['ชื่อวิชา'] || '') : String(s['ชั้น'] || '');
-          let sRoom = isShifted ? String(s['ชั้น'] || '') : String(s['กลุ่ม-ห้อง'] || '');
-          let sStatus = isShifted ? String(s['ครูผู้สอน'] || '') : String(s['สถานะการส่ง'] || '');
+          let sRoom = isShifted ? String(s['ชั้น'] || '') : String(s['กลุ่ม-ห้อง'] || s['ห้อง'] || '');
+          let sStatus = isShifted ? String(s['ครูผู้สอน'] || '') : String(s['สถานะการส่ง'] || s['สถานะ'] || '');
           
-          sLevel = sLevel.replace(/^ม\./, '').trim();
-          const courseLevel = String(course['ชั้น']).replace(/^ม\./, '').trim();
-          
-          return s['รหัสวิชา'] === courseCode && 
-                 sLevel === courseLevel && 
-                 sRoom.trim() === String(course['กลุ่ม-ห้อง']).trim() &&
-                 sStatus === 'ส่งแล้ว';
+          const sSubj = String(s['รหัสวิชา'] || '').trim();
+          if (sSubj !== String(courseCode || '').trim()) return false;
+          if (!sStatus.includes('ส่งแล้ว')) return false;
+
+          const courseLevel = String(course['ชั้น'] || '').replace(/^ม\./, '').trim();
+          const courseSubRoom = String(course['กลุ่ม-ห้อง'] || '').trim();
+          const targetRoomFull = `${courseLevel}/${courseSubRoom}`;
+          const sRoomFull = sRoom.includes('/') ? sRoom.replace(/^ม\./, '').trim() : `${sLevel.replace(/^ม\./, '').trim()}/${sRoom.trim()}`;
+
+          return targetRoomFull === sRoomFull || sRoom.trim() === courseSubRoom;
         });
         
         return {
@@ -170,12 +173,16 @@ function DashboardContent() {
       });
       const json = await res.json();
       if (json.success) {
-        // Filter the report for this specific course and room
         const courseReport = json.data.filter(s => {
-           // Normalize classroom matching
-           const sRoom = String(s['ชั้น'] || '').replace(/^ม\./, '').trim();
-           const matchRoom = classRoom.replace(/^ม\./, '').trim();
-           return s['รหัสวิชา'] === courseCode && sRoom === matchRoom;
+          const sSubj = String(s['รหัสวิชา'] || '').trim();
+          if (sSubj !== String(courseCode || '').trim()) return false;
+
+          const sLevel = String(s['ชั้น'] || '').replace(/^ม\./, '').trim();
+          const sSubRoom = String(s['กลุ่ม-ห้อง'] || s['ห้อง'] || '').trim();
+          const sCombined = sSubRoom ? `${sLevel}/${sSubRoom}` : sLevel;
+          const matchRoom = classRoom.replace(/^ม\./, '').trim();
+
+          return sCombined === matchRoom || sLevel === matchRoom || String(s['ชั้น/ห้อง'] || '').replace(/^ม\./, '').trim() === matchRoom;
         });
         setTeacherReport(courseReport);
       } else {
@@ -267,11 +274,13 @@ function DashboardContent() {
             method: 'POST',
             
             body: JSON.stringify({
-                action: 'uploadPdfToDrive', fileBase64: base64Str,
+                action: 'uploadPdfToDrive',
+                fileBase64: base64Str,
                 fileName: currentFile.name,
                 courseCode: uploadData.courseCode,
                 classRoom: uploadData.classRoom,
                 teacherName: mData.teacherName,
+                submissionMode: submissionMode || 1,
                 subjectGroup: mData.subjectGroup || "อื่นๆ"
             })
         });
@@ -359,32 +368,35 @@ function DashboardContent() {
         setLoading(false);
         return;
       }
-      const processed = uploadData.students.map(s => {
+      const safeTotalHours = Number(totalHours) || 0;
+      if (safeTotalHours <= 0) {
+        showAlert('เวลาเรียนเต็ม (totalHours) ไม่ถูกต้องหรือมีค่าน้อยกว่าหรือเท่ากับ 0 กรุณาตรวจสอบข้อมูลใน Masterdata', 'error');
+        setLoading(false);
+        return;
+      }
+
+      const processed = (uploadData.students || []).map(s => {
         let percentage = 0;
         let remark = '';
         let isMs = false;
         let msLevel = 0;
 
-        if (totalHours > 0) {
-          // ตรรกะ: ประมาณการว่าคาบที่เหลือในเทอม เด็กจะมาเรียนครบทุกคาบ
-          // ดังนั้นคาบที่หายไปจริงๆ จะมีแค่คาบที่ "ขาด" ไปแล้วในปัจจุบันเท่านั้น
-          // คิดเปอร์เซ็นต์สูงสุดที่เป็นไปได้ = ((เวลาเรียนเต็ม - จำนวนที่ขาด) / เวลาเรียนเต็ม) * 100
-          percentage = ((totalHours - s.absent) / totalHours) * 100;
-          
-          if (percentage < 60) {
-            remark = 'มส. (ไม่ถึง 60% เรียนซ้ำ)';
-            isMs = true;
-            msLevel = 2;
-          } else if (percentage < 80) {
-            remark = 'มส. (ขาดเรียนเกิน 20%)';
-            isMs = true;
-            msLevel = 1;
-          }
+        const absentHours = Number(s.absent) || 0;
+        percentage = Math.max(0, ((safeTotalHours - absentHours) / safeTotalHours) * 100);
+        
+        if (percentage < 60) {
+          remark = 'มส. (ไม่ถึง 60% เรียนซ้ำ)';
+          isMs = true;
+          msLevel = 2;
+        } else if (percentage < 80) {
+          remark = 'มส. (ขาดเรียนเกิน 20%)';
+          isMs = true;
+          msLevel = 1;
         }
 
         return {
           ...s,
-          percentage: percentage.toFixed(2),
+          percentage: isNaN(percentage) ? '0.00' : percentage.toFixed(2),
           remark: remark,
           selected: isMs, // Auto-select if MS
           msLevel: msLevel
@@ -471,23 +483,39 @@ function DashboardContent() {
     const selectedStudents = students.filter(s => s.selected);
     setLoading(true);
     
-    // Prepare 14 columns payload
+    // Prepare 14 columns payload with both Thai and camelCase keys for contract consistency
     const payload = selectedStudents.map((s, index) => ({
-      'ที่': index + 1, // Auto re-numbering
+      'ที่': index + 1,
+      'no': s.no,
+      'เลขที่': s.no,
       'รหัสประจำตัว': s.studentId,
+      'studentId': s.studentId,
       'ชื่อ - นามสกุล (ใส่คำนำหน้าเต็ม)': s.fullName,
+      'ชื่อ-สกุล': s.fullName,
+      'studentName': s.fullName,
+      'fullName': s.fullName,
       'ชั้น': s.classRoom,
-      'เลขที่': s.no, // Original class number
+      'classRoom': s.classRoom,
       'รหัสวิชา': s.courseCode,
+      'courseCode': s.courseCode,
       'ชื่อวิชา': masterData?.courseName || '',
+      'courseName': masterData?.courseName || '',
       'เวลาเรียนเต็ม': masterData?.totalHours || '',
+      'totalHours': masterData?.totalHours || '',
       'ขาด': s.absent,
+      'absent': s.absent,
       'ลา': s.leave,
+      'leave': s.leave,
       'รวมเวลามาเรียน': s.totalAttended,
+      'totalAttended': s.totalAttended,
       'คิดเป็นร้อยละที่มาเรียน': s.percentage,
+      'percentage': s.percentage,
       'ครูผู้สอน': masterData?.teacherName || '',
+      'teacherName': masterData?.teacherName || '',
       'หมายเหตุ': s.remark,
-      'อนุญาตให้เข้าสอบ': false
+      'remark': s.remark,
+      'อนุญาตให้เข้าสอบ': false,
+      'allowExam': false
     }));
 
     try {
@@ -841,10 +869,11 @@ function DashboardContent() {
                           
                           const isEligible = percentage >= 60 || rawRemark.includes('ไม่ส่งงาน');
                           const canEdit = timeframeState.phase <= 2 && (isEligible || isAllowed);
+                          const studentRoom = student['กลุ่ม-ห้อง'] ? `${student['ชั้น']}/${student['กลุ่ม-ห้อง']}` : (student['ชั้น'] || '');
                           
                           const handleToggle = () => {
                             const newStatus = !isAllowed;
-                            submitStatusUpdate(student['รหัสประจำตัว'], student['รหัสวิชา'], student['ชั้น'], newStatus);
+                            submitStatusUpdate(student['รหัสประจำตัว'], student['รหัสวิชา'], studentRoom, newStatus);
                           };
 
                           return (
@@ -886,7 +915,7 @@ function DashboardContent() {
                                       </span>
                                     ) : (
                                       <button
-                                        onClick={() => submitStatusUpdate(student['รหัสประจำตัว'], student['รหัสวิชา'], student['ชั้น'], isAllowed, rawRemark + ' (ลงทะเบียนแล้ว)')}
+                                        onClick={() => submitStatusUpdate(student['รหัสประจำตัว'], student['รหัสวิชา'], studentRoom, isAllowed, rawRemark + ' (ลงทะเบียนแล้ว)')}
                                         disabled={updatingStatus}
                                         className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-lg border border-blue-200 transition-colors"
                                       >
@@ -1038,24 +1067,26 @@ function DashboardContent() {
                 ย้อนกลับ
               </button>
               
-              {students.length > 0 ? (
-                <button 
-                  onClick={handleExportClick}
-                  disabled={loading}
-                  className="group bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
-                >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5 group-hover:scale-110 transition-transform" />}
-                  ยืนยันและอัปเดตระบบส่วนกลาง
-                </button>
-              ) : (
-                <button 
-                  onClick={handleExportClick}
-                  disabled={loading}
-                  className="group bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
-                >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5 group-hover:scale-110 transition-transform" />}
-                  ส่งข้อมูล (นักเรียนผ่านทุกคน)
-                </button>
+              {students.length > 0 && (
+                students.some(s => s.selected) ? (
+                  <button 
+                    onClick={handleExportClick}
+                    disabled={loading}
+                    className="group bg-gradient-to-br from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
+                  >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSpreadsheet className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+                    ยืนยันและอัปเดตระบบส่วนกลาง ({students.filter(s => s.selected).length} คน)
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleExportClick}
+                    disabled={loading}
+                    className="group bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-2xl font-semibold shadow-lg shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2 disabled:opacity-50 disabled:hover:translate-y-0"
+                  >
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+                    ส่งข้อมูล (นักเรียนผ่านทุกคน)
+                  </button>
+                )
               )}
             </div>
 
