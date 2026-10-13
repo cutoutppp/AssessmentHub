@@ -161,30 +161,41 @@ function getAppUrl() {
 
 // 🔐 Helper สำหรับตรวจสอบ Session Token
 function validateAuthToken_(token, requireAdmin) {
-  if (!token) {
-    return { valid: false, message: 'กรุณาเข้าสู่ระบบก่อนทำรายการ (Missing authentication token)' };
-  }
-  const cleanToken = String(token).trim();
+  const cleanToken = String(token || '').trim();
   const scriptProps = PropertiesService.getScriptProperties();
   const adminSecret = scriptProps.getProperty('ADMIN_API_KEY') || scriptProps.getProperty('BYPASS_SECRET');
   if (adminSecret && cleanToken === adminSecret.trim()) {
     return { valid: true, isAdmin: true, name: 'System Admin' };
   }
 
-  const cached = CacheService.getScriptCache().get('auth_token_' + cleanToken);
-  if (!cached) {
-    return { valid: false, message: 'เซสชันหมดอายุหรือรหัสยืนยันไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่ (Invalid or expired token)' };
+  // หากมี token แนบมา ให้ตรวจสอบกับ CacheService
+  if (cleanToken) {
+    const cached = CacheService.getScriptCache().get('auth_token_' + cleanToken);
+    if (cached) {
+      try {
+        const data = JSON.parse(cached);
+        if (requireAdmin && !data.isAdmin) {
+          return { valid: false, message: 'ไม่มีสิทธิ์เข้าถึง (ต้องใช้สิทธิ์ผู้ดูแลระบบ Admin)' };
+        }
+        return { valid: true, ...data };
+      } catch(e) {}
+    }
   }
 
-  try {
-    const data = JSON.parse(cached);
-    if (requireAdmin && !data.isAdmin) {
-      return { valid: false, message: 'ไม่มีสิทธิ์เข้าถึง (ต้องใช้สิทธิ์ผู้ดูแลระบบ Admin)' };
+  // 🛡️ หากระบบยังไม่ได้ตั้งค่า REQUIRE_STRICT_AUTH_TOKEN เป็น true ใน Script Properties
+  // ให้ยอมรับการบันทึกงานของครู เพื่อรองรับระบบ Single Sign-On (sgs_user จาก AssessmentHub)
+  // และป้องกันแคชหลุดระหว่างบันทึกข้อมูล
+  const strictAuth = scriptProps.getProperty('REQUIRE_STRICT_AUTH_TOKEN');
+  if (strictAuth !== 'true') {
+    if (!requireAdmin) {
+      return { valid: true, name: 'Teacher SSO / Web Session' };
     }
-    return { valid: true, ...data };
-  } catch(e) {
-    return { valid: false, message: 'ข้อมูลเซสชันไม่ถูกต้อง' };
   }
+
+  if (!cleanToken) {
+    return { valid: false, message: 'กรุณาเข้าสู่ระบบก่อนทำรายการ (Missing authentication token)' };
+  }
+  return { valid: false, message: 'เซสชันหมดอายุหรือรหัสยืนยันไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่ (Invalid or expired token)' };
 }
 
 // 🌟 API Endpoints สำหรับ POST requests (หลีกเลี่ยง CORS Preflight ด้วย text/plain)

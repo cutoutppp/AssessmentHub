@@ -779,9 +779,15 @@
           ].includes(action);
           const MAX_RETRIES = isWriteAction ? 1 : 3;
 
-          // แนบ session token เสมอถ้ามี
-          if (SESSION_TOKEN && !params.token) {
+          // แนบ session token และข้อมูลผู้ส่งเสมอ
+          if (!params.token && SESSION_TOKEN) {
             params.token = SESSION_TOKEN;
+          }
+          if (!params.teacherId && (CURRENT_USER_ID || TEMP_IDCARD)) {
+            params.teacherId = CURRENT_USER_ID || TEMP_IDCARD;
+          }
+          if (!params.teacherName && (CURRENT_TEACHER_NAME || CURRENT_TEACHER)) {
+            params.teacherName = CURRENT_TEACHER_NAME || CURRENT_TEACHER;
           }
 
           const urlParams = new URLSearchParams();
@@ -948,8 +954,11 @@
           const user = JSON.parse(sgsUser);
           if (user && (user.userid || user.idCard)) {
             TEMP_IDCARD = user.userid || user.idCard;
+            CURRENT_USER_ID = TEMP_IDCARD;
             CURRENT_TEACHER = user.name || ((user.prefix || '') + (user.firstname || '') + ' ' + (user.lastname || '')).trim();
+            CURRENT_TEACHER_NAME = CURRENT_TEACHER;
             IS_ADMIN = checkIsSuperuser(user, TEMP_IDCARD);
+            SESSION_TOKEN = user.token || localStorage.getItem('teac_token') || '';
             document.getElementById('loginScreen').classList.add('hidden');
             setupDashboard();
             return;
@@ -1039,13 +1048,16 @@
       if (cred.token && cred.expiry > Date.now()) {
         SESSION_TOKEN = cred.token;
         try { localStorage.setItem('teac_token', cred.token); } catch(e) {}
-        if (cachedName) {
-          CURRENT_TEACHER = cachedName;
-          IS_ADMIN = cachedAdmin || checkIsSuperuser(null, cred.id);
-          document.getElementById('loginScreen').classList.add('hidden');
-          setupDashboard();
-          return;
-        }
+      } else if (localStorage.getItem('teac_token')) {
+        SESSION_TOKEN = localStorage.getItem('teac_token') || '';
+      }
+      if (cachedName) {
+        CURRENT_TEACHER = cachedName;
+        CURRENT_TEACHER_NAME = cachedName;
+        IS_ADMIN = cachedAdmin || checkIsSuperuser(null, cred.id);
+        document.getElementById('loginScreen').classList.add('hidden');
+        setupDashboard();
+        return;
       }
 
       if (cachedName) {
