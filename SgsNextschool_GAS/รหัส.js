@@ -369,8 +369,8 @@ function cleanStr_(val) {
 
 var TARGET_SPREADSHEET_ID = "1OJh1FUnvLeIPGls4QIlture5f7GbAM0IieO8J5q9LuQ";
 
-function getSpreadsheet_(data) {
-  var id = (data && (data.spreadsheetId || data.spreadsheet_id)) || TARGET_SPREADSHEET_ID;
+function getSpreadsheet_() {
+  var id = TARGET_SPREADSHEET_ID;
   if (id) {
     try {
       return SpreadsheetApp.openById(id);
@@ -380,6 +380,7 @@ function getSpreadsheet_(data) {
   }
   return SpreadsheetApp.getActiveSpreadsheet();
 }
+
 
 /**
  * 🌟 ฟังก์ชันบันทึกและซิงค์ข้อมูลลงแผ่นงาน WP16_งานค้าง (14 คอลัมน์ ตรงตามหัวตารางมาตรฐาน)
@@ -536,7 +537,23 @@ function doPost(e) {
   
   try {
     var data = JSON.parse(e.postData.contents);
-    var ss = getSpreadsheet_(data);
+
+    // 🔒 ตรวจสอบสิทธิ์ด้วย Secret Key / Admin Token หากมีการตั้งค่าใน Script Properties
+    var scriptProps = PropertiesService.getScriptProperties();
+    var secretKey = scriptProps.getProperty('SYNC_SECRET_KEY') || scriptProps.getProperty('ADMIN_API_KEY');
+    if (secretKey) {
+      var reqSecret = String((data && (data.secret || data.token || data.secretKey || data.key)) || '').trim();
+      if (reqSecret !== secretKey.trim()) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          success: false,
+          message: "Unauthorized: Invalid or missing secret token"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    var ss = getSpreadsheet_();
+
     
     // 🌟 0. คำสั่งลบแถวทดสอบ (clean-test-rows)
     if (data.action === "clean-test-rows") {
