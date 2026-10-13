@@ -1134,10 +1134,11 @@ function updatePendingTask(payload) {
     
     sheet.getRange(targetRow, idxPendingTask).setValue(payload.pendingTask !== undefined ? payload.pendingTask : '');
     if (payload.taskDate !== undefined && idxTaskDate > 0) {
-      sheet.getRange(targetRow, idxTaskDate).setValue(payload.taskDate);
+      var valToSet = (payload.taskDate === 'clear' || payload.taskDate === '' || payload.taskDate === null || payload.taskDate === false) ? '' : payload.taskDate;
+      sheet.getRange(targetRow, idxTaskDate).setValue(valToSet);
     }
     SpreadsheetApp.flush();
-    return { success: true, rowId: targetRow, pendingTask: payload.pendingTask || '', taskDate: payload.taskDate };
+    return { success: true, rowId: targetRow, pendingTask: payload.pendingTask || '', taskDate: (payload.taskDate === 'clear' ? '' : payload.taskDate) };
   } catch (e) {
     console.error('Error in updatePendingTask:', e);
     return { success: false, message: e.message };
@@ -1165,7 +1166,8 @@ function batchUpdatePendingTasks(items) {
       if (rId && rId >= 2) {
         sheet.getRange(rId, idxPendingTask).setValue(task);
         if (it.taskDate !== undefined && idxTaskDate > 0) {
-          sheet.getRange(rId, idxTaskDate).setValue(it.taskDate);
+          var valToSet = (it.taskDate === 'clear' || it.taskDate === '' || it.taskDate === null || it.taskDate === false) ? '' : it.taskDate;
+          sheet.getRange(rId, idxTaskDate).setValue(valToSet);
         }
         updatedCount++;
       }
