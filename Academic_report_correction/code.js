@@ -765,8 +765,9 @@ function verifyPinLogin(idCard, pin) {
       Logger.log("Cloud Run auth error: " + fetchErr.message);
     }
 
-    const superCodes = ['444', '440', '242', '842', '234'];
-    const superIds = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+    const scriptProps = PropertiesService.getScriptProperties();
+    const superCodes = (scriptProps.getProperty('SUPER_CODES') || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    const superIds = (scriptProps.getProperty('SUPER_IDS') || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
 
     if (response && response.getResponseCode() === 200 && result && result.teacher) {
        let tName = result.teacher.name || ((result.teacher.prefix || '') + (result.teacher.firstname || '') + ' ' + (result.teacher.lastname || '')).trim();

@@ -840,7 +840,7 @@
     let CURRENT_TEACHER = '';
     let IS_ADMIN = false;
     const SUPERUSER_TEACCODES = ['444', '440', '242', '842', '234'];
-    const SUPERUSER_USERIDS = ['1199600135247', '1199600120657', '1331500042469', '1300800224529', '1199600209381'];
+    const SUPERUSER_USERIDS = [];
     function checkIsSuperuser(userObj, idCard) {
       const cleanId = String(idCard || (userObj && (userObj.userid || userObj.idCard)) || '').replace(/[-\s]/g, '');
       const cleanCode = String((userObj && userObj.teaccode) || '').trim();
