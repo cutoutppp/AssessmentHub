@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 DB_FILE = "work_db.json"
 
@@ -26,7 +26,7 @@ def add_work(teacher_name, subject_code, class_level, pair_data):
         db[teacher_name][subject_code] = {}
         
     db[teacher_name][subject_code][class_level] = {
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "data": pair_data
     }
     

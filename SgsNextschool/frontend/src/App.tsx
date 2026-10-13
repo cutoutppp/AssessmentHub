@@ -678,7 +678,7 @@ function App() {
     const subjName = p.subject_name || tInfo.subject_name || "";
     const teachName = tInfo.teacher_name || "";
     const cLevel = tInfo.class_level || classLevel;
-    const nowIso = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const nowIso = '';
 
     const failingStudents: any[] = [];
     sgsStudents.forEach((student: any) => {

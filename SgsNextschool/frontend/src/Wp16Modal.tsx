@@ -482,7 +482,7 @@ export default function Wp16Modal({
                 pending_task: newStudent.pending_task,
                 pendingTask: newStudent.pending_task,
                 remark: '[เพิ่มเอง]',
-                updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                updated_at: '',
               },
             ],
           }),
@@ -599,7 +599,7 @@ export default function Wp16Modal({
             pending_task: s.pending_task,
             pendingTask: s.pending_task,
             remark: s.remark,
-            updated_at: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            updated_at: '',
           }));
           fetch(webAppUrl, {
             method: 'POST',
