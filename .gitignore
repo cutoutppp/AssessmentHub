@@ -23,3 +23,6 @@ Thumbs.db
 *wp16_pending_tasks.json
 *work_db.json
 *.har
+test*.txt
+test*.docx
+
