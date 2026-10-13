@@ -1408,7 +1408,7 @@
               const a = Math.max(0, rowTarget - k - p);
               
               const defaultEval = (r === 0)
-                ? "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม"
+                ? (u.evaluation_methods || "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม")
                 : "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน/ภาระงาน";
 
               u.assessments.push({
@@ -2167,7 +2167,7 @@
           let a = Math.max(0, rowTarget - k - p);
 
           const defaultEval = (r === 0)
-            ? "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม"
+            ? (u.evaluation_methods || "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม")
             : "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน";
 
           u.assessments.push({
@@ -2232,7 +2232,7 @@
       let acc = 0;
       units.forEach((u, i) => {
         if (i === units.length - 1) {
-          u.hours = target - acc;
+          u.hours = Math.max(1, target - acc);
         } else {
           u.hours = Math.max(1, Math.round((u.hours / curSum) * target));
           acc += u.hours;

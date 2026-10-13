@@ -647,6 +647,8 @@ async function exportToWord() {
             btn.innerHTML = '<i class="ri-loader-4-line animate-spin text-xl"></i><span>กำลังสร้างไฟล์ Word...</span>';
             btn.disabled = true;
 
+            try {
+
             const itemsToPrint = db.filter(item => selectedIds.has(item.id));
             const gPhone = document.getElementById('globalPhone').value;
             
@@ -774,9 +776,14 @@ async function exportToWord() {
             link.click();
             document.body.removeChild(link);
             
-            // Restore button
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+            } catch (err) {
+                console.error('Export word error:', err);
+                alert('เกิดข้อผิดพลาดในการสร้างไฟล์ Word: ' + (err && err.message ? err.message : err));
+            } finally {
+                // Restore button
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         window.onload = init;
