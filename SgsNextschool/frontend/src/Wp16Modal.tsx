@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
+function escapeHtml(str: any): string {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export interface Wp16ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -427,7 +437,7 @@ export default function Wp16Modal({
     };
 
     try {
-      await fetch(`${backendUrl}/api/wp16/student`, {
+      const res = await fetch(`${backendUrl}/api/wp16/student`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -440,8 +450,17 @@ export default function Wp16Modal({
           webhookUrl: webAppUrl,
         }),
       });
-    } catch (err) {
+      if (!res.ok) {
+        throw new Error(`HTTP error ${res.status}`);
+      }
+    } catch (err: any) {
       console.error('Failed to save manual student to backend:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'เพิ่มนักเรียนไม่สำเร็จ',
+        text: err?.message || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+      });
+      return;
     }
 
     if (webAppUrl) {
@@ -506,10 +525,12 @@ export default function Wp16Modal({
   };
 
   const handleDeleteStudent = async (studentId: string, studentName: string) => {
+    const safeName = escapeHtml(studentName);
+    const safeId = escapeHtml(studentId);
     const confirm = await Swal.fire({
       icon: 'warning',
       title: 'ลบนักเรียนคนนี้?',
-      html: `คุณต้องการลบ <b>${studentName}</b> (รหัส ${studentId})<br/>ออกจากรายการ วผ.16 ของวิชานี้ใช่หรือไม่?`,
+      html: `คุณต้องการลบ <b>${safeName}</b> (รหัส ${safeId})<br/>ออกจากรายการ วผ.16 ของวิชานี้ใช่หรือไม่?`,
       showCancelButton: true,
       confirmButtonText: 'ยืนยันลบ',
       cancelButtonText: 'ยกเลิก',
@@ -518,29 +539,47 @@ export default function Wp16Modal({
     });
     if (confirm.isConfirmed) {
       try {
-        await fetch(
-          `${backendUrl}/api/wp16/student?subject_code=${encodeURIComponent(
-            selectedSubject
-          )}&student_id=${encodeURIComponent(studentId)}`,
+        const queryParams = new URLSearchParams({
+          subject_code: selectedSubject,
+          student_id: studentId,
+        });
+        if (webAppUrl) {
+          queryParams.append('webhook_url', webAppUrl);
+        }
+        const res = await fetch(
+          `${backendUrl}/api/wp16/student?${queryParams.toString()}`,
           { method: 'DELETE' }
         );
-      } catch (e) {
+        if (!res.ok) {
+          throw new Error(`HTTP error ${res.status}`);
+        }
+        const data = await res.json().catch(() => ({}));
+        if (data.status === 'error') {
+          throw new Error(data.message || 'Server error');
+        }
+
+        setStudents((prev) => prev.filter((s) => s.student_id !== studentId));
+        setSelectedStudentIds((prev) => {
+          const next = new Set(prev);
+          next.delete(studentId);
+          return next;
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'ลบเรียบร้อย',
+          timer: 1200,
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end',
+        });
+      } catch (e: any) {
         console.error('Failed to delete on server', e);
+        Swal.fire({
+          icon: 'error',
+          title: 'ไม่สามารถลบข้อมูลได้',
+          text: e?.message || 'กรุณาลองใหม่อีกครั้ง',
+        });
       }
-      setStudents((prev) => prev.filter((s) => s.student_id !== studentId));
-      setSelectedStudentIds((prev) => {
-        const next = new Set(prev);
-        next.delete(studentId);
-        return next;
-      });
-      Swal.fire({
-        icon: 'success',
-        title: 'ลบเรียบร้อย',
-        timer: 1200,
-        showConfirmButton: false,
-        toast: true,
-        position: 'top-end',
-      });
     }
   };
 

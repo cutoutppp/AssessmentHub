@@ -283,13 +283,33 @@ def remove_pending_task(subject_code, student_id, webhook_url=None):
             if str(v.get('subject_code', '')).strip() == s_code and str(v.get('student_id', '')).strip() == s_id:
                 target_key = k
                 break
+    local_deleted = False
     if target_key:
         del db[target_key]
         _save_wp16_db(db)
+        local_deleted = True
+
+    # Send delete action to Google Sheet via GAS
+    gas_deleted = False
+    try:
+        import requests
+        DEFAULT_GAS_URL = "https://script.google.com/macros/s/AKfycbxzpP9b_eBJUU5KaNX1CbMOLHygMsrUdO7earro-bQIs8lMS9H6YM6Z6mlamm3jJd1fDQ/exec"
+        GAS_URL = webhook_url if (webhook_url and is_valid_gas_url(webhook_url)) else (os.environ.get("GAS_WEB_APP_URL") or DEFAULT_GAS_URL)
+        sync_secret = os.environ.get("SYNC_SECRET_KEY", "sgs_ns_sync_default_key_2569")
+        payload = json.dumps({
+            'action': 'delete-wp16',
+            'secret': sync_secret,
+            'special_id': special_id,
+            'subject_code': s_code,
+            'student_id': s_id
+        })
+        resp = requests.post(GAS_URL, data=payload, headers={'Content-Type': 'text/plain;charset=utf-8'}, timeout=15)
         try:
-            import threading
-            threading.Thread(target=sync_all_accumulated_tasks_to_gas, args=(webhook_url,), daemon=True).start()
+            res_json = resp.json()
+            gas_deleted = bool(res_json.get("deleted") or res_json.get("status") == "success")
         except Exception:
             pass
-        return True
-    return False
+    except Exception as e:
+        print(f"[wp16_db] Error calling GAS delete-wp16: {e}")
+
+    return local_deleted or gas_deleted

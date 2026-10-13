@@ -607,22 +607,23 @@ function doPost(e) {
     }
     
     // 🌟 1.5 คำสั่งลบนักเรียนออกจาก WP16_งานค้าง
-    if (data.action === "delete-wp16") {
+    if (data.action === "delete-wp16" || data.action === "delete-wp16-student") {
       var sheet = ss.getSheetByName("WP16_งานค้าง");
-      if (sheet && data.special_id) {
+      var targetSp = cleanStr_(data.special_id || ((data.subject_code || "") + (data.student_id || "")));
+      if (sheet && targetSp) {
         var allData = sheet.getDataRange().getValues();
         var deletedRow = 0;
         for (var i = allData.length - 1; i > 0; i--) {
-          if (String(allData[i][0] || "").trim() === String(data.special_id).trim()) {
+          if (cleanStr_(allData[i][0]) === targetSp) {
             sheet.deleteRow(i + 1);
             deletedRow++;
-            break; // Assuming 1 unique special_id
+            break;
           }
         }
         SpreadsheetApp.flush();
-        return ContentService.createTextOutput(JSON.stringify({ status: "success", deleted: deletedRow })).setMimeType(ContentService.MimeType.JSON);
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", success: true, deleted: deletedRow > 0, deleted_count: deletedRow })).setMimeType(ContentService.MimeType.JSON);
       }
-      return ContentService.createTextOutput(JSON.stringify({ status: "not_found" })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "not_found", success: false, deleted: false })).setMimeType(ContentService.MimeType.JSON);
     }
     
     // 🌟 2. คำสั่งเดิม: บันทึกการส่งเกรด SGS & NextSchool (data.pairs)
