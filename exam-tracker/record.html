@@ -597,7 +597,17 @@
             }
         }
 
-        function batchActionCurrentSlot() {
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getCurrentFilteredExams() {
             let dayExams = examDb.filter(e => e.date_d === currentDay && e.grade_group === currentGrade);
             if (currentTimeSlot === 'morning') {
                 dayExams = dayExams.filter(e => e.start_min < 720);
@@ -610,13 +620,39 @@
                 dayExams = dayExams.filter(e => e.class_name === currentRoom);
             }
 
-            if (dayExams.length === 0) return;
+            let filtered = dayExams;
+            if (currentFilter === 'missing_p1') {
+                filtered = filtered.filter(e => !(stateData[e.row_id || e.id]?.p1_picked));
+            } else if (currentFilter === 'missing_p2') {
+                filtered = filtered.filter(e => !(stateData[e.row_id || e.id]?.p2_received));
+            } else if (currentFilter === 'done') {
+                filtered = filtered.filter(e => stateData[e.row_id || e.id]?.p2_received);
+            }
+
+            const search = (document.getElementById('recordSearchInput')?.value || '').trim().toLowerCase();
+            if (search) {
+                filtered = filtered.filter(e => 
+                    e.room.toLowerCase().includes(search) ||
+                    e.class_name.toLowerCase().includes(search) ||
+                    e.subj_code.toLowerCase().includes(search) ||
+                    e.subj_name.toLowerCase().includes(search) ||
+                    (e.teacher_name && e.teacher_name.toLowerCase().includes(search)) ||
+                    (e.proctor1 && e.proctor1.toLowerCase().includes(search)) ||
+                    (e.proctor2 && e.proctor2.toLowerCase().includes(search))
+                );
+            }
+            return { dayExams, filtered };
+        }
+
+        function batchActionCurrentSlot() {
+            const { filtered } = getCurrentFilteredExams();
+            if (filtered.length === 0) return;
             const timeLabel = getActiveTimeSlotLabel();
 
             if (currentPhaseMode === 'dispatch') {
-                const pending = dayExams.filter(e => !stateData[e.row_id || e.id]?.p1_picked);
+                const pending = filtered.filter(e => !stateData[e.row_id || e.id]?.p1_picked);
                 if (pending.length === 0) {
-                    alert(`ทุกห้องใน ${timeLabel} ได้บันทึกส่งข้อสอบเรียบร้อยแล้ว`);
+                    alert(`ทุกห้องในรายการ (${timeLabel}) ได้บันทึกส่งข้อสอบเรียบร้อยแล้ว`);
                     return;
                 }
                 if (!confirm(`ยืนยันบันทึก "ส่งข้อสอบแล้ว" ให้กับห้องสอบที่เหลือ ${pending.length} ห้องใน ${timeLabel} หรือไม่?`)) return;
@@ -633,9 +669,9 @@
                 renderTimeTabs();
                 renderTable();
             } else if (currentPhaseMode === 'return') {
-                const pending = dayExams.filter(e => !stateData[e.row_id || e.id]?.p2_received);
+                const pending = filtered.filter(e => !stateData[e.row_id || e.id]?.p2_received);
                 if (pending.length === 0) {
-                    alert(`ทุกห้องใน ${timeLabel} ได้บันทึกรับคืนข้อสอบเรียบร้อยแล้ว`);
+                    alert(`ทุกห้องในรายการ (${timeLabel}) ได้บันทึกรับคืนข้อสอบเรียบร้อยแล้ว`);
                     return;
                 }
                 if (!confirm(`ยืนยันบันทึก "รับซองคืนแล้ว" ให้กับห้องสอบที่เหลือ ${pending.length} ห้องใน ${timeLabel} หรือไม่?`)) return;
@@ -952,7 +988,7 @@
 
                         <!-- หมายเหตุ -->
                         <td class="p-2 no-print">
-                            <input type="text" onblur="saveNote('${rowKey}', this.value)" value="${st.p2_note || ''}" placeholder="บันทึกย่อ..." class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-indigo-400">
+                            <input type="text" onblur="saveNote('${rowKey}', this.value)" value="${escapeHtml(st.p2_note || '')}" placeholder="บันทึกย่อ..." class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-indigo-400">
                         </td>
                     `;
                     tbody.appendChild(tr);
