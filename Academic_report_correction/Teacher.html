@@ -1610,7 +1610,7 @@
       try {
         const res = await callBackend('submit-grades', { payload }, 'POST');
         hideLoader();
-        if(res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic Update: นำรายการที่ส่งแล้วออกจากหน้างานทันทีใน 0 วินาที
           const submittedRowIds = new Set(payload.map(p => p.rowId));
           ALL_TASKS = ALL_TASKS.filter(t => !submittedRowIds.has(t.rowId));
@@ -1711,11 +1711,9 @@
       const taskObj = ALL_TASKS.find(t => t.rowId === rowId);
       if (!taskObj) return;
 
-      // Optimistic update
+      const prevPendingTask = taskObj.pendingTask;
       taskObj.pendingTask = presetText;
       filterTasks();
-      saveTasksToCache();
-      showToast(`สั่งงาน "${presetText.slice(0, 20)}..." สำเร็จ!`);
 
       try {
         const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
@@ -1724,10 +1722,15 @@
           specialId: specialId,
           pendingTask: presetText
         }, 'GET');
-        if (res && res.success === false) {
-          throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+        if (!res || res.success !== true) {
+          throw new Error((res && res.message) || 'บันทึกไม่สำเร็จ');
         }
+        saveTasksToCache();
+        showToast(`สั่งงาน "${presetText.slice(0, 20)}..." สำเร็จ!`);
       } catch (err) {
+        taskObj.pendingTask = prevPendingTask;
+        filterTasks();
+        saveTasksToCache();
         console.error('Failed to sync quick preset:', err);
         showToast('⚠️ เตือน: ไม่สามารถบันทึกไปยังเซิร์ฟเวอร์ได้: ' + err.message);
       }
@@ -1741,21 +1744,20 @@
 
       const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
       const wasRegistered = !!taskObj.isRegistered;
+      const prevRegistered = taskObj.isRegistered;
+      const prevTaskDate = taskObj.taskDate;
       const nowStr = new Date().toLocaleString('th-TH');
 
       // Optimistic in-memory update
       if (wasRegistered) {
         taskObj.isRegistered = false;
         taskObj.taskDate = '';
-        showToast(`ยกเลิกการลงทะเบียนรับงานของ ${taskObj.stuName} แล้ว`);
       } else {
         taskObj.isRegistered = true;
         taskObj.taskDate = nowStr;
-        showToast(`บันทึกการรับทราบงานของ ${taskObj.stuName} เรียบร้อย!`);
       }
 
       filterTasks();
-      saveTasksToCache();
 
       // If single modal is currently open for this row, update its bar too
       if (ACTIVE_TASK_ROW_ID === rowId) {
@@ -1789,10 +1791,40 @@
           specialId: specialId,
           taskDate: wasRegistered ? 'clear' : nowStr
         }, 'GET');
-        if (res && res.success === false) {
-          throw new Error(res.message || 'บันทึกสถานะไม่สำเร็จ');
+        if (!res || res.success !== true) {
+          throw new Error((res && res.message) || 'บันทึกสถานะไม่สำเร็จ');
         }
+        saveTasksToCache();
+        showToast(wasRegistered ? `ยกเลิกการลงทะเบียนรับงานของ ${taskObj.stuName} แล้ว` : `บันทึกการรับทราบงานของ ${taskObj.stuName} เรียบร้อย!`);
       } catch (err) {
+        taskObj.isRegistered = prevRegistered;
+        taskObj.taskDate = prevTaskDate;
+        filterTasks();
+        if (ACTIVE_TASK_ROW_ID === rowId) {
+          const regStatusDiv = document.getElementById('taskModalRegStatusBar');
+          const regCheck = document.getElementById('taskModalMarkRegisteredCheck');
+          if (regCheck) regCheck.checked = taskObj.isRegistered;
+          if (regStatusDiv) {
+            if (taskObj.isRegistered) {
+              regStatusDiv.innerHTML = `
+                <div class="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-between text-xs font-bold text-emerald-800">
+                  <span class="flex items-center gap-1.5"><i class="material-icons-round text-emerald-600 text-sm">check_circle</i> นักเรียนลงทะเบียนรับงานแล้ว (${escapeHtml(taskObj.taskDate)})</span>
+                  <button type="button" onclick="toggleRowRegistration(${taskObj.rowId})" class="text-rose-600 hover:text-rose-800 text-[10px] underline font-bold cursor-pointer">ยกเลิกการรับงาน</button>
+                </div>
+              `;
+            } else {
+              regStatusDiv.innerHTML = `
+                <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 flex items-center justify-between text-xs font-bold text-amber-800">
+                  <span class="flex items-center gap-1.5"><i class="material-icons-round text-amber-600 text-sm">schedule</i> ยังไม่ได้ลงทะเบียนรับงาน</span>
+                  <button type="button" onclick="toggleRowRegistration(${taskObj.rowId})" class="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="material-icons-round text-xs">touch_app</i> <span>✍️ บันทึกว่ารับงานแล้ว</span>
+                  </button>
+                </div>
+              `;
+            }
+          }
+        }
+        saveTasksToCache();
         console.error('Failed to sync registration:', err);
         showToast('⚠️ ไม่สามารถบันทึกสถานะรับงานได้: ' + err.message);
       }
@@ -1808,6 +1840,10 @@
       const newTaskText = document.getElementById('taskModalTextarea').value.trim();
       const markRegistered = document.getElementById('taskModalMarkRegisteredCheck') ? document.getElementById('taskModalMarkRegisteredCheck').checked : false;
 
+      const prevPendingTask = taskObj.pendingTask;
+      const prevIsRegistered = taskObj.isRegistered;
+      const prevTaskDate = taskObj.taskDate;
+
       // Optimistic update
       taskObj.pendingTask = newTaskText;
       const nowStr = new Date().toLocaleString('th-TH');
@@ -1821,9 +1857,7 @@
 
       if (newTaskText) saveRecentTask(newTaskText);
       filterTasks();
-      saveTasksToCache();
       closeTaskModal();
-      showToast('บันทึกภาระงานค้างเรียบร้อยแล้ว');
 
       try {
         const specialId = taskObj.specialId || `${taskObj.subjCode}${taskObj.stuId}`;
@@ -1833,10 +1867,17 @@
           pendingTask: newTaskText,
           taskDate: markRegistered ? (taskObj.taskDate || nowStr) : 'clear'
         }, 'GET');
-        if (res && res.success === false) {
-          throw new Error(res.message || 'บันทึกไม่สำเร็จ');
+        if (!res || res.success !== true) {
+          throw new Error((res && res.message) || 'บันทึกไม่สำเร็จ');
         }
+        saveTasksToCache();
+        showToast('บันทึกภาระงานค้างเรียบร้อยแล้ว');
       } catch (err) {
+        taskObj.pendingTask = prevPendingTask;
+        taskObj.isRegistered = prevIsRegistered;
+        taskObj.taskDate = prevTaskDate;
+        filterTasks();
+        saveTasksToCache();
         console.error('Failed to save task:', err);
         showToast('⚠️ เกิดปัญหาในการบันทึก: ' + err.message);
       }
@@ -2348,7 +2389,7 @@
       try {
         const res = await callBackend('approve', { rowIds: allRowIds }, 'GET');
         hideLoader();
-        if (res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic in-memory update
           CURRENT_APPROVAL_TASKS = [];
           try { sessionStorage.setItem('approvals_cache', JSON.stringify([])); } catch(e) {}
@@ -2381,7 +2422,7 @@
       try {
         const res = await callBackend('approve', { rowIds: APPROVAL_LIST }, 'POST');
         hideLoader();
-        if (res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic in-memory update
           const approvedSet = new Set(APPROVAL_LIST);
           CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => !approvedSet.has(t.rowId));
@@ -2415,7 +2456,7 @@
       try {
         const res = await callBackend('reject', { rowIds: APPROVAL_LIST }, 'POST');
         hideLoader();
-        if (res && res.success !== false) {
+        if (res && res.success === true) {
           // ⚡ Optimistic in-memory update
           const rejectedSet = new Set(APPROVAL_LIST);
           CURRENT_APPROVAL_TASKS = CURRENT_APPROVAL_TASKS.filter(t => !rejectedSet.has(t.rowId));

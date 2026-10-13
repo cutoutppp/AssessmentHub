@@ -792,6 +792,7 @@ function App() {
         }
 
         // หาก Backend ไม่ได้เปิดทำงาน หรือตอบสนองช้า ให้ส่งข้อมูลตรงไปยัง Google Apps Script ทันที เพื่อบันทึกลงชีต History
+        let directSaved = false;
         if (!backendSaved && webhookUrl) {
           try {
             const directRes = await fetch(webhookUrl, {
@@ -799,9 +800,18 @@ function App() {
               headers: { "Content-Type": "text/plain;charset=utf-8" },
               body: JSON.stringify(payload)
             });
-            const directJson = await directRes.json();
-            if (directJson?.drive_folder_url) driveFolderUrl = directJson.drive_folder_url;
+            if (directRes.ok) {
+              const directJson = await directRes.json().catch(() => null);
+              if (directJson && directJson.status !== 'error') {
+                directSaved = true;
+                if (directJson?.drive_folder_url) driveFolderUrl = directJson.drive_folder_url;
+              }
+            }
           } catch (_) {}
+        }
+
+        if (!backendSaved && !directSaved) {
+          throw new Error("ไม่สามารถบันทึกข้อมูลได้ เนื่องจากเซิร์ฟเวอร์ Backend และ Google Apps Script ไม่ตอบสนอง");
         }
 
         // Directly sync failing students to Google Sheets WP16_งานค้าง tab (14 columns)

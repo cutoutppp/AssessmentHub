@@ -450,8 +450,9 @@ export default function Wp16Modal({
           webhookUrl: webAppUrl,
         }),
       });
-      if (!res.ok) {
-        throw new Error(`HTTP error ${res.status}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.status === 'error') {
+        throw new Error(data.message || `HTTP error ${res.status}`);
       }
     } catch (err: any) {
       console.error('Failed to save manual student to backend:', err);
