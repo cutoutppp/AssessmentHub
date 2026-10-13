@@ -25,4 +25,11 @@ Thumbs.db
 *.har
 test*.txt
 test*.docx
-
+# Build directories and caches
+.next/
+out/
+dist/
+build/
+_archive/
+code_review/
+scratch/
