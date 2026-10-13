@@ -56,50 +56,26 @@ function doGet(e) {
       if (action === 'approvals') return ContentService.createTextOutput(JSON.stringify(getPendingApprovals())).setMimeType(ContentService.MimeType.JSON);
       
       if (action === 'check-id') return ContentService.createTextOutput(JSON.stringify(checkIdCardStatus(e.parameter.idCard))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'verify-pin') return ContentService.createTextOutput(JSON.stringify(verifyPinLogin(e.parameter.idCard, e.parameter.pin))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'submit-grades') return ContentService.createTextOutput(JSON.stringify(submitGrades(JSON.parse(e.parameter.payload)))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'approve') return ContentService.createTextOutput(JSON.stringify(approveGrades(JSON.parse(e.parameter.rowIds)))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'reject') return ContentService.createTextOutput(JSON.stringify(rejectGrades(JSON.parse(e.parameter.rowIds)))).setMimeType(ContentService.MimeType.JSON);
+      // 🔒 ไม่อนุญาตให้ทำรายการเขียนหรือลบข้อมูลผ่าน GET เพื่อป้องกันการโจมตีหรือการคลิกลิงก์ทำลายข้อมูล
+      const forbiddenGetActions = [
+        'direct-fix-records', 'clean-sync-wp16', 'sync-wp16-sheet',
+        'submit-grades', 'approve', 'reject', 'update-pending-task',
+        'register-task', 'batch-register-tasks', 'batch-update-pending-tasks',
+        'sync-sgs', 'update-sgs-sync'
+      ];
+      if (forbiddenGetActions.indexOf(action) !== -1) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "error",
+          success: false,
+          error: "METHOD_NOT_ALLOWED",
+          message: "ไม่อนุญาตให้ทำรายการเขียนหรือลบข้อมูลผ่าน GET กรุณาใช้ POST พร้อม Token ยืนยันตัวตน"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       if (action === 'student-info') return ContentService.createTextOutput(JSON.stringify(getStudentData(e.parameter.studentId))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(e.parameter.rowId, e.parameter.specialId, e.parameter.taskDate))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'update-pending-task') {
-        return ContentService.createTextOutput(JSON.stringify(updatePendingTask({
-          rowId: e.parameter.rowId,
-          specialId: e.parameter.specialId,
-          pendingTask: e.parameter.pendingTask,
-          taskDate: e.parameter.taskDate
-        }))).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'batch-register-tasks') {
-        let rowIds = JSON.parse(e.parameter.rowIds || '[]');
-        return ContentService.createTextOutput(JSON.stringify(batchRegisterTasks(rowIds))).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'batch-update-pending-tasks') {
-        let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
-        return ContentService.createTextOutput(JSON.stringify(batchUpdatePendingTasks(items))).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'sync-sgs') {
-        let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
-        return ContentService.createTextOutput(JSON.stringify(syncFromSgsNextschool(items))).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
-        let items = JSON.parse(e.parameter.items || e.parameter.payload || '[]');
-        let clearAll = (action === 'clean-sync-wp16') || (e.parameter.clearAll === 'true');
-        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'direct-fix-records') {
-        return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'get-ready-sgs') {
-        return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'get-sgs-dashboard') {
-        return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
-      }
-      if (action === 'update-sgs-sync') {
-        let payloadObj = e.parameter.payload ? JSON.parse(e.parameter.payload) : e.parameter;
-        return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(payloadObj))).setMimeType(ContentService.MimeType.JSON);
-      }
+      if (action === 'get-ready-sgs') return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'get-sgs-dashboard') return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
+
       if (action === 'sgs-sync-script') {
         var jsContent = HtmlService.createHtmlOutputFromFile('SgsSyncScript').getContent();
         return ContentService.createTextOutput(jsContent).setMimeType(ContentService.MimeType.JAVASCRIPT);
@@ -183,12 +159,52 @@ function getAppUrl() {
   }
 }
 
+// 🔐 Helper สำหรับตรวจสอบ Session Token
+function validateAuthToken_(token, requireAdmin) {
+  if (!token) {
+    return { valid: false, message: 'กรุณาเข้าสู่ระบบก่อนทำรายการ (Missing authentication token)' };
+  }
+  const cleanToken = String(token).trim();
+  const scriptProps = PropertiesService.getScriptProperties();
+  const adminSecret = scriptProps.getProperty('ADMIN_API_KEY') || scriptProps.getProperty('BYPASS_SECRET');
+  if (adminSecret && cleanToken === adminSecret.trim()) {
+    return { valid: true, isAdmin: true, name: 'System Admin' };
+  }
+
+  const cached = CacheService.getScriptCache().get('auth_token_' + cleanToken);
+  if (!cached) {
+    return { valid: false, message: 'เซสชันหมดอายุหรือรหัสยืนยันไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่ (Invalid or expired token)' };
+  }
+
+  try {
+    const data = JSON.parse(cached);
+    if (requireAdmin && !data.isAdmin) {
+      return { valid: false, message: 'ไม่มีสิทธิ์เข้าถึง (ต้องใช้สิทธิ์ผู้ดูแลระบบ Admin)' };
+    }
+    return { valid: true, ...data };
+  } catch(e) {
+    return { valid: false, message: 'ข้อมูลเซสชันไม่ถูกต้อง' };
+  }
+}
+
 // 🌟 API Endpoints สำหรับ POST requests (หลีกเลี่ยง CORS Preflight ด้วย text/plain)
 function doPost(e) {
   try {
-    let params = JSON.parse(e.postData.contents);
+    let params = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        params = JSON.parse(e.postData.contents);
+      } catch(parseErr) {
+        params = e.parameter || {};
+      }
+    } else if (e && e.parameter) {
+      params = e.parameter;
+    }
     let action = params.action;
     
+    // Public POST endpoints
+    if (action === 'check-id') return ContentService.createTextOutput(JSON.stringify(checkIdCardStatus(params.idCard))).setMimeType(ContentService.MimeType.JSON);
+    if (action === 'verify-pin') return ContentService.createTextOutput(JSON.stringify(verifyPinLogin(params.idCard, params.pin))).setMimeType(ContentService.MimeType.JSON);
     if (action === 'initial-data') return ContentService.createTextOutput(JSON.stringify(getInitialLoadData())).setMimeType(ContentService.MimeType.JSON);
     if (action === 'filter-data') {
       return ContentService.createTextOutput(JSON.stringify(getByFilters(
@@ -199,48 +215,62 @@ function doPost(e) {
         params.teacher || ''
       ))).setMimeType(ContentService.MimeType.JSON);
     }
-    if (action === 'check-id') return ContentService.createTextOutput(JSON.stringify(checkIdCardStatus(params.idCard))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'verify-pin') return ContentService.createTextOutput(JSON.stringify(verifyPinLogin(params.idCard, params.pin))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'submit-grades') return ContentService.createTextOutput(JSON.stringify(submitGrades(params.payload))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'approve') return ContentService.createTextOutput(JSON.stringify(approveGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'reject') return ContentService.createTextOutput(JSON.stringify(rejectGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'update-pending-task') return ContentService.createTextOutput(JSON.stringify(updatePendingTask(params))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(params.rowId, params.specialId, params.taskDate))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'batch-register-tasks') return ContentService.createTextOutput(JSON.stringify(batchRegisterTasks(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
     if (action === 'student-info') return ContentService.createTextOutput(JSON.stringify(getStudentData(params.studentId))).setMimeType(ContentService.MimeType.JSON);
-    if (action === 'batch-update-pending-tasks') {
-      let items = params.items || params.payload || [];
-      return ContentService.createTextOutput(JSON.stringify(batchUpdatePendingTasks(items))).setMimeType(ContentService.MimeType.JSON);
+    if (action === 'get-ready-sgs') return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
+    if (action === 'get-sgs-dashboard') return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
+
+    // Protected POST endpoints: Require valid authentication token
+    const adminActions = ['direct-fix-records', 'clean-sync-wp16'];
+    const writeActions = [
+      'submit-grades', 'approve', 'reject', 'update-pending-task',
+      'register-task', 'batch-register-tasks', 'batch-update-pending-tasks',
+      'sync-sgs', 'update-sgs-sync', 'sync-wp16-sheet'
+    ];
+
+    if (adminActions.indexOf(action) !== -1) {
+      const auth = validateAuthToken_(params.token, true);
+      if (!auth.valid) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, status: 'error', message: auth.message })).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'direct-fix-records') return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'clean-sync-wp16') {
+        let items = params.items || params.payload || [];
+        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, true))).setMimeType(ContentService.MimeType.JSON);
+      }
     }
-    if (action === 'sync-sgs') {
-      let items = params.items || params.payload || [];
-      return ContentService.createTextOutput(JSON.stringify(syncFromSgsNextschool(items))).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'clean-sync-wp16' || action === 'sync-wp16-sheet') {
-      let items = params.items || params.payload || [];
-      let clearAll = (action === 'clean-sync-wp16') || !!params.clearAll;
-      return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, clearAll))).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'direct-fix-records') {
-      return ContentService.createTextOutput(JSON.stringify(directFixStudentRecords())).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'get-ready-sgs') {
-      return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'get-sgs-dashboard') {
-      return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
-    }
-    if (action === 'update-sgs-sync') {
-      return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(params))).setMimeType(ContentService.MimeType.JSON);
+
+    if (writeActions.indexOf(action) !== -1) {
+      const auth = validateAuthToken_(params.token, false);
+      if (!auth.valid) {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, status: 'error', message: auth.message })).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'submit-grades') return ContentService.createTextOutput(JSON.stringify(submitGrades(params.payload))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'approve') return ContentService.createTextOutput(JSON.stringify(approveGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'reject') return ContentService.createTextOutput(JSON.stringify(rejectGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'update-pending-task') return ContentService.createTextOutput(JSON.stringify(updatePendingTask(params))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(params.rowId, params.specialId, params.taskDate))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'batch-register-tasks') return ContentService.createTextOutput(JSON.stringify(batchRegisterTasks(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'batch-update-pending-tasks') {
+        let items = params.items || params.payload || [];
+        return ContentService.createTextOutput(JSON.stringify(batchUpdatePendingTasks(items))).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'sync-sgs') {
+        let items = params.items || params.payload || [];
+        return ContentService.createTextOutput(JSON.stringify(syncFromSgsNextschool(items))).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'sync-wp16-sheet') {
+        let items = params.items || params.payload || [];
+        return ContentService.createTextOutput(JSON.stringify(syncWp16Sheet(items, !!params.clearAll))).setMimeType(ContentService.MimeType.JSON);
+      }
+      if (action === 'update-sgs-sync') return ContentService.createTextOutput(JSON.stringify(updateSgsSyncResult(params))).setMimeType(ContentService.MimeType.JSON);
     }
     
-    return ContentService.createTextOutput(JSON.stringify({success: false, message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({success: false, status: 'error', message: 'Invalid POST action: ' + action})).setMimeType(ContentService.MimeType.JSON);
   } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({success: false, message: err.message})).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({success: false, status: 'error', message: err.message})).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-function getAppUrl() { return ScriptApp.getService().getUrl(); }
 function cleanStr_(v) { return v == null ? '' : String(v).trim(); }
 function parseDateSafe(val) {
   if (!val) return null;
@@ -787,7 +817,22 @@ function verifyPinLogin(idCard, pin) {
        let tCode = String((result.teacher && result.teacher.teaccode) || '').trim();
        let uId = String((result.teacher && result.teacher.userid) || cleanId).replace(/[-\s]/g, '').trim();
        let isAdmin = Boolean((result.teacher && result.teacher.is_admin) || superCodes.indexOf(tCode) !== -1 || superIds.indexOf(uId) !== -1);
-       return { success: true, name: tName, isAdmin: isAdmin };
+
+       const token = Utilities.getUuid();
+       const tokenData = {
+         name: tName,
+         userId: uId,
+         teacherCode: tCode,
+         isAdmin: isAdmin,
+         createdAt: new Date().getTime()
+       };
+       try {
+         CacheService.getScriptCache().put('auth_token_' + token, JSON.stringify(tokenData), 21600); // 6 ชั่วโมง
+       } catch(cacheErr) {
+         Logger.log('CacheService put token error: ' + cacheErr.message);
+       }
+
+       return { success: true, name: tName, isAdmin: isAdmin, token: token };
     } else if (result && result.detail) {
        if (result.detail === "FIRST_TIME_LOGIN") {
            return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };

@@ -199,19 +199,30 @@
   <script>
     const ACTIVE_DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec';
 
-    // 🧹 ล้างค่า URL เก่าที่พังออกจาก localStorage อัตโนมัติ ป้องกันไม่ให้เบราว์เซอร์ไปดึง URL เก่าที่ถูกเก็บถาวรแล้ว
+    function isValidGasUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      try {
+        const u = new URL(url.trim());
+        return u.protocol === 'https:' && u.hostname === 'script.google.com' && u.pathname.startsWith('/macros/s/');
+      } catch(e) {
+        return false;
+      }
+    }
+
+    // 🧹 ล้างค่า URL เก่าที่พังออกจาก localStorage อัตโนมัติ
     try {
       const savedUrl = localStorage.getItem('custom_gas_url');
-      if (savedUrl && (savedUrl.includes('ak8g') || savedUrl.includes('AKfycbyDn-m9RRJTvbe8mtutmDkYmVBrsCgP5uU8P2oiN_V_7QiBwxMW_YjtzUuqmLO---ak8g') || savedUrl.includes('AKfycbxzpP9b') || savedUrl.includes('AKfycbzSf') || savedUrl.includes('AKfycbz7'))) {
+      if (savedUrl && !isValidGasUrl(savedUrl)) {
         localStorage.removeItem('custom_gas_url');
       }
     } catch(e) {}
 
     const urlApiOverride = new URLSearchParams(window.location.search).get('apiUrl');
-    if (urlApiOverride) {
-      try { localStorage.setItem('custom_gas_url', urlApiOverride); } catch(e) {}
+    if (urlApiOverride && isValidGasUrl(urlApiOverride)) {
+      try { localStorage.setItem('custom_gas_url', urlApiOverride.trim()); } catch(e) {}
     }
     let API_BASE_URL = localStorage.getItem('custom_gas_url') || ACTIVE_DEPLOY_URL;
+
 
     let CURRENT_STUDENT_ID = '';
     let STUDENT_DATA = null;

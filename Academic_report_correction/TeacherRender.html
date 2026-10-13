@@ -652,13 +652,23 @@
       });
     }
 
+    function isValidGasUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      try {
+        const u = new URL(url.trim());
+        return u.protocol === 'https:' && u.hostname === 'script.google.com' && u.pathname.startsWith('/macros/s/');
+      } catch(e) {
+        return false;
+      }
+    }
+
     function configureApiUrl() {
       const current = localStorage.getItem('custom_gas_url') || API_BASE_URL;
       const input = prompt('ระบุ Google Apps Script Web App URL (ลงท้ายด้วย /exec):', current);
       if (input && input.trim()) {
         const clean = input.trim();
-        if (!clean.startsWith('http')) {
-          alert('กรุณาระบุ URL ที่ถูกต้อง (ขึ้นต้นด้วย https://)');
+        if (!isValidGasUrl(clean)) {
+          alert('กรุณาระบุ URL ที่ถูกต้อง (ต้องเป็น https://script.google.com/macros/s/...)');
           return;
         }
         localStorage.setItem('custom_gas_url', clean);
@@ -673,16 +683,17 @@
     // 🧹 ล้างค่า URL เก่าที่พังออกจาก localStorage อัตโนมัติ ป้องกันไม่ให้เบราว์เซอร์ไปดึง URL เก่าที่ถูกเก็บถาวรแล้ว
     try {
       const savedUrl = localStorage.getItem('custom_gas_url');
-      if (savedUrl && (savedUrl.includes('ak8g') || savedUrl.includes('AKfycbyDn-m9RRJTvbe8mtutmDkYmVBrsCgP5uU8P2oiN_V_7QiBwxMW_YjtzUuqmLO---ak8g') || savedUrl.includes('AKfycbxzpP9b') || savedUrl.includes('AKfycbzSf') || savedUrl.includes('AKfycbz7'))) {
+      if (savedUrl && !isValidGasUrl(savedUrl)) {
         localStorage.removeItem('custom_gas_url');
       }
     } catch(e) {}
 
     const urlApiOverride = new URLSearchParams(window.location.search).get('apiUrl');
-    if (urlApiOverride) {
-      try { localStorage.setItem('custom_gas_url', urlApiOverride); } catch(e) {}
+    if (urlApiOverride && isValidGasUrl(urlApiOverride)) {
+      try { localStorage.setItem('custom_gas_url', urlApiOverride.trim()); } catch(e) {}
     }
     let API_BASE_URL = localStorage.getItem('custom_gas_url') || ACTIVE_DEPLOY_URL;
+    let SESSION_TOKEN = localStorage.getItem('teac_token') || '';
 
     // 🚀 ฟังก์ชันตัวกลางเรียก API: ใช้ google.script.run เมื่ออยู่ใน GAS หรือ fetch เมื่อเป็น Standalone
     function callBackend(action, params = {}, method = 'GET') {
@@ -754,9 +765,19 @@
               reject(new Error('Unknown backend action: ' + action));
           }
         } else {
-          // 🔄 Auto-Retry: ลองใหม่อัตโนมัติสูงสุด 3 ครั้ง เมื่อ GAS ส่ง error หรือ HTML กลับมา
-          const MAX_RETRIES = 3;
-          const isWriteAction = ['approve','reject','submit-grades','update-pending-task','register-task','batch-register-tasks','batch-update-pending-tasks','sync-sgs','update-sgs-sync'].includes(action);
+          // 🔄 Auto-Retry: ลองใหม่อัตโนมัติสูงสุด 3 ครั้งเฉพาะ Read Action (Write Action ไม่ลองซ้ำเพื่อป้องกันคำสั่งเบิ้ล)
+          const isWriteAction = [
+            'approve','reject','submit-grades','update-pending-task',
+            'register-task','batch-register-tasks','batch-update-pending-tasks',
+            'sync-sgs','update-sgs-sync','clean-sync-wp16','sync-wp16-sheet',
+            'direct-fix-records','verify-pin'
+          ].includes(action);
+          const MAX_RETRIES = isWriteAction ? 1 : 3;
+
+          // แนบ session token เสมอถ้ามี
+          if (SESSION_TOKEN && !params.token) {
+            params.token = SESSION_TOKEN;
+          }
 
           const urlParams = new URLSearchParams();
           urlParams.append('action', action);
@@ -764,25 +785,25 @@
             if (val === undefined || val === null) continue;
             urlParams.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
           }
-                      let fetchUrl = API_BASE_URL;
-            let fetchOptions = { 
-              method: method || 'GET',
-              credentials: 'omit' // 🛡️ ไม่ส่ง Google session cookies ข้าม origin เพื่อป้องกัน Google Multi-Account Session Conflict ("ขออภัย ไม่สามารถเปิดไฟล์ได้")
-            };
-            
-            if (fetchOptions.method === 'POST' || isWriteAction) {
-                fetchOptions.method = 'POST'; // Force POST for write actions to avoid URL length limits
-                const postPayload = { action, ...params };
-                fetchOptions.body = JSON.stringify(postPayload);
-                // Use text/plain to avoid preflight OPTIONS request
-                fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
-            } else {
-                fetchUrl = `${API_BASE_URL}?${urlParams.toString()}`;
-            }
+          let fetchUrl = API_BASE_URL;
+          let fetchOptions = { 
+            method: method || 'GET',
+            credentials: 'omit' // 🛡️ ไม่ส่ง Google session cookies ข้าม origin เพื่อป้องกัน Google Multi-Account Session Conflict ("ขออภัย ไม่สามารถเปิดไฟล์ได้")
+          };
+          
+          if (fetchOptions.method === 'POST' || isWriteAction) {
+              fetchOptions.method = 'POST'; // Force POST for write actions to avoid URL length limits
+              const postPayload = { action, ...params };
+              fetchOptions.body = JSON.stringify(postPayload);
+              // Use text/plain to avoid preflight OPTIONS request
+              fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+          } else {
+              fetchUrl = `${API_BASE_URL}?${urlParams.toString()}`;
+          }
 
-            async function attemptFetch(attempt) {
-              try {
-                const res = await fetch(fetchUrl, fetchOptions);
+          async function attemptFetch(attempt) {
+            try {
+              const res = await fetch(fetchUrl, fetchOptions);
               const text = await res.text();
               try {
                 const data = JSON.parse(text);
@@ -793,12 +814,13 @@
                 }
                 // GAS ส่ง HTML กลับมา — อาจเป็น cold start หรือ quota
                 const isHtmlError = text.trim().startsWith('<') || res.status === 404 || text.includes('window[\'ppConfig\']');
-                if (isHtmlError) {
-                  // ลองใหม่อัตโนมัติ (ทั้ง read และ write ที่เป็น idempotent เช่น submit-grades, approve)
+                if (isHtmlError && !isWriteAction) {
+                  // ลองใหม่อัตโนมัติเฉพาะ Read action
                   if (attempt < MAX_RETRIES) {
                     return { ok: false, retry: true, isHtml: true, text };
                   }
-                  let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
+                }
+  let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
                   if (text.includes('ไม่สามารถเปิดไฟล์ได้') || text.includes('drive.google.com')) {
                     errDetail = 'Google Drive: "ขออภัย ไม่สามารถเปิดไฟล์ได้"\n\n💡 สาเหตุพบบ่อย: เกิดจากเบราว์เซอร์ล็อกอินบัญชี Google ค้างไว้หลายบัญชีพร้อมกัน (Google Multi-Account Conflict)\n👉 วิธีแก้: ให้กดปุ่ม "รีเซ็ต URL เริ่มต้น & ล้างแคช" ด้านล่าง หรือเปิดใช้งานผ่าน "หน้าต่างไม่ระบุตัวตน" (Incognito Window)';
                   }
@@ -905,25 +927,12 @@
         setTimeout(() => configureApiUrl(), 300);
       }
       const urlId = urlParams.get('id');
-      const urlName = urlParams.get('name');
-      const urlAdmin = urlParams.get('admin');
-      const urlPin = urlParams.get('pin');
-      if (urlAdmin === '1' || urlAdmin === 'true') {
-        IS_ADMIN = true;
-      }
-
-      // 1.1 ถ้าส่ง id และ name ตรงมาจากระบบหลัก Render (SSO) ให้เข้าสู่ระบบทันที
-      if (urlId && urlName) {
-        TEMP_IDCARD = urlId;
-        CURRENT_TEACHER = decodeURIComponent(urlName);
-        IS_ADMIN = urlAdmin === '1' || urlAdmin === 'true' || checkIsSuperuser(null, urlId);
+      // 🛡️ ล้างพารามิเตอร์ query ออกจาก URL ทันทีเพื่อป้องกันข้อมูลรั่วไหลใน browser history และ referrer
+      if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
-        document.getElementById('loginScreen').classList.add('hidden');
-        setupDashboard();
-        return;
       }
 
-      // 2. ตรวจสอบการล็อกอินมาจากระบบกลาง AssessmentHub (sgs_user ใน localStorage)
+      // 1. ตรวจสอบการล็อกอินมาจากระบบกลาง AssessmentHub (sgs_user ใน localStorage)
       let sgsUser = localStorage.getItem('sgs_user');
       if (sgsUser) {
         try {
@@ -941,33 +950,26 @@
         }
       }
 
-      // 3. ตรวจสอบพารามิเตอร์ URL ที่ส่ง PIN มาด้วย
-      if (urlId && urlPin) {
-        const credObj = { id: urlId, pin: urlPin };
-        localStorage.setItem('teac_session_v3', JSON.stringify(credObj));
-        window.history.replaceState({}, document.title, window.location.pathname);
-        autoLoginWithCred(credObj);
-        return;
-      }
-
-      // 4. ตรวจสอบ Session ที่บันทึกไว้เดิม
+      // 2. ตรวจสอบ Session ที่บันทึกไว้เดิม (รองรับ Token ที่ไม่หมดอายุ)
       let savedSession = localStorage.getItem('teac_session_v3');
       if (savedSession) {
         try {
           const cred = JSON.parse(savedSession);
-          if (cred && cred.id && cred.pin) {
+          if (cred && cred.id && ((cred.token && cred.expiry > Date.now()) || cred.pin)) {
             autoLoginWithCred(cred);
             return;
           }
         } catch(e) { 
-          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name'); 
+          localStorage.removeItem('teac_session_v3');
+          localStorage.removeItem('teac_token');
+          localStorage.removeItem('last_teacher_name'); 
         }
       }
 
-      // 5. หากไม่มีประวัติ ให้แสดงหน้ากรอกเลขบัตร 13 หลัก พร้อมดึงเลขบัตรเดิมที่เคยกรอก (ถ้ามี)
-      const lastId = localStorage.getItem('last_teacher_id');
+      // 3. หากไม่มีประวัติ ให้แสดงหน้ากรอกเลขบัตร 13 หลัก พร้อมดึงเลขบัตรเดิมที่เคยกรอก (ถ้ามี)
+      const lastId = urlId || localStorage.getItem('last_teacher_id');
       if (lastId && document.getElementById('idCardInput')) {
-        document.getElementById('idCardInput').value = lastId;
+        document.getElementById('idCardInput').value = String(lastId).replace(/[^0-9]/g, '').slice(0, 13);
       }
       showLoginStep('idCardStep');
     };
@@ -975,9 +977,24 @@
     async function verifyTeacherPin(idCard, pin) {
       const cleanId = String(idCard || '').replace(/[-\s]/g, '').trim();
       const cleanPin = String(pin || '').trim();
-      const cloudRunUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login';
 
-      // 1. ลองเชื่อมต่อ Cloud Run API โดยตรงก่อน (ความเร็ว ~0.15s, รองรับ CORS จาก cutoutppp.github.io 100%)
+      // 1. เรียกผ่าน backend GAS เพื่อตรวจสอบ PIN และรับ Session Token สำหรับสิทธิ์บันทึก/แก้ไข
+      try {
+        const gasRes = await callBackend('verify-pin', { idCard: cleanId, pin: cleanPin });
+        if (gasRes && gasRes.success) {
+          if (gasRes.token) {
+            SESSION_TOKEN = gasRes.token;
+            try { localStorage.setItem('teac_token', gasRes.token); } catch(e) {}
+          }
+          return gasRes;
+        }
+        if (gasRes && gasRes.message) return gasRes;
+      } catch (gasErr) {
+        console.warn('[verifyTeacherPin] GAS verify-pin failed, trying direct Cloud Run:', gasErr);
+      }
+
+      // 2. สำรอง: เรียกผ่าน Cloud Run API ตรงหาก GAS ไม่ตอบสนอง
+      const cloudRunUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login';
       try {
         const res = await fetch(cloudRunUrl, {
           method: 'POST',
@@ -998,16 +1015,7 @@
           return { success: false, message: result.detail === 'Incorrect username or password' ? 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' : result.detail };
         }
       } catch (err) {
-        console.warn('[verifyTeacherPin] Direct Cloud Run fetch failed, trying GAS fallback:', err);
-      }
-
-      // 2. สำรอง: เรียกผ่าน backend GAS (ถ้า Cloud Run ไม่ตอบสนอง)
-      try {
-        const gasRes = await callBackend('verify-pin', { idCard: cleanId, pin: cleanPin });
-        if (gasRes && gasRes.success) return gasRes;
-        if (gasRes && gasRes.message) return gasRes;
-      } catch (gasErr) {
-        console.warn('[verifyTeacherPin] GAS fallback failed:', gasErr);
+        console.warn('[verifyTeacherPin] Direct Cloud Run fetch failed:', err);
       }
 
       return { success: false, message: 'ไม่สามารถตรวจสอบรหัสผ่านได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง' };
@@ -1017,6 +1025,19 @@
       TEMP_IDCARD = cred.id;
       const cachedName = localStorage.getItem('last_teacher_name');
       const cachedAdmin = localStorage.getItem('last_teacher_is_admin') === 'true';
+
+      // กรณีมี Token ที่ยังไม่หมดอายุ สามารถใช้เซสชันเดิมได้ทันที
+      if (cred.token && cred.expiry > Date.now()) {
+        SESSION_TOKEN = cred.token;
+        try { localStorage.setItem('teac_token', cred.token); } catch(e) {}
+        if (cachedName) {
+          CURRENT_TEACHER = cachedName;
+          IS_ADMIN = cachedAdmin || checkIsSuperuser(null, cred.id);
+          document.getElementById('loginScreen').classList.add('hidden');
+          setupDashboard();
+          return;
+        }
+      }
 
       if (cachedName) {
         // ⚡ เข้าสู่แดชบอร์ดทันทีใน 0.001 วินาที พร้อมแสดง Skeleton Loader
@@ -1028,6 +1049,14 @@
         showLoader('กำลังเข้าสู่ระบบ...');
       }
 
+      if (!cred.pin) {
+        hideLoader();
+        localStorage.removeItem('teac_session_v3');
+        localStorage.removeItem('teac_token');
+        showLoginStep('idCardStep');
+        return;
+      }
+
       try {
         const res = await verifyTeacherPin(cred.id, cred.pin);
         if (res.success) {
@@ -1035,6 +1064,15 @@
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, cred.id);
           localStorage.setItem('last_teacher_name', res.name);
           localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
+          if (res.token) {
+            SESSION_TOKEN = res.token;
+            localStorage.setItem('teac_token', res.token);
+            localStorage.setItem('teac_session_v3', JSON.stringify({
+              id: cred.id,
+              token: res.token,
+              expiry: Date.now() + 6 * 3600 * 1000
+            }));
+          }
           document.getElementById('teacherNameDisplay').innerText = res.name;
           if (!cachedName) {
             document.getElementById('loginScreen').classList.add('hidden');
@@ -1042,18 +1080,23 @@
           }
         } else {
           hideLoader();
-          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name');
+          localStorage.removeItem('teac_session_v3');
+          localStorage.removeItem('teac_token');
+          localStorage.removeItem('last_teacher_name');
           document.getElementById('mainScreen').classList.add('hidden');
           showLoginStep('idCardStep');
         }
       } catch(e) {
         hideLoader();
         if (!cachedName) {
-          localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name');
+          localStorage.removeItem('teac_session_v3');
+          localStorage.removeItem('teac_token');
+          localStorage.removeItem('last_teacher_name');
           showLoginStep('idCardStep');
         }
       }
     }
+
 
     function showLoginStep(stepId) {
       document.getElementById('loginScreen').classList.remove('hidden');
@@ -1090,7 +1133,17 @@
       try {
         const res = await verifyTeacherPin(TEMP_IDCARD, pin);
         if(res.success) {
-          localStorage.setItem('teac_session_v3', JSON.stringify({ id: TEMP_IDCARD, pin: pin }));
+          // 🛡️ จัดเก็บ Session แบบ Token-based พร้อม Expiry เพื่อป้องกัน Plaintext PIN ตกค้าง
+          const sessionObj = {
+            id: TEMP_IDCARD,
+            token: res.token || SESSION_TOKEN,
+            expiry: Date.now() + 6 * 3600 * 1000
+          };
+          localStorage.setItem('teac_session_v3', JSON.stringify(sessionObj));
+          if (res.token) {
+            SESSION_TOKEN = res.token;
+            localStorage.setItem('teac_token', res.token);
+          }
           CURRENT_TEACHER = res.name; 
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, TEMP_IDCARD); 
           localStorage.setItem('last_teacher_name', res.name);
@@ -1110,7 +1163,17 @@
 
     function logout() {
       showDialog('ออกจากระบบ', 'คุณต้องการออกจากระบบใช่หรือไม่?', 'info', true).then(isConfirm => {
-         if(isConfirm) { showLoader('กำลังออกจากระบบ...'); localStorage.removeItem('teac_session_v3'); localStorage.removeItem('last_teacher_name'); window.location.reload(); }
+         if(isConfirm) {
+           showLoader('กำลังออกจากระบบ...');
+           localStorage.removeItem('teac_session_v3');
+           localStorage.removeItem('teac_token');
+           localStorage.removeItem('last_teacher_name');
+           localStorage.removeItem('last_teacher_id');
+           localStorage.removeItem('last_teacher_is_admin');
+           SESSION_TOKEN = '';
+           try { clearAllDataCaches(); } catch(e) {}
+           window.location.reload();
+         }
       });
     }
 
