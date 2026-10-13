@@ -46,7 +46,7 @@ def get_mode(scores):
     mapped = [mapping.get(s, s) for s in valid]
     return max(set(mapped), key=mapped.count)
 
-def generate_wp16(pair_results=None, subject_code="", subject_name="", teacher_name="", students=None, term="2", year="2568"):
+def generate_wp16(pair_results=None, subject_code="", subject_name="", teacher_name="", students=None, term="1", year="2569"):
     template_path = "template_wp16_single.docx"
     if not os.path.exists(template_path):
         template_path = os.path.join(os.path.dirname(__file__), "..", "template_wp16_single.docx")
@@ -360,12 +360,12 @@ def parse_level_room(level_str):
         return parts[0].strip(), parts[1].strip()
     return clean, ''
 
-def generate_wp25_group(pair_results, group_name="", head_name="", total_teachers_list=None):
+def generate_wp25_group(pair_results, group_name="", head_name="", total_teachers_list=None, term="1", year="2569", sign_date=None):
     template_path = "บันทึกข้อความรายงานการส่งคะแนนเก็บ.docx"
     if not os.path.exists(template_path):
         template_path = os.path.join("..", template_path)
     if not os.path.exists(template_path):
-        return generate_wp25(pair_results)
+        return generate_wp25(pair_results, term=term, year=year)
         
     doc = Document(template_path)
     
@@ -391,7 +391,7 @@ def generate_wp25_group(pair_results, group_name="", head_name="", total_teacher
     # Fill Paragraph P7 with group_name
     for p in doc.paragraphs:
         if "ซึ่งสาระการเรียนรู้" in p.text:
-            p.text = f"ซึ่งสาระการเรียนรู้{group_name}  ได้ดำเนินการรวบรวมรายงานการเก็บคะแนนหน่วยการเรียนรู้ และคะแนนสอบกลางภาค ภาคเรียนที่ 1 ปีการศึกษา 2569 เป็นที่เรียบร้อยแล้ว จึงขอรายงานข้อมูลดังนี้"
+            p.text = f"ซึ่งสาระการเรียนรู้{group_name}  ได้ดำเนินการรวบรวมรายงานการเก็บคะแนนหน่วยการเรียนรู้ และคะแนนสอบกลางภาค ภาคเรียนที่ {term} ปีการศึกษา {year} เป็นที่เรียบร้อยแล้ว จึงขอรายงานข้อมูลดังนี้"
             if len(p.runs) > 0:
                 p.runs[0].font.name = "TH Sarabun PSK"
                 p.runs[0].font.size = Pt(16)
@@ -475,7 +475,14 @@ def generate_wp25_group(pair_results, group_name="", head_name="", total_teacher
                 
                 has_submitted = any(st in teacher or teacher in st for st in submitted_teachers)
                 if has_submitted:
-                    set_cell_text(row.cells[2], "6 ม.ค. 2569")
+                    if not sign_date:
+                        from datetime import date
+                        today = date.today()
+                        thai_months = ["", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
+                        sign_date_str = f"{today.day} {thai_months[today.month]} {today.year + 543}"
+                    else:
+                        sign_date_str = str(sign_date)
+                    set_cell_text(row.cells[2], sign_date_str)
                     set_cell_text(row.cells[3], "ส่งแล้ว")
                     set_cell_text(row.cells[4], "เรียบร้อย")
                 else:
@@ -488,7 +495,7 @@ def generate_wp25_group(pair_results, group_name="", head_name="", total_teacher
     file_stream.seek(0)
     return file_stream.read()
 
-def generate_wp25(pair_results, explicit_teacher_name=None, explicit_subject_group=None):
+def generate_wp25(pair_results, explicit_teacher_name=None, explicit_subject_group=None, term="1", year="2569"):
     template_path = "วผ25 บันทึกข้อความรายงานคะแนนกลางภาค.docx"
     if not os.path.exists(template_path):
         template_path = os.path.join("..", template_path)
@@ -534,7 +541,7 @@ def generate_wp25(pair_results, explicit_teacher_name=None, explicit_subject_gro
                 para.runs[0].font.size = Pt(16)
 
         elif "ภาคเรียนที่" in text and "รวมดำเนินการจัดการเรียนการสอนทั้งสิ้น" in text:
-            para.text = f"  ภาคเรียนที่ 1  ปีการศึกษา 2569  รวมดำเนินการจัดการเรียนการสอนทั้งสิ้น {len(unique_subject_codes)} รายวิชา {len(subjects)} ห้องเรียนนั้น"
+            para.text = f"  ภาคเรียนที่ {term}  ปีการศึกษา {year}  รวมดำเนินการจัดการเรียนการสอนทั้งสิ้น {len(unique_subject_codes)} รายวิชา {len(subjects)} ห้องเรียนนั้น"
             if len(para.runs) > 0:
                 para.runs[0].font.name = "TH Sarabun PSK"
                 para.runs[0].font.size = Pt(16)

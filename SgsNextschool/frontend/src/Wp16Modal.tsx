@@ -670,8 +670,8 @@ export default function Wp16Modal({
 
       const url = `${backendUrl}/api/export/wp16/zip?teacher_name=${encodeURIComponent(
         teacherName
-      )}&academic_year=${encodeURIComponent(academicYear || '2568')}&semester=${encodeURIComponent(
-        semester || '2'
+      )}&academic_year=${encodeURIComponent(academicYear || '2569')}&semester=${encodeURIComponent(
+        semester || '1'
       )}`;
       const res = await fetch(url);
       if (!res.ok) {

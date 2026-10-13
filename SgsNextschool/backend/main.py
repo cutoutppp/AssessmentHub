@@ -252,7 +252,9 @@ async def export_wp16(request: Request):
     try:
         data = await request.json()
         pair_results = data.get("pairs", [])
-        doc_bytes = generate_wp16(pair_results)
+        term = str(data.get("semester", data.get("term", "1")))
+        year = str(data.get("academic_year", data.get("year", "2569")))
+        doc_bytes = generate_wp16(pair_results, term=term, year=year)
         if not doc_bytes:
             raise HTTPException(status_code=404, detail="Template not found")
             
@@ -480,7 +482,7 @@ async def api_export_wp16_saved(request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/export/wp16/zip")
-async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2568", semester: str = "2"):
+async def api_export_wp16_zip(teacher_name: str, academic_year: str = "2569", semester: str = "1"):
     try:
         import zipfile
         rooms = get_rooms_for_subject(teacher_name, None)
@@ -645,7 +647,9 @@ async def export_wp25(request: Request):
     try:
         data = await request.json()
         pair_results = data.get("pairs", [])
-        doc_bytes = generate_wp25(pair_results)
+        term = str(data.get("semester", data.get("term", "1")))
+        year = str(data.get("academic_year", data.get("year", "2569")))
+        doc_bytes = generate_wp25(pair_results, term=term, year=year)
         if not doc_bytes:
             raise HTTPException(status_code=404, detail="Template not found")
             
@@ -664,6 +668,8 @@ async def api_export_wp25_saved(request: Request):
         teacher_name = data.get("teacher_name")
         subject_group = data.get("subject_group")
         subject_code = data.get("subject_code", None)
+        term = str(data.get("semester", data.get("term", "1")))
+        year = str(data.get("academic_year", data.get("year", "2569")))
 
         mock_subjects = data.get("mock_subjects", [])
         
@@ -689,7 +695,7 @@ async def api_export_wp25_saved(request: Request):
         elif not rooms:
             rooms = _get_fallback_demo_rooms(teacher_name)
             
-        doc_bytes = generate_wp25(rooms, explicit_teacher_name=teacher_name, explicit_subject_group=subject_group)
+        doc_bytes = generate_wp25(rooms, explicit_teacher_name=teacher_name, explicit_subject_group=subject_group, term=term, year=year)
         if not doc_bytes:
             raise HTTPException(status_code=404, detail="Template not found")
             
@@ -710,12 +716,15 @@ async def api_export_wp25_group_saved(request: Request):
         group_name = data.get("group_name") or data.get("teacher_name")
         head_name = data.get("head_name", "")
         teachers = data.get("teachers", [])
+        term = str(data.get("semester", data.get("term", "1")))
+        year = str(data.get("academic_year", data.get("year", "2569")))
+        sign_date = data.get("sign_date")
         
         rooms = get_rooms_for_group(group_name, teachers)
         if not rooms:
             rooms = _get_fallback_demo_rooms(group_name)
             
-        doc_bytes = generate_wp25_group(rooms, group_name, head_name, teachers)
+        doc_bytes = generate_wp25_group(rooms, group_name, head_name, teachers, term=term, year=year, sign_date=sign_date)
         if not doc_bytes:
             raise HTTPException(status_code=404, detail="Template not found")
             
