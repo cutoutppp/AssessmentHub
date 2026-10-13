@@ -814,13 +814,12 @@
                 }
                 // GAS ส่ง HTML กลับมา — อาจเป็น cold start หรือ quota
                 const isHtmlError = text.trim().startsWith('<') || res.status === 404 || text.includes('window[\'ppConfig\']');
-                if (isHtmlError && !isWriteAction) {
+                if (isHtmlError) {
                   // ลองใหม่อัตโนมัติเฉพาะ Read action
-                  if (attempt < MAX_RETRIES) {
+                  if (!isWriteAction && attempt < MAX_RETRIES) {
                     return { ok: false, retry: true, isHtml: true, text };
                   }
-                }
-  let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
+                  let errDetail = 'ไม่สามารถเชื่อมต่อ Google Apps Script ได้ (เซิร์ฟเวอร์ตอบกลับเป็น HTML)';
                   if (text.includes('ไม่สามารถเปิดไฟล์ได้') || text.includes('drive.google.com')) {
                     errDetail = 'Google Drive: "ขออภัย ไม่สามารถเปิดไฟล์ได้"\n\n💡 สาเหตุพบบ่อย: เกิดจากเบราว์เซอร์ล็อกอินบัญชี Google ค้างไว้หลายบัญชีพร้อมกัน (Google Multi-Account Conflict)\n👉 วิธีแก้: ให้กดปุ่ม "รีเซ็ต URL เริ่มต้น & ล้างแคช" ด้านล่าง หรือเปิดใช้งานผ่าน "หน้าต่างไม่ระบุตัวตน" (Incognito Window)';
                   }
