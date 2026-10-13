@@ -1228,7 +1228,7 @@ function syncFromSgsNextschool(items) {
 
       var task = it.pending_task !== undefined ? String(it.pending_task) : (it.pendingTask !== undefined ? String(it.pendingTask) : '');
       var oldScore = it.old_score !== undefined && it.old_score !== null ? String(it.old_score) : '';
-      var oldGrade = cleanStr_(it.old_grade || it.oldGrade || '0');
+      var oldGrade = cleanStr_(it.old_grade !== undefined && it.old_grade !== null ? it.old_grade : (it.oldGrade !== undefined && it.oldGrade !== null ? it.oldGrade : ''));
 
       if (rowMap[sp]) {
         // มีแถวเดิมอยู่แล้ว -> อัปเดตงานค้าง และคะแนนเดิม/เกรดเดิม
@@ -1239,7 +1239,7 @@ function syncFromSgsNextschool(items) {
         if (idxOldScore >= 0 && oldScore) {
           sheet.getRange(rowIdx, idxOldScore + 1).setValue(oldScore);
         }
-        if (idxOldGrade >= 0 && oldGrade) {
+        if (idxOldGrade >= 0 && oldGrade !== '') {
           sheet.getRange(rowIdx, idxOldGrade + 1).setValue(oldGrade);
         }
         updatedCount++;
@@ -1333,7 +1333,7 @@ function syncWp16Sheet(items, clearAll) {
         cleanStr_(it.class_level || it.classLevel),
         cleanStr_(it.student_id || it.stuId),
         cleanStr_(it.student_name || it.stuName),
-        cleanStr_(it.old_grade || it.oldGrade || it.grade || 'มส'),
+        cleanStr_(it.old_grade || it.oldGrade || it.grade || ''),
         (it.old_score !== undefined && it.old_score !== null) ? String(it.old_score) : (it.score !== undefined ? String(it.score) : ''),
         (it.pending_task !== undefined && it.pending_task !== null) ? String(it.pending_task) : (it.task !== undefined ? String(it.task) : ''),
         cleanStr_(it.remark),

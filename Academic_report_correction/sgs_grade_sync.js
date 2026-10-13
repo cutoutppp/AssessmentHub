@@ -63,7 +63,7 @@
         stuId = cleanStr(specialId.slice(subjCode.length));
       }
 
-      const oldGrade = getVal(cells, iOldGrade) || '0';
+      const oldGrade = getVal(cells, iOldGrade) || '';
       let newGrade = getVal(cells, iNewGrade);
       if (!newGrade && oldGrade === 'มผ') newGrade = 'ผ';
       if (!stuId || !subjCode || !newGrade) continue;
