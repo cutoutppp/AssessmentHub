@@ -482,7 +482,7 @@ function getInitialLoadData() {
 
     try {
       var jsonStr = JSON.stringify(result);
-      putCacheChunked_('dashboard_initial_data', jsonStr, 1800); // 30 นาที
+      putCacheChunked_('dashboard_initial_data', jsonStr, 600); // 10 นาที (อัปเดตข้อมูลสดใหม่เร็วขึ้น)
     } catch (cErr) {}
 
     return result;
@@ -2279,4 +2279,34 @@ function getSgsSyncDashboard() {
     console.error('Error in getSgsSyncDashboard:', e);
     return { status: 'error', success: false, message: e.message, readyTasks: [], recentLogs: [] };
   }
+}
+
+// ==========================================
+// ⚡ Auto Cache Invalidation Triggers
+// ==========================================
+function onEdit(e) {
+  try {
+    var sheetName = e && e.range ? e.range.getSheet().getName() : '';
+    if (!sheetName || ['Teacherdata', 'StudentRecords', 'Config_Calendar', 'Totalstudent', 'MasterData', 'masterdata', 'mastetdata'].indexOf(sheetName) !== -1) {
+      clearDashboardCache();
+      bumpTaskCacheVersion_();
+      try { CacheService.getScriptCache().remove('all_teachers_cache'); } catch(err) {}
+    }
+  } catch(err) {}
+}
+
+function onOpen(e) {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu('⚡ ระบบแก้ผลการเรียน')
+      .addItem('🔄 ล้างแคช & ซิงค์หน้าเว็บทันที', 'menuClearCache')
+      .addToUi();
+  } catch(err) {}
+}
+
+function menuClearCache() {
+  clearDashboardCache();
+  bumpTaskCacheVersion_();
+  try { CacheService.getScriptCache().remove('all_teachers_cache'); } catch(e) {}
+  SpreadsheetApp.getActiveSpreadsheet().toast('ล้างแคชแดชบอร์ดเรียบร้อยแล้ว หน้าเว็บจะดึงข้อมูลใหม่ทันที!', 'สำเร็จ', 5);
 }
