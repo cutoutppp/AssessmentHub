@@ -511,7 +511,12 @@ function getFilters(preloaded) {
   
   teacherData.forEach(function(r) {
     var prefix = cleanStr_(r[2]);
-    var tName = (prefix + cleanStr_(r[3]) + ' ' + cleanStr_(r[4])).replace(/\s+/g, ' ').trim(); 
+    var fName = cleanStr_(r[3]);
+    var lName = cleanStr_(r[4]);
+    if (lName && fName.endsWith(lName)) {
+      fName = fName.slice(0, -lName.length).trim();
+    }
+    var tName = (prefix + fName + ' ' + lName).replace(/\s+/g, ' ').trim(); 
     var tDept = cleanStr_(r[5]) || "อื่นๆ";
     if (tName) { 
       subjectGroupsSet.add(tDept); 
@@ -597,6 +602,9 @@ function summarize(filters, preloaded) {
   var teacherDeptMap = {}; 
   teacherData.forEach(function(r) {
     var prefix = cleanStr_(r[2]); var fName = cleanStr_(r[3]); var lName = cleanStr_(r[4]);
+    if (lName && fName.endsWith(lName)) {
+      fName = fName.slice(0, -lName.length).trim();
+    }
     var tNameFull = (prefix + fName + ' ' + lName).replace(/\s+/g, ' ').trim();
     var tNameNoPrefix = (fName + ' ' + lName).replace(/\s+/g, ' ').trim();
     var tDept = cleanStr_(r[5]) || "อื่นๆ"; 
@@ -1148,7 +1156,12 @@ function getAllTeachers() {
   let teachers = [];
   for(let i=1; i<data.length; i++) { 
     let prefix = cleanStr_(data[i][2]); 
-    let tName = (prefix + cleanStr_(data[i][3]) + ' ' + cleanStr_(data[i][4])).replace(/\s+/g, ' ').trim(); 
+    let fName = cleanStr_(data[i][3]); 
+    let lName = cleanStr_(data[i][4]); 
+    if (lName && fName.endsWith(lName)) {
+      fName = fName.slice(0, -lName.length).trim();
+    }
+    let tName = (prefix + fName + ' ' + lName).replace(/\s+/g, ' ').trim(); 
     if(tName) teachers.push(tName); 
   }
   const result = teachers.sort();
