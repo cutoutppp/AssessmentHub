@@ -73,7 +73,8 @@
         <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?p=teacher&openExternalBrowser=1' : 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec?p=teacher&openExternalBrowser=1' ?>" target="_top" onclick="openPortal(event, 'teacher')" id="teacherLoginBtn" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 justify-center text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 transition shadow-lg shadow-blue-500/20 text-xs md:text-sm cursor-pointer">
           <i class="material-icons-round text-base">login</i> เข้าสู่ระบบส่งผลการเรียน
         </a>
-        <button class="w-10 h-10 md:h-11 shrink-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" onclick="toggleTheme()"><i class="material-icons-round">dark_mode</i></button>
+        <button class="w-10 h-10 md:h-11 shrink-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" onclick="forceRefreshData()" title="รีเฟรชข้อมูลล่าสุดจาก Google Sheets"><i class="material-icons-round" id="refreshIcon">refresh</i></button>
+        <button class="w-10 h-10 md:h-11 shrink-0 rounded-xl border border-slate-300 dark:border-slate-700 bg-transparent flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer" onclick="toggleTheme()" title="สลับโหมดมืด/สว่าง"><i class="material-icons-round">dark_mode</i></button>
       </div>
     </header>
 
@@ -635,18 +636,53 @@
     }
 
     function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.body.className = `p-3 md:p-8 ${theme}`; if(DATA) renderCharts(DATA); }
-    
+
+    function populateTeacherDropdown() {
+      const s = document.getElementById('subjectGroup') ? document.getElementById('subjectGroup').value : '';
+      const tSel = document.getElementById('teacher');
+      if (!tSel) return;
+      const prevVal = tSel.value;
+      tSel.innerHTML = '<option value="">— ครูทุกคน —</option>';
+      let teachers = [];
+      if (s && teacherByGroup[s]) {
+        teachers = teacherByGroup[s];
+      } else if (!s && teacherByGroup) {
+        teachers = Object.values(teacherByGroup).flat();
+      }
+      [...new Set(teachers)].sort().forEach(t => {
+        tSel.innerHTML += `<option value="${t}" ${t === prevVal ? 'selected' : ''}>${t}</option>`;
+      });
+    }
+
     function setupFilters(res){ 
       document.getElementById('year').innerHTML = '<option value="">— ทุกปีการศึกษา —</option>' + res.years.map(y => `<option value="${y}">${y}</option>`).join('');
       document.getElementById('grade').innerHTML = '<option value="">— ทุกระดับชั้น —</option>' + res.grades.map(g => `<option value="${g}">${g}</option>`).join(''); 
       roomsByGrade = res.roomsByGrade; 
       document.getElementById('subjectGroup').innerHTML = '<option value="">— ทุกกลุ่มสาระ —</option>' + res.subjectGroups.map(s => `<option value="${s}">${s}</option>`).join(''); 
       teacherByGroup = res.teacherByGroup || {}; 
+      populateTeacherDropdown();
     }
     
     function onGradeChange(){ let g = document.getElementById('grade').value; let rSel = document.getElementById('room'); rSel.innerHTML = '<option value="">— ทุกห้อง —</option>'; if(g && roomsByGrade[g]) rSel.innerHTML += roomsByGrade[g].map(r => `<option value="${r}">${r}</option>`).join(''); loadData(); }
     
-    function onSubjectGroupChange() { let s = document.getElementById('subjectGroup').value; let tSel = document.getElementById('teacher'); tSel.innerHTML = '<option value="">— ครูทุกคน —</option>'; if (s && teacherByGroup[s]) { [...new Set(teacherByGroup[s])].sort().forEach(t => { tSel.innerHTML += `<option value="${t}">${t}</option>`; }); } loadData(); }
+    function onSubjectGroupChange() { populateTeacherDropdown(); loadData(); }
+
+    async function forceRefreshData() {
+      const icon = document.getElementById('refreshIcon');
+      if (icon) icon.classList.add('animate-spin');
+      try {
+        localStorage.removeItem('cached_dashboard_data');
+        showDashboardSkeleton();
+        if (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) {
+          await fetch(`${API_BASE_URL}?action=clear-cache`, { credentials: 'omit' }).catch(() => null);
+        }
+        await loadInitialData();
+      } catch(e) {
+        console.error('Refresh error:', e);
+      } finally {
+        if (icon) icon.classList.remove('animate-spin');
+      }
+    }
     
     async function loadData() { 
       showDashboardSkeleton();

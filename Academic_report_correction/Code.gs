@@ -78,6 +78,12 @@ function doGet(e) {
         ))).setMimeType(ContentService.MimeType.JSON);
       }
       if (action === 'teachers') return ContentService.createTextOutput(JSON.stringify(getAllTeachers())).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'clear-cache') {
+        clearDashboardCache();
+        bumpTaskCacheVersion_();
+        try { CacheService.getScriptCache().remove('all_teachers_cache'); } catch(e) {}
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "ล้างแคชแดชบอร์ดเรียบร้อยแล้ว" })).setMimeType(ContentService.MimeType.JSON);
+      }
       if (action === 'tasks') return ContentService.createTextOutput(JSON.stringify(getTasksForAdmin(e.parameter.mode, e.parameter.keyword))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'history') return ContentService.createTextOutput(JSON.stringify(getHistoryForAdmin(e.parameter.mode, e.parameter.keyword))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'approvals') return ContentService.createTextOutput(JSON.stringify(getPendingApprovals())).setMimeType(ContentService.MimeType.JSON);
