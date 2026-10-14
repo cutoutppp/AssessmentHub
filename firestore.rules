@@ -8,14 +8,13 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // 2. แบบประเมินความพึงพอใจการจัดสอบปลายภาค (งานวัดผล โรงเรียนพัฒนานิคม)
+    // 2. แบบประเมินความพึงพอใจการจัดสอบปลายภาค (ปิดรับการประเมินแล้ว - อนุญาตให้อ่านดูผลได้อย่างเดียว)
     match /final_exam_surveys/{docId} {
       allow read: if true;
-      allow create: if true;
-      allow update, delete: if request.auth != null;
+      allow write: if false;
     }
 
-    // 2.1 แบบประเมินการใช้เครื่องมือวัดผล (AssessmentHub / NextSGS)
+    // 2.1 แบบประเมินการใช้เครื่องมือวัดผล (AssessmentHub / NextSGS) - เปิดรับข้อมูล
     match /assessment_tool_surveys/{docId} {
       allow read: if true;
       allow create: if true;

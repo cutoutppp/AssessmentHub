@@ -94,8 +94,20 @@
       </p>
     </header>
 
+    <!-- ป้ายแจ้งปิดรับการประเมิน -->
+    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl mb-6 shadow-xs flex items-start gap-3">
+      <span class="text-2xl">🔒</span>
+      <div>
+        <h3 class="text-sm font-bold text-amber-900">ปิดรับการประเมินการจัดสอบรอบนี้แล้ว</h3>
+        <p class="text-xs text-amber-700 mt-0.5 leading-relaxed">
+          แบบประเมินความพึงพอใจการจัดสอบได้ปิดรับข้อมูลเรียบร้อยแล้ว และฐานข้อมูลถูกล็อคเป็น Read-Only โดยท่านยังสามารถเข้าดูสรุปผลการประเมินย้อนหลังได้ที่แท็บ <strong>"📊 ผลการประเมินสด"</strong> ด้านบน
+        </p>
+      </div>
+    </div>
+
     <!-- ================= VIEW 1: แบบประเมิน (FORM) ================= -->
     <main id="formView" class="space-y-6">
+      <fieldset disabled class="space-y-6 opacity-75">
       <form id="surveyForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
 
         <!-- สถานะผู้ตอบแบบประเมิน -->
@@ -269,16 +281,16 @@
           </div>
         </section>
 
-        <!-- ปุ่มส่งแบบประเมิน -->
+        <!-- ปุ่มส่งแบบประเมิน (ปิดรับแล้ว) -->
         <div class="pt-2 pb-10">
-          <button type="submit" id="submitBtn"
-                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
-            <span>ส่งแบบประเมิน</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <button type="button" disabled
+                  class="w-full bg-slate-200 text-slate-500 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base border border-slate-300">
+            <span>🔒 ปิดรับการประเมินรอบนี้แล้ว</span>
           </button>
         </div>
 
       </form>
+      </fieldset>
 
       <!-- Modal แจ้งเตือนส่งสำเร็จ -->
       <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
@@ -707,8 +719,9 @@
         });
     }
 
-    // เริ่มต้นทำงาน
+    // เริ่มต้นทำงาน (เปิดแท็บรายงานผลสรุปโดยอัตโนมัติ เนื่องจากปิดรับการประเมินแล้ว)
     renderQuestions();
+    switchTab('report');
   </script>
 </body>
 </html>
