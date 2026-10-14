@@ -637,6 +637,15 @@
 
     function toggleTheme() { theme = theme === 'dark' ? 'light' : 'dark'; document.body.className = `p-3 md:p-8 ${theme}`; if(DATA) renderCharts(DATA); }
 
+    function cleanTeacherName(name) {
+      if (!name || typeof name !== 'string') return '';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 3 && parts[parts.length - 1] === parts[parts.length - 2]) {
+        parts.pop();
+      }
+      return parts.join(' ').trim();
+    }
+
     function populateTeacherDropdown() {
       const s = document.getElementById('subjectGroup') ? document.getElementById('subjectGroup').value : '';
       const tSel = document.getElementById('teacher');
@@ -649,7 +658,7 @@
       } else if (!s && teacherByGroup) {
         teachers = Object.values(teacherByGroup).flat();
       }
-      [...new Set(teachers)].sort().forEach(t => {
+      [...new Set(teachers.map(cleanTeacherName).filter(Boolean))].sort().forEach(t => {
         tSel.innerHTML += `<option value="${t}" ${t === prevVal ? 'selected' : ''}>${t}</option>`;
       });
     }
@@ -659,7 +668,12 @@
       document.getElementById('grade').innerHTML = '<option value="">— ทุกระดับชั้น —</option>' + res.grades.map(g => `<option value="${g}">${g}</option>`).join(''); 
       roomsByGrade = res.roomsByGrade; 
       document.getElementById('subjectGroup').innerHTML = '<option value="">— ทุกกลุ่มสาระ —</option>' + res.subjectGroups.map(s => `<option value="${s}">${s}</option>`).join(''); 
-      teacherByGroup = res.teacherByGroup || {}; 
+      teacherByGroup = {};
+      if (res.teacherByGroup) {
+        for (const [grp, tList] of Object.entries(res.teacherByGroup)) {
+          teacherByGroup[grp] = (tList || []).map(cleanTeacherName).filter(Boolean);
+        }
+      }
       populateTeacherDropdown();
     }
     
