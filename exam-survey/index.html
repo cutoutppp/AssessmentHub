@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบประเมินความพึงพอใจการจัดสอบ - โรงเรียนพัฒนานิคม</title>
+  
+  <!-- Google Fonts: Noto Sans Thai & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans Thai"', 'sans-serif'],
+            display: ['"Prompt"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Firebase App & Firestore Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body { font-family: 'Noto Sans Thai', sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Prompt', sans-serif; }
+    
+    /* Custom Scale Radio styling */
+    .scale-input:checked + label {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+      font-weight: 700;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Top Navigation / Mode Toggle -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Firebase Cloud Connected
+        </span>
+      </div>
+      <div class="flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+        <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition">
+          📝 ทำแบบประเมิน
+        </button>
+        <button id="tabReportBtn" onclick="switchTab('report')" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+          📊 ผลการประเมินสด
+        </button>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 mb-6 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500"></div>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+          📋
+        </div>
+        <div>
+          <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">งานวัดและประเมินผลการเรียนรู้</span>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+            แบบประเมินความพึงพอใจการจัดสอบ
+          </h1>
+        </div>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
+        เพื่อรวบรวมความคิดเห็นจากคณะครูกรรมการคุมสอบและนักเรียน นำไปพัฒนาปรับปรุงการบริหารจัดการสอบให้มีประสิทธิภาพสูงสุด
+      </p>
+    </header>
+
+    <!-- ================= VIEW 1: แบบประเมิน (FORM) ================= -->
+    <main id="formView" class="space-y-6">
+      <form id="surveyForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+
+        <!-- สถานะผู้ตอบแบบประเมิน -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">1</span>
+            <h2 class="text-base font-bold text-slate-900">ข้อมูลผู้ตอบแบบประเมิน</h2>
+          </div>
+
+          <!-- เลือกสถานะ: ครู vs นักเรียน -->
+          <div class="mb-5">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">สถานะของท่าน <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="relative flex flex-col p-3.5 rounded-xl border-2 border-indigo-500 bg-indigo-50/40 cursor-pointer transition" id="roleStudentLabel">
+                <input type="radio" name="role" value="student" checked onchange="handleRoleChange()" class="sr-only">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">🧑‍🎓</span>
+                  <span class="font-bold text-sm text-indigo-900">นักเรียนผู้เข้าสอบ</span>
+                </div>
+                <span class="text-xs text-slate-500 mt-1">ประเมินในฐานะผู้เข้าสอบ</span>
+              </label>
+
+              <label class="relative flex flex-col p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition" id="roleTeacherLabel">
+                <input type="radio" name="role" value="teacher" onchange="handleRoleChange()" class="sr-only">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">👨‍🏫</span>
+                  <span class="font-bold text-sm text-slate-800">ครู / กรรมการคุมสอบ</span>
+                </div>
+                <span class="text-xs text-slate-500 mt-1">ประเมินในฐานะกรรมการคุมสอบ</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- แถวข้อมูลย่อย: อาคาร / ระดับชั้น / กลุ่มสาระฯ -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- อาคารที่สอบ -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">อาคารสอบที่ท่านอยู่ <span class="text-red-500">*</span></label>
+              <select name="building" required class="w-full text-xs sm:text-sm p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="">-- เลือกอาคารสอบ --</option>
+                <option value="อาคาร 1">อาคาร 1</option>
+                <option value="อาคาร 2">อาคาร 2</option>
+                <option value="อาคาร 3">อาคาร 3</option>
+                <option value="อาคาร 4">อาคาร 4</option>
+                <option value="หอประชุม">หอประชุม / โดม</option>
+                <option value="อาคารอื่น ๆ">อาคารอื่น ๆ</option>
+              </select>
+            </div>
+
+            <!-- นักเรียน: เลือกระดับชั้น -->
+            <div id="gradeContainer">
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">ระดับชั้น <span class="text-red-500">*</span></label>
+              <select name="grade" id="gradeSelect" required class="w-full text-xs sm:text-sm p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="">-- เลือกระดับชั้น --</option>
+                <option value="มัธยมศึกษาปีที่ 1">มัธยมศึกษาปีที่ 1 (ม.1)</option>
+                <option value="มัธยมศึกษาปีที่ 2">มัธยมศึกษาปีที่ 2 (ม.2)</option>
+                <option value="มัธยมศึกษาปีที่ 3">มัธยมศึกษาปีที่ 3 (ม.3)</option>
+                <option value="มัธยมศึกษาปีที่ 4">มัธยมศึกษาปีที่ 4 (ม.4)</option>
+                <option value="มัธยมศึกษาปีที่ 5">มัธยมศึกษาปีที่ 5 (ม.5)</option>
+                <option value="มัธยมศึกษาปีที่ 6">มัธยมศึกษาปีที่ 6 (ม.6)</option>
+              </select>
+            </div>
+
+            <!-- ครู: เลือกกลุ่มสาระฯ (ซ่อนเป็นค่าเริ่มต้น) -->
+            <div id="deptContainer" class="hidden">
+              <label class="block text-xs font-semibold text-slate-700 mb-1.5">กลุ่มสาระการเรียนรู้ <span class="text-red-500">*</span></label>
+              <select name="department" id="deptSelect" class="w-full text-xs sm:text-sm p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="">-- เลือกกลุ่มสาระฯ --</option>
+                <option value="ภาษาไทย">ภาษาไทย</option>
+                <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="สังคมศึกษาฯ">สังคมศึกษาฯ</option>
+                <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                <option value="ศิลปะ">ศิลปะ</option>
+                <option value="การงานอาชีพ">การงานอาชีพ</option>
+                <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+              </select>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- เกณฑ์ประเมินความพึงพอใจ 5 ระดับ -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">2</span>
+              <h2 class="text-base font-bold text-slate-900">ความพึงพอใจต่อการจัดสอบ</h2>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">5 = มากที่สุด, 1 = น้อยที่สุด</span>
+          </div>
+
+          <div class="space-y-6">
+
+            <!-- ตอนที่ 1: ตารางสอบและการเตรียมการ -->
+            <div>
+              <div class="bg-slate-100/80 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 mb-3">
+                1. ด้านการเตรียมการและตารางสอบ
+              </div>
+              <div class="space-y-3" id="group1_questions"></div>
+            </div>
+
+            <!-- ตอนที่ 2: บรรยากาศ สถานที่ และการคุมสอบ -->
+            <div>
+              <div class="bg-slate-100/80 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 mb-3">
+                2. ด้านสถานที่ บรรยากาศ และการกำกับดูแล
+              </div>
+              <div class="space-y-3" id="group2_questions"></div>
+            </div>
+
+            <!-- ตอนที่ 3: ข้อสอบและภาพรวม -->
+            <div>
+              <div class="bg-slate-100/80 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 mb-3">
+                3. ด้านคุณภาพข้อสอบและภาพรวม
+              </div>
+              <div class="space-y-3" id="group3_questions"></div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ปัญหาที่พบ (Pain Points) & ข้อเสนอแนะ -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">3</span>
+            <h2 class="text-base font-bold text-slate-900">ปัญหาที่พบและข้อเสนอแนะ</h2>
+          </div>
+
+          <!-- Checkbox ปัญหาที่พบบ่อย -->
+          <div class="mb-5">
+            <label class="block text-xs font-semibold text-slate-700 mb-2">
+              ปัญหาหรืออุปสรรคที่ท่านพบในการสอบครั้งนี้ <span class="text-xs font-normal text-slate-500">(เลือกได้มากกว่า 1 ข้อ)</span>
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_noise" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                🔊 มีเสียงรบกวนภายนอกห้องสอบ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_room" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ☀️ อากาศร้อน / แสงสว่างไม่พอ / พัดลมเสีย
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_desk" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                🪑 โต๊ะ-เก้าอี้ชำรุด หรือโยกเยก
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_time" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ⏳ เวลาทำข้อสอบบางวิชาไม่เพียงพอ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_content" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                📄 ข้อสอบพิมพ์ไม่ชัดเจน / คำสั่งกำกวม
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="painPoints" value="p_exam" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ✏️ รูปแบบกระดาษคำตอบสับสน / ฝนยาก
+              </label>
+            </div>
+          </div>
+
+          <!-- ข้อเสนอแนะเพิ่มเติม -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+              ข้อเสนอแนะเพิ่มเติมเพื่อปรับปรุงการจัดสอบครั้งต่อไป:
+            </label>
+            <textarea name="comment" rows="3" placeholder="ระบุความคิดเห็นหรือข้อเสนอแนะเพื่อให้การจัดสอบดียิ่งขึ้น..."
+                      class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"></textarea>
+          </div>
+        </section>
+
+        <!-- ปุ่มส่งแบบประเมิน -->
+        <div class="pt-2 pb-10">
+          <button type="submit" id="submitBtn"
+                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
+            <span>ส่งแบบประเมิน</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Modal แจ้งเตือนส่งสำเร็จ -->
+      <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-xl">
+          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
+            ✓
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">ส่งแบบประเมินสำเร็จ</h3>
+          <p class="text-xs text-slate-600 mb-5 leading-relaxed">
+            ขอบพระคุณสำหรับความคิดเห็นอันมีค่า<br>
+            ระบบได้บันทึกข้อมูลเข้าสู่ระบบคลาวด์ Firebase เรียบร้อยแล้ว
+          </p>
+          <div class="space-y-2">
+            <button onclick="switchTab('report')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
+              ดูผลประเมินสรุปสด 📊
+            </button>
+            <button onclick="window.location.reload()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-xl text-xs transition">
+              ทำแบบประเมินอีกครั้ง
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= VIEW 2: รายงานผลสด (REAL-TIME REPORT) ================= -->
+    <section id="reportView" class="hidden space-y-6">
+      
+      <!-- Summary KPI Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">ผู้ตอบทั้งหมด</span>
+          <span id="statTotal" class="text-2xl font-bold text-slate-900">0</span>
+          <span class="text-[10px] text-emerald-600 font-medium mt-0.5 block">อัปเดตแบบเรียลไทม์</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">คะแนนเฉลี่ยรวม</span>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span id="statAvg" class="text-2xl font-bold text-indigo-600">0.00</span>
+            <span class="text-xs text-slate-400">/ 5.0</span>
+          </div>
+          <span id="statLevel" class="text-[10px] text-indigo-600 font-bold block mt-0.5">-</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">นักเรียน</span>
+          <span id="statStudents" class="text-2xl font-bold text-sky-600">0</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">คน</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">ครู / กรรมการ</span>
+          <span id="statTeachers" class="text-2xl font-bold text-purple-600">0</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">คน</span>
+        </div>
+      </div>
+
+      <!-- รายละเอียดคะแนนแต่ละด้าน -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center justify-between">
+          <span>คะแนนความพึงพอใจรายด้าน</span>
+          <span class="text-xs font-normal text-slate-400">เต็ม 5.00</span>
+        </h3>
+        <div class="space-y-3.5">
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>1. ด้านการเตรียมการและตารางสอบ</span>
+              <span id="scoreDim1" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim1" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>2. ด้านสถานที่ บรรยากาศ และการคุมสอบ</span>
+              <span id="scoreDim2" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim2" class="bg-sky-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>3. ด้านคุณภาพข้อสอบและภาพรวม</span>
+              <span id="scoreDim3" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim3" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- สรุปปัญหาที่พบบ่อย (Pain Points Breakdown) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 mb-3">สรุปปัญหาและอุปสรรคที่พบมากที่สุด</h3>
+        <div class="space-y-2.5 text-xs" id="painPointsList">
+          <div class="text-slate-400 py-3 text-center">กำลังโหลดข้อมูล...</div>
+        </div>
+      </div>
+
+      <!-- ความคิดเห็นและข้อเสนอแนะล่าสุด -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-900">ข้อเสนอแนะจากผู้ตอบแบบประเมิน</h3>
+          <span id="commentCount" class="text-xs text-slate-400">0 ข้อความ</span>
+        </div>
+        <div id="commentsList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div class="text-slate-400 py-4 text-center text-xs">ไม่มีข้อเสนอแนะ</div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Script: Firebase Integration & Interactive Logic -->
+  <script>
+    // 1. Firebase Config (เชื่อมต่อกับฐานข้อมูล tradesimschool - final_exam_surveys โดยตรง)
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2E6tJKGhq07Useb5rF_xyAq46LFbFtd0",
+      authDomain: "tradesimschool.firebaseapp.com",
+      projectId: "tradesimschool",
+      storageBucket: "tradesimschool.firebasestorage.app",
+      messagingSenderId: "389084930000",
+      appId: "1:389084930000:web:5295372ff352a600a7a3d5",
+      measurementId: "G-EC94TRQRCD"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const COLLECTION_NAME = 'final_exam_surveys';
+
+    // 2. ข้อมูลคำถาม 12 ข้อตามมาตรฐานงานวัดผล
+    const questions = [
+      // กลุ่มที่ 1
+      { id: 'sq1_1', group: 1, text: '1.1 การประชาสัมพันธ์และแจ้งตารางสอบล่วงหน้าชัดเจน' },
+      { id: 'sq1_2', group: 1, text: '1.2 การจัดลำดับวิชาสอบในแต่ละวันมีความเหมาะสม' },
+      { id: 'sq1_3', group: 1, text: '1.3 ระยะเวลาที่กำหนดในแต่ละวิชาพอเหมาะกับข้อสอบ' },
+      { id: 'sq1_4', group: 1, text: '1.4 คำชี้แจงและระเบียบปฏิบัติในการสอบมีความชัดเจน' },
+      { id: 'sq1_5', group: 1, text: '1.5 ความพร้อมของข้อสอบและกระดาษคำตอบตรงต่อเวลา' },
+      // กลุ่มที่ 2
+      { id: 'sq2_1', group: 2, text: '2.1 ความสะอาด ความพร้อมของโต๊ะ-เก้าอี้ในห้องสอบ' },
+      { id: 'sq2_2', group: 2, text: '2.2 สภาพแวดล้อม แสงสว่าง และการระบายอากาศเหมาะสม' },
+      { id: 'sq2_3', group: 2, text: '2.3 ความเงียบสงบ ไม่มีเสียงรบกวนสมาธิระหว่างสอบ' },
+      { id: 'sq2_4', group: 2, text: '2.4 กรรมการคุมสอบชี้แจงและปฏิบัติหน้าที่ตรงเวลา' },
+      { id: 'sq2_5', group: 2, text: '2.5 การประสานงานและการอำนวยความสะดวกของศูนย์สอบ' },
+      // กลุ่มที่ 3
+      { id: 'sq3_1', group: 3, text: '3.1 ความคมชัดของข้อสอบ ภาพประกอบ และกระดาษคำตอบ' },
+      { id: 'sq3_2', group: 3, text: '3.2 ภาพรวมความพึงพอใจต่อการบริหารจัดการสอบในครั้งนี้' }
+    ];
+
+    // 3. Render คำถามลงหน้าเว็บ
+    function renderQuestions() {
+      questions.forEach(q => {
+        const container = document.getElementById(`group${q.group}_questions`);
+        if (!container) return;
+
+        const row = document.createElement('div');
+        row.className = 'py-2.5 border-b border-slate-100 last:border-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5';
+        row.innerHTML = `
+          <span class="text-xs sm:text-sm text-slate-800 font-medium">${q.text} <span class="text-red-500">*</span></span>
+          <div class="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+            ${[1, 2, 3, 4, 5].map(val => `
+              <div class="relative">
+                <input type="radio" id="${q.id}_${val}" name="${q.id}" value="${val}" required class="sr-only scale-input">
+                <label for="${q.id}_${val}" class="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-700 flex items-center justify-center font-semibold text-xs cursor-pointer hover:border-indigo-400 transition select-none">
+                  ${val}
+                </label>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // 4. สลับบทบาท ครู vs นักเรียน
+    function handleRoleChange() {
+      const role = document.querySelector('input[name="role"]:checked').value;
+      const gradeBox = document.getElementById('gradeContainer');
+      const gradeSelect = document.getElementById('gradeSelect');
+      const deptBox = document.getElementById('deptContainer');
+      const deptSelect = document.getElementById('deptSelect');
+      const sLabel = document.getElementById('roleStudentLabel');
+      const tLabel = document.getElementById('roleTeacherLabel');
+
+      if (role === 'student') {
+        gradeBox.classList.remove('hidden');
+        gradeSelect.required = true;
+        deptBox.classList.add('hidden');
+        deptSelect.required = false;
+        deptSelect.value = '';
+
+        sLabel.className = 'relative flex flex-col p-3.5 rounded-xl border-2 border-indigo-500 bg-indigo-50/40 cursor-pointer transition';
+        tLabel.className = 'relative flex flex-col p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition';
+      } else {
+        gradeBox.classList.add('hidden');
+        gradeSelect.required = false;
+        gradeSelect.value = '';
+        deptBox.classList.remove('hidden');
+        deptSelect.required = true;
+
+        tLabel.className = 'relative flex flex-col p-3.5 rounded-xl border-2 border-indigo-500 bg-indigo-50/40 cursor-pointer transition';
+        sLabel.className = 'relative flex flex-col p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition';
+      }
+    }
+
+    // 5. สลับแท็บ หน้าฟอร์ม vs หน้าดูผล
+    function switchTab(tab) {
+      const fView = document.getElementById('formView');
+      const rView = document.getElementById('reportView');
+      const fBtn = document.getElementById('tabFormBtn');
+      const rBtn = document.getElementById('tabReportBtn');
+
+      if (tab === 'form') {
+        fView.classList.remove('hidden');
+        rView.classList.add('hidden');
+        fBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition';
+        rBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition';
+      } else {
+        fView.classList.add('hidden');
+        rView.classList.remove('hidden');
+        rBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition';
+        fBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition';
+        loadRealtimeStats();
+      }
+    }
+
+    // 6. ส่งแบบประเมินเข้า Firebase Firestore
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const form = document.getElementById('surveyForm');
+      const formData = new FormData(form);
+
+      const role = formData.get('role');
+      const randomId = (role === 'teacher' ? 'TCH-' : 'STD-') + Math.floor(100000 + Math.random() * 900000);
+
+      // รวบรวมคะแนน 12 ข้อ
+      const scores = {};
+      questions.forEach(q => {
+        scores[q.id] = parseInt(formData.get(q.id) || '0', 10);
+      });
+
+      // รวบรวม Pain Points
+      const painPoints = formData.getAll('painPoints');
+
+      // วันเวลาปัจจุบัน
+      const now = new Date();
+      const localTimeString = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0');
+
+      const payload = {
+        id: randomId,
+        role: role,
+        roleName: role === 'teacher' ? 'ครู' : 'นักเรียน',
+        building: formData.get('building') || '',
+        grade: formData.get('grade') || '',
+        department: formData.get('department') || '',
+        classroom: '',
+        gender: 'ไม่ระบุ',
+        scores: scores,
+        painPoints: painPoints,
+        comment: (formData.get('comment') || '').trim(),
+        timestamp: localTimeString,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>กำลังส่งข้อมูลเข้า Firebase...</span>
+        `;
+
+        await db.collection(COLLECTION_NAME).add(payload);
+
+        document.getElementById('successModal').classList.remove('hidden');
+      } catch (err) {
+        console.error('Error submitting survey to Firebase:', err);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ Firebase: ' + err.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>ส่งแบบประเมินอีกครั้ง</span>';
+      }
+    }
+
+    // 7. โหลดสถิติแบบ Real-time จาก Firestore
+    let unsubscribeStats = null;
+    function loadRealtimeStats() {
+      if (unsubscribeStats) return; // ติดตั้ง Listener ครั้งเดียว
+
+      unsubscribeStats = db.collection(COLLECTION_NAME)
+        .orderBy('createdAt', 'desc')
+        .limit(200)
+        .onSnapshot(snapshot => {
+          let total = 0;
+          let students = 0;
+          let teachers = 0;
+          let sumAll = 0;
+          let countAll = 0;
+
+          let sumD1 = 0, countD1 = 0;
+          let sumD2 = 0, countD2 = 0;
+          let sumD3 = 0, countD3 = 0;
+
+          const painCounts = {
+            p_noise: { name: '🔊 เสียงรบกวนภายนอกห้องสอบ', count: 0 },
+            p_room: { name: '☀️ อากาศร้อน / แสงสว่างไม่พอ / พัดลมเสีย', count: 0 },
+            p_desk: { name: '🪑 โต๊ะ-เก้าอี้ชำรุด หรือโยกเยก', count: 0 },
+            p_time: { name: '⏳ เวลาทำข้อสอบบางวิชาไม่เพียงพอ', count: 0 },
+            p_content: { name: '📄 ข้อสอบพิมพ์ไม่ชัดเจน / กำกวม', count: 0 },
+            p_exam: { name: '✏️ กระดาษคำตอบสับสน / ฝนยาก', count: 0 }
+          };
+
+          const comments = [];
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            total++;
+            if (data.role === 'teacher') teachers++;
+            else students++;
+
+            // คะแนนรายข้อ
+            if (data.scores) {
+              questions.forEach(q => {
+                const val = Number(data.scores[q.id]);
+                if (!isNaN(val) && val > 0) {
+                  sumAll += val;
+                  countAll++;
+                  if (q.group === 1) { sumD1 += val; countD1++; }
+                  else if (q.group === 2) { sumD2 += val; countD2++; }
+                  else if (q.group === 3) { sumD3 += val; countD3++; }
+                }
+              });
+            }
+
+            // Pain Points
+            if (Array.isArray(data.painPoints)) {
+              data.painPoints.forEach(p => {
+                if (painCounts[p]) painCounts[p].count++;
+              });
+            }
+
+            // ข้อเสนอแนะ
+            if (data.comment && data.comment.trim() !== '') {
+              comments.push({
+                role: data.roleName || (data.role === 'teacher' ? 'ครู' : 'นักเรียน'),
+                building: data.building || '',
+                text: data.comment,
+                time: data.timestamp || ''
+              });
+            }
+          });
+
+          // อัปเดตตัวเลข KPI
+          document.getElementById('statTotal').innerText = total.toLocaleString();
+          document.getElementById('statStudents').innerText = students.toLocaleString();
+          document.getElementById('statTeachers').innerText = teachers.toLocaleString();
+
+          const overallAvg = countAll > 0 ? (sumAll / countAll) : 0;
+          document.getElementById('statAvg').innerText = overallAvg.toFixed(2);
+          
+          let levelText = 'ไม่มีข้อมูล';
+          if (overallAvg >= 4.50) levelText = 'ความพึงพอใจมากที่สุด ⭐⭐⭐⭐⭐';
+          else if (overallAvg >= 3.50) levelText = 'ความพึงพอใจมาก ⭐⭐⭐⭐';
+          else if (overallAvg >= 2.50) levelText = 'ความพึงพอใจปานกลาง ⭐⭐⭐';
+          else if (overallAvg > 0) levelText = 'ควรปรับปรุง ⭐⭐';
+          document.getElementById('statLevel').innerText = levelText;
+
+          // อัปเดตรายด้าน
+          const avgD1 = countD1 > 0 ? (sumD1 / countD1) : 0;
+          const avgD2 = countD2 > 0 ? (sumD2 / countD2) : 0;
+          const avgD3 = countD3 > 0 ? (sumD3 / countD3) : 0;
+
+          document.getElementById('scoreDim1').innerText = avgD1.toFixed(2);
+          document.getElementById('scoreDim2').innerText = avgD2.toFixed(2);
+          document.getElementById('scoreDim3').innerText = avgD3.toFixed(2);
+
+          document.getElementById('barDim1').style.width = (avgD1 / 5 * 100) + '%';
+          document.getElementById('barDim2').style.width = (avgD2 / 5 * 100) + '%';
+          document.getElementById('barDim3').style.width = (avgD3 / 5 * 100) + '%';
+
+          // อัปเดต Pain Points
+          const painList = document.getElementById('painPointsList');
+          painList.innerHTML = Object.values(painCounts)
+            .sort((a, b) => b.count - a.count)
+            .map(item => {
+              const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+              return `
+                <div>
+                  <div class="flex justify-between text-slate-700 font-medium mb-1">
+                    <span>${item.name}</span>
+                    <span class="font-bold text-slate-900">${item.count} ครั้ง (${pct}%)</span>
+                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-1.5">
+                    <div class="bg-amber-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+          // อัปเดตข้อเสนอแนะ
+          document.getElementById('commentCount').innerText = `${comments.length} ข้อความ`;
+          const cList = document.getElementById('commentsList');
+          if (comments.length === 0) {
+            cList.innerHTML = '<div class="text-slate-400 py-4 text-center text-xs">ยังไม่มีข้อเสนอแนะ</div>';
+          } else {
+            cList.innerHTML = comments.slice(0, 30).map(c => `
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-indigo-700">${c.role} ${c.building ? `(${c.building})` : ''}</span>
+                  <span class="text-[10px] text-slate-400">${c.time}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed">${c.text}</p>
+              </div>
+            `).join('');
+          }
+        }, err => {
+          console.error('Error fetching live stats:', err);
+        });
+    }
+
+    // เริ่มต้นทำงาน
+    renderQuestions();
+  </script>
+</body>
+</html>

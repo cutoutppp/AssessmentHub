@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบประเมินการใช้งานระบบช่วยงานวัดผล - AssessmentHub / NextSGS</title>
+  
+  <!-- Google Fonts: Noto Sans Thai & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans Thai"', 'sans-serif'],
+            display: ['"Prompt"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Firebase App & Firestore Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body { font-family: 'Noto Sans Thai', sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Prompt', sans-serif; }
+    
+    /* Custom Scale Radio styling */
+    .scale-input:checked + label {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border-color: #4f46e5;
+      font-weight: 700;
+      box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+
+  <div class="max-w-3xl mx-auto">
+
+    <!-- Top Navigation / Mode Toggle -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Firebase Cloud Sync (บันทึกอัตโนมัติ)
+        </span>
+      </div>
+      <div class="flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+        <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition">
+          📝 ทำแบบประเมิน
+        </button>
+        <button id="tabReportBtn" onclick="switchTab('report')" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
+          📊 ผลการประเมินสด
+        </button>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 mb-6 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+          ⚡
+        </div>
+        <div>
+          <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">AssessmentHub & NextSGS Ecosystem</span>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+            แบบประเมินการใช้งานระบบช่วยงานวัดผล
+          </h1>
+        </div>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-500 mt-2 leading-relaxed">
+        เพื่อประเมินประสิทธิภาพ การลดภาระงานครู และนำข้อมูลเชิงประจักษ์ไปพัฒนาต่อยอดระบบในภาคเรียนถัดไป
+      </p>
+    </header>
+
+    <!-- ================= VIEW 1: แบบประเมิน (FORM) ================= -->
+    <main id="formView" class="space-y-6">
+      <form id="surveyForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+
+        <!-- ตอนที่ 1: ข้อมูลทั่วไป -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">1</span>
+            <h2 class="text-base font-bold text-slate-900">ตอนที่ 1: ข้อมูลทั่วไป</h2>
+          </div>
+
+          <!-- 1. กลุ่มสาระการเรียนรู้ -->
+          <div class="mb-5">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">1. กลุ่มสาระการเรียนรู้ <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="ภาษาไทย" required class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ภาษาไทย
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="คณิตศาสตร์" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                คณิตศาสตร์
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="วิทยาศาสตร์ฯ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                วิทยาศาสตร์ฯ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="สังคมศึกษาฯ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                สังคมศึกษาฯ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="ภาษาต่างประเทศ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ภาษาต่างประเทศ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="ศิลปะ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ศิลปะ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="สุขศึกษาฯ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                สุขศึกษาฯ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="การงานอาชีพ" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                การงานอาชีพ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="department" value="กิจกรรมพัฒนาผู้เรียน" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                กิจกรรมพัฒนาผู้เรียน
+              </label>
+            </div>
+          </div>
+
+          <!-- 2. ระดับชั้นที่สอน -->
+          <div class="mb-5">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">2. ระดับชั้นที่สอน <span class="text-red-500">*</span></label>
+            <div class="grid grid-cols-3 gap-2.5">
+              <label class="flex items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm text-center">
+                <input type="radio" name="gradeLevel" value="ม.ต้น" required class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ม.ต้น
+              </label>
+              <label class="flex items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm text-center">
+                <input type="radio" name="gradeLevel" value="ม.ปลาย" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ม.ปลาย
+              </label>
+              <label class="flex items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm text-center">
+                <input type="radio" name="gradeLevel" value="ทั้ง ม.ต้น และ ม.ปลาย" class="text-indigo-600 focus:ring-indigo-500 mr-2">
+                ทั้ง ม.ต้น และ ม.ปลาย
+              </label>
+            </div>
+          </div>
+
+          <!-- 3. เครื่องมือที่เคยใช้งาน -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1">
+              3. เครื่องมือที่เคยใช้งานในภาคเรียนนี้ <span class="text-xs font-normal text-slate-500">(เลือกได้มากกว่า 1 ข้อ)</span>
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ส่วนเสริม NextSGS" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ส่วนเสริม NextSGS
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบตรวจสอบคะแนนและไฟล์ ปพ.5 (SGS NEXTSCHOOL)" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ตรวจสอบ ปพ.5 (SGS NEXTSCHOOL)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบจัดทำแผนวัดผล (วผ.19)" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                จัดทำแผนวัดผล (วผ.19)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบสร้างใบปะหน้าข้อสอบ" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ระบบสร้างใบปะหน้าข้อสอบ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบประเมินข้อสอบ (IOC)" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ระบบประเมินข้อสอบ (IOC)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบยื่นคำร้องขอแก้ไขผลการเรียน (0, ร, มส.)" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ขอแก้ไขผลการเรียน (0, ร, มส.)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบตรวจสอบนักเรียน มส. (MoreSor)" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ตรวจสอบนักเรียน มส. (MoreSor)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="tools" value="ระบบวิเคราะห์ผลการเรียน ต.2ก" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                วิเคราะห์ผลการเรียน ต.2ก
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ตอนที่ 2: ความพึงพอใจต่อระบบ (11 ข้อ 5 ระดับ) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">2</span>
+              <h2 class="text-base font-bold text-slate-900">ตอนที่ 2: ความพึงพอใจต่อระบบ</h2>
+            </div>
+            <span class="text-xs text-slate-400 font-medium">5 = มากที่สุด, 1 = น้อยที่สุด</span>
+          </div>
+
+          <div class="space-y-6">
+            <!-- กลุ่มที่ 1 -->
+            <div>
+              <div class="bg-indigo-50/70 px-3 py-2 rounded-lg text-xs font-bold text-indigo-900 mb-3">
+                ด้านการใช้งานและความเร็ว
+              </div>
+              <div class="space-y-3" id="group1_questions"></div>
+            </div>
+
+            <!-- กลุ่มที่ 2 -->
+            <div>
+              <div class="bg-indigo-50/70 px-3 py-2 rounded-lg text-xs font-bold text-indigo-900 mb-3">
+                ด้านการลดภาระงาน
+              </div>
+              <div class="space-y-3" id="group2_questions"></div>
+            </div>
+
+            <!-- กลุ่มที่ 3 -->
+            <div>
+              <div class="bg-indigo-50/70 px-3 py-2 rounded-lg text-xs font-bold text-indigo-900 mb-3">
+                ด้านความมั่นใจและการใช้งานต่อ
+              </div>
+              <div class="space-y-3" id="group3_questions"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ตอนที่ 3: เวลาและความถูกต้องในการทำงาน (ภาพรวม) -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">3</span>
+            <h2 class="text-base font-bold text-slate-900">ตอนที่ 3: เวลาและความถูกต้องในการทำงาน (ภาพรวม)</h2>
+          </div>
+
+          <!-- 1. เวลาเฉลี่ย -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              1. เวลาเฉลี่ยที่ใช้จัดการคะแนนและเอกสาร (ต่อ 1 ห้องเรียน) <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              <!-- ก่อนใช้ -->
+              <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <span class="block text-xs font-bold text-slate-600 mb-2">🕒 ก่อนใช้นวัตกรรม</span>
+                <div class="space-y-1.5">
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeBefore" value="มากกว่า 60 นาที" required class="text-indigo-600 mr-2"> มากกว่า 60 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeBefore" value="30–60 นาที" class="text-indigo-600 mr-2"> 30–60 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeBefore" value="15–30 นาที" class="text-indigo-600 mr-2"> 15–30 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeBefore" value="น้อยกว่า 15 นาที" class="text-indigo-600 mr-2"> น้อยกว่า 15 นาที</label>
+                </div>
+              </div>
+              <!-- หลังใช้ -->
+              <div class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-200/80">
+                <span class="block text-xs font-bold text-emerald-800 mb-2">⚡ หลังใช้นวัตกรรม</span>
+                <div class="space-y-1.5">
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeAfter" value="มากกว่า 60 นาที" required class="text-emerald-600 mr-2"> มากกว่า 60 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeAfter" value="30–60 นาที" class="text-emerald-600 mr-2"> 30–60 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeAfter" value="15–30 นาที" class="text-emerald-600 mr-2"> 15–30 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeAfter" value="5–15 นาที" class="text-emerald-600 mr-2"> 5–15 นาที</label>
+                  <label class="flex items-center text-xs sm:text-sm cursor-pointer"><input type="radio" name="timeAfter" value="น้อยกว่า 5 นาที" class="text-emerald-600 mr-2 font-semibold text-emerald-700"> น้อยกว่า 5 นาที (เร็วมาก)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. ความถูกต้อง -->
+          <div class="mb-6">
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              2. ความถูกต้องของข้อมูลและเอกสารที่ได้รับจากระบบ <span class="text-red-500">*</span>
+            </label>
+            <div class="space-y-2">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="accuracy" value="ถูกต้อง 100% (ไม่ต้องแก้ไขซ้ำ)" required class="text-indigo-600 mr-2.5">
+                ถูกต้อง 100% (ไม่ต้องแก้ไขซ้ำ)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="accuracy" value="ถูกต้องดี (มีแก้เล็กน้อย)" class="text-indigo-600 mr-2.5">
+                ถูกต้องดี (มีแก้เล็กน้อย)
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="accuracy" value="ต้องแก้ไขใหม่หลายจุด" class="text-indigo-600 mr-2.5">
+                ต้องแก้ไขใหม่หลายจุด
+              </label>
+            </div>
+          </div>
+
+          <!-- 3. ข้อผิดพลาดที่ต้องแก้ -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-2">
+              3. ข้อผิดพลาดที่ต้องส่งกลับมาแก้ไขใหม่ <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="errorRate" value="ลดลงอย่างมาก (แทบไม่พบข้อผิดพลาด)" required class="text-indigo-600 mr-2">
+                ลดลงอย่างมาก
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="errorRate" value="ลดลงบางส่วน" class="text-indigo-600 mr-2">
+                ลดลงบางส่วน
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="errorRate" value="เท่าเดิม" class="text-indigo-600 mr-2">
+                เท่าเดิม
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- ตอนที่ 4: ปัญหาและแนวทางพัฒนาต่อยอด -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-7">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+            <span class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">4</span>
+            <h2 class="text-base font-bold text-slate-900">ตอนที่ 4: ปัญหาและแนวทางพัฒนาต่อยอด</h2>
+          </div>
+
+          <!-- 1. เหตุผลหลักที่ยังไม่ได้ใช้ -->
+          <div class="mb-5">
+            <label class="block text-sm font-semibold text-slate-800 mb-1">
+              1. เหตุผลหลักที่ท่านยังไม่ได้ใช้งานเครื่องมือบางตัวในระบบ <span class="text-xs font-normal text-slate-500">(เลือกได้มากกว่า 1 ข้อ)</span>
+            </label>
+            <div class="space-y-2 mt-2">
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="unusedReasons" value="ยังไม่ทราบว่ามีเครื่องมือนี้อยู่" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ยังไม่ทราบว่ามีเครื่องมือนี้อยู่
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="unusedReasons" value="ยังใช้งานไม่เป็น / อยากได้คลิปวิดีโอหรือคู่มือสั้น ๆ" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ยังใช้งานไม่เป็น / อยากได้คลิปวิดีโอหรือคู่มือสั้น ๆ
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="unusedReasons" value="ลักษณะวิชาที่สอนไม่จำเป็นต้องใช้" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                ลักษณะวิชาที่สอนไม่จำเป็นต้องใช้
+              </label>
+              <label class="flex items-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                <input type="checkbox" name="unusedReasons" value="กังวลเรื่องความถูกต้อง / กลัวระบบทำข้อมูลผิดพลาด" class="w-4 h-4 text-indigo-600 rounded mr-2.5">
+                กังวลเรื่องความถูกต้อง / กลัวระบบทำข้อมูลผิดพลาด
+              </label>
+            </div>
+          </div>
+
+          <!-- 2. ปัญหาหรือจุดที่ติดขัด -->
+          <div class="mb-5">
+            <label class="block text-sm font-semibold text-slate-800 mb-1">
+              2. ปัญหาหรือจุดที่ติดขัดระหว่างใช้งาน (ถ้ามี):
+            </label>
+            <textarea name="issues" rows="3" placeholder="ระบุปัญหา เช่น การเชื่อมต่อ, เบราว์เซอร์, ไฟล์ Excel ฯลฯ"
+                      class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"></textarea>
+          </div>
+
+          <!-- 3. ฟังก์ชันที่อยากให้เพิ่ม -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-800 mb-1">
+              3. ฟังก์ชันหรือสิ่งที่อยากให้ระบบพัฒนาเพิ่มเติมในภาคเรียนหน้า:
+            </label>
+            <textarea name="suggestions" rows="3" placeholder="ระบุสิ่งที่ยังต้องทำมือและอยากให้มีระบบช่วยทำอัตโนมัติ..."
+                      class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"></textarea>
+          </div>
+        </section>
+
+        <!-- ปุ่มส่งแบบประเมิน -->
+        <div class="pt-2 pb-10">
+          <button type="submit" id="submitBtn"
+                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
+            <span>ส่งแบบประเมิน</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Modal แจ้งเตือนส่งสำเร็จ -->
+      <div id="successModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-xl">
+          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
+            ✓
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">บันทึกข้อมูลเรียบร้อยแล้ว</h3>
+          <p class="text-xs text-slate-600 mb-5 leading-relaxed">
+            ขอบพระคุณสำหรับข้อมูลและความคิดเห็นอันมีค่ายิ่ง<br>
+            ระบบได้บันทึกข้อมูลเข้าสู่ฐานข้อมูล Firebase เรียบร้อยแล้ว
+          </p>
+          <div class="space-y-2">
+            <button onclick="switchTab('report')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition">
+              ดูผลประเมินสรุปสด 📊
+            </button>
+            <button onclick="window.location.reload()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-xl text-xs transition">
+              ปิดหน้าต่าง
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ================= VIEW 2: รายงานผลสด (REAL-TIME REPORT) ================= -->
+    <section id="reportView" class="hidden space-y-6">
+      
+      <!-- Summary KPI Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">ผู้ตอบทั้งหมด</span>
+          <span id="statTotal" class="text-2xl font-bold text-slate-900">0</span>
+          <span class="text-[10px] text-emerald-600 font-medium mt-0.5 block">อัปเดตสด (Real-time)</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">คะแนนเฉลี่ยรวม</span>
+          <div class="flex items-baseline gap-1 mt-0.5">
+            <span id="statAvg" class="text-2xl font-bold text-indigo-600">0.00</span>
+            <span class="text-xs text-slate-400">/ 5.0</span>
+          </div>
+          <span id="statLevel" class="text-[10px] text-indigo-600 font-bold block mt-0.5">-</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">ลดเวลา > 30 นาที</span>
+          <span id="statTimeSaved" class="text-2xl font-bold text-emerald-600">0%</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">ของผู้ตอบทั้งหมด</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs">
+          <span class="text-[11px] font-semibold text-slate-500 block">ถูกต้อง 100%</span>
+          <span id="statAccurate" class="text-2xl font-bold text-sky-600">0%</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">ไม่ต้องแก้ไขซ้ำ</span>
+        </div>
+      </div>
+
+      <!-- รายละเอียดคะแนน 3 ด้าน -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center justify-between">
+          <span>คะแนนความพึงพอใจรายด้าน</span>
+          <span class="text-xs font-normal text-slate-400">เต็ม 5.00</span>
+        </h3>
+        <div class="space-y-3.5">
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>ด้านที่ 1: การใช้งานและความรวดเร็ว (ข้อ 1-4)</span>
+              <span id="scoreDim1" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim1" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>ด้านที่ 2: การลดภาระงานและลดความผิดพลาด (ข้อ 5-8)</span>
+              <span id="scoreDim2" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim2" class="bg-emerald-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-700 mb-1">
+              <span>ด้านที่ 3: ความมั่นใจและการใช้งานต่อเนื่อง (ข้อ 9-11)</span>
+              <span id="scoreDim3" class="font-bold text-indigo-600">0.00</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2">
+              <div id="barDim3" class="bg-purple-500 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- สถิติเครื่องมือที่มีการใช้งานมากที่สุด -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <h3 class="text-sm font-bold text-slate-900 mb-3">เครื่องมือที่มีการใช้งานมากที่สุด</h3>
+        <div class="space-y-2.5 text-xs" id="toolsRankingList">
+          <div class="text-slate-400 py-3 text-center">กำลังโหลดข้อมูล...</div>
+        </div>
+      </div>
+
+      <!-- ข้อเสนอแนะและฟังก์ชันที่อยากได้เพิ่ม -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-900">ฟังก์ชันที่ต้องการให้พัฒนาเพิ่ม (เสียงสะท้อนจากครู)</h3>
+          <span id="suggestionCount" class="text-xs text-slate-400">0 ข้อความ</span>
+        </div>
+        <div id="suggestionsList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div class="text-slate-400 py-4 text-center text-xs">ยังไม่มีข้อเสนอแนะ</div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Script: Firebase Integration & Interactive Logic -->
+  <script>
+    // 1. Firebase Config เชื่อมต่อ tradesimschool โดยตรง
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2E6tJKGhq07Useb5rF_xyAq46LFbFtd0",
+      authDomain: "tradesimschool.firebaseapp.com",
+      projectId: "tradesimschool",
+      storageBucket: "tradesimschool.firebasestorage.app",
+      messagingSenderId: "389084930000",
+      appId: "1:389084930000:web:5295372ff352a600a7a3d5",
+      measurementId: "G-EC94TRQRCD"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const COLLECTION_NAME = 'assessment_tool_surveys';
+
+    // 2. คำถาม 11 ข้อแบบ 5 ระดับ
+    const likertQuestions = [
+      // กลุ่ม 1: การใช้งานและความเร็ว
+      { id: 'q1', group: 1, text: '1. ติดตั้งและเข้าใช้งานง่าย ไม่ซับซ้อน' },
+      { id: 'q2', group: 1, text: '2. ระบบทำงานลื่นไหลและประมวลผลรวดเร็ว' },
+      { id: 'q3', group: 1, text: '3. หน้าตาโปรแกรมชัดเจน เมนูเข้าใจง่าย' },
+      { id: 'q4', group: 1, text: '4. มีระบบช่วยเตือนและป้องกันการกรอกคะแนนผิด' },
+      // กลุ่ม 2: การลดภาระงาน
+      { id: 'q5', group: 2, text: '5. ช่วยลดขั้นตอนทำงานที่ซ้ำซ้อน' },
+      { id: 'q6', group: 2, text: '6. ช่วยลดข้อผิดพลาดในการกรอกข้อมูล' },
+      { id: 'q7', group: 2, text: '7. ส่งและตรวจทานคะแนนเสร็จเร็วกว่าเดิม' },
+      { id: 'q8', group: 2, text: '8. ช่วยลดความเหนื่อยล้าในการทำงานเอกสาร' },
+      // กลุ่ม 3: ความมั่นใจและการใช้งานต่อ
+      { id: 'q9', group: 3, text: '9. มั่นใจในความถูกต้องของข้อมูลที่ระบบคำนวณ' },
+      { id: 'q10', group: 3, text: '10. ต้องการใช้งานระบบนี้ต่อเนื่องในภาคเรียนหน้า' },
+      { id: 'q11', group: 3, text: '11. พร้อมแนะนำให้เพื่อนครูใช้งาน' }
+    ];
+
+    // 3. Render คำถามลงหน้าเว็บ
+    function renderQuestions() {
+      likertQuestions.forEach(q => {
+        const container = document.getElementById(`group${q.group}_questions`);
+        if (!container) return;
+
+        const row = document.createElement('div');
+        row.className = 'py-2.5 border-b border-slate-100 last:border-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5';
+        row.innerHTML = `
+          <span class="text-xs sm:text-sm text-slate-800 font-medium">${q.text} <span class="text-red-500">*</span></span>
+          <div class="flex items-center justify-between sm:justify-end gap-1.5 shrink-0">
+            ${[1, 2, 3, 4, 5].map(val => `
+              <div class="relative">
+                <input type="radio" id="${q.id}_${val}" name="${q.id}" value="${val}" required class="sr-only scale-input">
+                <label for="${q.id}_${val}" class="w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-700 flex items-center justify-center font-semibold text-xs cursor-pointer hover:border-indigo-400 transition select-none">
+                  ${val}
+                </label>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // 4. สลับแท็บ หน้าฟอร์ม vs หน้าดูผล
+    function switchTab(tab) {
+      const fView = document.getElementById('formView');
+      const rView = document.getElementById('reportView');
+      const fBtn = document.getElementById('tabFormBtn');
+      const rBtn = document.getElementById('tabReportBtn');
+
+      if (tab === 'form') {
+        fView.classList.remove('hidden');
+        rView.classList.add('hidden');
+        fBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition';
+        rBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition';
+      } else {
+        fView.classList.add('hidden');
+        rView.classList.remove('hidden');
+        rBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition';
+        fBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition';
+        loadRealtimeStats();
+      }
+    }
+
+    // 5. ส่งแบบประเมินเข้า Firebase Firestore
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const form = document.getElementById('surveyForm');
+      const formData = new FormData(form);
+
+      // คำนวณคะแนน 11 ข้อ
+      const scores = {};
+      let sum = 0;
+      likertQuestions.forEach(q => {
+        const val = parseInt(formData.get(q.id) || '0', 10);
+        scores[q.id] = val;
+        sum += val;
+      });
+      const avgScore = Number((sum / likertQuestions.length).toFixed(2));
+
+      // วันเวลาปัจจุบัน
+      const now = new Date();
+      const localTimeString = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + ' ' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0');
+
+      const payload = {
+        department: formData.get('department'),
+        gradeLevel: formData.get('gradeLevel'),
+        tools: formData.getAll('tools'),
+        scores: scores,
+        avgScore: avgScore,
+        timeBefore: formData.get('timeBefore'),
+        timeAfter: formData.get('timeAfter'),
+        accuracy: formData.get('accuracy'),
+        errorRate: formData.get('errorRate'),
+        unusedReasons: formData.getAll('unusedReasons'),
+        issues: (formData.get('issues') || '').trim(),
+        suggestions: (formData.get('suggestions') || '').trim(),
+        timestamp: localTimeString,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>กำลังบันทึกข้อมูลเข้า Firebase...</span>
+        `;
+
+        await db.collection(COLLECTION_NAME).add(payload);
+
+        document.getElementById('successModal').classList.remove('hidden');
+      } catch (err) {
+        console.error('Error submitting survey:', err);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อ Firebase: ' + err.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>ส่งแบบประเมินอีกครั้ง</span>';
+      }
+    }
+
+    // 6. โหลดสถิติแบบ Real-time จาก Firestore
+    let unsubscribeStats = null;
+    function loadRealtimeStats() {
+      if (unsubscribeStats) return;
+
+      unsubscribeStats = db.collection(COLLECTION_NAME)
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(snapshot => {
+          let total = 0;
+          let sumAll = 0;
+          let countAll = 0;
+          let timeSavedCount = 0;
+          let perfectAccuracyCount = 0;
+
+          let sumD1 = 0, countD1 = 0;
+          let sumD2 = 0, countD2 = 0;
+          let sumD3 = 0, countD3 = 0;
+
+          const toolCounts = {};
+          const suggestions = [];
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            total++;
+
+            // คะแนนรายข้อ
+            if (data.scores) {
+              likertQuestions.forEach(q => {
+                const val = Number(data.scores[q.id]);
+                if (!isNaN(val) && val > 0) {
+                  sumAll += val;
+                  countAll++;
+                  if (q.group === 1) { sumD1 += val; countD1++; }
+                  else if (q.group === 2) { sumD2 += val; countD2++; }
+                  else if (q.group === 3) { sumD3 += val; countD3++; }
+                }
+              });
+            }
+
+            // เวลาที่ลดลง (ถ้าหลังใช้ใช้เวลาน้อยกว่า 15 นาที หรือน้อยกว่า 5 นาที)
+            if (data.timeAfter === 'น้อยกว่า 5 นาที' || data.timeAfter === '5–15 นาที') {
+              timeSavedCount++;
+            }
+
+            // ความถูกต้อง 100%
+            if (data.accuracy && data.accuracy.includes('100%')) {
+              perfectAccuracyCount++;
+            }
+
+            // เครื่องมือที่ใช้
+            if (Array.isArray(data.tools)) {
+              data.tools.forEach(t => {
+                toolCounts[t] = (toolCounts[t] || 0) + 1;
+              });
+            }
+
+            // ข้อเสนอแนะ
+            if (data.suggestions && data.suggestions.trim() !== '') {
+              suggestions.push({
+                dept: data.department || '',
+                text: data.suggestions,
+                time: data.timestamp || ''
+              });
+            }
+          });
+
+          // อัปเดตตัวเลข KPI
+          document.getElementById('statTotal').innerText = total.toLocaleString();
+          const overallAvg = countAll > 0 ? (sumAll / countAll) : 0;
+          document.getElementById('statAvg').innerText = overallAvg.toFixed(2);
+
+          let levelText = 'ไม่มีข้อมูล';
+          if (overallAvg >= 4.50) levelText = 'ความพึงพอใจมากที่สุด ⭐⭐⭐⭐⭐';
+          else if (overallAvg >= 3.50) levelText = 'ความพึงพอใจมาก ⭐⭐⭐⭐';
+          else if (overallAvg >= 2.50) levelText = 'ความพึงพอใจปานกลาง ⭐⭐⭐';
+          else if (overallAvg > 0) levelText = 'ควรปรับปรุง ⭐⭐';
+          document.getElementById('statLevel').innerText = levelText;
+
+          const timeSavedPct = total > 0 ? Math.round((timeSavedCount / total) * 100) : 0;
+          document.getElementById('statTimeSaved').innerText = timeSavedPct + '%';
+
+          const accPct = total > 0 ? Math.round((perfectAccuracyCount / total) * 100) : 0;
+          document.getElementById('statAccurate').innerText = accPct + '%';
+
+          // อัปเดตคะแนนรายด้าน
+          const avgD1 = countD1 > 0 ? (sumD1 / countD1) : 0;
+          const avgD2 = countD2 > 0 ? (sumD2 / countD2) : 0;
+          const avgD3 = countD3 > 0 ? (sumD3 / countD3) : 0;
+
+          document.getElementById('scoreDim1').innerText = avgD1.toFixed(2);
+          document.getElementById('scoreDim2').innerText = avgD2.toFixed(2);
+          document.getElementById('scoreDim3').innerText = avgD3.toFixed(2);
+
+          document.getElementById('barDim1').style.width = (avgD1 / 5 * 100) + '%';
+          document.getElementById('barDim2').style.width = (avgD2 / 5 * 100) + '%';
+          document.getElementById('barDim3').style.width = (avgD3 / 5 * 100) + '%';
+
+          // อัปเดต Tools Ranking
+          const toolsList = document.getElementById('toolsRankingList');
+          const sortedTools = Object.entries(toolCounts).sort((a, b) => b[1] - a[1]);
+          if (sortedTools.length === 0) {
+            toolsList.innerHTML = '<div class="text-slate-400 py-3 text-center text-xs">ยังไม่มีข้อมูลการใช้งานเครื่องมือ</div>';
+          } else {
+            toolsList.innerHTML = sortedTools.map(([name, count]) => {
+              const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+              return `
+                <div>
+                  <div class="flex justify-between text-slate-700 font-medium mb-1">
+                    <span>${name}</span>
+                    <span class="font-bold text-slate-900">${count} คน (${pct}%)</span>
+                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-1.5">
+                    <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+
+          // อัปเดตรายการข้อเสนอแนะ
+          document.getElementById('suggestionCount').innerText = `${suggestions.length} ข้อความ`;
+          const sList = document.getElementById('suggestionsList');
+          if (suggestions.length === 0) {
+            sList.innerHTML = '<div class="text-slate-400 py-4 text-center text-xs">ยังไม่มีข้อเสนอแนะ</div>';
+          } else {
+            sList.innerHTML = suggestions.slice(0, 30).map(s => `
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="font-bold text-indigo-700">ครูกลุ่มสาระฯ ${s.dept}</span>
+                  <span class="text-[10px] text-slate-400">${s.time}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed">${s.text}</p>
+              </div>
+            `).join('');
+          }
+        }, err => {
+          console.error('Error fetching live stats:', err);
+        });
+    }
+
+    // เริ่มต้นแสดงผล
+    renderQuestions();
+  </script>
+</body>
+</html>
