@@ -788,6 +788,9 @@
 
     // เริ่มต้นแสดงผล
     renderQuestions();
+    if (window.location.hash === '#report' || window.location.search.includes('tab=report')) {
+      switchTab('report');
+    }
   </script>
 </body>
 </html>
