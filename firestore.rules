@@ -8,13 +8,7 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
-    // 2. แบบประเมินความพึงพอใจการจัดสอบปลายภาค (ปิดรับการประเมินแล้ว - อนุญาตให้อ่านดูผลได้อย่างเดียว)
-    match /final_exam_surveys/{docId} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    // 2.1 แบบประเมินการใช้เครื่องมือวัดผล (AssessmentHub / NextSGS) - เปิดรับข้อมูล
+    // 2. แบบประเมินการใช้เครื่องมือวัดผล (AssessmentHub / NextSGS) - เปิดรับข้อมูล
     match /assessment_tool_surveys/{docId} {
       allow read: if true;
       allow create: if true;
@@ -35,7 +29,7 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
-    // 5. กฎเหมาเข่งสำหรับส่วนที่เหลือ
+    // 5. กฎความปลอดภัยทั่วไป
     match /{document=**} {
       allow read, write: if request.auth != null;
     }
