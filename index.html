@@ -134,6 +134,31 @@
             `;
             targetGrid.appendChild(surveyCard);
           }
+
+          // 6. Inject Full Exam Survey Report card if not present
+          if (!document.getElementById('exam-report-injected-card')) {
+            const reportCard = document.createElement('a');
+            reportCard.id = 'exam-report-injected-card';
+            reportCard.href = 'exam-survey-report.html';
+            reportCard.className = 'group bg-white rounded-xl p-3.5 border border-slate-200/80 hover:border-emerald-500/40 cursor-pointer shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between block text-left decoration-transparent';
+            reportCard.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                  </div>
+                  <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-200">สรุปผล 307 คน</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">รายงานผลประเมินการจัดสอบ</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">รายงานฉบับสมบูรณ์ (ครูและนักเรียน) ค่าเฉลี่ย 3.88/5.00 พร้อมข้อเสนอแนะ 107 ข้อความ</p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-emerald-600">
+                <span>ดูรายงานฉบับเต็ม</span>
+                <span>→</span>
+              </div>
+            `;
+            targetGrid.appendChild(reportCard);
+          }
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });

@@ -95,14 +95,20 @@
     </header>
 
     <!-- ป้ายแจ้งปิดรับการประเมิน -->
-    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl mb-6 shadow-xs flex items-start gap-3">
-      <span class="text-2xl">🔒</span>
-      <div>
-        <h3 class="text-sm font-bold text-amber-900">ปิดรับการประเมินการจัดสอบรอบนี้แล้ว</h3>
-        <p class="text-xs text-amber-700 mt-0.5 leading-relaxed">
-          แบบประเมินความพึงพอใจการจัดสอบได้ปิดรับข้อมูลเรียบร้อยแล้ว และฐานข้อมูลถูกล็อคเป็น Read-Only โดยท่านยังสามารถเข้าดูสรุปผลการประเมินย้อนหลังได้ที่แท็บ <strong>"📊 ผลการประเมินสด"</strong> ด้านบน
-        </p>
+    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-xl mb-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">🔒</span>
+        <div>
+          <h3 class="text-sm font-bold text-amber-900">ปิดรับการประเมินการจัดสอบรอบนี้แล้ว</h3>
+          <p class="text-xs text-amber-700 mt-0.5 leading-relaxed">
+            แบบประเมินความพึงพอใจการจัดสอบได้ปิดรับข้อมูลเรียบร้อยแล้ว ท่านสามารถเข้าดูรายงานผลการประเมินฉบับสมบูรณ์ (307 คน) ได้ทันที
+          </p>
+        </div>
       </div>
+      <a href="exam-survey-report.html" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs shrink-0 transition no-underline">
+        <span>📊 ดูรายงานผลฉบับเต็ม (307 คน)</span>
+        <span>→</span>
+      </a>
     </div>
 
     <!-- ================= VIEW 1: แบบประเมิน (FORM) ================= -->
