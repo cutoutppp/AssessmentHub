@@ -497,6 +497,44 @@
         </div>
       </div>
 
+      <!-- ตารางข้อมูลการตอบฉบับเต็มรายบุคคล (Full Responses Table) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span>📋</span>
+              <span>ตารางข้อมูลผู้ตอบแบบประเมินฉบับเต็มรายบุคคล</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">แสดงข้อมูลคำตอบจริงทุกข้อ ทุกฟิลด์แบบ Real-time</p>
+          </div>
+          <button onclick="downloadToolSurveyCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer self-start sm:self-auto">
+            <span>📥 ดาวน์โหลด Excel / CSV</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-xs text-left" id="toolResponsesTable">
+            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px] whitespace-nowrap">
+              <tr>
+                <th class="p-3 text-center">#</th>
+                <th class="p-3">วัน-เวลา</th>
+                <th class="p-3">กลุ่มสาระฯ</th>
+                <th class="p-3">ระดับชั้น</th>
+                <th class="p-3">เครื่องมือที่ใช้งาน</th>
+                <th class="p-3 text-center">เวลาเดิม ➡️ หลังใช้</th>
+                <th class="p-3 text-center">ความถูกต้อง</th>
+                <th class="p-3 text-center">คะแนนเฉลี่ย</th>
+                <th class="p-3">ฟังก์ชันที่เสนอแนะ</th>
+                <th class="p-3">เหตุผลที่ยังไม่ได้ใช้ตัวอื่น</th>
+              </tr>
+            </thead>
+            <tbody id="toolResponsesTableBody" class="divide-y divide-slate-100">
+              <tr><td colspan="10" class="p-4 text-center text-slate-400">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </section>
 
   </div>
@@ -666,9 +704,11 @@
 
           const toolCounts = {};
           const suggestions = [];
+          const allDocs = [];
 
           snapshot.forEach(doc => {
             const data = doc.data();
+            allDocs.push(data);
             total++;
 
             // คะแนนรายข้อ
@@ -781,10 +821,62 @@
               </div>
             `).join('');
           }
+
+          // อัปเดตตารางข้อมูลฉบับเต็มรายบุคคล
+          window.LIVE_TOOL_RESPONSES = allDocs;
+          const tbody = document.getElementById('toolResponsesTableBody');
+          if (allDocs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="p-6 text-center text-slate-400 font-bold">ยังไม่มีข้อมูลการตอบกลับ</td></tr>';
+          } else {
+            tbody.innerHTML = allDocs.map((d, i) => {
+              const tools = Array.isArray(d.tools) ? d.tools.map(t => `<span class="inline-block bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md text-[10px] font-semibold border border-indigo-100 mr-1 mb-1">${t}</span>`).join('') : '-';
+              const reasons = Array.isArray(d.unusedReasons) ? d.unusedReasons.join(', ') : (d.unusedReasons || '-');
+              const timeText = `${d.timeBefore || '-'} ➡️ <span class="font-bold text-emerald-600">${d.timeAfter || '-'}</span>`;
+              const score = typeof d.avgScore === 'number' ? d.avgScore.toFixed(2) : (d.avgScore || '-');
+              
+              return `
+                <tr class="hover:bg-slate-50/80 transition">
+                  <td class="p-3 text-center font-bold text-slate-500">${i + 1}</td>
+                  <td class="p-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">${d.timestamp || d.createdAt || '-'}</td>
+                  <td class="p-3 font-bold text-slate-900 whitespace-nowrap">${d.department || '-'}</td>
+                  <td class="p-3 text-slate-600 whitespace-nowrap">${d.gradeLevel || '-'}</td>
+                  <td class="p-3 max-w-xs">${tools}</td>
+                  <td class="p-3 text-center whitespace-nowrap">${timeText}</td>
+                  <td class="p-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${d.accuracy && d.accuracy.includes('100%') ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800'}">${d.accuracy || '-'}</span></td>
+                  <td class="p-3 text-center font-black text-amber-600 whitespace-nowrap">⭐ ${score}</td>
+                  <td class="p-3 font-semibold text-indigo-900 max-w-xs">${d.suggestions || '<span class="text-slate-300">-</span>'}</td>
+                  <td class="p-3 text-slate-500 max-w-xs text-[11px]">${reasons}</td>
+                </tr>
+              `;
+            }).join('');
+          }
         }, err => {
           console.error('Error fetching live stats:', err);
         });
     }
+
+    // ฟังก์ชันดาวน์โหลดตารางผลตอบฉบับเต็มเป็น CSV
+    window.downloadToolSurveyCSV = function() {
+      const list = window.LIVE_TOOL_RESPONSES || [];
+      if (list.length === 0) {
+        alert('ยังไม่มีข้อมูลการตอบกลับสำหรับดาวน์โหลด');
+        return;
+      }
+      let csv = 'ลำดับ,วันเวลา,กลุ่มสาระ,ระดับชั้น,เครื่องมือที่ใช้,เวลาเดิม,เวลาหลังใช้,ความถูกต้อง,การลดข้อผิดพลาด,คะแนนเฉลี่ย,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10,q11,ข้อเสนอแนะ,เหตุผลที่ยังไม่ใช้ตัวอื่น\n';
+      list.forEach((d, i) => {
+        const tools = (Array.isArray(d.tools) ? d.tools.join('; ') : '').replace(/"/g, '""');
+        const reasons = (Array.isArray(d.unusedReasons) ? d.unusedReasons.join('; ') : '').replace(/"/g, '""');
+        const suggestions = (d.suggestions || '').replace(/"/g, '""').replace(/\n/g, ' ');
+        const s = d.scores || {};
+        csv += `"${i+1}","${d.timestamp || ''}","${d.department || ''}","${d.gradeLevel || ''}","${tools}","${d.timeBefore || ''}","${d.timeAfter || ''}","${d.accuracy || ''}","${d.errorRate || ''}","${d.avgScore || ''}","${s.q1||''}","${s.q2||''}","${s.q3||''}","${s.q4||''}","${s.q5||''}","${s.q6||''}","${s.q7||''}","${s.q8||''}","${s.q9||''}","${s.q10||''}","${s.q11||''}","${suggestions}","${reasons}"\n`;
+      });
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ผลการตอบแบบประเมินเครื่องมือ_ฉบับเต็ม.csv';
+      a.click();
+    };
 
     // เริ่มต้นแสดงผล
     renderQuestions();
