@@ -165,10 +165,26 @@
             targetGrid.appendChild(surveyCard);
           }
 
-          // 6. Standardize Card 5 (ระบบใบปะหน้าข้อสอบ) to replace arbitrary '2569-1' badge with matching chevron
-          targetGrid.querySelectorAll('span').forEach((s) => {
-            if (s.textContent && s.textContent.trim() === '2569-1') {
-              s.outerHTML = '<svg class="w-4 h-4 text-slate-300 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"></path></svg>';
+          // 6. Standardize all top-right badges on active cards (including admin cards: '2569-1', 'เฉพาะ 444 / วัดผล', 'ม.1 - ม.6', '880 ซอง')
+          const headerRows = targetGrid.querySelectorAll('.flex.items-center.justify-between.mb-2');
+          headerRows.forEach((row) => {
+            const badgeSpan = row.querySelector('span');
+            if (badgeSpan && !row.closest('.cursor-not-allowed')) {
+              const card = row.closest('.group');
+              let hoverColor = 'group-hover:text-primary';
+              if (card) {
+                const c = card.className;
+                if (c.includes('hover:border-teal')) hoverColor = 'group-hover:text-teal-600';
+                else if (c.includes('hover:border-indigo')) hoverColor = 'group-hover:text-indigo-600';
+                else if (c.includes('hover:border-cyan')) hoverColor = 'group-hover:text-cyan-600';
+                else if (c.includes('hover:border-amber')) hoverColor = 'group-hover:text-amber-600';
+                else if (c.includes('hover:border-blue')) hoverColor = 'group-hover:text-blue-600';
+                else if (c.includes('hover:border-purple')) hoverColor = 'group-hover:text-purple-600';
+                else if (c.includes('hover:border-emerald')) hoverColor = 'group-hover:text-emerald-600';
+                else if (c.includes('hover:border-rose')) hoverColor = 'group-hover:text-rose-600';
+                else if (c.includes('hover:border-red')) hoverColor = 'group-hover:text-red-600';
+              }
+              badgeSpan.outerHTML = `<svg class="w-4 h-4 text-slate-300 ${hoverColor} group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"></path></svg>`;
             }
           });
         }
