@@ -186,16 +186,6 @@
             `;
             targetGrid.appendChild(reportCard);
           }
-
-          // Update total systems count badge if present
-          const headerContainer = targetGrid.previousElementSibling;
-          if (headerContainer) {
-            const countBadge = headerContainer.querySelector('span');
-            if (countBadge && targetGrid.children.length > 0) {
-              const isAdmin = countBadge.textContent.includes('สิทธิ์วัดผล');
-              countBadge.textContent = `${targetGrid.children.length} ระบบพร้อมใช้งาน${isAdmin ? ' (สิทธิ์วัดผล)' : ''}`;
-            }
-          }
         }
       });
       observer.observe(document.body, { childList: true, subtree: true });
