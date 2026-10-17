@@ -662,7 +662,7 @@
                 const data = doc.data();
                 if (data && data.course_code) {
                   sgsConfirmations[data.course_code] = data;
-                  // Apply persisted unit/classroom/teacher customizations back to allCourses
+                  // Apply persisted unit/classroom/teacher/duration customizations back to allCourses
                   if (allCourses[data.course_code]) {
                     if (data.classrooms) allCourses[data.course_code].classrooms = data.classrooms;
                     if (Array.isArray(data.teachers) && data.teachers.length > 0) {
@@ -672,6 +672,22 @@
                       allCourses[data.course_code].units = JSON.parse(JSON.stringify(data.units_snapshot));
                       if (data.midterm_cutoff) allCourses[data.course_code].midterm_cutoff = data.midterm_cutoff;
                     }
+                    if (data.mid_exam_duration !== undefined) {
+                      allCourses[data.course_code].mid_exam_duration = parseInt(data.mid_exam_duration, 10) || 60;
+                    }
+                    if (data.fin_exam_duration !== undefined) {
+                      allCourses[data.course_code].fin_exam_duration = parseInt(data.fin_exam_duration, 10) || 60;
+                    }
+                  }
+                  if (currentCourse && currentCourse.course_code === data.course_code) {
+                    const midIn = document.getElementById('inputMidExamDuration');
+                    const finIn = document.getElementById('inputFinExamDuration');
+                    if (midIn && data.mid_exam_duration !== undefined && document.activeElement !== midIn) {
+                      midIn.value = String(parseInt(data.mid_exam_duration, 10) || 60);
+                    }
+                    if (finIn && data.fin_exam_duration !== undefined && document.activeElement !== finIn) {
+                      finIn.value = String(parseInt(data.fin_exam_duration, 10) || 60);
+                    }
                   }
                   changed = true;
                 }
@@ -680,7 +696,6 @@
             if (changed) {
               saveLocalSgsConfirmations();
               updateFilteredCourses();
-              if (currentCourse) updateLiveSgsPreviewStrip();
             }
           }, (err) => {
             console.warn('Firestore SGS listener fallback to localStorage:', err.message);
@@ -700,6 +715,78 @@
         } catch (err) {
           console.warn('Cloud save fallback to local:', err.message);
         }
+      }
+    }
+
+    let _isSelectingCourse = false;
+    let _planDraftTimer = null;
+
+    // Silently save assessment plan scores & exam durations so sgs-confirm.html has them ready
+    function silentlySavePlanDraftForSgsConfirm(immediate = false) {
+      if (!currentCourse || _isSelectingCourse) return;
+      const code = currentCourse.course_code;
+      if (!code) return;
+
+      const sgs = extractCourseSgsSlots(currentCourse);
+      const existing = sgsConfirmations[code] || {};
+      const midIn = document.getElementById('inputMidExamDuration');
+      const finIn = document.getElementById('inputFinExamDuration');
+      const midDur = midIn ? (parseInt(midIn.value, 10) || 60) : (existing.mid_exam_duration || 60);
+      const finDur = finIn ? (parseInt(finIn.value, 10) || 60) : (existing.fin_exam_duration || 60);
+      const inpClass = document.getElementById('inputCourseClassrooms');
+      const classrooms = (inpClass && inpClass.value.trim()) ? inpClass.value.trim() : (currentCourse.classrooms || existing.classrooms || `${currentCourse.grade_level}`);
+      const validTeachers = (currentCourse.teachers || []).filter(t => !isPlaceholderTeacher(t));
+
+      const draftPayload = {
+        ...existing,
+        type: 'sgs_confirmation_2_2569',
+        academic_year: '2569',
+        semester: '2',
+        course_code: code,
+        course_name: currentCourse.course_name,
+        learning_area: currentCourse.learning_area,
+        grade_level: currentCourse.grade_level,
+        classrooms: classrooms,
+        teachers: validTeachers.length > 0 ? validTeachers : (existing.teachers || currentCourse.teachers || []),
+        pre_slots: Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : null),
+        post_slots: Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : null),
+        pre_sum: sgs.preSum,
+        mid_exam: sgs.midExam,
+        post_sum: sgs.postSum,
+        fin_exam: sgs.finExam,
+        grand_total: sgs.grandTotal,
+        mid_exam_duration: midDur,
+        fin_exam_duration: finDur,
+        confirmed_status: existing.confirmed_status || 'รอยืนยัน',
+        midterm_cutoff: currentCourse.midterm_cutoff,
+        units_snapshot: JSON.parse(JSON.stringify(currentCourse.units || [])),
+        plan_saved_at: new Date().toISOString()
+      };
+
+      // Also update in-memory allCourses so switching back & forth preserves edits
+      if (allCourses[code]) {
+        allCourses[code].classrooms = classrooms;
+        allCourses[code].teachers = draftPayload.teachers;
+        allCourses[code].midterm_cutoff = currentCourse.midterm_cutoff;
+        allCourses[code].mid_exam_duration = midDur;
+        allCourses[code].fin_exam_duration = finDur;
+        allCourses[code].units = JSON.parse(JSON.stringify(currentCourse.units || []));
+      }
+
+      sgsConfirmations[code] = draftPayload;
+      saveLocalSgsConfirmations();
+
+      if (_planDraftTimer) clearTimeout(_planDraftTimer);
+      if (immediate) {
+        if (sgsDb) {
+          sgsDb.collection('survey_config').doc('sgs_2569_2_' + code).set(draftPayload, { merge: true }).catch(() => {});
+        }
+      } else {
+        _planDraftTimer = setTimeout(() => {
+          if (sgsDb) {
+            sgsDb.collection('survey_config').doc('sgs_2569_2_' + code).set(draftPayload, { merge: true }).catch(() => {});
+          }
+        }, 700);
       }
     }
 
@@ -825,6 +912,12 @@
             allCourses[code].units = JSON.parse(JSON.stringify(data.units_snapshot));
             if (data.midterm_cutoff) allCourses[code].midterm_cutoff = data.midterm_cutoff;
           }
+          if (data.mid_exam_duration !== undefined) {
+            allCourses[code].mid_exam_duration = parseInt(data.mid_exam_duration, 10) || 60;
+          }
+          if (data.fin_exam_duration !== undefined) {
+            allCourses[code].fin_exam_duration = parseInt(data.fin_exam_duration, 10) || 60;
+          }
         }
       });
       setupSearch();
@@ -927,7 +1020,10 @@
       const el = document.getElementById(type === 'mid' ? 'inputMidExamDuration' : 'inputFinExamDuration');
       if (el) {
         el.value = mins;
-        if (currentCourse) renderMatrixTable();
+        if (currentCourse) {
+          renderMatrixTable();
+          silentlySavePlanDraftForSgsConfirm();
+        }
         showToast(`เปลี่ยนเวลาสอบ${type === 'mid' ? 'กลางภาค' : 'ปลายภาค'}เป็น: ${mins} นาที`, "success");
       }
     }
@@ -937,19 +1033,31 @@
       const finIn = document.getElementById('inputFinExamDuration');
       if (midIn) {
         midIn.addEventListener('input', () => {
-          if (currentCourse) renderMatrixTable();
+          if (currentCourse) {
+            renderMatrixTable();
+            silentlySavePlanDraftForSgsConfirm();
+          }
         });
         midIn.addEventListener('change', () => {
-          if (currentCourse) renderMatrixTable();
+          if (currentCourse) {
+            renderMatrixTable();
+            silentlySavePlanDraftForSgsConfirm();
+          }
           showToast(`เปลี่ยนเวลาสอบกลางภาคเป็น: ${midIn.value} นาที`, "success");
         });
       }
       if (finIn) {
         finIn.addEventListener('input', () => {
-          if (currentCourse) renderMatrixTable();
+          if (currentCourse) {
+            renderMatrixTable();
+            silentlySavePlanDraftForSgsConfirm();
+          }
         });
         finIn.addEventListener('change', () => {
-          if (currentCourse) renderMatrixTable();
+          if (currentCourse) {
+            renderMatrixTable();
+            silentlySavePlanDraftForSgsConfirm();
+          }
           showToast(`เปลี่ยนเวลาสอบปลายภาคเป็น: ${finIn.value} นาที`, "success");
         });
       }
@@ -2042,20 +2150,23 @@
     // Initialize exam scores evenly across units in each exam cycle
     function initExamScores() {
       if (!currentCourse || !currentCourse.units) return;
+      const savedConf = sgsConfirmations[currentCourse.course_code] || {};
+      const targetMid = savedConf.mid_exam !== undefined ? (parseInt(savedConf.mid_exam, 10) || 15) : 15;
+      const targetFin = savedConf.fin_exam !== undefined ? (parseInt(savedConf.fin_exam, 10) || 15) : 15;
       const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
       const preUnits = currentCourse.units.slice(0, cutoff);
       const postUnits = currentCourse.units.slice(cutoff);
 
       if (!currentCourse.midExamScores || currentCourse.midExamScores.length !== preUnits.length) {
-        const per = Math.floor(15 / preUnits.length);
-        const rem = 15 - (per * preUnits.length);
+        const per = Math.floor(targetMid / preUnits.length);
+        const rem = targetMid - (per * preUnits.length);
         currentCourse.midExamScores = preUnits.map((_, i) => per + (i < rem ? 1 : 0));
       }
 
       if (!currentCourse.finExamScores || currentCourse.finExamScores.length !== postUnits.length) {
         if (postUnits.length > 0) {
-          const per = Math.floor(15 / postUnits.length);
-          const rem = 15 - (per * postUnits.length);
+          const per = Math.floor(targetFin / postUnits.length);
+          const rem = targetFin - (per * postUnits.length);
           currentCourse.finExamScores = postUnits.map((_, i) => per + (i < rem ? 1 : 0));
         } else {
           currentCourse.finExamScores = [];
@@ -2227,7 +2338,12 @@
     function selectCourse(code) {
       const c = allCourses[code];
       if (!c) return;
+      _isSelectingCourse = true;
+      const savedConf = sgsConfirmations[code] || {};
       currentCourse = JSON.parse(JSON.stringify(c)); // deep copy
+      if (Array.isArray(savedConf.units_snapshot) && savedConf.units_snapshot.length > 0) {
+        currentCourse.units = JSON.parse(JSON.stringify(savedConf.units_snapshot));
+      }
       if (typeof ensureCourseUnits === 'function') ensureCourseUnits(currentCourse);
 
       document.getElementById('emptyState').classList.add('hidden');
@@ -2250,20 +2366,22 @@
       // Render Teacher Tags
       renderTeacherTags();
 
-      // Optimal Cutoff & Cutoff selector
-      currentCourse.midterm_cutoff = getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      // Optimal Cutoff & Cutoff selector (preserve saved cutoff if present)
+      currentCourse.midterm_cutoff = savedConf.midterm_cutoff || c.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
       updateCutoffSelector();
 
       // Initialize exam scores & sub-assessments
       initExamScores();
       initUnitAssessments();
 
-      // Reset Exam Durations to 60 mins default
+      // Load Exam Durations from sgsConfirmations (or default 60 mins)
+      const savedMidDur = savedConf.mid_exam_duration !== undefined ? savedConf.mid_exam_duration : (c.mid_exam_duration || 60);
+      const savedFinDur = savedConf.fin_exam_duration !== undefined ? savedConf.fin_exam_duration : (c.fin_exam_duration || 60);
       if (document.getElementById('inputMidExamDuration')) {
-        document.getElementById('inputMidExamDuration').value = "60";
+        document.getElementById('inputMidExamDuration').value = String(savedMidDur);
       }
       if (document.getElementById('inputFinExamDuration')) {
-        document.getElementById('inputFinExamDuration').value = "60";
+        document.getElementById('inputFinExamDuration').value = String(savedFinDur);
       }
 
       // Smart Defaults for Key Assignment (Assign & Due Dates)
@@ -2299,7 +2417,7 @@
 
       const inpClass = document.getElementById('inputCourseClassrooms');
       if (inpClass) {
-        const confClass = sgsConfirmations[code]?.classrooms;
+        const confClass = savedConf.classrooms;
         inpClass.value = confClass || currentCourse.classrooms || `${c.grade_level} (ทุกห้องที่เรียน)`;
         currentCourse.classrooms = inpClass.value;
       }
@@ -2311,6 +2429,7 @@
 
       renderMatrixTable();
       updateHourValidation();
+      _isSelectingCourse = false;
     }
 
     function updateLiveSgsPreviewStrip() {
@@ -2953,6 +3072,7 @@
       }
 
       updateLiveSgsPreviewStrip();
+      silentlySavePlanDraftForSgsConfirm(false);
     }
 
     function distributeHalfFormativeScores(unitsSlice, targetSum) {
@@ -3102,6 +3222,7 @@
         btn.innerHTML = '<i class="ri-loader-4-line animate-spin text-lg"></i> กำลังสร้างเอกสาร วผ.19 (.docx)...';
 
         try {
+          silentlySavePlanDraftForSgsConfirm(true);
           await generateAndDownloadDocx();
           showToast("สร้างและดาวน์โหลดเอกสารแผนการวัดและประเมินผล (วผ.19) สำเร็จแล้ว", "success");
           
