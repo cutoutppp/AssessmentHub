@@ -430,9 +430,6 @@
           รวม 100 คะแนน
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="modalAutoBalance()" class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300">
-            เกลี่ย 50:50 อัตโนมัติ
-          </button>
           <button onclick="saveScoreAdjustModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
             บันทึกและยืนยัน
           </button>
@@ -506,6 +503,12 @@
                     if (Array.isArray(data.teachers) && data.teachers.length > 0) {
                       targetCourse.teachers = mergeCourseTeachers(targetCourse, data.teachers, null);
                     }
+                    if (data.plan_saved_at && Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
+                      targetCourse._originalPlanUnits = JSON.parse(JSON.stringify(data.units_snapshot));
+                      if (data.midterm_cutoff) targetCourse._originalPlanCutoff = data.midterm_cutoff;
+                      if (data.mid_exam !== undefined) targetCourse._planMidExam = parseInt(data.mid_exam, 10);
+                      if (data.fin_exam !== undefined) targetCourse._planFinExam = parseInt(data.fin_exam, 10);
+                    }
                     if (Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
                       targetCourse.units = JSON.parse(JSON.stringify(data.units_snapshot));
                       if (data.midterm_cutoff) targetCourse.midterm_cutoff = data.midterm_cutoff;
@@ -518,8 +521,18 @@
                     }
                     if (data.mid_exam !== undefined) targetCourse._inlineMidExam = parseInt(data.mid_exam, 10) || 15;
                     if (data.fin_exam !== undefined) targetCourse._inlineFinExam = parseInt(data.fin_exam, 10) || 15;
-                    if (data.mid_exam_duration !== undefined) targetCourse._inlineMidDuration = parseInt(data.mid_exam_duration, 10) || 60;
-                    if (data.fin_exam_duration !== undefined) targetCourse._inlineFinDuration = parseInt(data.fin_exam_duration, 10) || 60;
+                    if (data.mid_exam_duration !== undefined && data.mid_exam_duration !== null && data.mid_exam_duration !== '') {
+                      const dur = parseInt(data.mid_exam_duration, 10);
+                      targetCourse._inlineMidDuration = dur > 0 ? dur : null;
+                    } else {
+                      targetCourse._inlineMidDuration = null;
+                    }
+                    if (data.fin_exam_duration !== undefined && data.fin_exam_duration !== null && data.fin_exam_duration !== '') {
+                      const dur = parseInt(data.fin_exam_duration, 10);
+                      targetCourse._inlineFinDuration = dur > 0 ? dur : null;
+                    } else {
+                      targetCourse._inlineFinDuration = null;
+                    }
                   }
                   changed = true;
                 }
@@ -613,12 +626,28 @@
         }
       }
 
+      // Initialize base plan units and blank exam durations by default
+      Object.values(allCourses).forEach(c => {
+        c._originalPlanUnits = JSON.parse(JSON.stringify(c.units || []));
+        c._originalPlanCutoff = c.midterm_cutoff || 1;
+        c._planMidExam = c.mid_exam !== undefined ? parseInt(c.mid_exam, 10) : 15;
+        c._planFinExam = c.fin_exam !== undefined ? parseInt(c.fin_exam, 10) : 15;
+        c._inlineMidDuration = null;
+        c._inlineFinDuration = null;
+      });
+
       // Apply overrides from local confirmations while preserving all co-teachers
       Object.entries(sgsConfirmations).forEach(([code, data]) => {
         if (allCourses[code]) {
           if (data.classrooms) allCourses[code].classrooms = data.classrooms;
           if (Array.isArray(data.teachers) && data.teachers.length > 0) {
             allCourses[code].teachers = mergeCourseTeachers(allCourses[code], data.teachers, null);
+          }
+          if (data.plan_saved_at && Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
+            allCourses[code]._originalPlanUnits = JSON.parse(JSON.stringify(data.units_snapshot));
+            if (data.midterm_cutoff) allCourses[code]._originalPlanCutoff = data.midterm_cutoff;
+            if (data.mid_exam !== undefined) allCourses[code]._planMidExam = parseInt(data.mid_exam, 10);
+            if (data.fin_exam !== undefined) allCourses[code]._planFinExam = parseInt(data.fin_exam, 10);
           }
           if (Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
             allCourses[code].units = JSON.parse(JSON.stringify(data.units_snapshot));
@@ -632,8 +661,18 @@
           }
           if (data.mid_exam !== undefined) allCourses[code]._inlineMidExam = parseInt(data.mid_exam, 10) || 15;
           if (data.fin_exam !== undefined) allCourses[code]._inlineFinExam = parseInt(data.fin_exam, 10) || 15;
-          if (data.mid_exam_duration !== undefined) allCourses[code]._inlineMidDuration = parseInt(data.mid_exam_duration, 10) || 60;
-          if (data.fin_exam_duration !== undefined) allCourses[code]._inlineFinDuration = parseInt(data.fin_exam_duration, 10) || 60;
+          if (data.mid_exam_duration !== undefined && data.mid_exam_duration !== null && data.mid_exam_duration !== '') {
+            const dur = parseInt(data.mid_exam_duration, 10);
+            allCourses[code]._inlineMidDuration = dur > 0 ? dur : null;
+          } else {
+            allCourses[code]._inlineMidDuration = null;
+          }
+          if (data.fin_exam_duration !== undefined && data.fin_exam_duration !== null && data.fin_exam_duration !== '') {
+            const dur = parseInt(data.fin_exam_duration, 10);
+            allCourses[code]._inlineFinDuration = dur > 0 ? dur : null;
+          } else {
+            allCourses[code]._inlineFinDuration = null;
+          }
         }
       });
     }
@@ -892,20 +931,22 @@
           : 15;
       }
       if (course._inlineMidDuration === undefined) {
-        course._inlineMidDuration = sgsConfirmations[course.course_code]?.mid_exam_duration !== undefined
-          ? parseInt(sgsConfirmations[course.course_code].mid_exam_duration, 10)
-          : 60;
+        const savedDur = sgsConfirmations[course.course_code]?.mid_exam_duration;
+        course._inlineMidDuration = (savedDur !== undefined && savedDur !== null && savedDur !== '' && parseInt(savedDur, 10) > 0)
+          ? parseInt(savedDur, 10)
+          : null;
       }
       if (course._inlineFinDuration === undefined) {
-        course._inlineFinDuration = sgsConfirmations[course.course_code]?.fin_exam_duration !== undefined
-          ? parseInt(sgsConfirmations[course.course_code].fin_exam_duration, 10)
-          : 60;
+        const savedDur = sgsConfirmations[course.course_code]?.fin_exam_duration;
+        course._inlineFinDuration = (savedDur !== undefined && savedDur !== null && savedDur !== '' && parseInt(savedDur, 10) > 0)
+          ? parseInt(savedDur, 10)
+          : null;
       }
     }
 
     function getSgsSlots(course) {
       if (!course) {
-        return { preSlots: [], postSlots: [], preSum: 0, midExam: 15, postSum: 0, finExam: 15, grandTotal: 30, midDuration: 60, finDuration: 60, hasOver15: false, is5050: false };
+        return { preSlots: [], postSlots: [], preSum: 0, midExam: 15, postSum: 0, finExam: 15, grandTotal: 30, midDuration: null, finDuration: null, hasOver15: false, is5050: false };
       }
       ensureInlineSlots(course);
 
@@ -943,14 +984,318 @@
       const postSum = course._inlinePostScores.reduce((s, v) => s + (parseInt(v, 10) || 0), 0);
       const midExam = parseInt(course._inlineMidExam, 10) || 0;
       const finExam = parseInt(course._inlineFinExam, 10) || 0;
-      const midDuration = parseInt(course._inlineMidDuration, 10) || 60;
-      const finDuration = parseInt(course._inlineFinDuration, 10) || 60;
+      const midDuration = (course._inlineMidDuration !== null && course._inlineMidDuration !== undefined && course._inlineMidDuration !== '')
+        ? parseInt(course._inlineMidDuration, 10)
+        : null;
+      const finDuration = (course._inlineFinDuration !== null && course._inlineFinDuration !== undefined && course._inlineFinDuration !== '')
+        ? parseInt(course._inlineFinDuration, 10)
+        : null;
       const grandTotal = preSum + midExam + postSum + finExam;
       const hasOver15 = course._inlinePreScores.some(v => (parseInt(v, 10) || 0) > 15) ||
                         course._inlinePostScores.some(v => (parseInt(v, 10) || 0) > 15);
-      const is5050 = (preSum === 35 && midExam === 15 && postSum === 35 && finExam === 15 && grandTotal === 100 && !hasOver15);
+      const is5050 = (preSum + midExam === 50 && postSum + finExam === 50 && grandTotal === 100 && !hasOver15 && midDuration > 0 && finDuration > 0);
 
       return { preSlots, postSlots, preSum, midExam, postSum, finExam, grandTotal, midDuration, finDuration, hasOver15, is5050 };
+    }
+
+    // 3.5 Plan Comparison & Strict SGS Validation Helpers
+    function getPlanSlotsForCourse(course) {
+      if (!course) return null;
+      const units = course._originalPlanUnits || course.units || [];
+      if (!units || units.length === 0) return null;
+      const cutoff = course._originalPlanCutoff || course.midterm_cutoff || 1;
+      const preUnits = units.slice(0, cutoff);
+      const postUnits = units.slice(cutoff);
+
+      const planPre = [];
+      preUnits.forEach(u => {
+        const assList = (u.assessments && u.assessments.length > 0)
+          ? u.assessments
+          : [{ score_total: u.score_total || 0, score_k: u.score_k || 0, score_p: u.score_p || 0, score_a: u.score_a || 0 }];
+        assList.forEach(a => {
+          planPre.push((parseInt(a.score_k) || 0) + (parseInt(a.score_p) || 0) + (parseInt(a.score_a) || 0) || (parseInt(a.score_total) || 0));
+        });
+      });
+
+      const planPost = [];
+      postUnits.forEach(u => {
+        const assList = (u.assessments && u.assessments.length > 0)
+          ? u.assessments
+          : [{ score_total: u.score_total || 0, score_k: u.score_k || 0, score_p: u.score_p || 0, score_a: u.score_a || 0 }];
+        assList.forEach(a => {
+          planPost.push((parseInt(a.score_k) || 0) + (parseInt(a.score_p) || 0) + (parseInt(a.score_a) || 0) || (parseInt(a.score_total) || 0));
+        });
+      });
+
+      return {
+        preScores: Array.from({ length: 9 }, (_, i) => planPre[i] || 0),
+        postScores: Array.from({ length: 9 }, (_, i) => planPost[i] || 0),
+        midExam: course._planMidExam !== undefined ? course._planMidExam : 15,
+        finExam: course._planFinExam !== undefined ? course._planFinExam : 15
+      };
+    }
+
+    function validateCourseSgs(courseOrCode) {
+      const c = typeof courseOrCode === 'string' ? allCourses[courseOrCode] : courseOrCode;
+      if (!c) return { isValid: false, errors: ['ไม่พบข้อมูลรายวิชา'], isPlanDeviated: false, preHalf: 0, postHalf: 0, grandTotal: 0 };
+
+      ensureInlineSlots(c);
+      const sgs = getSgsSlots(c);
+      const errors = [];
+
+      // 1. Each formative slot must be <= 15
+      const overPreIndices = [];
+      c._inlinePreScores.forEach((v, idx) => {
+        if (v !== null && v !== undefined && v > 15) {
+          overPreIndices.push(idx + 1);
+        }
+      });
+      if (overPreIndices.length > 0) {
+        errors.push(`คะแนนเก็บก่อนกลางภาค: ช่องที่ ${overPreIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
+      }
+
+      const overPostIndices = [];
+      c._inlinePostScores.forEach((v, idx) => {
+        if (v !== null && v !== undefined && v > 15) {
+          overPostIndices.push(idx + 1);
+        }
+      });
+      if (overPostIndices.length > 0) {
+        errors.push(`คะแนนเก็บหลังกลางภาค: ช่องที่ ${overPostIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
+      }
+
+      // 2. Pre-midterm total must equal 50
+      const preHalf = sgs.preSum + sgs.midExam;
+      if (preHalf !== 50) {
+        const diff = preHalf - 50;
+        const diffText = diff > 0 ? `เกินมา ${diff} คะแนน` : `ขาดอีก ${Math.abs(diff)} คะแนน`;
+        errors.push(`สัดส่วนก่อนกลางภาคปัจจุบันรวมได้ ${preHalf} / 50 คะแนน (${diffText}: คะแนนเก็บ ${sgs.preSum} + สอบกลางภาค ${sgs.midExam})`);
+      }
+
+      // 3. Post-midterm total must equal 50
+      const postHalf = sgs.postSum + sgs.finExam;
+      if (postHalf !== 50) {
+        const diff = postHalf - 50;
+        const diffText = diff > 0 ? `เกินมา ${diff} คะแนน` : `ขาดอีก ${Math.abs(diff)} คะแนน`;
+        errors.push(`สัดส่วนหลังกลางภาคปัจจุบันรวมได้ ${postHalf} / 50 คะแนน (${diffText}: คะแนนเก็บ ${sgs.postSum} + สอบปลายภาค ${sgs.finExam})`);
+      }
+
+      // 4. Grand total must equal 100
+      if (sgs.grandTotal !== 100) {
+        const diff = sgs.grandTotal - 100;
+        const diffText = diff > 0 ? `เกินมา ${diff} คะแนน` : `ขาดอีก ${Math.abs(diff)} คะแนน`;
+        errors.push(`คะแนนรวมตลอดภาคเรียนรวมได้ ${sgs.grandTotal} / 100 คะแนน (${diffText})`);
+      }
+
+      // 5. Exam durations must be entered (> 0)
+      if (!sgs.midDuration || sgs.midDuration <= 0) {
+        errors.push(`ยังไม่ได้ระบุ "เวลาสอบกลางภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
+      }
+      if (!sgs.finDuration || sgs.finDuration <= 0) {
+        errors.push(`ยังไม่ได้ระบุ "เวลาสอบปลายภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
+      }
+
+      // 6. Check if scores deviate from assessment plan (วผ.19)
+      let isPlanDeviated = false;
+      const planSlots = getPlanSlotsForCourse(c);
+      if (planSlots) {
+        for (let i = 0; i < 9; i++) {
+          const curPre = c._inlinePreScores[i] || 0;
+          const planPre = planSlots.preScores[i] || 0;
+          if (curPre !== planPre) {
+            isPlanDeviated = true;
+            break;
+          }
+        }
+        if (!isPlanDeviated) {
+          for (let i = 0; i < 9; i++) {
+            const curPost = c._inlinePostScores[i] || 0;
+            const planPost = planSlots.postScores[i] || 0;
+            if (curPost !== planPost) {
+              isPlanDeviated = true;
+              break;
+            }
+          }
+        }
+        if (!isPlanDeviated) {
+          if ((sgs.midExam || 0) !== (planSlots.midExam || 0) || (sgs.finExam || 0) !== (planSlots.finExam || 0)) {
+            isPlanDeviated = true;
+          }
+        }
+      }
+
+      return {
+        isValid: errors.length === 0,
+        errors,
+        isPlanDeviated,
+        preHalf,
+        postHalf,
+        grandTotal: sgs.grandTotal
+      };
+    }
+
+    function showValidationErrorToast(code) {
+      const c = allCourses[code];
+      if (!c) return;
+      const val = validateCourseSgs(c);
+      if (!val.isValid) {
+        alert(`⚠️ ไม่สามารถบันทึกยืนยันวิชา ${code} (${c.course_name}) ได้\nเนื่องจากไม่เป็นไปตามเกณฑ์ SGS (${val.errors.length} ข้อ):\n\n` + val.errors.map((e, i) => `${i + 1}. ${e}`).join('\n') + `\n\nกรุณาปรับตัวเลขคะแนนให้ครบ 100 (แบ่ง 50:50) แต่ละช่องไม่เกิน 15 และระบุเวลาสอบให้ครบถ้วนก่อนยืนยัน`);
+      }
+    }
+
+    function renderCardStatusBadge(c, val, isConfirmed, confirmedByDisplay, confirmTimeStr, isCoTaught) {
+      if (!val.isValid) {
+        return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-black border border-rose-300 shadow-2xs">
+          <i class="ri-error-warning-fill text-rose-600 text-sm"></i> สัดส่วนคะแนนไม่เป็นไปตามเกณฑ์ (${val.errors.length} ข้อ)
+        </span>`;
+      }
+      if (isConfirmed) {
+        return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300 shadow-2xs">
+          <i class="ri-checkbox-circle-fill text-emerald-600 text-sm"></i> ยืนยันแล้วโดย ${escapeHtml(confirmedByDisplay)}${confirmTimeStr ? ` (${confirmTimeStr})` : ''}
+        </span>`;
+      }
+      return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-black border border-emerald-300 shadow-2xs">
+        <i class="ri-checkbox-circle-line text-emerald-600 text-sm"></i> สัดส่วนถูกต้องครบถ้วน (50:50) พร้อมยืนยัน
+      </span>`;
+    }
+
+    function renderConfirmButton(code, val, isConfirmed) {
+      if (!val.isValid) {
+        return `<button type="button" onclick="showValidationErrorToast('${code}')" class="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-500 text-xs font-black shadow-none cursor-pointer flex items-center gap-2 border border-slate-300 transition-all" title="คลิกเพื่อดูข้อกำหนดที่ไม่ผ่านเกณฑ์">
+          <i class="ri-lock-line text-base text-slate-400"></i>
+          <span>ยังไม่สามารถยืนยันได้ (คลิกดูเหตุผล)</span>
+        </button>`;
+      }
+      if (isConfirmed) {
+        return `<div class="flex flex-wrap items-center gap-2">
+          <button onclick="confirmSingleCourse('${code}')" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+            <i class="ri-check-line text-base"></i>
+            <span>ยืนยันแล้ว (บันทึกค่าใหม่)</span>
+          </button>
+          <button onclick="unconfirmCourseSgs('${code}')" class="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 text-xs font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="ยกเลิกสถานะการยืนยันรายวิชานี้">
+            <i class="ri-close-circle-line text-sm"></i>
+            <span>ยกเลิกยืนยัน</span>
+          </button>
+        </div>`;
+      }
+      return `<button onclick="confirmSingleCourse('${code}')" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md shadow-emerald-600/30 transition-all flex items-center gap-2 cursor-pointer hover:scale-102">
+        <i class="ri-checkbox-circle-fill text-lg"></i>
+        <span>กดยืนยันสัดส่วนคะแนน</span>
+      </button>`;
+    }
+
+    function updateCardValidationUI(code) {
+      const c = allCourses[code];
+      if (!c) return;
+      const val = validateCourseSgs(c);
+      const sgs = getSgsSlots(c);
+      const conf = sgsConfirmations[code] || {};
+      const isConfirmed = conf.confirmed_status === 'ยืนยัน';
+      const validTeachers = mergeCourseTeachers(c, conf.teachers, null);
+      const isCoTaught = validTeachers.length > 1;
+      const confirmedByDisplay = conf.confirmed_by ? formatTeacherName(conf.confirmed_by) : (validTeachers[0] ? formatTeacherName(validTeachers[0]) : 'ครูผู้สอน');
+      const confirmTimeStr = conf.confirmed_at 
+        ? new Date(conf.confirmed_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })
+        : '';
+
+      // 1. Card container styling
+      const cardEl = document.getElementById(`card-${code}`);
+      if (cardEl) {
+        if (!val.isValid) {
+          cardEl.className = 'rounded-3xl border-2 border-rose-400 bg-rose-50/15 ring-2 ring-rose-200/50 shadow-md transition-all duration-200 overflow-hidden';
+        } else if (isConfirmed) {
+          cardEl.className = 'rounded-3xl border-2 border-emerald-300 bg-emerald-50/20 shadow-sm transition-all duration-200 overflow-hidden';
+        } else {
+          cardEl.className = 'rounded-3xl border border-slate-200 bg-white hover:border-indigo-300 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden';
+        }
+      }
+
+      // 2. Status badge in header
+      const statusBadgeEl = document.getElementById(`status-badge-${code}`);
+      if (statusBadgeEl) {
+        statusBadgeEl.innerHTML = renderCardStatusBadge(c, val, isConfirmed, confirmedByDisplay, confirmTimeStr, isCoTaught);
+      }
+
+      // 3. Mid exam duration box styling
+      const midDurBox = document.getElementById(`dur-box-${code}-mid`);
+      const midDurInp = document.getElementById(`dur-inp-${code}-mid`);
+      if (midDurBox && midDurInp) {
+        const hasMidDur = sgs.midDuration !== null && sgs.midDuration > 0;
+        midDurBox.className = hasMidDur
+          ? 'px-2.5 py-1 rounded-xl bg-amber-50 text-amber-950 border border-amber-300 flex items-center gap-1.5 transition-all'
+          : 'px-2.5 py-1 rounded-xl bg-rose-50 text-rose-950 border-2 border-rose-400 ring-2 ring-rose-200 flex items-center gap-1.5 transition-all';
+        midDurInp.className = hasMidDur
+          ? 'w-16 text-center bg-white border border-amber-300 focus:border-amber-500 rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none'
+          : 'w-16 text-center bg-white border border-rose-400 focus:border-rose-600 ring-1 ring-rose-300 rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none';
+      }
+
+      // 4. Fin exam duration box styling
+      const finDurBox = document.getElementById(`dur-box-${code}-fin`);
+      const finDurInp = document.getElementById(`dur-inp-${code}-fin`);
+      if (finDurBox && finDurInp) {
+        const hasFinDur = sgs.finDuration !== null && sgs.finDuration > 0;
+        finDurBox.className = hasFinDur
+          ? 'px-2.5 py-1 rounded-xl bg-amber-50 text-amber-950 border border-amber-300 flex items-center gap-1.5 transition-all'
+          : 'px-2.5 py-1 rounded-xl bg-rose-50 text-rose-950 border-2 border-rose-400 ring-2 ring-rose-200 flex items-center gap-1.5 transition-all';
+        finDurInp.className = hasFinDur
+          ? 'w-16 text-center bg-white border border-amber-300 focus:border-amber-500 rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none'
+          : 'w-16 text-center bg-white border border-rose-400 focus:border-rose-600 ring-1 ring-rose-300 rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none';
+      }
+
+      // 5. Caution deviation box
+      const devBox = document.getElementById(`deviation-box-${code}`);
+      if (devBox) {
+        if (val.isPlanDeviated) {
+          devBox.classList.remove('hidden');
+        } else {
+          devBox.classList.add('hidden');
+        }
+      }
+
+      // 6. Error explanation box
+      const errBox = document.getElementById(`error-box-${code}`);
+      const errList = document.getElementById(`error-list-${code}`);
+      const errCount = document.getElementById(`error-count-${code}`);
+      if (errBox && errList) {
+        if (!val.isValid) {
+          if (errCount) errCount.textContent = `(${val.errors.length} ข้อ)`;
+          errList.innerHTML = val.errors.map(err => `<li>${escapeHtml(err)}</li>`).join('');
+          errBox.classList.remove('hidden');
+        } else {
+          errBox.classList.add('hidden');
+        }
+      }
+
+      // 7. Footer Grand Total
+      const grandIconEl = document.getElementById(`grand-total-icon-${code}`);
+      const grandValEl = document.getElementById(`grand-total-val-${code}`);
+      const grandDescEl = document.getElementById(`grand-total-desc-${code}`);
+      if (grandIconEl && grandValEl && grandDescEl) {
+        const midDurStr = sgs.midDuration ? `${sgs.midDuration} นาที` : '<span class="text-rose-600 font-black">ยังไม่ระบุเวลาสอบ</span>';
+        const finDurStr = sgs.finDuration ? `${sgs.finDuration} นาที` : '<span class="text-rose-600 font-black">ยังไม่ระบุเวลาสอบ</span>';
+
+        if (!val.isValid) {
+          grandIconEl.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 border border-rose-300 flex items-center justify-center text-xl font-black shrink-0';
+          grandIconEl.innerHTML = '<i class="ri-error-warning-fill"></i>';
+          grandValEl.className = 'text-rose-700 font-black';
+          grandValEl.textContent = `${sgs.grandTotal} / 100 คะแนน (ไม่ถูกต้องตามเกณฑ์ SGS)`;
+          grandDescEl.className = 'text-[11px] text-rose-700 font-semibold';
+          grandDescEl.innerHTML = `ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam}=${val.preHalf}/50 (${midDurStr}) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam}=${val.postHalf}/50 (${finDurStr})`;
+        } else {
+          grandIconEl.className = 'w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-xl font-black shrink-0';
+          grandIconEl.innerHTML = '<i class="ri-checkbox-circle-fill"></i>';
+          grandValEl.className = 'text-emerald-700 font-black';
+          grandValEl.textContent = `${sgs.grandTotal} คะแนน (50:50 ถูกต้องตามเกณฑ์)`;
+          grandDescEl.className = 'text-[11px] text-slate-500 font-medium';
+          grandDescEl.innerHTML = `ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam}=50 (${midDurStr}) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam}=50 (${finDurStr})`;
+        }
+      }
+
+      // 8. Confirm button container
+      const btnCont = document.getElementById(`confirm-btn-container-${code}`);
+      if (btnCont) {
+        btnCont.innerHTML = renderConfirmButton(code, val, isConfirmed);
+      }
     }
 
     function syncInlineSlotsBackToUnits(course) {
@@ -1018,9 +1363,9 @@
       } else if (half === 'finExam') {
         c._inlineFinExam = parsed || 0;
       } else if (half === 'midDuration') {
-        c._inlineMidDuration = Math.max(10, parsed || 60);
+        c._inlineMidDuration = parsed && parsed > 0 ? parsed : null;
       } else if (half === 'finDuration') {
-        c._inlineFinDuration = Math.max(10, parsed || 60);
+        c._inlineFinDuration = parsed && parsed > 0 ? parsed : null;
       }
 
       syncInlineSlotsBackToUnits(c);
@@ -1061,9 +1406,6 @@
       const preTotEl = document.getElementById(`pre-total-badge-${code}`);
       const postSumEl = document.getElementById(`post-sum-badge-${code}`);
       const postTotEl = document.getElementById(`post-total-badge-${code}`);
-      const grandIconEl = document.getElementById(`grand-total-icon-${code}`);
-      const grandValEl = document.getElementById(`grand-total-val-${code}`);
-      const grandDescEl = document.getElementById(`grand-total-desc-${code}`);
 
       if (preSumEl) {
         preSumEl.textContent = `คะแนนเก็บ: ${sgs.preSum} / 35`;
@@ -1092,39 +1434,15 @@
           : 'px-2.5 py-1 rounded-lg bg-amber-600 text-white font-black';
       }
 
-      if (grandIconEl && grandValEl && grandDescEl) {
-        if (sgs.hasOver15) {
-          grandIconEl.className = 'w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 border border-rose-300 flex items-center justify-center text-xl font-black shrink-0';
-          grandIconEl.innerHTML = '<i class="ri-error-warning-fill"></i>';
-          grandValEl.className = 'text-rose-700 font-black';
-          grandValEl.textContent = `${sgs.grandTotal} / 100 คะแนน (มีช่องเกิน 15 คะแนน)`;
-          grandDescEl.className = 'text-[11px] text-rose-600 font-bold';
-          grandDescEl.textContent = 'ระบบ SGS กำหนดให้แต่ละช่องคะแนนเก็บ (ช่อง 1–9) ต้องไม่เกิน 15 คะแนน';
-        } else if (sgs.is5050) {
-          grandIconEl.className = 'w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-xl font-black shrink-0';
-          grandIconEl.innerHTML = '<i class="ri-checkbox-circle-fill"></i>';
-          grandValEl.className = 'text-emerald-700 font-black';
-          grandValEl.textContent = `${sgs.grandTotal} คะแนน (50:50 ตามเกณฑ์)`;
-          grandDescEl.className = 'text-[11px] text-slate-500 font-medium';
-          grandDescEl.textContent = `ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam} = 50 (${sgs.midDuration} นาที) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam} = 50 (${sgs.finDuration} นาที)`;
-        } else {
-          const diff = sgs.grandTotal - 100;
-          const diffStr = diff === 0 ? 'รวมครบ 100 แต่สัดส่วนยังไม่ 50:50' : (diff > 0 ? `เกินมา ${diff} คะแนน` : `ขาดอีก ${Math.abs(diff)} คะแนน`);
-          grandIconEl.className = 'w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-xl font-black shrink-0';
-          grandIconEl.innerHTML = '<i class="ri-alert-line"></i>';
-          grandValEl.className = 'text-amber-700 font-black';
-          grandValEl.textContent = `${sgs.grandTotal} / 100 คะแนน (${diffStr})`;
-          grandDescEl.className = 'text-[11px] text-amber-700 font-semibold';
-          grandDescEl.textContent = `ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam}=${sgs.preSum + sgs.midExam}/50 (${sgs.midDuration} นาที) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam}=${sgs.postSum + sgs.finExam}/50 (${sgs.finDuration} นาที)`;
-        }
-      }
+      // Update card border, alert styling, error box, deviation warning, and confirm button
+      updateCardValidationUI(code);
     }
 
     function setCourseExamDuration(code, which, mins) {
       const inp = document.getElementById(`dur-inp-${code}-${which}`);
       if (inp) inp.value = mins;
       onInlineSlotInput(code, which === 'mid' ? 'midDuration' : 'finDuration', 0, mins);
-      showToast(`บันทึกเวลาสอบ${which === 'mid' ? 'กลางภาค' : 'ปลายภาค'}วิชา ${code} เป็น ${mins} นาที (ซิงค์กับแผนวัดผล วผ.19 แล้ว)`, 'info');
+      showToast(`บันทึกเวลาสอบ${which === 'mid' ? 'กลางภาค' : 'ปลายภาค'}วิชา ${code} เป็น ${mins} นาทีแล้ว`, 'info');
     }
 
     function autoBalanceCourseInline(code) {
@@ -1295,22 +1613,26 @@
         const conf = sgsConfirmations[code] || {};
         const isConfirmed = conf.confirmed_status === 'ยืนยัน';
         const sgs = getSgsSlots(c);
+        const val = validateCourseSgs(c);
         const classrooms = conf.classrooms || c.classrooms || `${c.grade_level} (ทุกห้องที่เรียน)`;
 
         const card = document.createElement('div');
+        card.id = `card-${code}`;
         card.className = `rounded-3xl border transition-all duration-200 overflow-hidden ${
-          isConfirmed 
-            ? 'bg-emerald-50/20 border-emerald-300 shadow-sm' 
-            : 'bg-white border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md'
+          !val.isValid
+            ? 'border-2 border-rose-400 bg-rose-50/15 ring-2 ring-rose-200/50 shadow-md'
+            : (isConfirmed 
+                ? 'bg-emerald-50/20 border-emerald-300 shadow-sm' 
+                : 'bg-white border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md')
         }`;
 
         // Build 9 pre slots with direct inline <input type="number">
         let prePills = '';
         for (let i = 0; i < 9; i++) {
-          const val = c._inlinePreScores[i];
+          const valScore = c._inlinePreScores[i];
           const meta = c._preMeta[i];
-          const hasVal = val !== null && val !== undefined && val > 0;
-          const isOver = hasVal && val > 15;
+          const hasVal = valScore !== null && valScore !== undefined && valScore > 0;
+          const isOver = hasVal && valScore > 15;
           const unitTitle = meta
             ? `หน่วยที่ ${meta.unit_no}: ${meta.unit_name}${meta.sub_idx ? ` (ครั้งที่ ${meta.sub_idx})` : ''}`
             : `ช่องคะแนนก่อนกลางภาคที่ ${i + 1} (พิมพ์ตัวเลขเพื่อกำหนดคะแนน)`;
@@ -1333,7 +1655,7 @@
                 min="0"
                 max="15"
                 placeholder="-"
-                value="${hasVal ? val : ''}"
+                value="${hasVal ? valScore : ''}"
                 oninput="onInlineSlotInput('${code}', 'pre', ${i}, this.value)"
                 class="w-full text-center text-base sm:text-lg font-black text-slate-900 bg-transparent border-b border-transparent focus:border-blue-500 focus:bg-blue-50/50 rounded my-0.5 py-0.5 focus:outline-none"
               />
@@ -1345,10 +1667,10 @@
         // Build 9 post slots with direct inline <input type="number">
         let postPills = '';
         for (let i = 0; i < 9; i++) {
-          const val = c._inlinePostScores[i];
+          const valScore = c._inlinePostScores[i];
           const meta = c._postMeta[i];
-          const hasVal = val !== null && val !== undefined && val > 0;
-          const isOver = hasVal && val > 15;
+          const hasVal = valScore !== null && valScore !== undefined && valScore > 0;
+          const isOver = hasVal && valScore > 15;
           const unitTitle = meta
             ? `หน่วยที่ ${meta.unit_no}: ${meta.unit_name}${meta.sub_idx ? ` (ครั้งที่ ${meta.sub_idx})` : ''}`
             : `ช่องคะแนนหลังกลางภาคที่ ${i + 1} (พิมพ์ตัวเลขเพื่อกำหนดคะแนน)`;
@@ -1371,7 +1693,7 @@
                 min="0"
                 max="15"
                 placeholder="-"
-                value="${hasVal ? val : ''}"
+                value="${hasVal ? valScore : ''}"
                 oninput="onInlineSlotInput('${code}', 'post', ${i}, this.value)"
                 class="w-full text-center text-base sm:text-lg font-black text-slate-900 bg-transparent border-b border-transparent focus:border-purple-500 focus:bg-purple-50/50 rounded my-0.5 py-0.5 focus:outline-none"
               />
@@ -1415,26 +1737,16 @@
                 <label for="classrooms-${code}" class="text-slate-500 font-bold text-[11px]">ห้องที่สอน:</label>
                 <input id="classrooms-${code}" type="text" value="${escapeHtml(classrooms)}" onchange="updateCourseClassroom('${code}', this.value)" class="text-xs font-black text-indigo-900 bg-white border border-slate-300 rounded px-2 py-0.5 text-center w-28 focus:border-indigo-500 focus:outline-none" title="คลิกเพื่อแก้ไขห้องที่สอน" />
               </div>
-              <div>
-                ${isConfirmed 
-                  ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300 shadow-2xs">
-                       <i class="ri-checkbox-circle-fill text-emerald-600 text-sm"></i> ยืนยันแล้วโดย ${escapeHtml(confirmedByDisplay)}${confirmTimeStr ? ` (${confirmTimeStr})` : ''}
-                     </span>`
-                  : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300 shadow-2xs">
-                       <i class="ri-time-line text-amber-700"></i> ${isCoTaught ? 'รอยืนยัน (ตัวแทนผู้สอนกดยืนยันเพียง 1 ท่าน)' : 'รอกดยืนยันสัดส่วนคะแนน'}
-                     </span>`
-                }
+              <div id="status-badge-${code}">
+                ${renderCardStatusBadge(c, val, isConfirmed, confirmedByDisplay, confirmTimeStr, isCoTaught)}
               </div>
             </div>
           </div>
 
           <!-- Card Body: 9 Slots Pre & Post Midterm Breakdown (Direct Inline Input) -->
           <div class="p-5 space-y-4 bg-slate-50/70 border-b border-slate-100">
-            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 px-1">
-              <span><i class="ri-edit-line text-indigo-600 font-bold"></i> <strong>คลิกพิมพ์ปรับตัวเลขคะแนนในช่อง 1–9 และเวลาสอบได้โดยตรง</strong> ระบบจะคำนวณสดและซิงค์ไปบันทึกในแผนวัดผล วผ.19 อัตโนมัติ</span>
-              <button type="button" onclick="autoBalanceCourseInline('${code}')" class="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer shrink-0">
-                <i class="ri-scales-3-line"></i> เกลี่ย 50:50 อัตโนมัติ
-              </button>
+            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-600 px-1">
+              <span><i class="ri-edit-line text-indigo-600 font-bold"></i> <strong>คลิกพิมพ์ปรับตัวเลขคะแนนในช่อง 1–9 และเวลาสอบได้โดยตรง</strong> ระบบคำนวณสดทันที (เกณฑ์ SGS: รวม 100 คะแนน แบ่ง 50:50 แต่ละช่องไม่เกิน 15 และต้องระบุเวลาสอบ)</span>
             </div>
 
             <!-- 1. Pre-Midterm Card -->
@@ -1451,16 +1763,16 @@
                     <input type="number" min="0" max="30" value="${sgs.midExam}" oninput="onInlineSlotInput('${code}', 'midExam', 0, this.value)" class="w-10 text-center bg-white border border-indigo-200 rounded font-black text-indigo-950 py-0.5 focus:outline-none focus:border-indigo-500" />
                     <span class="text-[10px] text-indigo-600">คะแนน</span>
                   </label>
-                  <div class="px-2 py-0.5 rounded-lg bg-amber-50 text-amber-900 font-bold border border-amber-200 flex items-center gap-1" title="กำหนดเวลาสอบกลางภาค (นาที) จะถูกนำไปบันทึกในข้อ 3 ของเอกสารแผนวัดผล วผ.19 อัตโนมัติ">
-                    <i class="ri-timer-line text-amber-600"></i>
-                    <span>เวลาสอบ:</span>
-                    <input id="dur-inp-${code}-mid" type="number" min="10" max="300" step="5" value="${sgs.midDuration}" oninput="onInlineSlotInput('${code}', 'midDuration', 0, this.value)" class="w-12 text-center bg-white border border-amber-300 rounded font-black text-amber-950 py-0.5 focus:outline-none focus:border-amber-500" />
-                    <span class="text-[10px] text-amber-700">นาที</span>
-                    <div class="hidden sm:flex items-center gap-0.5 ml-0.5">
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 50)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">50</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 60)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">60</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 90)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">90</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 120)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">120</button>
+                  <div id="dur-box-${code}-mid" class="px-2.5 py-1 rounded-xl ${sgs.midDuration ? 'bg-amber-50 text-amber-950 border border-amber-300' : 'bg-rose-50 text-rose-950 border-2 border-rose-400 ring-2 ring-rose-200'} flex items-center gap-1.5 transition-all" title="กำหนดเวลาสอบกลางภาค (นาที) - จำเป็นต้องระบุเพื่อบันทึกยืนยัน">
+                    <i class="ri-timer-line ${sgs.midDuration ? 'text-amber-600' : 'text-rose-600 font-bold'} text-sm"></i>
+                    <span class="text-[11px] font-black ${sgs.midDuration ? 'text-slate-700' : 'text-rose-700'}">เวลาสอบ: <span class="text-rose-600">*</span></span>
+                    <input id="dur-inp-${code}-mid" type="number" min="10" max="300" step="5" placeholder="ระบุนาที" value="${sgs.midDuration !== null && sgs.midDuration !== undefined ? sgs.midDuration : ''}" oninput="onInlineSlotInput('${code}', 'midDuration', 0, this.value)" class="w-16 text-center bg-white border ${sgs.midDuration ? 'border-amber-300 focus:border-amber-500' : 'border-rose-400 focus:border-rose-600 ring-1 ring-rose-300'} rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none" />
+                    <span class="text-[10px] ${sgs.midDuration ? 'text-amber-800' : 'text-rose-700 font-bold'}">นาที</span>
+                    <div class="hidden sm:flex items-center gap-0.5 ml-1">
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 50)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">50</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 60)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">60</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 90)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">90</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'mid', 120)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">120</button>
                     </div>
                   </div>
                   <span id="pre-total-badge-${code}" class="px-2.5 py-1 rounded-lg ${preHalf === 50 ? 'bg-blue-600' : 'bg-amber-600'} text-white font-black">รวม: ${preHalf} / 50</span>
@@ -1485,16 +1797,16 @@
                     <input type="number" min="0" max="30" value="${sgs.finExam}" oninput="onInlineSlotInput('${code}', 'finExam', 0, this.value)" class="w-10 text-center bg-white border border-fuchsia-200 rounded font-black text-fuchsia-950 py-0.5 focus:outline-none focus:border-fuchsia-500" />
                     <span class="text-[10px] text-fuchsia-600">คะแนน</span>
                   </label>
-                  <div class="px-2 py-0.5 rounded-lg bg-amber-50 text-amber-900 font-bold border border-amber-200 flex items-center gap-1" title="กำหนดเวลาสอบปลายภาค (นาที) จะถูกนำไปบันทึกในข้อ 3 ของเอกสารแผนวัดผล วผ.19 อัตโนมัติ">
-                    <i class="ri-timer-line text-amber-600"></i>
-                    <span>เวลาสอบ:</span>
-                    <input id="dur-inp-${code}-fin" type="number" min="10" max="300" step="5" value="${sgs.finDuration}" oninput="onInlineSlotInput('${code}', 'finDuration', 0, this.value)" class="w-12 text-center bg-white border border-amber-300 rounded font-black text-amber-950 py-0.5 focus:outline-none focus:border-amber-500" />
-                    <span class="text-[10px] text-amber-700">นาที</span>
-                    <div class="hidden sm:flex items-center gap-0.5 ml-0.5">
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 50)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">50</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 60)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">60</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 90)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">90</button>
-                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 120)" class="px-1 py-0.5 rounded bg-white hover:bg-amber-100 text-[9px] font-bold text-amber-800 border border-amber-200 cursor-pointer">120</button>
+                  <div id="dur-box-${code}-fin" class="px-2.5 py-1 rounded-xl ${sgs.finDuration ? 'bg-amber-50 text-amber-950 border border-amber-300' : 'bg-rose-50 text-rose-950 border-2 border-rose-400 ring-2 ring-rose-200'} flex items-center gap-1.5 transition-all" title="กำหนดเวลาสอบปลายภาค (นาที) - จำเป็นต้องระบุเพื่อบันทึกยืนยัน">
+                    <i class="ri-timer-line ${sgs.finDuration ? 'text-amber-600' : 'text-rose-600 font-bold'} text-sm"></i>
+                    <span class="text-[11px] font-black ${sgs.finDuration ? 'text-slate-700' : 'text-rose-700'}">เวลาสอบ: <span class="text-rose-600">*</span></span>
+                    <input id="dur-inp-${code}-fin" type="number" min="10" max="300" step="5" placeholder="ระบุนาที" value="${sgs.finDuration !== null && sgs.finDuration !== undefined ? sgs.finDuration : ''}" oninput="onInlineSlotInput('${code}', 'finDuration', 0, this.value)" class="w-16 text-center bg-white border ${sgs.finDuration ? 'border-amber-300 focus:border-amber-500' : 'border-rose-400 focus:border-rose-600 ring-1 ring-rose-300'} rounded font-black text-slate-900 py-0.5 text-xs focus:outline-none" />
+                    <span class="text-[10px] ${sgs.finDuration ? 'text-amber-800' : 'text-rose-700 font-bold'}">นาที</span>
+                    <div class="hidden sm:flex items-center gap-0.5 ml-1">
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 50)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">50</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 60)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">60</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 90)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">90</button>
+                      <button type="button" onclick="setCourseExamDuration('${code}', 'fin', 120)" class="px-1.5 py-0.5 rounded bg-white hover:bg-amber-100 text-[10px] font-bold text-amber-900 border border-amber-200 cursor-pointer shadow-2xs">120</button>
                     </div>
                   </div>
                   <span id="post-total-badge-${code}" class="px-2.5 py-1 rounded-lg ${postHalf === 50 ? 'bg-purple-600' : 'bg-amber-600'} text-white font-black">รวม: ${postHalf} / 50</span>
@@ -1504,19 +1816,43 @@
                 ${postPills}
               </div>
             </div>
+
+            <!-- Caution Banner: If edited scores deviate from assessment plan (วผ.19) -->
+            <div id="deviation-box-${code}" class="p-3.5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 text-xs flex items-start gap-2.5 shadow-xs ${val.isPlanDeviated ? '' : 'hidden'}">
+              <i class="ri-alert-fill text-amber-600 text-xl shrink-0 mt-0.5"></i>
+              <div class="flex-1">
+                <strong class="font-black text-amber-950 text-xs sm:text-sm block">⚠️ ข้อควรระวัง: สัดส่วนคะแนนที่ปรับในหน้านี้แตกต่างจากแผนวัดผล (วผ.19)</strong>
+                <p class="text-[11px] text-amber-900 font-semibold mt-1">
+                  คะแนนในช่อง SGS ปัจจุบันไม่ตรงกับคะแนนหน่วยการเรียนรู้ในแผนวัดผล วผ.19 หากกดยืนยันค่านี้ โปรดตรวจสอบและกดปุ่ม <strong>"จัดทำแผนวัดผล วผ.19 วิชานี้"</strong> เพื่อปรับปรุงแผนวัดผลให้สอดคล้องกันด้วย
+                </p>
+              </div>
+            </div>
+
+            <!-- Error Explanation Box: If any rule is violated (cannot confirm) -->
+            <div id="error-box-${code}" class="p-3.5 sm:p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-950 text-xs shadow-xs ${val.isValid ? 'hidden' : ''}">
+              <div class="font-black flex items-center gap-2 text-rose-800 text-xs sm:text-sm mb-1.5">
+                <i class="ri-close-circle-fill text-rose-600 text-lg"></i>
+                <span>ไม่สามารถบันทึกยืนยันได้เนื่องจากไม่เป็นไปตามเกณฑ์ SGS <span id="error-count-${code}">(${val.errors.length} ข้อ)</span>:</span>
+              </div>
+              <ul id="error-list-${code}" class="list-disc list-inside space-y-1 text-xs font-bold text-rose-800 ml-1">
+                ${val.errors.map(err => `<li>${escapeHtml(err)}</li>`).join('')}
+              </ul>
+            </div>
           </div>
 
           <!-- Card Footer Actions -->
           <div class="p-4 sm:p-5 bg-white flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-              <div id="grand-total-icon-${code}" class="w-10 h-10 rounded-2xl ${sgs.is5050 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-amber-50 text-amber-600 border border-amber-200'} flex items-center justify-center text-xl font-black shrink-0">
-                ${sgs.is5050 ? '<i class="ri-checkbox-circle-fill"></i>' : '<i class="ri-alert-line"></i>'}
+              <div id="grand-total-icon-${code}" class="w-10 h-10 rounded-2xl ${val.isValid ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-100 text-rose-600 border border-rose-300'} flex items-center justify-center text-xl font-black shrink-0">
+                ${val.isValid ? '<i class="ri-checkbox-circle-fill"></i>' : '<i class="ri-error-warning-fill"></i>'}
               </div>
               <div>
                 <div class="text-xs sm:text-sm font-black text-slate-900">
-                  คะแนนรวมตลอดภาคเรียน: <span id="grand-total-val-${code}" class="${sgs.is5050 ? 'text-emerald-700' : 'text-amber-700'}">${sgs.grandTotal} คะแนน</span>
+                  คะแนนรวมตลอดภาคเรียน: <span id="grand-total-val-${code}" class="${val.isValid ? 'text-emerald-700' : 'text-rose-700'}">${sgs.grandTotal} คะแนน ${val.isValid ? '(50:50 ถูกต้องตามเกณฑ์)' : '(ไม่ถูกต้องตามเกณฑ์ SGS)'}</span>
                 </div>
-                <p id="grand-total-desc-${code}" class="text-[11px] text-slate-500 font-medium">ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam} = ${preHalf} (${sgs.midDuration} นาที) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam} = ${postHalf} (${sgs.finDuration} นาที)</p>
+                <p id="grand-total-desc-${code}" class="text-[11px] ${val.isValid ? 'text-slate-500 font-medium' : 'text-rose-700 font-semibold'}">
+                  ก่อนกลางภาค ${sgs.preSum}+${sgs.midExam}=${val.preHalf}/50 (${sgs.midDuration ? sgs.midDuration + ' นาที' : '⚠️ ยังไม่ระบุเวลาสอบ'}) • หลังกลางภาค ${sgs.postSum}+${sgs.finExam}=${val.postHalf}/50 (${sgs.finDuration ? sgs.finDuration + ' นาที' : '⚠️ ยังไม่ระบุเวลาสอบ'})
+                </p>
               </div>
             </div>
 
@@ -1528,23 +1864,10 @@
                 <i class="ri-arrow-right-up-line text-xs opacity-80"></i>
               </a>
 
-              <!-- Main Confirm & Unconfirm Buttons -->
-              ${isConfirmed
-                ? `<div class="flex flex-wrap items-center gap-2">
-                     <button onclick="confirmSingleCourse('${code}')" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
-                       <i class="ri-check-line text-base"></i>
-                       <span>ยืนยันแล้ว (บันทึกค่าใหม่)</span>
-                     </button>
-                     <button onclick="unconfirmCourseSgs('${code}')" class="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 text-xs font-bold shadow-2xs transition-all flex items-center gap-1 cursor-pointer" title="ยกเลิกสถานะการยืนยันรายวิชานี้">
-                       <i class="ri-close-circle-line text-sm"></i>
-                       <span>ยกเลิกยืนยัน</span>
-                     </button>
-                   </div>`
-                : `<button onclick="confirmSingleCourse('${code}')" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md shadow-emerald-600/30 transition-all flex items-center gap-2 cursor-pointer hover:scale-102">
-                     <i class="ri-checkbox-circle-fill text-lg"></i>
-                     <span>กดยืนยันสัดส่วนคะแนน</span>
-                   </button>`
-              }
+              <!-- Main Confirm / Locked Button Container -->
+              <div id="confirm-btn-container-${code}">
+                ${renderConfirmButton(code, val, isConfirmed)}
+              </div>
             </div>
           </div>
         `;
@@ -1556,7 +1879,14 @@
     // 6. Single Course Confirm Handler (Co-taught courses: 1 teacher confirms for all co-teachers)
     async function confirmSingleCourse(code) {
       const c = allCourses[code];
-      if (!c) return;
+      if (!c) return false;
+
+      const val = validateCourseSgs(c);
+      if (!val.isValid) {
+        showValidationErrorToast(code);
+        showToast(`ไม่สามารถยืนยันวิชา ${code} ได้: ${val.errors[0]}`, "error");
+        return false;
+      }
 
       const classroomsInp = document.getElementById(`classrooms-${code}`);
       const classrooms = classroomsInp ? classroomsInp.value.trim() : (c.classrooms || `${c.grade_level}`);
@@ -1601,6 +1931,7 @@
         renderAdminTable();
       }
       showToast(`ยืนยันสัดส่วนคะแนนและเวลาสอบวิชา ${code} (${c.course_name}) เรียบร้อยแล้ว`, "success");
+      return true;
     }
 
     // 6.5 Unconfirm Single Course / Reset Accidental Confirmations
@@ -1683,7 +2014,29 @@
         return;
       }
 
-      for (const c of courses) {
+      const validCourses = [];
+      const invalidCourses = [];
+      courses.forEach(c => {
+        const val = validateCourseSgs(c);
+        if (val.isValid) {
+          validCourses.push(c);
+        } else {
+          invalidCourses.push({ course: c, errors: val.errors });
+        }
+      });
+
+      if (invalidCourses.length > 0) {
+        const errSummary = invalidCourses.map(item => `• ${item.course.course_code} (${item.course.course_name}):\n  - ${item.errors.join('\n  - ')}`).join('\n\n');
+        if (validCourses.length === 0) {
+          alert(`⚠️ ไม่สามารถยืนยันรายวิชาได้เลย เนื่องจากมีข้อมูลไม่ถูกต้องตามเกณฑ์ SGS:\n\n${errSummary}\n\nโปรดแก้ไขให้ถูกต้องและระบุเวลาสอบให้ครบถ้วนก่อนยืนยัน`);
+          return;
+        } else {
+          const proceed = confirm(`⚠️ พบ ${invalidCourses.length} รายวิชาที่ข้อมูลยังไม่ครบตามเกณฑ์ SGS (ไม่สามารถยืนยันได้):\n\n${errSummary}\n\nต้องการยืนยันเฉพาะวิชาที่ถูกต้องครบถ้วน (${validCourses.length} วิชา) ก่อนหรือไม่?`);
+          if (!proceed) return;
+        }
+      }
+
+      for (const c of validCourses) {
         const sgs = getSgsSlots(c);
         const classroomsInp = document.getElementById(`classrooms-${c.course_code}`);
         const classrooms = classroomsInp ? classroomsInp.value.trim() : (c.classrooms || `${c.grade_level}`);
@@ -1724,7 +2077,7 @@
 
       renderTeacherCards();
       renderAccountOwnerBanner();
-      showToast(`ยืนยันสัดส่วนคะแนนและเวลาสอบครบทั้ง ${courses.length} รายวิชาเรียบร้อยแล้ว`, "success");
+      showToast(`ยืนยันสัดส่วนคะแนนเรียบร้อยแล้ว ${validCourses.length} วิชา${invalidCourses.length > 0 ? ` (ยกเว้น ${invalidCourses.length} วิชาที่ยังไม่ผ่านเกณฑ์)` : ''}`, "success");
     }
 
     function updateCourseClassroom(code, val) {
@@ -1935,8 +2288,7 @@
           ${postHtml}
           <td class="border border-slate-200 px-1 py-1 text-center font-extrabold bg-purple-100 text-purple-900">${sgs.postSum}</td>
           <td class="border border-slate-200 px-1 py-1 text-center font-bold bg-fuchsia-50 text-fuchsia-900">${sgs.finExam}</td>
-          <td class="border border-slate-200 px-1 py-1 text-center font-black ${sgs.grandTotal === 100 ? 'bg-emerald-100 text-emerald-950' : 'bg-rose-100 text-rose-800'}">${sgs.grandTotal}</td>
-          <td class="border border-slate-200 px-1.5 py-1 text-center font-bold text-[10px] bg-amber-50/60 text-amber-900 whitespace-nowrap">${sgs.midDuration}/${sgs.finDuration} น.</td>
+          <td class="border border-slate-200 px-1.5 py-1 text-center font-bold text-[10px] bg-amber-50/60 text-amber-900 whitespace-nowrap">${sgs.midDuration || '-'}/${sgs.finDuration || '-'} น.</td>
           <td class="border border-slate-200 px-2 py-1 text-center whitespace-nowrap">
             ${isConfirmed 
               ? `<div class="inline-flex items-center gap-1">
@@ -1975,6 +2327,12 @@
     async function adminQuickConfirm(code) {
       const c = allCourses[code];
       if (!c) return;
+      const val = validateCourseSgs(c);
+      if (!val.isValid) {
+        showToast(`วิชา ${code} ยังไม่ผ่านเกณฑ์ SGS: ${val.errors[0]}`, 'error');
+        alert(`⚠️ ไม่สามารถยืนยันวิชา ${code} (${c.course_name}) ได้\nเนื่องจากไม่เป็นไปตามเกณฑ์ SGS (${val.errors.length} ข้อ):\n\n` + val.errors.map((e, i) => `${i + 1}. ${e}`).join('\n'));
+        return;
+      }
       const sgs = getSgsSlots(c);
       const existing = sgsConfirmations[code] || {};
       const payload = {
@@ -2057,7 +2415,7 @@
           conf.confirmed_status === 'ยืนยัน' ? 'ยืนยัน' : 'รอยืนยัน',
           conf.admin_checked ? 'TRUE' : 'FALSE',
           conf.sgs_entered ? 'TRUE' : 'FALSE',
-          `${sgs.midDuration}/${sgs.finDuration} นาที`, '', '', '', ''
+          `${sgs.midDuration || '-'}/${sgs.finDuration || '-'} นาที`, '', '', '', ''
         ];
       });
 
@@ -2090,8 +2448,8 @@
 
         return [
           idx + 1, code, c.course_name, c.grade_level, conf.classrooms || c.classrooms || c.grade_level, validTeachers.join(', '),
-          ...pre9, sgs.preSum, sgs.midExam, sgs.midDuration,
-          ...post9, sgs.postSum, sgs.finExam, sgs.finDuration, sgs.grandTotal,
+          ...pre9, sgs.preSum, sgs.midExam, sgs.midDuration || '',
+          ...post9, sgs.postSum, sgs.finExam, sgs.finDuration || '', sgs.grandTotal,
           conf.confirmed_status === 'ยืนยัน' ? 'ยืนยัน' : 'รอยืนยัน',
           conf.admin_checked ? 'TRUE' : 'FALSE',
           conf.sgs_entered ? 'TRUE' : 'FALSE'

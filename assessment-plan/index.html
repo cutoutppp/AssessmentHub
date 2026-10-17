@@ -328,9 +328,9 @@
                   สอบกลางภาค (นาที)
                 </label>
                 <div class="relative">
-                  <input type="number" id="inputMidExamDuration" min="10" max="300" step="5" value="60"
+                  <input type="number" id="inputMidExamDuration" min="10" max="300" step="5" value=""
                     class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary pr-10"
-                    placeholder="เช่น 60">
+                    placeholder="ระบุนาที เช่น 60">
                   <span class="absolute right-2.5 top-1.5 text-[11px] text-slate-400 font-bold">นาที</span>
                 </div>
                 <div class="flex items-center gap-1 mt-1.5 flex-wrap">
@@ -345,9 +345,9 @@
                   สอบปลายภาค (นาที)
                 </label>
                 <div class="relative">
-                  <input type="number" id="inputFinExamDuration" min="10" max="300" step="5" value="60"
+                  <input type="number" id="inputFinExamDuration" min="10" max="300" step="5" value=""
                     class="w-full px-2.5 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-bold focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary pr-10"
-                    placeholder="เช่น 60">
+                    placeholder="ระบุนาที เช่น 60">
                   <span class="absolute right-2.5 top-1.5 text-[11px] text-slate-400 font-bold">นาที</span>
                 </div>
                 <div class="flex items-center gap-1 mt-1.5 flex-wrap">
@@ -731,8 +731,8 @@
       const existing = sgsConfirmations[code] || {};
       const midIn = document.getElementById('inputMidExamDuration');
       const finIn = document.getElementById('inputFinExamDuration');
-      const midDur = midIn ? (parseInt(midIn.value, 10) || 60) : (existing.mid_exam_duration || 60);
-      const finDur = finIn ? (parseInt(finIn.value, 10) || 60) : (existing.fin_exam_duration || 60);
+      const midDur = (midIn && midIn.value) ? (parseInt(midIn.value, 10) || null) : (existing.mid_exam_duration || null);
+      const finDur = (finIn && finIn.value) ? (parseInt(finIn.value, 10) || null) : (existing.fin_exam_duration || null);
       const inpClass = document.getElementById('inputCourseClassrooms');
       const classrooms = (inpClass && inpClass.value.trim()) ? inpClass.value.trim() : (currentCourse.classrooms || existing.classrooms || `${currentCourse.grade_level}`);
       const validTeachers = (currentCourse.teachers || []).filter(t => !isPlaceholderTeacher(t));
@@ -2374,14 +2374,14 @@
       initExamScores();
       initUnitAssessments();
 
-      // Load Exam Durations from sgsConfirmations (or default 60 mins)
-      const savedMidDur = savedConf.mid_exam_duration !== undefined ? savedConf.mid_exam_duration : (c.mid_exam_duration || 60);
-      const savedFinDur = savedConf.fin_exam_duration !== undefined ? savedConf.fin_exam_duration : (c.fin_exam_duration || 60);
+      // Load Exam Durations from sgsConfirmations (or leave blank if unset)
+      const savedMidDur = (savedConf.mid_exam_duration !== undefined && savedConf.mid_exam_duration !== null && savedConf.mid_exam_duration !== '') ? savedConf.mid_exam_duration : '';
+      const savedFinDur = (savedConf.fin_exam_duration !== undefined && savedConf.fin_exam_duration !== null && savedConf.fin_exam_duration !== '') ? savedConf.fin_exam_duration : '';
       if (document.getElementById('inputMidExamDuration')) {
-        document.getElementById('inputMidExamDuration').value = String(savedMidDur);
+        document.getElementById('inputMidExamDuration').value = savedMidDur ? String(savedMidDur) : '';
       }
       if (document.getElementById('inputFinExamDuration')) {
-        document.getElementById('inputFinExamDuration').value = String(savedFinDur);
+        document.getElementById('inputFinExamDuration').value = savedFinDur ? String(savedFinDur) : '';
       }
 
       // Smart Defaults for Key Assignment (Assign & Due Dates)
