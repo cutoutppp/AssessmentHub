@@ -7,8 +7,14 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>ระบบส่งผลการเรียน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://docs.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+  <link rel="preconnect" href="https://teacherhub-backend-324760995892.asia-southeast1.run.app" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: 'Noto Sans Thai', sans-serif; background-color: #f1f5f9; color: #0f172a; }
@@ -779,6 +785,16 @@
           ].includes(action);
           const MAX_RETRIES = isWriteAction ? 1 : 3;
 
+          // ถ้าระบบกำลังขอ SESSION_TOKEN จาก GAS เบื้องหลังอยู่ ให้รอรับ Token ก่อนส่งคำสั่งแก้ไขข้อมูล
+          if (isWriteAction && action !== 'verify-pin' && !SESSION_TOKEN && PENDING_TOKEN_PROMISE) {
+            try {
+              await Promise.race([
+                PENDING_TOKEN_PROMISE,
+                new Promise(r => setTimeout(r, 4000))
+              ]);
+            } catch (e) {}
+          }
+
           // แนบ session token และข้อมูลผู้ส่งเสมอ
           if (!params.token && SESSION_TOKEN) {
             params.token = SESSION_TOKEN;
@@ -871,6 +887,7 @@
 
     let CURRENT_TEACHER = '';
     let IS_ADMIN = false;
+    let PENDING_TOKEN_PROMISE = null;
     const SUPERUSER_TEACCODES = ['444', '440', '242', '842', '234'];
     const SUPERUSER_USERIDS = [];
     function checkIsSuperuser(userObj, idCard) {
@@ -892,6 +909,227 @@
     let SELECTED_TASK_ROWS = new Set();
     let CURRENT_TASK_FILTER = 'all'; // 'all', 'no_task', 'unregistered', 'registered'
     let ACTIVE_TASK_ROW_ID = null; 
+
+    // ==========================================
+    // ⚡ FAST PERSISTENT CACHE & DIRECT SHEET READER (สำหรับมือถือ)
+    // ==========================================
+    function readFastCache(key) {
+      try {
+        const sVal = sessionStorage.getItem(key);
+        if (sVal) return JSON.parse(sVal);
+      } catch (e) {}
+      try {
+        const lVal = localStorage.getItem(key);
+        if (lVal) return JSON.parse(lVal);
+      } catch (e) {}
+      return null;
+    }
+
+    function writeFastCache(key, data) {
+      const str = JSON.stringify(data || []);
+      try { sessionStorage.setItem(key, str); } catch (e) {}
+      try { localStorage.setItem(key, str); } catch (e) {}
+    }
+
+    let _DIRECT_SHEET_CACHE = null;
+    let _DIRECT_SHEET_TS = 0;
+    let _DIRECT_SHEET_PROMISE = null;
+
+    function cleanCellStr(v) {
+      if (v === null || v === undefined) return '';
+      return String(v).trim().replace(/\.0+$/, '');
+    }
+
+    function fetchDirectSheetRows(forceRefresh = false) {
+      const now = Date.now();
+      if (!forceRefresh && _DIRECT_SHEET_CACHE && (now - _DIRECT_SHEET_TS < 30000)) {
+        return Promise.resolve(_DIRECT_SHEET_CACHE);
+      }
+      if (!forceRefresh && _DIRECT_SHEET_PROMISE) {
+        return _DIRECT_SHEET_PROMISE;
+      }
+      const sheetId = '1vfAjcf9whhVHVu_u4d-6yxyFNKIiTQ715Stz-yfRA4M';
+      const gid = '2143121488';
+      const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=tsv&gid=${gid}`;
+      _DIRECT_SHEET_PROMISE = fetch(url, { method: 'GET', credentials: 'omit' })
+        .then(res => {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text();
+        })
+        .then(text => {
+          const lines = text.split(/\r?\n/);
+          if (lines.length < 1) throw new Error('Empty sheet');
+          const headers = lines[0].split('\t').map(cleanCellStr);
+          const parsed = { headers, lines, ts: Date.now() };
+          _DIRECT_SHEET_CACHE = parsed;
+          _DIRECT_SHEET_TS = Date.now();
+          _DIRECT_SHEET_PROMISE = null;
+          return parsed;
+        })
+        .catch(err => {
+          _DIRECT_SHEET_PROMISE = null;
+          throw err;
+        });
+      return _DIRECT_SHEET_PROMISE;
+    }
+
+    async function getDirectTasks(mode, keyword) {
+      const cleanKey = String(keyword || '').trim().toLowerCase();
+      if (!cleanKey) return [];
+      const { headers, lines } = await fetchDirectSheetRows();
+      const idxTeacher = headers.indexOf('ครูผู้สอน'),
+            idxStatus = headers.indexOf('สถานะระบบ'),
+            idxStuId = headers.indexOf('เลขประจำตัว'),
+            idxStuName = headers.indexOf('ชื่อ-นามสกุล'),
+            idxSubjCode = headers.indexOf('รหัสวิชา'),
+            idxSubjName = headers.indexOf('ชื่อวิชา'),
+            idxGrade = headers.indexOf('ชั้น'),
+            idxRoom = headers.indexOf('ห้อง'),
+            idxOldScore = headers.indexOf('คะแนนเดิม'),
+            idxOldGrade = headers.indexOf('ผลการเรียนเดิม'),
+            idxSpecialId = headers.indexOf('เลขเฉพาะ'),
+            idxPendingTask = headers.indexOf('งานค้าง'),
+            idxTaskDate = headers.indexOf('วันที่รับงาน');
+      if (idxStuId === -1 || idxTeacher === -1) throw new Error('Header mismatch');
+
+      let reqTeacherName = '';
+      if (mode === 'teacher') {
+        reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
+      }
+      const tasks = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const cells = lines[i].split('\t');
+        const stuIdRaw = cleanCellStr(cells[idxStuId]);
+        if (!stuIdRaw) continue;
+        const rowStatus = (idxStatus !== -1 ? cleanCellStr(cells[idxStatus]) : '') || 'รอแก้ไข';
+        if (rowStatus !== 'รอแก้ไข') continue;
+
+        let match = false;
+        if (mode === 'teacher') {
+          const rowTeacher = cleanCellStr(cells[idxTeacher]).toLowerCase();
+          if (rowTeacher.includes(reqTeacherName)) match = true;
+        } else if (mode === 'student') {
+          const sId = stuIdRaw.toLowerCase();
+          const sName = (idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '').toLowerCase();
+          if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true;
+        }
+        if (match) {
+          const taskDate = idxTaskDate !== -1 ? cleanCellStr(cells[idxTaskDate]) : '';
+          tasks.push({
+            rowId: i + 1,
+            subjCode: idxSubjCode !== -1 ? cleanCellStr(cells[idxSubjCode]) : '',
+            subjName: idxSubjName !== -1 ? cleanCellStr(cells[idxSubjName]) : '',
+            stuId: stuIdRaw,
+            stuName: idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '',
+            gradeRoom: (idxGrade !== -1 ? cleanCellStr(cells[idxGrade]) : '') + '/' + (idxRoom !== -1 ? cleanCellStr(cells[idxRoom]) : ''),
+            oldScore: idxOldScore !== -1 ? cleanCellStr(cells[idxOldScore]) : '',
+            oldGrade: idxOldGrade !== -1 ? cleanCellStr(cells[idxOldGrade]) : '',
+            teacherName: cleanCellStr(cells[idxTeacher]),
+            specialId: idxSpecialId !== -1 ? cleanCellStr(cells[idxSpecialId]) : '',
+            pendingTask: idxPendingTask !== -1 ? cleanCellStr(cells[idxPendingTask]) : '',
+            taskDate: taskDate,
+            isRegistered: !!taskDate
+          });
+        }
+      }
+      return tasks;
+    }
+
+    async function getDirectHistory(mode, keyword) {
+      const cleanKey = String(keyword || '').trim().toLowerCase();
+      if (!cleanKey) return [];
+      const { headers, lines } = await fetchDirectSheetRows();
+      const idxTeacher = headers.indexOf('ครูผู้สอน'),
+            idxStatus = headers.indexOf('สถานะระบบ'),
+            idxStuId = headers.indexOf('เลขประจำตัว'),
+            idxStuName = headers.indexOf('ชื่อ-นามสกุล'),
+            idxSubjCode = headers.indexOf('รหัสวิชา'),
+            idxSubjName = headers.indexOf('ชื่อวิชา'),
+            idxGrade = headers.indexOf('ชั้น'),
+            idxRoom = headers.indexOf('ห้อง'),
+            idxOldGrade = headers.indexOf('ผลการเรียนเดิม'),
+            idxNewGrade = headers.indexOf('ผลการเรียนใหม่'),
+            idxDate = headers.indexOf('วันที่แก้ไข'),
+            idxPendingTask = headers.indexOf('งานค้าง');
+      if (idxStuId === -1 || idxTeacher === -1) throw new Error('Header mismatch');
+
+      let reqTeacherName = '';
+      if (mode === 'teacher') {
+        reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
+      }
+      const history = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const cells = lines[i].split('\t');
+        const stuIdRaw = cleanCellStr(cells[idxStuId]);
+        if (!stuIdRaw) continue;
+        const rowStatus = (idxStatus !== -1 ? cleanCellStr(cells[idxStatus]) : '') || 'รอแก้ไข';
+        if (rowStatus === 'รอแก้ไข' || rowStatus === '') continue;
+
+        let match = false;
+        if (mode === 'teacher') {
+          const rowTeacher = cleanCellStr(cells[idxTeacher]).toLowerCase();
+          if (rowTeacher.includes(reqTeacherName)) match = true;
+        } else if (mode === 'student') {
+          const sId = stuIdRaw.toLowerCase();
+          const sName = (idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '').toLowerCase();
+          if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true;
+        }
+        if (match) {
+          history.push({
+            subjCode: idxSubjCode !== -1 ? cleanCellStr(cells[idxSubjCode]) : '',
+            subjName: idxSubjName !== -1 ? cleanCellStr(cells[idxSubjName]) : '',
+            stuId: stuIdRaw,
+            stuName: idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '',
+            gradeRoom: (idxGrade !== -1 ? cleanCellStr(cells[idxGrade]) : '') + '/' + (idxRoom !== -1 ? cleanCellStr(cells[idxRoom]) : ''),
+            oldGrade: idxOldGrade !== -1 ? cleanCellStr(cells[idxOldGrade]) : '',
+            newGrade: idxNewGrade !== -1 ? cleanCellStr(cells[idxNewGrade]) : '',
+            teacherName: cleanCellStr(cells[idxTeacher]),
+            status: rowStatus,
+            date: (idxDate !== -1 && cleanCellStr(cells[idxDate])) ? cleanCellStr(cells[idxDate]) : '-',
+            pendingTask: idxPendingTask !== -1 ? cleanCellStr(cells[idxPendingTask]) : ''
+          });
+        }
+      }
+      return history.reverse();
+    }
+
+    async function getDirectApprovals() {
+      const { headers, lines } = await fetchDirectSheetRows();
+      const idxStatus = headers.indexOf('สถานะระบบ'),
+            idxStuId = headers.indexOf('เลขประจำตัว'),
+            idxSubjCode = headers.indexOf('รหัสวิชา'),
+            idxSubjName = headers.indexOf('ชื่อวิชา'),
+            idxStuName = headers.indexOf('ชื่อ-นามสกุล'),
+            idxGrade = headers.indexOf('ชั้น'),
+            idxRoom = headers.indexOf('ห้อง'),
+            idxOldGrade = headers.indexOf('ผลการเรียนเดิม'),
+            idxNewGrade = headers.indexOf('ผลการเรียนใหม่'),
+            idxTeacher = headers.indexOf('ครูผู้สอน');
+      if (idxStuId === -1 || idxStatus === -1) throw new Error('Header mismatch');
+      const tasks = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const cells = lines[i].split('\t');
+        const stuId = cleanCellStr(cells[idxStuId]);
+        if (!stuId) continue;
+        if (cleanCellStr(cells[idxStatus]) === 'รออนุมัติ') {
+          tasks.push({
+            rowId: i + 1,
+            subjCode: idxSubjCode !== -1 ? cleanCellStr(cells[idxSubjCode]) : '',
+            subjName: idxSubjName !== -1 ? cleanCellStr(cells[idxSubjName]) : '',
+            stuId,
+            stuName: idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '',
+            gradeRoom: (idxGrade !== -1 ? cleanCellStr(cells[idxGrade]) : '') + '/' + (idxRoom !== -1 ? cleanCellStr(cells[idxRoom]) : ''),
+            oldGrade: idxOldGrade !== -1 ? cleanCellStr(cells[idxOldGrade]) : '',
+            newGrade: idxNewGrade !== -1 ? cleanCellStr(cells[idxNewGrade]) : '',
+            teacherName: idxTeacher !== -1 ? cleanCellStr(cells[idxTeacher]) : ''
+          });
+        }
+      }
+      return tasks;
+    }
 
     function goToIndex(e) {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -919,7 +1157,14 @@
       return false;
     }
 
-    window.onload = async function() {
+    let _teacherAppInitialized = false;
+    async function initTeacherApp() {
+      if (_teacherAppInitialized) return;
+      _teacherAppInitialized = true;
+
+      // ⚡ ดึงข้อมูลตารางล่วงหน้าทันทีตั้งแต่วินาทีแรกที่เปิดหน้าเว็บ (ไม่บล็อกหน้าจอ)
+      fetchDirectSheetRows().catch(() => {});
+
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run.withSuccessHandler(url => {
           if (url) {
@@ -990,51 +1235,80 @@
         document.getElementById('idCardInput').value = String(lastId).replace(/[^0-9]/g, '').slice(0, 13);
       }
       showLoginStep('idCardStep');
-    };
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTeacherApp);
+    } else {
+      initTeacherApp();
+    }
+    window.onload = initTeacherApp;
 
     async function verifyTeacherPin(idCard, pin) {
       const cleanId = String(idCard || '').replace(/[-\s]/g, '').trim();
       const cleanPin = String(pin || '').trim();
+      const cloudRunUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login';
 
-      // 1. เรียกผ่าน backend GAS เพื่อตรวจสอบ PIN และรับ Session Token สำหรับสิทธิ์บันทึก/แก้ไข
-      try {
-        const gasRes = await callBackend('verify-pin', { idCard: cleanId, pin: cleanPin });
-        if (gasRes && gasRes.success) {
-          if (gasRes.token) {
+      // ⚡ ยิงตรวจสอบควบคู่กัน (Parallel Race):
+      // 1) Cloud Run ตรง (เร็วมาก ~1.2 วินาที บนมือถือ) เพื่อให้เข้าหน้าแดชบอร์ดได้ทันที
+      // 2) GAS verify-pin เบื้องหลังเพื่อรับ SESSION_TOKEN สำหรับสิทธิ์บันทึกเกรด
+      const gasPromise = callBackend('verify-pin', { idCard: cleanId, pin: cleanPin })
+        .then(gasRes => {
+          if (gasRes && gasRes.success && gasRes.token) {
             SESSION_TOKEN = gasRes.token;
-            try { localStorage.setItem('teac_token', gasRes.token); } catch(e) {}
+            try {
+              localStorage.setItem('teac_token', gasRes.token);
+              localStorage.setItem('teac_session_v3', JSON.stringify({
+                id: cleanId,
+                token: gasRes.token,
+                expiry: Date.now() + 6 * 3600 * 1000
+              }));
+            } catch (e) {}
           }
           return gasRes;
-        }
-        if (gasRes && gasRes.message) return gasRes;
-      } catch (gasErr) {
-        console.warn('[verifyTeacherPin] GAS verify-pin failed, trying direct Cloud Run:', gasErr);
+        })
+        .catch(err => {
+          console.warn('[verifyTeacherPin] GAS verify-pin background error:', err);
+          return null;
+        });
+
+      PENDING_TOKEN_PROMISE = gasPromise;
+
+      const cloudRunPromise = fetch(cloudRunUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idCard: cleanId, pin: cleanPin })
+      })
+        .then(async res => {
+          const result = await res.json().catch(() => null);
+          if (res.ok && result && result.teacher) {
+            const t = result.teacher;
+            const tName = t.name || ((t.prefix || '') + (t.firstname || '') + ' ' + (t.lastname || '')).trim();
+            const isAdmin = checkIsSuperuser(t, cleanId);
+            return { success: true, name: tName, isAdmin, teacher: t };
+          }
+          if (result && result.detail) {
+            if (result.detail === 'FIRST_TIME_LOGIN') {
+              return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };
+            }
+            return { success: false, message: result.detail === 'Incorrect username or password' ? 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' : result.detail };
+          }
+          return null;
+        })
+        .catch(err => {
+          console.warn('[verifyTeacherPin] Direct Cloud Run fetch error:', err);
+          return null;
+        });
+
+      // รอผลลัพธ์จากฝั่งที่ตอบกลับมาก่อน (ปกติ Cloud Run จะตอบใน ~1.2 วินาที)
+      const firstResult = await Promise.race([cloudRunPromise, gasPromise]);
+      if (firstResult && typeof firstResult.success === 'boolean') {
+        return firstResult;
       }
 
-      // 2. สำรอง: เรียกผ่าน Cloud Run API ตรงหาก GAS ไม่ตอบสนอง
-      const cloudRunUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/auth/login';
-      try {
-        const res = await fetch(cloudRunUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idCard: cleanId, pin: cleanPin })
-        });
-        const result = await res.json().catch(() => null);
-        if (res.ok && result && result.teacher) {
-          const t = result.teacher;
-          const tName = t.name || ((t.prefix || '') + (t.firstname || '') + ' ' + (t.lastname || '')).trim();
-          const isAdmin = checkIsSuperuser(t, cleanId);
-          return { success: true, name: tName, isAdmin, teacher: t };
-        }
-        if (result && result.detail) {
-          if (result.detail === 'FIRST_TIME_LOGIN') {
-            return { success: false, message: 'คุณต้องตั้งรหัสผ่านใหม่ก่อนเข้าใช้งาน กรุณาไปตั้งรหัสผ่านผ่านระบบ AssessmentHub หลัก' };
-          }
-          return { success: false, message: result.detail === 'Incorrect username or password' ? 'รหัส PIN ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง' : result.detail };
-        }
-      } catch (err) {
-        console.warn('[verifyTeacherPin] Direct Cloud Run fetch failed:', err);
-      }
+      const [crRes, gasRes] = await Promise.all([cloudRunPromise, gasPromise]);
+      if (crRes && typeof crRes.success === 'boolean') return crRes;
+      if (gasRes && typeof gasRes.success === 'boolean') return gasRes;
 
       return { success: false, message: 'ไม่สามารถตรวจสอบรหัสผ่านได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง' };
     }
@@ -1060,15 +1334,7 @@
         return;
       }
 
-      if (cachedName) {
-        // ⚡ เข้าสู่แดชบอร์ดทันทีใน 0.001 วินาที พร้อมแสดง Skeleton Loader
-        CURRENT_TEACHER = cachedName;
-        IS_ADMIN = cachedAdmin || checkIsSuperuser(null, cred.id);
-        document.getElementById('loginScreen').classList.add('hidden');
-        setupDashboard();
-      } else {
-        showLoader('กำลังเข้าสู่ระบบ...');
-      }
+      showLoader('กำลังเข้าสู่ระบบ...');
 
       if (!cred.pin) {
         hideLoader();
@@ -1082,6 +1348,7 @@
         const res = await verifyTeacherPin(cred.id, cred.pin);
         if (res.success) {
           CURRENT_TEACHER = res.name;
+          CURRENT_TEACHER_NAME = res.name;
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, cred.id);
           localStorage.setItem('last_teacher_name', res.name);
           localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
@@ -1137,7 +1404,8 @@
       try { localStorage.setItem('last_teacher_id', idCard); } catch(e) {}
       
       // ⚡ ข้ามไปหน้ากรอก PIN ทันทีใน 0 วินาที โดยไม่ต้องรอเช็คเซิร์ฟเวอร์
-      // เพราะระบบ verify-pin จะตรวจสอบทั้งเลขบัตรและรหัส PIN พร้อมกันในการกดยืนยันครั้งเดียว
+      // พร้อมเตรียมดึงข้อมูลชีตไว้ล่วงหน้าในหน่วยความจำระหว่างที่ครูกำลังกดรหัส PIN
+      fetchDirectSheetRows().catch(() => {});
       showLoginStep('enterPinStep'); 
       const pinEl = document.getElementById('pinInput');
       if (pinEl) {
@@ -1157,7 +1425,7 @@
           // 🛡️ จัดเก็บ Session แบบ Token-based พร้อม Expiry เพื่อป้องกัน Plaintext PIN ตกค้าง
           const sessionObj = {
             id: TEMP_IDCARD,
-            token: res.token || SESSION_TOKEN,
+            token: res.token || SESSION_TOKEN || 'pending_gas_token',
             expiry: Date.now() + 6 * 3600 * 1000
           };
           localStorage.setItem('teac_session_v3', JSON.stringify(sessionObj));
@@ -1166,6 +1434,7 @@
             localStorage.setItem('teac_token', res.token);
           }
           CURRENT_TEACHER = res.name; 
+          CURRENT_TEACHER_NAME = res.name;
           IS_ADMIN = res.isAdmin || checkIsSuperuser(null, TEMP_IDCARD); 
           localStorage.setItem('last_teacher_name', res.name);
           localStorage.setItem('last_teacher_is_admin', IS_ADMIN ? 'true' : 'false');
@@ -1205,7 +1474,7 @@
          document.getElementById('roleBadge').innerText = 'Superuser Workspace'; 
          document.getElementById('roleBadge').classList.replace('text-blue-500', 'text-indigo-600'); 
          document.getElementById('adminControls').classList.remove('hidden'); 
-         setTimeout(() => loadTeacherDropdownData(), 1500);
+         setTimeout(() => loadTeacherDropdownData(), 2500);
       }
       document.getElementById('mainScreen').classList.remove('hidden');
       switchTab('worklist'); 
@@ -1213,10 +1482,9 @@
 
     async function loadTeacherDropdownData() {
        try {
-         const cached = sessionStorage.getItem('teachers_dropdown_cache');
-         if (cached) {
-           const list = JSON.parse(cached);
-           let html = ''; if(list) list.forEach(t => html += `<option value="${escapeHtml(t)}">`);
+         const cached = readFastCache('teachers_dropdown_cache');
+         if (Array.isArray(cached) && cached.length > 0) {
+           let html = ''; cached.forEach(t => html += `<option value="${escapeHtml(t)}">`);
            const el = document.getElementById('teacherDatalist');
            if (el) el.innerHTML = html;
            return;
@@ -1226,7 +1494,7 @@
          const el = document.getElementById('teacherDatalist');
          if (el) el.innerHTML = html;
          if (list && list.length > 0) {
-           sessionStorage.setItem('teachers_dropdown_cache', JSON.stringify(list));
+           writeFastCache('teachers_dropdown_cache', list);
          }
        } catch(e) {}
     }
@@ -1278,28 +1546,36 @@
       const cacheKey = `tasks_cache_${mode}_${keyword}`;
       let hasCached = false;
 
-      // ⚡ โหลดจาก Cache ทันทีใน 0.05 วินาที เพื่อให้ผู้ใช้เห็นข้อมูลทันทีโดยไม่ต้องรอจอหมุน
-      try {
-        const cachedStr = sessionStorage.getItem(cacheKey);
-        if (cachedStr) {
-          const cachedData = JSON.parse(cachedStr);
-          if (Array.isArray(cachedData)) {
-            renderTasks(cachedData);
-            hasCached = true;
-          }
-        }
-      } catch(e) {}
-
-      // ⚡ ถ้ายังไม่มี Cache ให้แสดง Skeleton Loader สวยงามทันที (ไม่บล็อกหน้าจอด้วย Modal หมุน)
-      if (!hasCached) {
+      // ⚡ 1. โหลดจาก Persistent Cache (localStorage / sessionStorage) ทันทีใน 0.01 วินาที
+      const cachedData = readFastCache(cacheKey);
+      if (Array.isArray(cachedData)) {
+        renderTasks(cachedData);
+        hasCached = true;
+      } else {
         renderTaskSkeleton();
       }
-      
+
+      let gasResolved = false;
+
+      // ⚡ 2. ดึงทางด่วน Direct Sheet TSV ควบคู่กับ GAS (ได้ข้อมูลใน ~0.5-1 วินาที แม้เข้าครั้งแรกบนมือถือ)
+      const directPromise = getDirectTasks(mode, keyword)
+        .then(directTasks => {
+          if (!gasResolved && Array.isArray(directTasks)) {
+            renderTasks(directTasks, hasCached);
+            hasCached = true;
+            writeFastCache(cacheKey, directTasks);
+          }
+          return directTasks;
+        })
+        .catch(() => null);
+
       try {
          const tasks = await callBackend('tasks', { mode, keyword });
+         gasResolved = true;
          renderTasks(tasks, hasCached);
-         try { sessionStorage.setItem(cacheKey, JSON.stringify(tasks || [])); } catch(e) {}
+         writeFastCache(cacheKey, tasks || []);
       } catch (e) { 
+        await directPromise;
         hideLoader(); 
         if (!hasCached) {
           showDialog('ข้อผิดพลาด', 'เชื่อมต่อฐานข้อมูลไม่ได้: ' + e.message, 'error'); 
@@ -1341,16 +1617,27 @@
         let keyword = document.getElementById('adminSearchBox') ? document.getElementById('adminSearchBox').value.trim() : '';
         if (!keyword) { mode = 'teacher'; keyword = CURRENT_TEACHER; }
         const cacheKey = `tasks_cache_${mode}_${keyword}`;
-        sessionStorage.setItem(cacheKey, JSON.stringify(ALL_TASKS || []));
+        writeFastCache(cacheKey, ALL_TASKS || []);
+        _DIRECT_SHEET_CACHE = null;
       } catch(e) {}
     }
 
     function clearAllDataCaches() {
+      _DIRECT_SHEET_CACHE = null;
+      _DIRECT_SHEET_TS = 0;
       try {
         for (let i = sessionStorage.length - 1; i >= 0; i--) {
           const k = sessionStorage.key(i);
           if (k && (k.startsWith('tasks_cache_') || k.startsWith('history_cache_') || k === 'approvals_cache')) {
             sessionStorage.removeItem(k);
+          }
+        }
+      } catch(e) {}
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && (k.startsWith('tasks_cache_') || k.startsWith('history_cache_') || k === 'approvals_cache')) {
+            localStorage.removeItem(k);
           }
         }
       } catch(e) {}
@@ -1642,6 +1929,7 @@
           saveTasksToCache();
 
           // ลบ cache ประวัติและรายการรออนุมัติ เพื่อให้เวลาสลับไปดูประวัติหรือหน้าอนุมัติจะดึงข้อมูลใหม่ทันที
+          _DIRECT_SHEET_CACHE = null;
           try {
             sessionStorage.removeItem('approvals_cache');
             for (let i = sessionStorage.length - 1; i >= 0; i--) {
@@ -1649,8 +1937,16 @@
               if (k && k.startsWith('history_cache_')) sessionStorage.removeItem(k);
             }
           } catch(e) {}
+          try {
+            localStorage.removeItem('approvals_cache');
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+              const k = localStorage.key(i);
+              if (k && k.startsWith('history_cache_')) localStorage.removeItem(k);
+            }
+          } catch(e) {}
 
           await showDialog('สำเร็จ', `ส่งผลการเรียนสำเร็จทั้งหมด ${count} รายการ เรียบร้อยแล้ว`, 'success'); 
+          if (window.showSurveyNag) setTimeout(window.showSurveyNag, 800);
         } else {
           showDialog('เกิดข้อผิดพลาด', (res && res.message) || 'ส่งผลไม่สำเร็จ', 'error');
         }
@@ -2141,26 +2437,33 @@
 
       const cacheKey = 'approvals_cache';
       let hasCached = false;
-      try {
-        const cachedStr = sessionStorage.getItem(cacheKey);
-        if (cachedStr) {
-          const cachedData = JSON.parse(cachedStr);
-          if (Array.isArray(cachedData)) {
-            renderApprovals(cachedData);
-            hasCached = true;
-          }
-        }
-      } catch(e) {}
-
-      if (!hasCached) {
+      const cachedData = readFastCache(cacheKey);
+      if (Array.isArray(cachedData)) {
+        renderApprovals(cachedData);
+        hasCached = true;
+      } else {
         renderApprovalSkeleton();
       }
 
+      let gasResolved = false;
+      const directPromise = getDirectApprovals()
+        .then(directTasks => {
+          if (!gasResolved && Array.isArray(directTasks)) {
+            renderApprovals(directTasks);
+            hasCached = true;
+            writeFastCache(cacheKey, directTasks);
+          }
+          return directTasks;
+        })
+        .catch(() => null);
+
       try {
         const tasks = await callBackend('approvals');
+        gasResolved = true;
         renderApprovals(tasks);
-        try { sessionStorage.setItem(cacheKey, JSON.stringify(tasks || [])); } catch(e) {}
+        writeFastCache(cacheKey, tasks || []);
       } catch (e) {
+        await directPromise;
         hideLoader();
         if (!hasCached) {
           showDialog('พบปัญหา', 'ไม่สามารถโหลดรายการรออนุมัติได้: ' + e.message, 'error');
@@ -2511,26 +2814,33 @@
 
       const cacheKey = `history_cache_${mode}_${keyword}`;
       let hasCached = false;
-      try {
-        const cachedStr = sessionStorage.getItem(cacheKey);
-        if (cachedStr) {
-          const cachedData = JSON.parse(cachedStr);
-          if (Array.isArray(cachedData)) {
-            renderHistory(cachedData);
-            hasCached = true;
-          }
-        }
-      } catch(e) {}
-
-      if (!hasCached) {
+      const cachedData = readFastCache(cacheKey);
+      if (Array.isArray(cachedData)) {
+        renderHistory(cachedData);
+        hasCached = true;
+      } else {
         renderHistorySkeleton();
       }
 
+      let gasResolved = false;
+      const directPromise = getDirectHistory(mode, keyword)
+        .then(directData => {
+          if (!gasResolved && Array.isArray(directData)) {
+            renderHistory(directData);
+            hasCached = true;
+            writeFastCache(cacheKey, directData);
+          }
+          return directData;
+        })
+        .catch(() => null);
+
       try {
         const data = await callBackend('history', { mode, keyword });
+        gasResolved = true;
         renderHistory(data);
-        try { sessionStorage.setItem(cacheKey, JSON.stringify(data || [])); } catch(e) {}
+        writeFastCache(cacheKey, data || []);
       } catch (e) {
+        await directPromise;
         hideLoader();
         if (!hasCached) {
           showDialog('พบปัญหา', 'ไม่สามารถโหลดประวัติได้: ' + e.message, 'error');
@@ -2646,23 +2956,45 @@
     }
 
     // ==========================================
-    // 🤖 ระบบดูคิวซิงค์ SGS, รายงานผล SGS_Log และคัดลอก Bookmarklet สำหรับมือถือ
+    // 🤖 ระบบสรุปรายงานผลการซิงค์ SGS สำหรับส่งกลุ่ม LINE
     // ==========================================
-    function getSgsBookmarkletCode() {
-      const scriptUrl = 'https://cutoutppp.github.io/AssessmentHub/Academic_report_correction/sgs_grade_sync.js';
-      return `javascript:(function(){window.__NEXTSGS_BOOKMARKLET__=true;if(window.openNextSgsGradeSyncModal){window.openNextSgsGradeSyncModal();return;}var s=document.createElement('script');s.src='${scriptUrl}?t='+Date.now();document.body.appendChild(s);})();`;
-    }
+    function copySgsLogSummaryForLine() {
+      const logs = (CURRENT_SGS_DASH_DATA && CURRENT_SGS_DASH_DATA.recentLogs) || [];
+      const successLogs = logs.filter(l => l.status === 'สำเร็จ');
+      if (successLogs.length === 0) {
+        showModal('info', 'ยังไม่มีรายการที่ซิงค์สำเร็จ', 'ยังไม่พบประวัติการซิงค์เกรดที่สำเร็จในระบบ SGS_Log เพื่อนำมาทำรายงานสรุปครับ');
+        return;
+      }
 
-    function copyMobileSgsBookmarklet() {
-      const code = getSgsBookmarkletCode();
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + ' น.';
+
+      let text = `📊 สรุปผลการซิงค์แก้ผลการเรียน (SGS)\n`;
+      text += `🏫 โรงเรียนพัฒนานิคม\n`;
+      text += `🗓️ วันที่ ${dateStr} เวลา ${timeStr}\n`;
+      text += `━━━━━━━━━━━━━━━━━━\n`;
+      text += `✅ ซิงค์สำเร็จ: ${successLogs.length} รายการ\n`;
+      text += `━━━━━━━━━━━━━━━━━━\n`;
+      text += `📝 รายละเอียดนักเรียนที่แก้ไขสำเร็จ:\n`;
+
+      successLogs.forEach((item, i) => {
+        text += `${i + 1}. [${item.studentId || item.stuId}] ${item.studentName || item.stuName} (${item.gradeRoom || '-'})\n`;
+        text += `   • วิชา: ${item.subjectCode || item.subjCode} ${item.subjectName || item.subjName || ''} (${item.yearTerm || '-'})\n`;
+        text += `   • ผลการเรียน: ${item.oldGrade} ➡️ ${item.newGrade} (รีเช็ค: ${item.verifiedGrade || item.newGrade})\n`;
+      });
+
+      text += `━━━━━━━━━━━━━━━━━━\n`;
+      text += `🔒 อัปเดตสถานะ "ซิงค์แล้ว" ในระบบ Google Sheets เรียบร้อย`;
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(() => {
-          showModal('success', 'คัดลอกโค้ดบุ๊กมาร์กสำเร็จ!', 'วิธีใช้บนมือถือ/iPad:\n1. บันทึกหน้าเว็บใดก็ได้เป็นบุ๊กมาร์ก ตั้งชื่อว่า "ซิงค์เกรด SGS"\n2. กดแก้ไขบุ๊กมาร์กนั้น แล้ววางโค้ดที่คัดลอกนี้ลงในช่อง URL\n3. เวลาเข้าเว็บ SGS บนมือถือ พิมพ์ชื่อบุ๊กมาร์ก "ซิงค์เกรด SGS" ที่ช่อง URL ด้านบน เพื่อเปิดแผงซิงค์และรีเช็คอัตโนมัติได้ทันที!');
+        navigator.clipboard.writeText(text).then(() => {
+          showModal('success', 'คัดลอกสรุปส่ง LINE สำเร็จแล้ว!', 'คัดลอกข้อความสรุปรายงาน ' + successLogs.length + ' รายการ เรียบร้อยแล้ว สามารถนำไปกดวาง (Paste) ในกลุ่ม LINE ได้ทันทีครับ');
         }).catch(() => {
-          prompt('คัดลอกโค้ดด้านล่างนี้ไปใส่ในช่อง URL ของบุ๊กมาร์กบนมือถือ:', code);
+          prompt('คัดลอกข้อความด้านล่างนี้สำหรับส่ง LINE:', text);
         });
       } else {
-        prompt('คัดลอกโค้ดด้านล่างนี้ไปใส่ในช่อง URL ของบุ๊กมาร์กบนมือถือ:', code);
+        prompt('คัดลอกข้อความด้านล่างนี้สำหรับส่ง LINE:', text);
       }
     }
 
@@ -2746,10 +3078,11 @@
                 <p class="text-xs text-indigo-200 mt-0.5">ตรวจสอบรายการ "พร้อมทำงาน" และดูรายงานความสำเร็จ/สาเหตุที่ผิดพลาดจากทุกอุปกรณ์</p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
-                <a id="sgsDragBookmarkletLink" href="#" onclick="event.preventDefault(); copyMobileSgsBookmarklet();" class="bg-amber-400 hover:bg-amber-300 text-slate-900 px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 cursor-grab no-underline" title="บนคอม: ลากปุ่มนี้ไปวางบนแถบบุ๊กมาร์กด้านบน | บนมือถือ: แตะเพื่อคัดลอกโค้ด">
-                  <span>🤖 ซิงค์เกรด SGS (ลากวางบุ๊กมาร์ก / แตะคัดลอก)</span>
-                </a>
-                <a href="https://sgs.bopp-obec.info/sgs/TblTranscripts/Edit-TblTranscripts-TableAll.aspx" target="_blank" rel="noopener" class="bg-emerald-500 hover:bg-emerald-400 text-white px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 no-underline">
+                <button type="button" onclick="copySgsLogSummaryForLine()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 cursor-pointer" title="คัดลอกสรุปรายการที่ซิงค์สำเร็จสำหรับส่งในกลุ่ม LINE">
+                  <i class="material-icons-round text-sm">content_copy</i>
+                  <span>📋 คัดลอกสรุปส่ง LINE</span>
+                </button>
+                <a href="https://sgs.bopp-obec.info/sgs/TblTranscripts/Edit-TblTranscripts-TableAll.aspx" target="_blank" rel="noopener" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl font-black text-xs shadow-sm flex items-center gap-1.5 no-underline">
                   <i class="material-icons-round text-sm">open_in_new</i>
                   <span>เปิดหน้าแก้ผลการเรียน SGS</span>
                 </a>
@@ -2791,8 +3124,6 @@
           </div>
         `;
         document.body.appendChild(modal);
-        const dragLink = document.getElementById('sgsDragBookmarkletLink');
-        if (dragLink) dragLink.href = getSgsBookmarkletCode();
       } else {
         modal.classList.remove('hidden');
       }

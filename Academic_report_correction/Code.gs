@@ -974,7 +974,7 @@ function getTasksForAdmin(mode, keyword) {
     }
   }
   try {
-    putCacheChunked_(cacheKey, JSON.stringify(tasks), 300);
+    putCacheChunked_(cacheKey, JSON.stringify(tasks), 1800);
   } catch(e) {}
   return tasks;
 }
@@ -984,7 +984,7 @@ function getHistoryForAdmin(mode, keyword) {
   let cleanKey = String(keyword || '').trim().toLowerCase();
   if(!cleanKey) return [];
 
-  // ⚡ High-Speed Server Cache (5 mins)
+  // ⚡ High-Speed Server Cache (30 mins, invalidated on edit/submit)
   var ver = getTaskCacheVersion_();
   var safeKey = encodeURIComponent(cleanKey).replace(/%/g, '_').slice(0, 40);
   var cacheKey = 'hst_' + ver + '_' + (mode || 't') + '_' + safeKey;
@@ -1059,7 +1059,11 @@ function getHistoryForAdmin(mode, keyword) {
       }
     }
   }
-  return history.reverse(); // เอาข้อมูลล่าสุดขึ้นข้างบน
+  const result = history.reverse(); // เอาข้อมูลล่าสุดขึ้นข้างบน
+  try {
+    putCacheChunked_(cacheKey, JSON.stringify(result), 1800);
+  } catch(e) {}
+  return result;
 }
 
 function submitGrades(payload) {
