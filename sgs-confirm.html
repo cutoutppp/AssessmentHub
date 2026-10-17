@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบยืนยันสัดส่วนคะแนน SGS (9 ช่อง) ภาคเรียนที่ 2/2569 - รร.พัฒนานิคม</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Google Fonts: Prompt & Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Remix Icon -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Prompt', 'sans-serif'],
+            sarabun: ['Sarabun', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Courses Data Offline Bundle -->
+  <script src="assessment-plan/data/courses_2_2569.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Announcement Bar -->
+  <aside aria-label="แถบแจ้งเตือนด่วน" class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white text-xs py-2 px-4 border-b border-indigo-700/50 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 bg-amber-400 text-slate-950 font-extrabold px-2 py-0.5 rounded text-[11px] animate-pulse">
+          <i class="ri-alert-fill"></i> ต้องทำทุกคน
+        </span>
+        <span class="font-medium text-slate-200">
+          งานวัดผลพัฒนานิคม: คุณครูทุกท่านโปรดเลือกชื่อตนเอง และกดยืนยันสัดส่วนคะแนน 2/2569 (ไม่ต้องพิมพ์ใน Google Sheet เองแล้ว)
+        </span>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-300">
+        <a href="assessment-plan/index.html" class="hover:text-amber-300 underline font-medium flex items-center gap-1 transition-colors">
+          <i class="ri-file-word-line"></i> ระบบทำแผนวัดผล วผ.19 (ใครไม่ใช้ไม่เป็นไร)
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+          <i class="ri-checkbox-circle-fill text-2xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-black text-slate-900 leading-tight">ระบบยืนยันสัดส่วนคะแนน SGS</h1>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">ภาคเรียนที่ 2/2569</span>
+          </div>
+          <p class="text-xs text-slate-500">แบ่งครึ่ง 50:50 (ก่อนกลางภาค 35+15 | หลังกลางภาค 35+15 และทุกช่อง ≤ 15 คะแนน)</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher (ครูผู้สอน vs งานวัดผล) -->
+      <nav aria-label="สลับโหมดการทำงาน" class="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200">
+        <button id="tabTeacherMode" onclick="switchMainView('teacher')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-indigo-700 shadow-sm cursor-pointer">
+          <i class="ri-user-follow-line text-sm"></i>
+          <span>สำหรับครูผู้สอน</span>
+        </button>
+        <button id="tabAdminMode" onclick="switchMainView('admin')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer">
+          <i class="ri-dashboard-line text-sm"></i>
+          <span>สำหรับงานวัดผล (ตาราง 37 คอลัมน์)</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: FOR TEACHERS (Simple, Focused, 1-Click Confirm)                  -->
+    <!-- ========================================================================= -->
+    <section id="teacherViewSection" class="space-y-6">
+
+      <!-- Step 1: Select Teacher Name Hero Card -->
+      <div class="bg-gradient-to-br from-indigo-700 via-indigo-600 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="max-w-2xl relative z-10">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-400/20 border border-emerald-300/30 text-emerald-300 text-xs font-bold mb-3">
+            <i class="ri-flashlight-line"></i> ใช้งานง่ายที่สุดใน 3 วินาที
+          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white leading-tight">
+            เลือกชื่อของคุณครูเพื่อกดยืนยันสัดส่วนคะแนน
+          </h2>
+          <p class="text-xs sm:text-sm text-indigo-100/90 mt-1.5 leading-relaxed">
+            ระบบจัดสรรคะแนนให้ครบ 100 คะแนน และแบ่งครึ่ง 50:50 ตามโครงสร้างหลักสูตรให้เรียบร้อยแล้ว คุณครูเพียงตรวจดูและกดปุ่ม <span class="text-emerald-300 font-bold">"ยืนยัน"</span> เพื่อส่งต่องานวัดผลได้ทันที
+          </p>
+
+          <!-- Selection Controls Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 mt-5">
+            <!-- Learning Area Filter (Optional Helper) -->
+            <div class="sm:col-span-5">
+              <label for="teacherAreaFilter" class="block text-[11px] font-semibold text-indigo-200 mb-1">กลุ่มสาระการเรียนรู้</label>
+              <select id="teacherAreaFilter" onchange="onTeacherAreaChange()" class="w-full bg-indigo-950/70 border border-indigo-400/30 text-white rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-400 cursor-pointer">
+                <option value="">-- ทุกกลุ่มสาระฯ (เลือกชื่อครูได้เลย) --</option>
+                <option value="ภาษาไทย">กลุ่มสาระฯ ภาษาไทย</option>
+                <option value="คณิตศาสตร์">กลุ่มสาระฯ คณิตศาสตร์</option>
+                <option value="วิทยาศาสตร์และเทคโนโลยี">กลุ่มสาระฯ วิทยาศาสตร์และเทคโนโลยี</option>
+                <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">กลุ่มสาระฯ สังคมศึกษาฯ</option>
+                <option value="สุขศึกษาและพลศึกษา">กลุ่มสาระฯ สุขศึกษาและพลศึกษา</option>
+                <option value="ศิลปะ">กลุ่มสาระฯ ศิลปะ</option>
+                <option value="การงานอาชีพ">กลุ่มสาระฯ การงานอาชีพ</option>
+                <option value="ภาษาต่างประเทศ">กลุ่มสาระฯ ภาษาต่างประเทศ</option>
+                <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน / IS</option>
+              </select>
+            </div>
+
+            <!-- Teacher Select (Primary) -->
+            <div class="sm:col-span-7">
+              <label for="teacherNameSelect" class="block text-[11px] font-semibold text-emerald-300 mb-1">
+                <i class="ri-user-star-line"></i> ค้นหา/เลือกชื่อของคุณครูผู้สอน *
+              </label>
+              <select id="teacherNameSelect" onchange="onTeacherNameChange()" class="w-full bg-white text-slate-900 border-2 border-emerald-400 rounded-xl px-3 py-2 text-xs sm:text-sm font-bold shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-300 cursor-pointer">
+                <option value="">-- คลิกเลือกรหัส/ชื่อครูผู้สอน --</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teacher Course Summary & Batch Actions Bar (Shown after selecting teacher) -->
+      <div id="teacherCourseSummaryBar" class="hidden bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 text-xl font-black">
+            <i class="ri-user-smile-line"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="selectedTeacherDisplayName" class="text-base font-extrabold text-slate-900">คุณครู...</span>
+              <span id="selectedTeacherAreaBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">กลุ่มสาระฯ</span>
+            </div>
+            <p id="selectedTeacherStatsText" class="text-xs text-slate-500 mt-0.5">พบ 0 รายวิชาในภาคเรียนที่ 2/2569</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Button: Confirm All My Courses in 1 Click -->
+          <button id="btnConfirmAllMyCourses" onclick="confirmAllMyCourses()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2 cursor-pointer">
+            <i class="ri-checkbox-circle-fill text-base"></i>
+            <span>กดยืนยันทุกวิชาของฉันในคลิกเดียว ✅</span>
+          </button>
+          
+          <button onclick="clearSelectedTeacher()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold transition-colors">
+            เปลี่ยนครู
+          </button>
+        </div>
+      </div>
+
+      <!-- Course Cards Container -->
+      <div id="teacherCourseCardsList" class="space-y-4">
+        <!-- Empty State Prompt -->
+        <div id="teacherEmptyPrompt" class="py-16 text-center text-slate-400 bg-white rounded-3xl border border-dashed border-slate-300 p-8">
+          <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-3xl">
+            <i class="ri-user-search-line"></i>
+          </div>
+          <h3 class="text-sm font-bold text-slate-700">กรุณาเลือกชื่อคุณครูผู้สอนด้านบน</h3>
+          <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+            เพื่อแสดงรายวิชาที่ท่านรับผิดชอบสอนในภาคเรียนที่ 2/2569 พร้อมสัดส่วนคะแนนที่คำนวณไว้ล่วงหน้า
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: FOR ACADEMIC ADMIN (Full 37-Column Sheet & Export)                 -->
+    <!-- ========================================================================= -->
+    <section id="adminViewSection" class="hidden space-y-5">
+      <!-- Admin Controls Header -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-base font-extrabold text-slate-900">ตารางสัดส่วนคะแนน SGS ปีการศึกษา 2569 (งานวัดและประเมินผล)</h2>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">37 คอลัมน์</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">
+              โครงสร้างตรงกับ Google Sheet งานวัดผลทุกคอลัมน์ ครูแต่ละคนแค่เข้ามากดยืนยัน งานวัดผลคัดลอกหรือดาวน์โหลดไปกรอก SGS ได้ทันที
+            </p>
+          </div>
+
+          <!-- Export Actions -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="copyAdminSgsTableTSV()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+              <i class="ri-clipboard-line text-sm"></i>
+              <span>คัดลอกตาราง (วาง Google Sheet ได้ทันที)</span>
+            </button>
+            <button onclick="exportAdminSgsCSV()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+              <i class="ri-file-excel-2-line text-sm text-emerald-400"></i>
+              <span>ส่งออก CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+            <span class="text-[11px] font-semibold text-slate-500">รายวิชาทั้งหมด</span>
+            <div id="adminStatTotal" class="text-lg font-black text-slate-900 mt-0.5">0 วิชา</div>
+          </div>
+          <div class="bg-emerald-50/70 rounded-xl p-3 border border-emerald-100">
+            <span class="text-[11px] font-semibold text-emerald-700">ยืนยันสัดส่วนแล้ว</span>
+            <div id="adminStatConfirmed" class="text-lg font-black text-emerald-800 mt-0.5">0 วิชา (0%)</div>
+          </div>
+          <div class="bg-amber-50/70 rounded-xl p-3 border border-amber-100">
+            <span class="text-[11px] font-semibold text-amber-700">รอยืนยัน</span>
+            <div id="adminStatPending" class="text-lg font-black text-amber-800 mt-0.5">0 วิชา</div>
+          </div>
+          <div class="bg-indigo-50/70 rounded-xl p-3 border border-indigo-100">
+            <span class="text-[11px] font-semibold text-indigo-700">กรอกลง SGS แล้ว</span>
+            <div id="adminStatEntered" class="text-lg font-black text-indigo-800 mt-0.5">0 วิชา</div>
+          </div>
+        </div>
+
+        <!-- Filters Bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-4 mt-3 border-t border-slate-100 text-xs">
+          <div class="sm:col-span-4">
+            <label for="adminAreaFilter" class="block font-semibold text-slate-600 mb-1">กลุ่มสาระการเรียนรู้</label>
+            <select id="adminAreaFilter" onchange="renderAdminTable()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400">
+              <option value="">-- ทุกกลุ่มสาระฯ --</option>
+              <option value="ภาษาไทย">ภาษาไทย</option>
+              <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+              <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+              <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+              <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+              <option value="ศิลปะ">ศิลปะ</option>
+              <option value="การงานอาชีพ">การงานอาชีพ</option>
+              <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+              <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน / IS</option>
+            </select>
+          </div>
+          <div class="sm:col-span-3">
+            <label for="adminStatusFilter" class="block font-semibold text-slate-600 mb-1">สถานะยืนยัน</label>
+            <select id="adminStatusFilter" onchange="renderAdminTable()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400">
+              <option value="all">ทั้งหมด (ยืนยันแล้ว + รอยืนยัน)</option>
+              <option value="confirmed">เฉพาะที่ยืนยันแล้ว ✅</option>
+              <option value="pending">เฉพาะที่ยังไม่ยืนยัน ⏳</option>
+            </select>
+          </div>
+          <div class="sm:col-span-5">
+            <label for="adminSearchInput" class="block font-semibold text-slate-600 mb-1">ค้นหารหัสวิชา / ชื่อวิชา / ครูผู้สอน</label>
+            <input type="search" id="adminSearchInput" oninput="renderAdminTable()" placeholder="พิมพ์ค้นหา เช่น ว21102 หรือชื่อครู..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 37-Column Table Container -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto max-h-[650px] overflow-y-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="sticky top-0 z-20 bg-slate-900 text-white text-[11px] shadow-sm select-none">
+              <tr>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center w-10">ที่</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center w-16">กลุ่มสาระ</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center w-20">รหัสวิชา</th>
+                <th rowspan="2" class="border border-slate-700 px-3 py-2 min-w-[150px]">ชื่อวิชา</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center w-14">ชั้น</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center w-24">ห้องที่สอน</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 min-w-[120px]">ครูผู้สอน</th>
+                <th colspan="9" class="border border-slate-700 px-1 py-1 text-center bg-blue-950 text-blue-200">ก่อนกลางภาค (ช่อง 1–9) รวม 35</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-12 bg-blue-900 text-blue-100 font-bold">รวมเก็บ 35</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-12 bg-indigo-900 text-indigo-100 font-bold">กลางภาค 15</th>
+                <th colspan="9" class="border border-slate-700 px-1 py-1 text-center bg-purple-950 text-purple-200">หลังกลางภาค (ช่อง 1–9) รวม 35</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-12 bg-purple-900 text-purple-100 font-bold">รวมเก็บ 35</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-12 bg-fuchsia-900 text-fuchsia-100 font-bold">ปลายภาค 15</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-12 bg-emerald-900 text-emerald-100 font-black">รวม 100</th>
+                <th rowspan="2" class="border border-slate-700 px-2 py-2 text-center min-w-[110px]">สถานะยืนยัน</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-14 bg-indigo-950 text-indigo-200" title="สำหรับเจ้าหน้าที่วัดผล: ตรวจสัดส่วนแล้ว">ตรวจแล้ว</th>
+                <th rowspan="2" class="border border-slate-700 px-1 py-2 text-center w-14 bg-emerald-950 text-emerald-200" title="สำหรับเจ้าหน้าที่วัดผล: กรอก SGS แล้ว">กรอก SGS</th>
+              </tr>
+              <tr class="bg-slate-800 text-[10px] text-slate-300">
+                <!-- Pre 1-9 -->
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">1</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">2</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">3</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">4</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">5</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">6</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">7</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">8</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">9</th>
+                <!-- Post 1-9 -->
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">1</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">2</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">3</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">4</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">5</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">6</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">7</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">8</th>
+                <th class="border border-slate-700 px-1 py-1 text-center w-7">9</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody" class="font-sans text-slate-800 divide-y divide-slate-200">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: Quick Score Adjuster (For teachers who want to fine-tune unit points) -->
+  <div id="modalScoreAdjust" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <h3 id="modalCourseTitle" class="text-base font-extrabold text-slate-900">ปรับแต่งคะแนนรายวิชา</h3>
+          <p class="text-xs text-slate-500">ปรับคะแนนแต่ละช่องได้ตามบริบทวิชา (เกณฑ์ SGS: แต่ละช่องห้ามเกิน 15 คะแนน)</p>
+        </div>
+        <button onclick="closeScoreAdjustModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center">
+          <i class="ri-close-line text-lg"></i>
+        </button>
+      </div>
+
+      <div id="modalUnitRowsContainer" class="flex-1 overflow-y-auto py-4 space-y-3">
+        <!-- Populated via JS -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div id="modalScoreSummaryBadge" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-900">
+          รวม 100 คะแนน
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="modalAutoBalance()" class="px-3 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300">
+            เกลี่ย 50:50 อัตโนมัติ
+          </button>
+          <button onclick="saveScoreAdjustModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm">
+            บันทึกและยืนยัน
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 text-sm">
+      <i id="toastIcon" class="ri-checkbox-circle-fill text-emerald-400 text-lg"></i>
+      <span id="toastMsg" class="font-medium">ข้อความแจ้งเตือน</span>
+    </div>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    let allCourses = {};
+    let sgsConfirmations = {};
+    let selectedTeacherName = '';
+    let currentFilteredAdminList = [];
+    let editingCourseObj = null;
+    let sgsDb = null;
+
+    const SGS_STORAGE_KEY = 'sgs_confirmations_2_2569_v1';
+
+    // 1. Initialize Firebase & LocalStorage
+    function initStorageAndFirebase() {
+      try {
+        const raw = localStorage.getItem(SGS_STORAGE_KEY);
+        if (raw) sgsConfirmations = JSON.parse(raw) || {};
+      } catch (e) {
+        console.warn('LocalStorage parse error:', e);
+      }
+
+      try {
+        if (typeof firebase !== 'undefined') {
+          const firebaseConfig = {
+            apiKey: "AIzaSyCGjC6w1a795yZ858-V3q9-wD2_8zH1770",
+            authDomain: "tradesimschool.firebaseapp.com",
+            projectId: "tradesimschool",
+            storageBucket: "tradesimschool.firebasestorage.app",
+            messagingSenderId: "903283363810",
+            appId: "1:903283363810:web:5cb5c8e5898ab114284e77"
+          };
+          if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+          sgsDb = firebase.firestore();
+
+          sgsDb.collection('survey_config').onSnapshot((snapshot) => {
+            let changed = false;
+            snapshot.forEach((doc) => {
+              if (doc.id && doc.id.startsWith('sgs_2569_2_')) {
+                const data = doc.data();
+                if (data && data.course_code) {
+                  sgsConfirmations[data.course_code] = data;
+                  if (allCourses[data.course_code]) {
+                    if (data.classrooms) allCourses[data.course_code].classrooms = data.classrooms;
+                    if (Array.isArray(data.teachers) && data.teachers.length > 0) allCourses[data.course_code].teachers = data.teachers;
+                    if (Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
+                      allCourses[data.course_code].units = JSON.parse(JSON.stringify(data.units_snapshot));
+                      if (data.midterm_cutoff) allCourses[data.course_code].midterm_cutoff = data.midterm_cutoff;
+                    }
+                  }
+                  changed = true;
+                }
+              }
+            });
+            if (changed) {
+              localStorage.setItem(SGS_STORAGE_KEY, JSON.stringify(sgsConfirmations));
+              if (selectedTeacherName) renderTeacherCards();
+              renderAdminTable();
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Firebase init error (offline mode active):', err);
+      }
+    }
+
+    async function persistConfirmation(code, payload) {
+      sgsConfirmations[code] = payload;
+      localStorage.setItem(SGS_STORAGE_KEY, JSON.stringify(sgsConfirmations));
+      if (sgsDb) {
+        try {
+          await sgsDb.collection('survey_config').doc('sgs_2569_2_' + code).set(payload, { merge: true });
+        } catch (err) {
+          console.warn('Cloud save fallback:', err.message);
+        }
+      }
+    }
+
+    // 2. Load Course Data
+    async function initData() {
+      if (window.COURSES_DATA) {
+        allCourses = window.COURSES_DATA;
+      } else {
+        try {
+          const res = await fetch('assessment-plan/data/courses_2_2569.json');
+          allCourses = await res.json();
+        } catch (e) {
+          console.error("Failed to fetch courses data", e);
+        }
+      }
+
+      // Apply overrides from local confirmations
+      Object.entries(sgsConfirmations).forEach(([code, data]) => {
+        if (allCourses[code]) {
+          if (data.classrooms) allCourses[code].classrooms = data.classrooms;
+          if (Array.isArray(data.teachers) && data.teachers.length > 0) allCourses[code].teachers = data.teachers;
+          if (Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
+            allCourses[code].units = JSON.parse(JSON.stringify(data.units_snapshot));
+            if (data.midterm_cutoff) allCourses[code].midterm_cutoff = data.midterm_cutoff;
+          }
+        }
+      });
+    }
+
+    // 3. Extract 9 SGS Slots Helper
+    function getSgsSlots(course) {
+      if (!course || !course.units) {
+        return { preSlots: [], postSlots: [], preSum: 0, midExam: 15, postSum: 0, finExam: 15, grandTotal: 30, is5050: false };
+      }
+      const cutoff = course.midterm_cutoff || 1;
+      const preUnits = course.units.slice(0, cutoff);
+      const postUnits = course.units.slice(cutoff);
+
+      const preSlots = [];
+      preUnits.forEach(u => {
+        const assList = (u.assessments && u.assessments.length > 0) ? u.assessments : [{ score_total: u.score_total || 0, score_k: u.score_k || 0, score_p: u.score_p || 0, score_a: u.score_a || 0 }];
+        assList.forEach((a, idx) => {
+          preSlots.push({
+            score: (parseInt(a.score_k)||0) + (parseInt(a.score_p)||0) + (parseInt(a.score_a)||0) || (parseInt(a.score_total)||0),
+            unit_no: u.unit_no,
+            unit_name: u.unit_name,
+            sub_idx: assList.length > 1 ? idx + 1 : 0
+          });
+        });
+      });
+
+      const postSlots = [];
+      postUnits.forEach(u => {
+        const assList = (u.assessments && u.assessments.length > 0) ? u.assessments : [{ score_total: u.score_total || 0, score_k: u.score_k || 0, score_p: u.score_p || 0, score_a: u.score_a || 0 }];
+        assList.forEach((a, idx) => {
+          postSlots.push({
+            score: (parseInt(a.score_k)||0) + (parseInt(a.score_p)||0) + (parseInt(a.score_a)||0) || (parseInt(a.score_total)||0),
+            unit_no: u.unit_no,
+            unit_name: u.unit_name,
+            sub_idx: assList.length > 1 ? idx + 1 : 0
+          });
+        });
+      });
+
+      const preSum = preSlots.reduce((s, x) => s + x.score, 0);
+      const postSum = postSlots.reduce((s, x) => s + x.score, 0);
+      const midExam = 15;
+      const finExam = 15;
+      const grandTotal = preSum + midExam + postSum + finExam;
+      const is5050 = (preSum === 35 && postSum === 35 && grandTotal === 100);
+
+      return { preSlots, postSlots, preSum, midExam, postSum, finExam, grandTotal, is5050 };
+    }
+
+    function isPlaceholderTeacher(t) {
+      return !t || /^[.\s…\-_]+$/.test(String(t).trim());
+    }
+
+    // 4. Populate Teacher Dropdown
+    function populateTeacherDropdown(selectedArea = '') {
+      const select = document.getElementById('teacherNameSelect');
+      const cur = select.value;
+      select.innerHTML = '<option value="">-- คลิกเลือกรหัส/ชื่อครูผู้สอน --</option>';
+
+      const teachersSet = new Set();
+
+      // From school areas dictionary if present
+      if (window.SCHOOL_TEACHERS_BY_AREA) {
+        Object.entries(window.SCHOOL_TEACHERS_BY_AREA).forEach(([area, list]) => {
+          if (!selectedArea || area === selectedArea) {
+            (list || []).forEach(t => {
+              const clean = String(t || '').trim();
+              if (clean && !isPlaceholderTeacher(clean)) teachersSet.add(clean);
+            });
+          }
+        });
+      }
+
+      // From courses data
+      Object.values(allCourses).forEach(c => {
+        if (!selectedArea || c.learning_area === selectedArea) {
+          (c.teachers || []).forEach(t => {
+            const clean = String(t || '').trim();
+            if (clean && !isPlaceholderTeacher(clean)) teachersSet.add(clean);
+          });
+        }
+      });
+
+      const sorted = Array.from(teachersSet).sort((a, b) => a.localeCompare(b, 'th'));
+      sorted.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+
+      if (sorted.includes(cur)) {
+        select.value = cur;
+      }
+    }
+
+    function onTeacherAreaChange() {
+      const area = document.getElementById('teacherAreaFilter').value;
+      populateTeacherDropdown(area);
+      if (selectedTeacherName) {
+        onTeacherNameChange();
+      }
+    }
+
+    function onTeacherNameChange() {
+      const select = document.getElementById('teacherNameSelect');
+      selectedTeacherName = select.value.trim();
+      if (!selectedTeacherName) {
+        document.getElementById('teacherCourseSummaryBar').classList.add('hidden');
+        document.getElementById('teacherEmptyPrompt').classList.remove('hidden');
+        document.getElementById('teacherCourseCardsList').innerHTML = '';
+        document.getElementById('teacherCourseCardsList').appendChild(document.getElementById('teacherEmptyPrompt'));
+        return;
+      }
+
+      // Find department
+      let dept = '';
+      if (window.SCHOOL_TEACHERS_BY_AREA) {
+        for (const [area, list] of Object.entries(window.SCHOOL_TEACHERS_BY_AREA)) {
+          if (Array.isArray(list) && list.includes(selectedTeacherName)) {
+            dept = area;
+            break;
+          }
+        }
+      }
+      if (!dept) {
+        const found = Object.values(allCourses).find(c => (c.teachers || []).includes(selectedTeacherName));
+        if (found) dept = found.learning_area;
+      }
+
+      document.getElementById('selectedTeacherDisplayName').textContent = `คุณครู${selectedTeacherName}`;
+      document.getElementById('selectedTeacherAreaBadge').textContent = dept || 'ครูผู้สอน';
+      document.getElementById('teacherCourseSummaryBar').classList.remove('hidden');
+
+      renderTeacherCards();
+    }
+
+    function clearSelectedTeacher() {
+      document.getElementById('teacherNameSelect').value = '';
+      selectedTeacherName = '';
+      onTeacherNameChange();
+    }
+
+    // 5. Render Teacher Cards
+    function renderTeacherCards() {
+      const container = document.getElementById('teacherCourseCardsList');
+      container.innerHTML = '';
+
+      if (!selectedTeacherName) return;
+
+      // Find courses for this teacher (prioritize scheduled term 2)
+      let courses = Object.values(allCourses).filter(c => (c.teachers || []).includes(selectedTeacherName));
+
+      // Fallback: If no direct matches, check department courses
+      if (courses.length === 0) {
+        const area = document.getElementById('teacherAreaFilter').value;
+        if (area) {
+          courses = Object.values(allCourses).filter(c => c.learning_area === area && c.is_scheduled_term2);
+        }
+      }
+
+      // Sort: Term 2 first
+      courses.sort((a, b) => {
+        if (a.is_scheduled_term2 && !b.is_scheduled_term2) return -1;
+        if (!a.is_scheduled_term2 && b.is_scheduled_term2) return 1;
+        return a.course_code.localeCompare(b.course_code, 'th');
+      });
+
+      const confirmedCount = courses.filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
+      document.getElementById('selectedTeacherStatsText').textContent = `พบ ${courses.length} รายวิชา (ยืนยันแล้ว ${confirmedCount} / รอยืนยัน ${courses.length - confirmedCount})`;
+
+      if (courses.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-slate-400 bg-white rounded-3xl border border-slate-200 p-6">
+            <i class="ri-file-search-line text-3xl opacity-50 block mb-2"></i>
+            ยังไม่มีรายชื่อวิชาที่ผูกกับครูท่านนี้โดยตรง ท่านสามารถค้นหาตามรหัสวิชาในหน้างานวัดผลได้ครับ
+          </div>
+        `;
+        return;
+      }
+
+      courses.forEach((c) => {
+        const code = c.course_code;
+        const conf = sgsConfirmations[code] || {};
+        const isConfirmed = conf.confirmed_status === 'ยืนยัน';
+        const sgs = getSgsSlots(c);
+        const classrooms = conf.classrooms || c.classrooms || `${c.grade_level} (ทุกห้องที่เรียน)`;
+
+        const card = document.createElement('div');
+        card.className = `rounded-3xl border transition-all duration-200 overflow-hidden ${
+          isConfirmed 
+            ? 'bg-emerald-50/20 border-emerald-300 shadow-sm' 
+            : 'bg-white border-slate-200 hover:border-indigo-300 shadow-sm hover:shadow-md'
+        }`;
+
+        // Build 9 pre slots pills
+        let prePills = '';
+        for (let i = 0; i < 9; i++) {
+          const slot = sgs.preSlots[i];
+          if (slot) {
+            prePills += `
+              <div class="px-2 py-1 rounded-lg bg-blue-50 border border-blue-200/80 text-center min-w-[42px]" title="ช่อง ${i+1}: หน่วยที่ ${slot.unit_no} ${escapeHtml(slot.unit_name)}">
+                <span class="text-[9px] text-blue-600 block">ช.${i+1}</span>
+                <span class="text-xs font-black text-blue-950">${slot.score}</span>
+              </div>
+            `;
+          } else {
+            prePills += `
+              <div class="px-1.5 py-1 rounded-lg border border-dashed border-slate-200 text-center min-w-[32px] opacity-40">
+                <span class="text-[9px] text-slate-400 block">-</span>
+                <span class="text-xs font-bold text-slate-300">-</span>
+              </div>
+            `;
+          }
+        }
+
+        // Build 9 post slots pills
+        let postPills = '';
+        for (let i = 0; i < 9; i++) {
+          const slot = sgs.postSlots[i];
+          if (slot) {
+            postPills += `
+              <div class="px-2 py-1 rounded-lg bg-purple-50 border border-purple-200/80 text-center min-w-[42px]" title="ช่อง ${i+1}: หน่วยที่ ${slot.unit_no} ${escapeHtml(slot.unit_name)}">
+                <span class="text-[9px] text-purple-600 block">ช.${i+1}</span>
+                <span class="text-xs font-black text-purple-950">${slot.score}</span>
+              </div>
+            `;
+          } else {
+            postPills += `
+              <div class="px-1.5 py-1 rounded-lg border border-dashed border-slate-200 text-center min-w-[32px] opacity-40">
+                <span class="text-[9px] text-slate-400 block">-</span>
+                <span class="text-xs font-bold text-slate-300">-</span>
+              </div>
+            `;
+          }
+        }
+
+        const confirmTimeStr = conf.confirmed_at 
+          ? new Date(conf.confirmed_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })
+          : '';
+
+        card.innerHTML = `
+          <!-- Card Header -->
+          <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 bg-white">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs font-black px-2.5 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-mono">${code}</span>
+                <span class="text-xs font-bold text-slate-600">${c.grade_level}</span>
+                ${c.is_scheduled_term2 ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">เปิดสอน 2/69</span>' : ''}
+              </div>
+              <h3 class="text-base font-extrabold text-slate-900">${escapeHtml(c.course_name)}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">${escapeHtml(c.learning_area)} • ${c.total_hours} คาบ (${c.credits.toFixed(1)} นก.)</p>
+            </div>
+
+            <!-- Classrooms Inline Input & Status Badge -->
+            <div class="flex flex-col sm:items-end gap-1.5">
+              <div class="flex items-center gap-1.5 text-xs">
+                <label for="classrooms-${code}" class="text-slate-500 font-semibold text-[11px]">ห้องที่สอน:</label>
+                <input id="classrooms-${code}" type="text" value="${escapeHtml(classrooms)}" onchange="updateCourseClassroom('${code}', this.value)" class="text-xs font-bold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-center w-28 focus:border-indigo-400 focus:bg-white focus:outline-none" title="คลิกเพื่อแก้ไขห้องที่สอน" />
+              </div>
+              <div>
+                ${isConfirmed 
+                  ? `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300">
+                       <i class="ri-checkbox-circle-fill text-emerald-600 text-sm"></i> ยืนยันแล้ว (${confirmTimeStr})
+                     </span>`
+                  : `<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
+                       <i class="ri-time-line text-amber-700"></i> รอกดยืนยัน
+                     </span>`
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body: 9 Slots Pre & Post Midterm Breakdown -->
+          <div class="p-5 space-y-4 bg-slate-50/50">
+            <!-- Part 1: Pre-Midterm -->
+            <div>
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="font-bold text-blue-900 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                  1. คะแนนก่อนกลางภาค (รวม 50 คะแนน)
+                </span>
+                <span class="text-[11px] font-semibold text-slate-500">เก็บ 35 + กลางภาค 15</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1">
+                ${prePills}
+                <div class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-center ml-1 shrink-0">
+                  <span class="text-[9px] opacity-90 block font-semibold">รวมเก็บก่อน</span>
+                  <span class="text-xs font-black">${sgs.preSum}/35</span>
+                </div>
+                <div class="px-2.5 py-1 rounded-lg bg-indigo-700 text-white text-center shrink-0">
+                  <span class="text-[9px] opacity-90 block font-semibold">สอบกลางภาค</span>
+                  <span class="text-xs font-black">${sgs.midExam}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Part 2: Post-Midterm -->
+            <div>
+              <div class="flex items-center justify-between text-xs mb-2">
+                <span class="font-bold text-purple-900 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+                  2. คะแนนหลังกลางภาค (รวม 50 คะแนน)
+                </span>
+                <span class="text-[11px] font-semibold text-slate-500">เก็บ 35 + ปลายภาค 15</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1">
+                ${postPills}
+                <div class="px-2.5 py-1 rounded-lg bg-purple-600 text-white text-center ml-1 shrink-0">
+                  <span class="text-[9px] opacity-90 block font-semibold">รวมเก็บหลัง</span>
+                  <span class="text-xs font-black">${sgs.postSum}/35</span>
+                </div>
+                <div class="px-2.5 py-1 rounded-lg bg-fuchsia-700 text-white text-center shrink-0">
+                  <span class="text-[9px] opacity-90 block font-semibold">สอบปลายภาค</span>
+                  <span class="text-xs font-black">${sgs.finExam}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Footer Actions -->
+          <div class="px-5 py-3.5 bg-white border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-black text-slate-900">รวมทั้งสิ้น:</span>
+              <span class="text-sm font-black ${sgs.grandTotal === 100 ? 'text-emerald-700' : 'text-amber-700'}">${sgs.grandTotal} คะแนน</span>
+              <span class="text-[11px] text-slate-400 font-medium">(แบ่งครึ่ง 50:50 สมบูรณ์)</span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <!-- Edit Score Button -->
+              <button onclick="openScoreAdjustModal('${code}')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer" title="ปรับคะแนนในแต่ละช่อง">
+                <i class="ri-edit-2-line"></i>
+                <span>ปรับแก้ตัวเลข</span>
+              </button>
+
+              <!-- Link to Full WP.19 Plan (Optional) -->
+              <a href="assessment-plan/index.html?code=${encodeURIComponent(code)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 text-xs font-semibold transition-colors flex items-center gap-1" title="เปิดระบบจัดทำแผนวัดผล วผ.19 ฉบับเต็มเพื่อดาวน์โหลดไฟล์ Word">
+                <i class="ri-file-word-2-line"></i>
+                <span>แผน วผ.19 (Word)</span>
+                <i class="ri-arrow-right-up-line text-indigo-400"></i>
+              </a>
+
+              <!-- Main Confirm Button -->
+              ${isConfirmed
+                ? `<button onclick="confirmSingleCourse('${code}')" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-extrabold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                     <i class="ri-check-line text-base"></i>
+                     <span>ยืนยันแล้ว (คลิกอัปเดต)</span>
+                   </button>`
+                : `<button onclick="confirmSingleCourse('${code}')" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 cursor-pointer animate-bounce-subtle">
+                     <i class="ri-checkbox-circle-fill text-base"></i>
+                     <span>กดยืนยันสัดส่วนวิชานี้</span>
+                   </button>`
+              }
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // 6. Single Course Confirm Handler
+    async function confirmSingleCourse(code) {
+      const c = allCourses[code];
+      if (!c) return;
+
+      const classroomsInp = document.getElementById(`classrooms-${code}`);
+      const classrooms = classroomsInp ? classroomsInp.value.trim() : (c.classrooms || `${c.grade_level}`);
+      const sgs = getSgsSlots(c);
+      const existing = sgsConfirmations[code] || {};
+
+      const payload = {
+        type: 'sgs_confirmation_2_2569',
+        academic_year: '2569',
+        semester: '2',
+        course_code: code,
+        course_name: c.course_name,
+        learning_area: c.learning_area,
+        grade_level: c.grade_level,
+        classrooms: classrooms,
+        teachers: selectedTeacherName ? [selectedTeacherName] : (c.teachers || []),
+        pre_slots: Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : null),
+        post_slots: Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : null),
+        pre_sum: sgs.preSum,
+        mid_exam: sgs.midExam,
+        post_sum: sgs.postSum,
+        fin_exam: sgs.finExam,
+        grand_total: sgs.grandTotal,
+        confirmed_status: 'ยืนยัน',
+        confirmed_by: selectedTeacherName || (c.teachers && c.teachers[0]) || 'ครูผู้สอน',
+        confirmed_at: new Date().toISOString(),
+        admin_checked: Boolean(existing.admin_checked),
+        sgs_entered: Boolean(existing.sgs_entered),
+        midterm_cutoff: c.midterm_cutoff,
+        units_snapshot: JSON.parse(JSON.stringify(c.units || []))
+      };
+
+      await persistConfirmation(code, payload);
+      renderTeacherCards();
+      showToast(`ยืนยันสัดส่วนคะแนนวิชา ${code} (${c.course_name}) เรียบร้อยแล้ว! ✅`, "success");
+    }
+
+    // 7. Confirm All My Courses in 1 Click
+    async function confirmAllMyCourses() {
+      if (!selectedTeacherName) return;
+      const courses = Object.values(allCourses).filter(c => (c.teachers || []).includes(selectedTeacherName));
+      if (courses.length === 0) {
+        showToast("ไม่พบรายวิชาที่ต้องยืนยัน", "error");
+        return;
+      }
+
+      for (const c of courses) {
+        const sgs = getSgsSlots(c);
+        const classroomsInp = document.getElementById(`classrooms-${c.course_code}`);
+        const classrooms = classroomsInp ? classroomsInp.value.trim() : (c.classrooms || `${c.grade_level}`);
+        const existing = sgsConfirmations[c.course_code] || {};
+
+        const payload = {
+          type: 'sgs_confirmation_2_2569',
+          academic_year: '2569',
+          semester: '2',
+          course_code: c.course_code,
+          course_name: c.course_name,
+          learning_area: c.learning_area,
+          grade_level: c.grade_level,
+          classrooms: classrooms,
+          teachers: [selectedTeacherName],
+          pre_slots: Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : null),
+          post_slots: Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : null),
+          pre_sum: sgs.preSum,
+          mid_exam: sgs.midExam,
+          post_sum: sgs.postSum,
+          fin_exam: sgs.finExam,
+          grand_total: sgs.grandTotal,
+          confirmed_status: 'ยืนยัน',
+          confirmed_by: selectedTeacherName,
+          confirmed_at: new Date().toISOString(),
+          admin_checked: Boolean(existing.admin_checked),
+          sgs_entered: Boolean(existing.sgs_entered),
+          midterm_cutoff: c.midterm_cutoff,
+          units_snapshot: JSON.parse(JSON.stringify(c.units || []))
+        };
+        await persistConfirmation(c.course_code, payload);
+      }
+
+      renderTeacherCards();
+      showToast(`ยืนยันสัดส่วนคะแนนครบทั้ง ${courses.length} วิชาแล้ว ขอบพระคุณครับคุณครู 🙏✨`, "success");
+    }
+
+    function updateCourseClassroom(code, val) {
+      const clean = (val || '').trim();
+      if (allCourses[code]) allCourses[code].classrooms = clean;
+      if (sgsConfirmations[code]) {
+        sgsConfirmations[code].classrooms = clean;
+        persistConfirmation(code, sgsConfirmations[code]);
+      }
+      showToast(`อัปเดตห้องที่สอนวิชา ${code} แล้ว`, "info");
+    }
+
+    // 8. Admin View Render
+    function renderAdminTable() {
+      const tbody = document.getElementById('adminTableBody');
+      const area = document.getElementById('adminAreaFilter')?.value || '';
+      const status = document.getElementById('adminStatusFilter')?.value || 'all';
+      const q = document.getElementById('adminSearchInput')?.value?.trim().toLowerCase() || '';
+
+      let list = Object.values(allCourses);
+      if (area) list = list.filter(c => c.learning_area === area);
+      if (status === 'confirmed') list = list.filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน');
+      if (status === 'pending') list = list.filter(c => sgsConfirmations[c.course_code]?.confirmed_status !== 'ยืนยัน');
+      if (q) {
+        list = list.filter(c =>
+          c.course_code.toLowerCase().includes(q) ||
+          c.course_name.toLowerCase().includes(q) ||
+          (c.teachers && c.teachers.some(t => t.toLowerCase().includes(q)))
+        );
+      }
+
+      // Sort
+      list.sort((a, b) => {
+        if (a.is_scheduled_term2 && !b.is_scheduled_term2) return -1;
+        if (!a.is_scheduled_term2 && b.is_scheduled_term2) return 1;
+        return a.course_code.localeCompare(b.course_code, 'th');
+      });
+
+      currentFilteredAdminList = list;
+
+      // Update Counters
+      const totalAll = Object.values(allCourses).length;
+      const totalConfirmed = Object.values(allCourses).filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
+      const totalPending = totalAll - totalConfirmed;
+      const totalEntered = Object.values(allCourses).filter(c => sgsConfirmations[c.course_code]?.sgs_entered).length;
+      const pct = Math.round((totalConfirmed / totalAll) * 100) || 0;
+
+      document.getElementById('adminStatTotal').textContent = `${totalAll} รายวิชา`;
+      document.getElementById('adminStatConfirmed').textContent = `${totalConfirmed} วิชา (${pct}%)`;
+      document.getElementById('adminStatPending').textContent = `${totalPending} วิชา`;
+      document.getElementById('adminStatEntered').textContent = `${totalEntered} วิชา`;
+
+      tbody.innerHTML = '';
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="30" class="py-12 text-center text-slate-400 text-xs">ไม่พบรายวิชาที่ตรงกับตัวกรอง</td></tr>';
+        return;
+      }
+
+      list.forEach((c, idx) => {
+        const code = c.course_code;
+        const conf = sgsConfirmations[code] || {};
+        const isConfirmed = conf.confirmed_status === 'ยืนยัน';
+        const sgs = getSgsSlots(c);
+        const validTeachers = (c.teachers || []).filter(t => !isPlaceholderTeacher(t));
+        const teacherStr = validTeachers.length > 0 ? validTeachers.join(', ') : 'ยังไม่ระบุ';
+        const classrooms = conf.classrooms || c.classrooms || `${c.grade_level}`;
+
+        let preHtml = '';
+        for (let i = 0; i < 9; i++) {
+          const sc = sgs.preSlots[i] ? sgs.preSlots[i].score : '-';
+          preHtml += `<td class="border border-slate-200 px-1 py-1 text-center ${sc !== '-' ? 'font-bold text-blue-900 bg-blue-50/20' : 'text-slate-300'}">${sc}</td>`;
+        }
+
+        let postHtml = '';
+        for (let i = 0; i < 9; i++) {
+          const sc = sgs.postSlots[i] ? sgs.postSlots[i].score : '-';
+          postHtml += `<td class="border border-slate-200 px-1 py-1 text-center ${sc !== '-' ? 'font-bold text-purple-900 bg-purple-50/20' : 'text-slate-300'}">${sc}</td>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = isConfirmed ? 'bg-emerald-50/30 hover:bg-emerald-50/60' : 'bg-white hover:bg-slate-50';
+
+        tr.innerHTML = `
+          <td class="border border-slate-200 px-2 py-1 text-center font-semibold text-slate-500">${idx + 1}</td>
+          <td class="border border-slate-200 px-2 py-1 text-center font-bold text-[10px] text-slate-600 whitespace-nowrap">${escapeHtml(shortArea(c.learning_area))}</td>
+          <td class="border border-slate-200 px-2 py-1 font-mono font-black text-indigo-700 whitespace-nowrap">${code}</td>
+          <td class="border border-slate-200 px-2.5 py-1 font-bold text-slate-900"><div class="line-clamp-1 max-w-[180px]" title="${escapeHtml(c.course_name)}">${escapeHtml(c.course_name)}</div></td>
+          <td class="border border-slate-200 px-1.5 py-1 text-center text-slate-600 whitespace-nowrap">${escapeHtml(c.grade_level)}</td>
+          <td class="border border-slate-200 px-1.5 py-1 text-center text-[10px]">${escapeHtml(classrooms)}</td>
+          <td class="border border-slate-200 px-2 py-1 text-[10px]"><div class="line-clamp-1 max-w-[130px]" title="${escapeHtml(teacherStr)}">${escapeHtml(teacherStr)}</div></td>
+          ${preHtml}
+          <td class="border border-slate-200 px-1 py-1 text-center font-extrabold bg-blue-100 text-blue-900">${sgs.preSum}</td>
+          <td class="border border-slate-200 px-1 py-1 text-center font-bold bg-indigo-50 text-indigo-900">${sgs.midExam}</td>
+          ${postHtml}
+          <td class="border border-slate-200 px-1 py-1 text-center font-extrabold bg-purple-100 text-purple-900">${sgs.postSum}</td>
+          <td class="border border-slate-200 px-1 py-1 text-center font-bold bg-fuchsia-50 text-fuchsia-900">${sgs.finExam}</td>
+          <td class="border border-slate-200 px-1 py-1 text-center font-black ${sgs.grandTotal === 100 ? 'bg-emerald-100 text-emerald-950' : 'bg-rose-100 text-rose-800'}">${sgs.grandTotal}</td>
+          <td class="border border-slate-200 px-2 py-1 text-center whitespace-nowrap">
+            ${isConfirmed 
+              ? `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px]">✅ ยืนยันแล้ว</span>`
+              : `<button onclick="adminQuickConfirm('${code}')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px]">กดยืนยัน</button>`
+            }
+          </td>
+          <td class="border border-slate-200 px-1 py-1 text-center">
+            <input type="checkbox" ${conf.admin_checked ? 'checked' : ''} onchange="toggleAdminFlag('${code}', 'admin_checked', this.checked)" class="w-3.5 h-3.5 accent-indigo-600 cursor-pointer" />
+          </td>
+          <td class="border border-slate-200 px-1 py-1 text-center">
+            <input type="checkbox" ${conf.sgs_entered ? 'checked' : ''} onchange="toggleAdminFlag('${code}', 'sgs_entered', this.checked)" class="w-3.5 h-3.5 accent-emerald-600 cursor-pointer" />
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function shortArea(a) {
+      const map = {
+        'ภาษาไทย': 'ไทย',
+        'คณิตศาสตร์': 'คณิต',
+        'วิทยาศาสตร์และเทคโนโลยี': 'วิทย์-เทคโน',
+        'สังคมศึกษา ศาสนา และวัฒนธรรม': 'สังคม',
+        'สุขศึกษาและพลศึกษา': 'สุข-พละ',
+        'ศิลปะ': 'ศิลปะ',
+        'การงานอาชีพ': 'การงาน',
+        'ภาษาต่างประเทศ': 'ตปท.',
+        'กิจกรรมพัฒนาผู้เรียน': 'กิจกรรม/IS'
+      };
+      return map[a] || a;
+    }
+
+    async function adminQuickConfirm(code) {
+      const c = allCourses[code];
+      if (!c) return;
+      const sgs = getSgsSlots(c);
+      const existing = sgsConfirmations[code] || {};
+      const payload = {
+        type: 'sgs_confirmation_2_2569',
+        course_code: code,
+        course_name: c.course_name,
+        learning_area: c.learning_area,
+        grade_level: c.grade_level,
+        classrooms: c.classrooms || `${c.grade_level}`,
+        teachers: c.teachers || [],
+        pre_slots: Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : null),
+        post_slots: Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : null),
+        pre_sum: sgs.preSum,
+        mid_exam: sgs.midExam,
+        post_sum: sgs.postSum,
+        fin_exam: sgs.finExam,
+        grand_total: sgs.grandTotal,
+        confirmed_status: 'ยืนยัน',
+        confirmed_by: 'งานวัดผล (แอดมิน)',
+        confirmed_at: new Date().toISOString(),
+        admin_checked: true,
+        sgs_entered: Boolean(existing.sgs_entered)
+      };
+      await persistConfirmation(code, payload);
+      renderAdminTable();
+      showToast(`ยืนยันสัดส่วนวิชา ${code} แล้ว`, "success");
+    }
+
+    async function toggleAdminFlag(code, field, val) {
+      if (!sgsConfirmations[code]) {
+        await adminQuickConfirm(code);
+      }
+      sgsConfirmations[code][field] = Boolean(val);
+      await persistConfirmation(code, sgsConfirmations[code]);
+      renderAdminTable();
+    }
+
+    // 9. Export TSV (for Google Sheet 37 columns)
+    async function copyAdminSgsTableTSV() {
+      if (!currentFilteredAdminList || currentFilteredAdminList.length === 0) {
+        showToast("ไม่มีข้อมูลสำหรับคัดลอก", "error");
+        return;
+      }
+
+      const rows = currentFilteredAdminList.map((c, idx) => {
+        const code = c.course_code;
+        const conf = sgsConfirmations[code] || {};
+        const sgs = getSgsSlots(c);
+        const validTeachers = (c.teachers || []).filter(t => !isPlaceholderTeacher(t));
+        const teacherStr = validTeachers.join(', ');
+        const classrooms = conf.classrooms || c.classrooms || `${c.grade_level}`;
+
+        const pre9 = Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : '');
+        const post9 = Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : '');
+
+        return [
+          idx + 1,
+          code,
+          c.course_name,
+          c.grade_level,
+          classrooms,
+          teacherStr,
+          ...pre9,
+          sgs.preSum,
+          sgs.midExam,
+          ...post9,
+          sgs.postSum,
+          sgs.finExam,
+          sgs.grandTotal,
+          conf.confirmed_status === 'ยืนยัน' ? 'ยืนยัน' : 'รอยืนยัน',
+          conf.admin_checked ? 'TRUE' : 'FALSE',
+          conf.sgs_entered ? 'TRUE' : 'FALSE',
+          '', '', '', '', ''
+        ];
+      });
+
+      const tsv = rows.map(r => r.map(x => String(x ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+      try {
+        await navigator.clipboard.writeText(tsv);
+        showToast(`คัดลอกข้อมูลทั้ง 37 คอลัมน์ (${rows.length} วิชา) แล้ว! กด Ctrl+V วางใน Google Sheet ได้ทันที 📋`, "success");
+      } catch (e) {
+        showToast("ไม่สามารถคัดลอกอัตโนมัติได้ ให้ใช้ปุ่มส่งออก CSV แทนครับ", "error");
+      }
+    }
+
+    function exportAdminSgsCSV() {
+      if (!currentFilteredAdminList || currentFilteredAdminList.length === 0) return;
+      const headers = [
+        'ที่', 'รหัสวิชา', 'ชื่อวิชา', 'ชั้น', 'ห้องที่สอน', 'ครูผู้สอน',
+        'ช่อง 1 (ก่อน)', 'ช่อง 2 (ก่อน)', 'ช่อง 3 (ก่อน)', 'ช่อง 4 (ก่อน)', 'ช่อง 5 (ก่อน)', 'ช่อง 6 (ก่อน)', 'ช่อง 7 (ก่อน)', 'ช่อง 8 (ก่อน)', 'ช่อง 9 (ก่อน)',
+        'รวมเก็บก่อนกลางภาค (35)', 'สอบกลางภาค (15)',
+        'ช่อง 1 (หลัง)', 'ช่อง 2 (หลัง)', 'ช่อง 3 (หลัง)', 'ช่อง 4 (หลัง)', 'ช่อง 5 (หลัง)', 'ช่อง 6 (หลัง)', 'ช่อง 7 (หลัง)', 'ช่อง 8 (หลัง)', 'ช่อง 9 (หลัง)',
+        'รวมเก็บหลังกลางภาค (35)', 'สอบปลายภาค (15)', 'รวม 100',
+        'สถานะยืนยัน', 'ตรวจแล้ว', 'กรอก SGS แล้ว'
+      ];
+      const rows = currentFilteredAdminList.map((c, idx) => {
+        const code = c.course_code;
+        const conf = sgsConfirmations[code] || {};
+        const sgs = getSgsSlots(c);
+        const validTeachers = (c.teachers || []).filter(t => !isPlaceholderTeacher(t));
+        const pre9 = Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : '');
+        const post9 = Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : '');
+
+        return [
+          idx + 1, code, c.course_name, c.grade_level, conf.classrooms || c.classrooms || c.grade_level, validTeachers.join(', '),
+          ...pre9, sgs.preSum, sgs.midExam,
+          ...post9, sgs.postSum, sgs.finExam, sgs.grandTotal,
+          conf.confirmed_status === 'ยืนยัน' ? 'ยืนยัน' : 'รอยืนยัน',
+          conf.admin_checked ? 'TRUE' : 'FALSE',
+          conf.sgs_entered ? 'TRUE' : 'FALSE'
+        ];
+      });
+
+      const csvLines = [headers, ...rows].map(row =>
+        row.map(cell => {
+          const s = String(cell ?? '');
+          return (s.includes(',') || s.includes('"') || s.includes('\n')) ? `"${s.replace(/"/g, '""')}"` : s;
+        }).join(',')
+      );
+      const csv = '\uFEFF' + csvLines.join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ตารางยืนยัน_SGS_2_2569.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("ดาวน์โหลดไฟล์ CSV เรียบร้อยแล้ว", "success");
+    }
+
+    // 10. Modal Score Adjuster
+    function openScoreAdjustModal(code) {
+      const c = allCourses[code];
+      if (!c) return;
+      editingCourseObj = JSON.parse(JSON.stringify(c));
+      document.getElementById('modalCourseTitle').textContent = `${code} ${c.course_name}`;
+
+      const cont = document.getElementById('modalUnitRowsContainer');
+      cont.innerHTML = '';
+
+      const cutoff = editingCourseObj.midterm_cutoff || 1;
+      const preUnits = editingCourseObj.units.slice(0, cutoff);
+      const postUnits = editingCourseObj.units.slice(cutoff);
+
+      const renderSection = (title, units, isPre) => {
+        const h = document.createElement('div');
+        h.className = `font-bold text-xs p-2 rounded-lg ${isPre ? 'bg-blue-50 text-blue-900' : 'bg-purple-50 text-purple-900'}`;
+        h.textContent = title;
+        cont.appendChild(h);
+
+        units.forEach((u, uIdx) => {
+          const row = document.createElement('div');
+          row.className = 'flex items-center justify-between gap-3 p-2 bg-slate-50 rounded-xl text-xs';
+          row.innerHTML = `
+            <div class="flex-1">
+              <span class="font-bold text-slate-800">หน่วยที่ ${u.unit_no}: ${escapeHtml(u.unit_name)}</span>
+              <span class="text-[10px] text-slate-400 block">${u.hours} ชม.</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <label class="text-[10px] text-slate-500">คะแนนเก็บ:</label>
+              <input type="number" min="0" max="15" value="${u.score_total || 0}" onchange="updateModalUnitScore(${isPre ? uIdx : cutoff + uIdx}, this.value)" class="w-14 bg-white border border-slate-300 rounded-lg p-1 text-center font-bold text-slate-900 focus:border-indigo-400" />
+            </div>
+          `;
+          cont.appendChild(row);
+        });
+      };
+
+      renderSection('1. หน่วยก่อนสอบกลางภาค (เป้าหมายเก็บ 35 คะแนน)', preUnits, true);
+      renderSection('2. หน่วยหลังสอบกลางภาค (เป้าหมายเก็บ 35 คะแนน)', postUnits, false);
+
+      updateModalSummary();
+      document.getElementById('modalScoreAdjust').classList.remove('hidden');
+    }
+
+    function closeScoreAdjustModal() {
+      document.getElementById('modalScoreAdjust').classList.add('hidden');
+      editingCourseObj = null;
+    }
+
+    function updateModalUnitScore(idx, val) {
+      if (!editingCourseObj || !editingCourseObj.units[idx]) return;
+      const num = Math.min(15, Math.max(0, parseInt(val) || 0));
+      editingCourseObj.units[idx].score_total = num;
+      // split K P A
+      const k = Math.round(num * 0.5);
+      const p = Math.round(num * 0.3);
+      const a = num - k - p;
+      editingCourseObj.units[idx].assessments = [{
+        score_k: k,
+        score_p: p,
+        score_a: a,
+        score_total: num,
+        eval_methods: "- การสังเกตและประเมินผลงาน"
+      }];
+      updateModalSummary();
+    }
+
+    function updateModalSummary() {
+      if (!editingCourseObj) return;
+      const sgs = getSgsSlots(editingCourseObj);
+      const b = document.getElementById('modalScoreSummaryBadge');
+      if (sgs.is5050 && sgs.grandTotal === 100) {
+        b.className = 'text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300';
+        b.textContent = `รวม 100 คะแนนพอดี ✅ (ก่อน ${sgs.preSum}+15 | หลัง ${sgs.postSum}+15)`;
+      } else {
+        b.className = 'text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300';
+        b.textContent = `ปัจจุบัน ${sgs.grandTotal}/100 (ก่อน=${sgs.preSum}/35 | หลัง=${sgs.postSum}/35)`;
+      }
+    }
+
+    function modalAutoBalance() {
+      if (!editingCourseObj) return;
+      const cutoff = editingCourseObj.midterm_cutoff || 1;
+      const pre = editingCourseObj.units.slice(0, cutoff);
+      const post = editingCourseObj.units.slice(cutoff);
+
+      const balanceSlice = (slice, target) => {
+        if (!slice || slice.length === 0) return;
+        const per = Math.floor(target / slice.length);
+        const rem = target - (per * slice.length);
+        slice.forEach((u, i) => {
+          const tot = per + (i < rem ? 1 : 0);
+          u.score_total = tot;
+          const k = Math.round(tot * 0.5);
+          const p = Math.round(tot * 0.3);
+          const a = tot - k - p;
+          u.assessments = [{ score_k: k, score_p: p, score_a: a, score_total: tot, eval_methods: "- การประเมินผล" }];
+        });
+      };
+
+      balanceSlice(pre, 35);
+      balanceSlice(post, 35);
+      openScoreAdjustModal(editingCourseObj.course_code);
+      showToast("ปรับเกลี่ย 50:50 เรียบร้อยแล้ว", "success");
+    }
+
+    async function saveScoreAdjustModal() {
+      if (!editingCourseObj) return;
+      const code = editingCourseObj.course_code;
+      allCourses[code].units = JSON.parse(JSON.stringify(editingCourseObj.units));
+      await confirmSingleCourse(code);
+      closeScoreAdjustModal();
+    }
+
+    // 11. View Switcher
+    function switchMainView(mode) {
+      const btnT = document.getElementById('tabTeacherMode');
+      const btnA = document.getElementById('tabAdminMode');
+      const secT = document.getElementById('teacherViewSection');
+      const secA = document.getElementById('adminViewSection');
+
+      if (mode === 'teacher') {
+        btnT.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-indigo-700 shadow-sm cursor-pointer';
+        btnA.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        secT.classList.remove('hidden');
+        secA.classList.add('hidden');
+      } else {
+        btnA.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-white text-indigo-700 shadow-sm cursor-pointer';
+        btnT.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        secA.classList.remove('hidden');
+        secT.classList.add('hidden');
+        renderAdminTable();
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMsg');
+      const icon = document.getElementById('toastIcon');
+      msgEl.textContent = msg;
+      icon.className = type === 'success' 
+        ? "ri-checkbox-circle-fill text-emerald-400 text-lg" 
+        : (type === 'error' ? "ri-error-warning-fill text-rose-400 text-lg" : "ri-information-fill text-sky-400 text-lg");
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3500);
+    }
+
+    // 12. DOM Ready
+    window.addEventListener('DOMContentLoaded', async () => {
+      initStorageAndFirebase();
+      await initData();
+      populateTeacherDropdown('');
+
+      // Check URL query parameters (e.g. ?teacher= หรือ ?code=)
+      const urlParams = new URLSearchParams(window.location.search);
+      const teacherParam = urlParams.get('teacher');
+      const codeParam = urlParams.get('code');
+
+      if (teacherParam) {
+        document.getElementById('teacherNameSelect').value = teacherParam;
+        onTeacherNameChange();
+      } else if (codeParam && allCourses[codeParam]) {
+        const c = allCourses[codeParam];
+        const t = (c.teachers || []).find(x => !isPlaceholderTeacher(x));
+        if (t) {
+          document.getElementById('teacherNameSelect').value = t;
+          onTeacherNameChange();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

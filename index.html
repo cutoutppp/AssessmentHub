@@ -36,6 +36,33 @@
             }
           });
 
+          // 1.9 Inject active 'ระบบยืนยันสัดส่วนคะแนน SGS (ทุกคนต้องกด)' card if not present
+          if (!document.getElementById('sgs-confirm-injected-card')) {
+            const sgsCard = document.createElement('a');
+            sgsCard.id = 'sgs-confirm-injected-card';
+            sgsCard.href = 'sgs-confirm.html';
+            sgsCard.className = 'group bg-white rounded-xl p-3.5 border-2 border-emerald-400 hover:border-emerald-600 cursor-pointer shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between block text-left decoration-transparent relative overflow-hidden';
+            sgsCard.innerHTML = `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  </div>
+                  <span class="inline-flex items-center gap-1 bg-amber-400 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow-xs">
+                    ★ ทุกคนต้องกดยืนยัน
+                  </span>
+                </div>
+                <h3 class="text-sm font-black text-slate-900 group-hover:text-emerald-700 transition-colors">ระบบยืนยันสัดส่วนคะแนน SGS (2/2569)</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">เลือกชื่อครู ตรวจสอบ 9 ช่อง (50:50) และกดยืนยันในคลิกเดียว ไม่ต้องกรอก Google Sheet เอง</p>
+              </div>
+              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-emerald-700">
+                <span>เข้ากดยืนยันสัดส่วนคะแนน</span>
+                <span>→</span>
+              </div>
+            `;
+            targetGrid.appendChild(sgsCard);
+          }
+
           // 2. Inject active 'ระบบจัดทำแผนวัดผล (วผ.19)' card if not present
           if (!document.getElementById('assessment-plan-injected-card')) {
             const planCard = document.createElement('a');
@@ -48,13 +75,13 @@
                   <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   </div>
-                  <svg class="w-4 h-4 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"></path></svg>
+                  <span class="text-[10px] font-semibold text-slate-400">สำหรับครูที่ต้องการส่งแผน</span>
                 </div>
-                <h3 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">ยืนยันสัดส่วนคะแนน SGS & แผนวัดผล (วผ.19)</h3>
-                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">ตารางยืนยันสัดส่วนคะแนน SGS (9 ช่อง) แบ่งครึ่ง 50:50 อัตโนมัติ (35+15 | 35+15) พร้อมออกไฟล์ วผ.19</p>
+                <h3 class="text-sm font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">ระบบจัดทำแผนวัดผล (วผ.19)</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">สำหรับท่านที่ต้องการเอกสาร วผ.19 ฉบับเต็ม (.docx) พร้อมตัวชี้วัด/KPA อัตโนมัติ (ใครไม่ใช้ไม่เป็นไร)</p>
               </div>
               <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-indigo-600">
-                <span>กดยืนยันสัดส่วน SGS / สร้าง วผ.19</span>
+                <span>สร้างแผนวัดผล วผ.19 (.docx)</span>
                 <span>→</span>
               </div>
             `;
