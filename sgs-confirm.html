@@ -37,6 +37,8 @@
   <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Teacher Directory & SGS Code Mapping -->
+  <script src="assessment-plan/data/teacher_directory.js"></script>
   <!-- Courses Data Offline Bundle -->
   <script src="assessment-plan/data/courses_2_2569.js"></script>
 </head>
@@ -708,10 +710,43 @@
       return merged;
     }
 
-    function findCanonicalTeacherName(rawName) {
-      if (!rawName) return '';
-      const targetKey = normalizeTeacherKey(rawName);
+    function getTeacherCodeByName(name) {
+      if (!name) return '';
+      const k = normalizeTeacherKey(name);
+      if (!k) return '';
+      const map = window.TEACHER_CODE_MAP || {};
+      for (const [code, info] of Object.entries(map)) {
+        if (normalizeTeacherKey(info.name) === k) return code;
+      }
+      return '';
+    }
+
+    function findCanonicalTeacherName(rawInput) {
+      if (!rawInput) return '';
+      const s = String(rawInput).trim();
+      if (!s) return '';
+
+      const map = window.TEACHER_CODE_MAP || {};
+
+      // 1. Direct code lookup (e.g. '444', '242')
+      if (map[s]) {
+        return map[s].name;
+      }
+      const numCode = parseInt(s, 10);
+      if (!isNaN(numCode) && map[String(numCode)]) {
+        return map[String(numCode)].name;
+      }
+
+      // 2. Name normalization lookup in TEACHER_CODE_MAP
+      const targetKey = normalizeTeacherKey(s);
       if (!targetKey) return '';
+      for (const info of Object.values(map)) {
+        if (info.name === s || normalizeTeacherKey(info.name) === targetKey) {
+          return info.name;
+        }
+      }
+
+      // 3. Fallback: Search allCourses and SCHOOL_TEACHERS_BY_AREA
       const allTeachers = new Set();
       Object.values(allCourses).forEach(c => {
         (c.teachers || []).forEach(t => {
@@ -726,7 +761,7 @@
         });
       }
       for (const t of allTeachers) {
-        if (t === rawName.trim() || normalizeTeacherKey(t) === targetKey) {
+        if (t === s || normalizeTeacherKey(t) === targetKey) {
           return t;
         }
       }
@@ -775,9 +810,9 @@
       const confirmedCount = myCourses.filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
       const pendingCount = totalCount - confirmedCount;
       const isAllDone = totalCount > 0 && pendingCount === 0;
-      const displayName = formatTeacherName(canonicalName);
-      const teacCodeBadge = (accUser && accUser.teaccode)
-        ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-900/10 text-slate-800">รหัสครู ${escapeHtml(accUser.teaccode)}</span>`
+      const resolvedCode = (accUser && accUser.teaccode) || getTeacherCodeByName(canonicalName);
+      const teacCodeBadge = resolvedCode
+        ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-900/10 text-slate-800">รหัสครู ${escapeHtml(resolvedCode)}</span>`
         : '';
 
       banner.classList.remove('hidden');
@@ -1483,10 +1518,19 @@
 
       const teachersSet = new Set();
 
+      // From TEACHER_CODE_MAP
+      if (window.TEACHER_CODE_MAP) {
+        Object.values(window.TEACHER_CODE_MAP).forEach(t => {
+          if (!selectedArea || t.dept === selectedArea || (selectedArea.includes('สังคม') && (t.dept || '').includes('สังคม')) || (selectedArea.includes('วิทย') && (t.dept || '').includes('วิทย'))) {
+            teachersSet.add(t.name);
+          }
+        });
+      }
+
       // From school areas dictionary if present
       if (window.SCHOOL_TEACHERS_BY_AREA) {
         Object.entries(window.SCHOOL_TEACHERS_BY_AREA).forEach(([area, list]) => {
-          if (!selectedArea || area === selectedArea) {
+          if (!selectedArea || area === selectedArea || (selectedArea.includes('สังคม') && area.includes('สังคม')) || (selectedArea.includes('วิทย') && area.includes('วิทย'))) {
             (list || []).forEach(t => {
               const clean = String(t || '').trim();
               if (clean && !isPlaceholderTeacher(clean)) teachersSet.add(clean);
@@ -1497,7 +1541,7 @@
 
       // From courses data
       Object.values(allCourses).forEach(c => {
-        if (!selectedArea || c.learning_area === selectedArea) {
+        if (!selectedArea || c.learning_area === selectedArea || (selectedArea.includes('สังคม') && (c.learning_area || '').includes('สังคม')) || (selectedArea.includes('วิทย') && (c.learning_area || '').includes('วิทย'))) {
           (c.teachers || []).forEach(t => {
             const clean = String(t || '').trim();
             if (clean && !isPlaceholderTeacher(clean)) teachersSet.add(clean);
@@ -1505,11 +1549,25 @@
         }
       });
 
-      const sorted = Array.from(teachersSet).sort((a, b) => a.localeCompare(b, 'th'));
+      const sorted = Array.from(teachersSet).sort((a, b) => {
+        const codeA = getTeacherCodeByName(a);
+        const codeB = getTeacherCodeByName(b);
+        if (codeA && codeB && codeA !== codeB) {
+          const numA = parseInt(codeA, 10);
+          const numB = parseInt(codeB, 10);
+          if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+          return codeA.localeCompare(codeB, 'th');
+        }
+        if (codeA && !codeB) return -1;
+        if (!codeA && codeB) return 1;
+        return a.localeCompare(b, 'th');
+      });
+
       sorted.forEach(name => {
+        const code = getTeacherCodeByName(name);
         const opt = document.createElement('option');
         opt.value = name;
-        opt.textContent = name;
+        opt.textContent = code ? `[${code}] ${name}` : name;
         select.appendChild(opt);
       });
 
@@ -1538,9 +1596,30 @@
         return;
       }
 
+      // Sync URL parameter to clean teachcode or teacher
+      const tCode = getTeacherCodeByName(selectedTeacherName);
+      try {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete('view');
+        currentUrl.searchParams.delete('area');
+        currentUrl.searchParams.delete('code');
+        currentUrl.searchParams.delete('teacher');
+        currentUrl.searchParams.delete('teaccode');
+        currentUrl.searchParams.delete('t');
+        if (tCode) {
+          currentUrl.searchParams.set('teachcode', tCode);
+        } else {
+          currentUrl.searchParams.set('teacher', selectedTeacherName);
+        }
+        window.history.replaceState({}, '', currentUrl.toString());
+      } catch (e) {}
+
       // Find department
       let dept = '';
-      if (window.SCHOOL_TEACHERS_BY_AREA) {
+      if (tCode && window.TEACHER_CODE_MAP && window.TEACHER_CODE_MAP[tCode] && window.TEACHER_CODE_MAP[tCode].dept) {
+        dept = window.TEACHER_CODE_MAP[tCode].dept;
+      }
+      if (!dept && window.SCHOOL_TEACHERS_BY_AREA) {
         for (const [area, list] of Object.entries(window.SCHOOL_TEACHERS_BY_AREA)) {
           if (Array.isArray(list) && list.includes(selectedTeacherName)) {
             dept = area;
@@ -1553,7 +1632,8 @@
         if (found) dept = found.learning_area;
       }
 
-      document.getElementById('selectedTeacherDisplayName').textContent = formatTeacherName(selectedTeacherName);
+      const codePrefix = tCode ? `[รหัส ${tCode}] ` : '';
+      document.getElementById('selectedTeacherDisplayName').textContent = `${codePrefix}${formatTeacherName(selectedTeacherName)}`;
       document.getElementById('selectedTeacherAreaBadge').textContent = dept || 'ครูผู้สอน';
       document.getElementById('teacherCourseSummaryBar').classList.remove('hidden');
 
@@ -1563,6 +1643,14 @@
     function clearSelectedTeacher() {
       document.getElementById('teacherNameSelect').value = '';
       selectedTeacherName = '';
+      try {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.delete('teachcode');
+        currentUrl.searchParams.delete('teaccode');
+        currentUrl.searchParams.delete('teacher');
+        currentUrl.searchParams.delete('t');
+        window.history.replaceState({}, '', currentUrl.toString());
+      } catch (e) {}
       onTeacherNameChange();
     }
 
@@ -2633,12 +2721,17 @@
       populateTeacherDropdown('');
       renderAccountOwnerBanner();
 
-      // Check URL query parameters (e.g. ?view=admin, ?area=, ?teacher= หรือ ?code=)
+      // Check URL query parameters (e.g. ?view=admin, ?area=, ?teachcode=, ?teaccode=, ?teacher= หรือ ?code=)
       const urlParams = new URLSearchParams(window.location.search);
       const viewParam = urlParams.get('view');
       const areaParam = urlParams.get('area');
-      const teacherParam = urlParams.get('teacher');
       const codeParam = urlParams.get('code');
+      const teacherParam = urlParams.get('teachcode') || 
+                           urlParams.get('teaccode') || 
+                           urlParams.get('teacher_code') || 
+                           urlParams.get('teacherCode') || 
+                           urlParams.get('t') || 
+                           urlParams.get('teacher');
 
       if (viewParam === 'admin') {
         if (areaParam) {
@@ -2648,22 +2741,33 @@
         switchMainView('admin');
       } else if (teacherParam) {
         const canonical = findCanonicalTeacherName(teacherParam);
-        document.getElementById('teacherNameSelect').value = canonical;
-        onTeacherNameChange();
-      } else if (codeParam && allCourses[codeParam]) {
-        const c = allCourses[codeParam];
-        const t = (c.teachers || []).find(x => !isPlaceholderTeacher(x));
-        if (t) {
-          document.getElementById('teacherNameSelect').value = t;
+        if (canonical) {
+          document.getElementById('teacherNameSelect').value = canonical;
           onTeacherNameChange();
+        }
+      } else if (codeParam) {
+        if (allCourses[codeParam]) {
+          const c = allCourses[codeParam];
+          const t = (c.teachers || []).find(x => !isPlaceholderTeacher(x));
+          if (t) {
+            document.getElementById('teacherNameSelect').value = t;
+            onTeacherNameChange();
+          }
+        } else {
+          // If code is numeric (e.g. ?code=444 or ?code=242), check if it's a teacher code
+          const canonical = findCanonicalTeacherName(codeParam);
+          if (canonical) {
+            document.getElementById('teacherNameSelect').value = canonical;
+            onTeacherNameChange();
+          }
         }
       } else {
         // Auto-select logged-in TeacherHub account owner if available
         const accUser = getLoggedInAccountUser();
-        if (accUser && accUser.name) {
-          const canonical = findCanonicalTeacherName(accUser.name);
+        if (accUser && (accUser.teaccode || accUser.name)) {
+          const canonical = findCanonicalTeacherName(accUser.teaccode || accUser.name);
           const sel = document.getElementById('teacherNameSelect');
-          if (sel && Array.from(sel.options).some(o => o.value === canonical)) {
+          if (sel && canonical && Array.from(sel.options).some(o => o.value === canonical)) {
             sel.value = canonical;
             onTeacherNameChange();
           }

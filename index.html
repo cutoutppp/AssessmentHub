@@ -10,7 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script type="module" crossorigin src="/AssessmentHub/assets/index-ynmewE__.js"></script>
     <link rel="stylesheet" crossorigin href="/AssessmentHub/assets/index-CpDl0GpN.css">
-    <!-- SGS 2/2569 Course Data & Cloud Sync for Main Card + Account Alert -->
+    <!-- SGS 2/2569 Teacher Directory, Course Data & Cloud Sync for Main Card + Account Alert -->
+    <script src="assessment-plan/data/teacher_directory.js"></script>
     <script src="assessment-plan/data/courses_2_2569.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
@@ -95,9 +96,22 @@
 
         const myConfirmed = myCourses.filter(c => portalSgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
         const myPending = myCourses.length - myConfirmed;
-        const targetUrl = canonicalTeacherName
-          ? `sgs-confirm.html?teacher=${encodeURIComponent(canonicalTeacherName)}`
-          : 'sgs-confirm.html';
+        let teachCode = (user && user.teaccode) ? String(user.teaccode).trim() : '';
+        if (!teachCode && canonicalTeacherName && window.TEACHER_CODE_MAP) {
+          const cnk = normalizePortalTeacherKey(canonicalTeacherName);
+          for (const [code, info] of Object.entries(window.TEACHER_CODE_MAP)) {
+            if (normalizePortalTeacherKey(info.name) === cnk) {
+              teachCode = code;
+              break;
+            }
+          }
+        }
+
+        const targetUrl = teachCode
+          ? `sgs-confirm.html?teachcode=${encodeURIComponent(teachCode)}`
+          : (canonicalTeacherName
+            ? `sgs-confirm.html?teacher=${encodeURIComponent(canonicalTeacherName)}`
+            : 'sgs-confirm.html');
 
         return {
           user,

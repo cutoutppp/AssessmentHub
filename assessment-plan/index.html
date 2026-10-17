@@ -604,6 +604,7 @@
   </div>
 
   <!-- Offline Data Fallbacks (allows opening directly via double-click without web server) -->
+  <script src="data/teacher_directory.js"></script>
   <script src="data/courses_2_2569.js"></script>
   <script src="templates/template_base64.js"></script>
   <script src="js/generator.js"></script>
@@ -929,11 +930,27 @@
       setupGenerator();
       setupClassroomInputListener();
 
-      // Check if URL has ?code=
+      // Check if URL has ?code= or ?teachcode= or ?teaccode= or ?teacher=
       const urlParams = new URLSearchParams(window.location.search);
       const codeParam = urlParams.get('code');
+      const teacherParam = urlParams.get('teachcode') || 
+                           urlParams.get('teaccode') || 
+                           urlParams.get('teacher_code') || 
+                           urlParams.get('teacherCode') || 
+                           urlParams.get('t') || 
+                           urlParams.get('teacher');
+
       if (codeParam && allCourses[codeParam]) {
         selectCourse(codeParam);
+      } else if (teacherParam) {
+        const canonical = window.resolveTeacherFromCodeOrName 
+          ? window.resolveTeacherFromCodeOrName(teacherParam) 
+          : teacherParam;
+        const sel = document.getElementById('filterTeacherSelect');
+        if (sel && canonical) {
+          sel.value = canonical;
+          updateFilteredCourses();
+        }
       }
     });
 
@@ -1289,11 +1306,34 @@
           }
         });
 
-        const sortedTeachers = Array.from(teacherSet).sort((a, b) => a.localeCompare(b, 'th'));
+        const sortedTeachers = Array.from(teacherSet).sort((a, b) => {
+          let codeA = '', codeB = '';
+          if (window.TEACHER_CODE_MAP) {
+            for (const [c, info] of Object.entries(window.TEACHER_CODE_MAP)) {
+              if (info.name === a) codeA = c;
+              if (info.name === b) codeB = c;
+            }
+          }
+          if (codeA && codeB && codeA !== codeB) {
+            const numA = parseInt(codeA, 10);
+            const numB = parseInt(codeB, 10);
+            if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+            return codeA.localeCompare(codeB, 'th');
+          }
+          if (codeA && !codeB) return -1;
+          if (!codeA && codeB) return 1;
+          return a.localeCompare(b, 'th');
+        });
         sortedTeachers.forEach(t => {
+          let code = '';
+          if (window.TEACHER_CODE_MAP) {
+            for (const [c, info] of Object.entries(window.TEACHER_CODE_MAP)) {
+              if (info.name === t) { code = c; break; }
+            }
+          }
           const opt = document.createElement('option');
           opt.value = t;
-          opt.textContent = t;
+          opt.textContent = code ? `[${code}] ${t}` : t;
           teacherSelect.appendChild(opt);
         });
 
