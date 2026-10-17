@@ -10,12 +10,286 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script type="module" crossorigin src="/AssessmentHub/assets/index-ynmewE__.js"></script>
     <link rel="stylesheet" crossorigin href="/AssessmentHub/assets/index-CpDl0GpN.css">
+    <!-- SGS 2/2569 Course Data & Cloud Sync for Main Card + Account Alert -->
+    <script src="assessment-plan/data/courses_2_2569.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script>
-      // Script to dynamically manage and inject cards in Teacher Hub under 'ระบบที่เกี่ยวข้อง'
+      const SGS_PORTAL_STORAGE_KEY = 'sgs_confirmations_2_2569_v1';
+      let portalSgsConfirmations = {};
+
+      try {
+        const raw = localStorage.getItem(SGS_PORTAL_STORAGE_KEY);
+        if (raw) portalSgsConfirmations = JSON.parse(raw) || {};
+      } catch (e) {}
+
+      function normalizePortalTeacherKey(name) {
+        if (!name) return '';
+        return String(name)
+          .replace(/^(คุณครู|ครู)\s*/g, '')
+          .replace(/^(ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร\.|ผศ\.|รศ\.|ศ\.|นาย|นางสาว|น\.ส\.|นาง)\s*/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function formatPortalTeacherName(name) {
+        const clean = normalizePortalTeacherKey(name);
+        return clean ? `คุณครู${clean}` : 'คุณครูผู้สอน';
+      }
+
+      function getPortalLoggedInUser() {
+        try {
+          const raw = localStorage.getItem('sgs_user');
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.name) return parsed;
+        } catch (e) {}
+        return null;
+      }
+
+      function computeAccountSgsStats() {
+        const coursesList = Array.isArray(window.COURSES_DATA) ? window.COURSES_DATA : [];
+        const totalSchoolCourses = coursesList.length;
+        const totalSchoolConfirmed = coursesList.filter(c => portalSgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
+
+        const user = getPortalLoggedInUser();
+        const userKey = user && user.name ? normalizePortalTeacherKey(user.name) : '';
+        let canonicalTeacherName = '';
+        let myCourses = [];
+
+        if (userKey && coursesList.length > 0) {
+          myCourses = coursesList.filter(c => {
+            const tList = (portalSgsConfirmations[c.course_code]?.teachers && portalSgsConfirmations[c.course_code].teachers.length > 0)
+              ? portalSgsConfirmations[c.course_code].teachers
+              : (c.teachers || []);
+            return tList.some(t => {
+              const tk = normalizePortalTeacherKey(t);
+              if (tk && tk === userKey) {
+                if (!canonicalTeacherName) canonicalTeacherName = String(t).trim();
+                return true;
+              }
+              return false;
+            });
+          });
+        }
+
+        const myConfirmed = myCourses.filter(c => portalSgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
+        const myPending = myCourses.length - myConfirmed;
+        const targetUrl = canonicalTeacherName
+          ? `sgs-confirm.html?teacher=${encodeURIComponent(canonicalTeacherName)}`
+          : 'sgs-confirm.html';
+
+        return {
+          user,
+          userKey,
+          canonicalTeacherName,
+          myCourses,
+          myConfirmed,
+          myPending,
+          totalSchoolCourses,
+          totalSchoolConfirmed,
+          targetUrl
+        };
+      }
+
+      function renderPortalSgsMainCardAndAlert() {
+        const grids = document.querySelectorAll('.grid');
+        if (grids.length < 2) return;
+
+        const overviewGrid = grids[0];
+        const stats = computeAccountSgsStats();
+        const { user, myCourses, myConfirmed, myPending, totalSchoolCourses, totalSchoolConfirmed, targetUrl } = stats;
+
+        // Upgrade overviewGrid to 4 columns on large screens so all 4 main cards sit side by side
+        if (overviewGrid.className.includes('md:grid-cols-3')) {
+          overviewGrid.className = overviewGrid.className.replace('md:grid-cols-3', 'md:grid-cols-2 lg:grid-cols-4');
+        }
+
+        // 1. Inject or update Account-Based Notification Banner right above overviewGrid
+        let bannerEl = document.getElementById('sgs-account-alert-banner');
+        if (!bannerEl) {
+          bannerEl = document.createElement('div');
+          bannerEl.id = 'sgs-account-alert-banner';
+          overviewGrid.parentNode.insertBefore(bannerEl, overviewGrid);
+        }
+
+        const displayName = user && user.name ? formatPortalTeacherName(user.name) : 'คุณครูผู้สอน';
+        const sigKey = JSON.stringify({
+          u: user ? user.userid : '',
+          mc: myCourses.length,
+          mconf: myConfirmed,
+          sc: totalSchoolConfirmed
+        });
+
+        if (bannerEl.getAttribute('data-sig') !== sigKey) {
+          bannerEl.setAttribute('data-sig', sigKey);
+          if (myCourses.length > 0 && myPending > 0) {
+            const pendingNames = myCourses
+              .filter(c => portalSgsConfirmations[c.course_code]?.confirmed_status !== 'ยืนยัน')
+              .map(c => `${c.course_code} ${c.course_name}`)
+              .join(', ');
+            bannerEl.className = 'mb-6 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 via-orange-50/70 to-white p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4';
+            bannerEl.innerHTML = `
+              <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider">แจ้งเตือนตามชื่อเจ้าของบัญชี</span>
+                    <span class="text-sm sm:text-base font-extrabold text-slate-900">${displayName} — มีรายวิชารอยืนยันสัดส่วนคะแนน SGS (${myPending} จาก ${myCourses.length} วิชา)</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1 font-medium">วิชาที่รอยืนยัน: <strong class="text-amber-900">${pendingNames}</strong> • สามารถคลิกพิมพ์ปรับคะแนนในช่องตาราง 1–9 ได้โดยตรงและคำนวณสดทันที</p>
+                </div>
+              </div>
+              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
+                <span>ยืนยันสัดส่วนคะแนนของฉัน</span>
+                <span>→</span>
+              </a>
+            `;
+          } else if (myCourses.length > 0 && myPending === 0) {
+            const confirmedNames = myCourses.map(c => c.course_code).join(', ');
+            bannerEl.className = 'mb-6 rounded-2xl border border-emerald-300 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-white p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4';
+            bannerEl.innerHTML = `
+              <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">สถานะเจ้าของบัญชี</span>
+                    <span class="text-sm sm:text-base font-extrabold text-emerald-950">${displayName} — ยืนยันสัดส่วนคะแนน SGS ครบทั้ง ${myCourses.length} รายวิชาแล้ว</span>
+                  </div>
+                  <p class="text-xs text-emerald-800 mt-1 font-medium">รายวิชาที่ยืนยันแล้ว (${confirmedNames}) • สามารถคลิกเพื่อตรวจสอบหรือแก้ไขสัดส่วนคะแนนได้ตลอดเวลา</p>
+                </div>
+              </div>
+              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
+                <span>ดู / แก้ไขสัดส่วนคะแนน</span>
+                <span>→</span>
+              </a>
+            `;
+          } else {
+            bannerEl.className = 'mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/70 via-white to-indigo-50/40 p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4';
+            bannerEl.innerHTML = `
+              <div class="flex items-start gap-3.5">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">แจ้งเตือนบัญชีผู้ใช้</span>
+                    <span class="text-sm sm:text-base font-extrabold text-slate-900">${displayName} — ระบบยืนยันสัดส่วนคะแนน SGS (ภาคเรียนที่ 2/2569)</span>
+                  </div>
+                  <p class="text-xs text-slate-600 mt-1 font-medium">ภาพรวมทั้งโรงเรียนยืนยันแล้ว <strong>${totalSchoolConfirmed} / ${totalSchoolCourses}</strong> รายวิชา • พิมพ์ปรับคะแนนลงช่องตาราง 1–9 ได้โดยตรงและคำนวณสดทันที</p>
+                </div>
+              </div>
+              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
+                <span>เข้าสู่ระบบยืนยันสัดส่วนคะแนน</span>
+                <span>→</span>
+              </a>
+            `;
+          }
+        }
+
+        // 2. Inject or update Main Overview Card (#sgs-main-overview-card) inside overviewGrid (grids[0])
+        let mainCard = document.getElementById('sgs-main-overview-card');
+        if (!mainCard) {
+          mainCard = document.createElement('div');
+          mainCard.id = 'sgs-main-overview-card';
+          overviewGrid.appendChild(mainCard);
+        }
+
+        if (mainCard.getAttribute('data-sig') !== sigKey) {
+          mainCard.setAttribute('data-sig', sigKey);
+          mainCard.onclick = () => { window.location.href = targetUrl; };
+
+          const hasPersonal = myCourses.length > 0;
+          const isAllDone = hasPersonal ? (myPending === 0) : (totalSchoolConfirmed > 0 && totalSchoolConfirmed === totalSchoolCourses);
+          const mainCountText = hasPersonal ? `${myConfirmed}/${myCourses.length}` : `${totalSchoolConfirmed}/${totalSchoolCourses}`;
+          const mainUnitText = hasPersonal ? 'วิชาของฉัน' : 'วิชาทั้ง รร.';
+
+          const courseBreakdownHtml = hasPersonal
+            ? `<div class="mt-4 border-t border-slate-100 pt-3 relative z-10 space-y-1.5">
+                 ${myCourses.slice(0, 4).map(c => {
+                   const ok = portalSgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน';
+                   return `<div class="flex items-center justify-between text-xs">
+                     <span class="text-slate-700 font-semibold truncate pr-2">${c.course_code} ${c.course_name}</span>
+                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${ok ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}">${ok ? 'ยืนยันแล้ว' : 'รอยืนยัน'}</span>
+                   </div>`;
+                 }).join('')}
+               </div>`
+            : `<div class="mt-4 border-t border-slate-100 pt-3 relative z-10 flex items-center justify-between text-xs font-bold text-emerald-700">
+                 <span>คลิกเพื่อเลือกชื่อครูและยืนยันคะแนน</span>
+                 <span>→</span>
+               </div>`;
+
+          mainCard.className = `bg-white rounded-2xl p-6 border ${hasPersonal && myPending > 0 ? 'border-amber-300 hover:border-amber-400' : 'border-emerald-200 hover:border-emerald-400'} shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.15)] transition-all duration-300 transform hover:-translate-y-1 cursor-pointer relative overflow-hidden group`;
+          mainCard.innerHTML = `
+            <div class="absolute top-0 right-0 w-32 h-32 ${hasPersonal && myPending > 0 ? 'bg-amber-50' : 'bg-emerald-50'} rounded-bl-full -z-0 opacity-60 group-hover:scale-110 transition-transform duration-500"></div>
+            <div class="flex justify-between items-start relative z-10">
+              <div>
+                <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-1">ยืนยันสัดส่วนคะแนน SGS</p>
+                <div class="flex items-baseline gap-2">
+                  <h3 class="text-4xl font-extrabold text-slate-900">${mainCountText}</h3>
+                  <span class="text-sm font-medium text-slate-500">${mainUnitText}</span>
+                </div>
+              </div>
+              <div class="${hasPersonal && myPending > 0 ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'} p-3.5 rounded-2xl shadow-sm">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+            </div>
+            <div class="mt-5 flex items-center text-sm font-semibold ${hasPersonal && myPending > 0 ? 'text-amber-800 bg-amber-50/80' : 'text-emerald-700 bg-emerald-50/70'} p-2 rounded-lg relative z-10">
+              <span>${hasPersonal ? (myPending > 0 ? `รอยืนยัน ${myPending} วิชา (คลิกเพื่อยืนยัน)` : 'ยืนยันครบทุกรายวิชาแล้ว ✓') : 'ตรวจสอบและยืนยันสัดส่วนคะแนน 50:50'}</span>
+            </div>
+            ${courseBreakdownHtml}
+          `;
+        }
+
+        // Also update the bottom card link if present
+        const bottomSgsCard = document.getElementById('sgs-confirm-injected-card');
+        if (bottomSgsCard) {
+          bottomSgsCard.href = targetUrl;
+        }
+      }
+
+      // Initialize Firebase listener for live confirmation counts on TeacherHub portal
+      try {
+        if (typeof firebase !== 'undefined') {
+          const fbConfig = {
+            apiKey: "AIzaSyCGjC6w1a795yZ858-V3q9-wD2_8zH1770",
+            authDomain: "tradesimschool.firebaseapp.com",
+            projectId: "tradesimschool",
+            storageBucket: "tradesimschool.firebasestorage.app",
+            messagingSenderId: "903283363810",
+            appId: "1:903283363810:web:5cb5c8e5898ab114284e77"
+          };
+          if (!firebase.apps.length) firebase.initializeApp(fbConfig);
+          firebase.firestore().collection('survey_config').onSnapshot((snap) => {
+            let changed = false;
+            snap.forEach((doc) => {
+              if (doc.id && doc.id.startsWith('sgs_2569_2_')) {
+                const d = doc.data();
+                if (d && d.course_code) {
+                  portalSgsConfirmations[d.course_code] = d;
+                  changed = true;
+                }
+              }
+            });
+            if (changed) {
+              localStorage.setItem(SGS_PORTAL_STORAGE_KEY, JSON.stringify(portalSgsConfirmations));
+              renderPortalSgsMainCardAndAlert();
+            }
+          });
+        }
+      } catch (e) {}
+
+      // Script to dynamically manage and inject cards in Teacher Hub
       const observer = new MutationObserver((mutations) => {
+        renderPortalSgsMainCardAndAlert();
+
         // Look for all grids
         const grids = document.querySelectorAll('.grid');
         
@@ -36,11 +310,12 @@
             }
           });
 
-          // 1.9 Inject active 'ระบบยืนยันสัดส่วนคะแนน SGS (ทุกคนต้องกด)' card if not present
+          // 1.9 Inject active 'ระบบยืนยันสัดส่วนคะแนน SGS' card if not present
           if (!document.getElementById('sgs-confirm-injected-card')) {
+            const stats = computeAccountSgsStats();
             const sgsCard = document.createElement('a');
             sgsCard.id = 'sgs-confirm-injected-card';
-            sgsCard.href = 'sgs-confirm.html';
+            sgsCard.href = stats.targetUrl;
             sgsCard.className = 'group bg-white rounded-xl p-3.5 border-2 border-emerald-400 hover:border-emerald-600 cursor-pointer shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between block text-left decoration-transparent relative overflow-hidden';
             sgsCard.innerHTML = `
               <div>
@@ -53,7 +328,7 @@
                   </span>
                 </div>
                 <h3 class="text-sm font-black text-slate-900 group-hover:text-emerald-700 transition-colors">ระบบยืนยันสัดส่วนคะแนน SGS (2/2569)</h3>
-                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">เลือกรหัส/ชื่อครูผู้สอน ตรวจสอบสัดส่วนคะแนน 9 ช่อง (50:50) และกดยืนยันส่งต่องานวัดและประเมินผล</p>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">พิมพ์ปรับสัดส่วนคะแนนลงช่องตาราง 1–9 คำนวณสดทันที (50:50) และกดยืนยันส่งต่องานวัดและประเมินผล</p>
               </div>
               <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-emerald-700">
                 <span>เข้าสู่ระบบยืนยันสัดส่วนคะแนน</span>
