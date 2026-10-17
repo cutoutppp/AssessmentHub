@@ -145,10 +145,15 @@
                   <p class="text-xs text-slate-600 mt-1 font-medium">วิชาที่รอยืนยัน: <strong class="text-amber-900">${pendingNames}</strong> • สามารถคลิกพิมพ์ปรับคะแนนในช่องตาราง 1–9 ได้โดยตรงและคำนวณสดทันที</p>
                 </div>
               </div>
-              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
-                <span>ยืนยันสัดส่วนคะแนนของฉัน</span>
-                <span>→</span>
-              </a>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <a href="sgs-confirm.html?view=admin" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-indigo-700 border border-indigo-200 font-bold text-xs shadow-2xs transition-all flex items-center justify-center gap-1.5 decoration-transparent">
+                  <span>แดชบอร์ดรายกลุ่มสาระฯ</span>
+                </a>
+                <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-sm transition-all flex items-center justify-center gap-2 decoration-transparent">
+                  <span>ยืนยันสัดส่วนคะแนนของฉัน</span>
+                  <span>→</span>
+                </a>
+              </div>
             `;
           } else if (myCourses.length > 0 && myPending === 0) {
             const confirmedNames = myCourses.map(c => c.course_code).join(', ');
@@ -166,10 +171,15 @@
                   <p class="text-xs text-emerald-800 mt-1 font-medium">รายวิชาที่ยืนยันแล้ว (${confirmedNames}) • สามารถคลิกเพื่อตรวจสอบหรือแก้ไขสัดส่วนคะแนนได้ตลอดเวลา</p>
                 </div>
               </div>
-              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
-                <span>ดู / แก้ไขสัดส่วนคะแนน</span>
-                <span>→</span>
-              </a>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <a href="sgs-confirm.html?view=admin" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-indigo-700 border border-indigo-200 font-bold text-xs shadow-2xs transition-all flex items-center justify-center gap-1.5 decoration-transparent">
+                  <span>แดชบอร์ดรายกลุ่มสาระฯ</span>
+                </a>
+                <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 decoration-transparent">
+                  <span>ดู / แก้ไขสัดส่วนคะแนน</span>
+                  <span>→</span>
+                </a>
+              </div>
             `;
           } else {
             bannerEl.className = 'mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50/70 via-white to-indigo-50/40 p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4';
@@ -186,10 +196,15 @@
                   <p class="text-xs text-slate-600 mt-1 font-medium">ภาพรวมทั้งโรงเรียนยืนยันแล้ว <strong>${totalSchoolConfirmed} / ${totalSchoolCourses}</strong> รายวิชา • พิมพ์ปรับคะแนนลงช่องตาราง 1–9 ได้โดยตรงและคำนวณสดทันที</p>
                 </div>
               </div>
-              <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 shrink-0 decoration-transparent">
-                <span>เข้าสู่ระบบยืนยันสัดส่วนคะแนน</span>
-                <span>→</span>
-              </a>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <a href="sgs-confirm.html?view=admin" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-indigo-700 border border-indigo-200 font-bold text-xs shadow-2xs transition-all flex items-center justify-center gap-1.5 decoration-transparent">
+                  <span>แดชบอร์ดรายกลุ่มสาระฯ</span>
+                </a>
+                <a href="${targetUrl}" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 decoration-transparent">
+                  <span>เข้าสู่ระบบยืนยันสัดส่วนคะแนน</span>
+                  <span>→</span>
+                </a>
+              </div>
             `;
           }
         }
