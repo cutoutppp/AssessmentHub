@@ -128015,4 +128015,4 @@ window.COURSES_DATA = {
   }
 };
 
-window.SCHOOL_TEACHERS_BY_AREA = {};
+window.SCHOOL_TEACHERS_BY_AREA = window.SCHOOL_TEACHERS_BY_AREA || {};
