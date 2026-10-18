@@ -1533,6 +1533,7 @@
       // From TEACHER_CODE_MAP
       if (window.TEACHER_CODE_MAP) {
         Object.values(window.TEACHER_CODE_MAP).forEach(t => {
+          if (t.transferred) return;
           if (!selectedArea || t.dept === selectedArea || (selectedArea.includes('สังคม') && (t.dept || '').includes('สังคม')) || (selectedArea.includes('วิทย') && (t.dept || '').includes('วิทย'))) {
             teachersSet.add(t.name);
           }
