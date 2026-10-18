@@ -1680,13 +1680,6 @@
         (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
       );
 
-      // Fallback: If no direct matches, check department courses
-      if (courses.length === 0) {
-        const area = document.getElementById('teacherAreaFilter').value;
-        if (area) {
-          courses = Object.values(allCourses).filter(c => c.learning_area === area && c.is_scheduled_term2);
-        }
-      }
 
       // Sort: Term 2 first
       courses.sort((a, b) => {
