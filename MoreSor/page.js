@@ -52,6 +52,28 @@ function DashboardContent() {
     }
     setAlertModal({ isOpen: true, title: title || defaultTitle, message, type });
   };
+
+  const showAuthRequired = () => {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'กรุณาเข้าสู่ระบบ',
+        text: 'กรุณาเข้าสู่ระบบผ่าน AssessmentHub ก่อน',
+        confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+        confirmButtonColor: '#4f46e5',
+        showCancelButton: true,
+        cancelButtonText: 'ยกเลิก'
+      }).then((res) => {
+        if (res.isConfirmed) {
+          window.location.href = '/AssessmentHub/index.html';
+        }
+      });
+    } else {
+      if (confirm('กรุณาเข้าสู่ระบบผ่าน AssessmentHub ก่อน\n\nต้องการไปที่หน้าเข้าสู่ระบบหรือไม่?')) {
+        window.location.href = '/AssessmentHub/index.html';
+      }
+    }
+  };
   
   const fileInputRef = useRef(null);
 
@@ -96,7 +118,7 @@ function DashboardContent() {
              showAlert('ไม่พบข้อมูลรายวิชาของคุณครูในระบบ ม.ส. (หรือยังไม่มีข้อมูลจากวิชาการ)', 'error', 'ไม่พบข้อมูล');
           }
         } else {
-          showAlert('กรุณาเข้าสู่ระบบผ่านหน้า TeacherHub', 'error', 'ไม่ได้รับอนุญาต');
+          showAuthRequired();
         }
       }
     } catch (err) {
@@ -233,10 +255,24 @@ function DashboardContent() {
         formData.append('file', currentFile);
 
         // 1. Parse PDF
+        const token = localStorage.getItem('sgs_token');
+        if (!token) {
+          showAuthRequired();
+          setLoading(false);
+          return;
+        }
         const uploadRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/upload-pdf', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         });
+        if (uploadRes.status === 401) {
+          showAuthRequired();
+          setLoading(false);
+          return;
+        }
         const uploadData = await uploadRes.json();
         if (!uploadData.success) throw new Error(uploadData.error || 'Parsing failed');
 
@@ -248,12 +284,20 @@ function DashboardContent() {
         // 2. Fetch Masterdata
         const mdRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/masterdata', {
           method: 'POST',
-          
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             courseCode: uploadData.courseCode,
             classRoom: uploadData.classRoom
           })
         });
+        if (mdRes.status === 401) {
+          showAuthRequired();
+          setLoading(false);
+          return;
+        }
         const mdData = await mdRes.json();
         if (!mdData.success) throw new Error(mdData.error || 'ไม่พบข้อมูลใน Masterdata');
         
@@ -318,10 +362,24 @@ function DashboardContent() {
 
     try {
       // 1. Parse PDF using the external Render backend
+      const token = localStorage.getItem('sgs_token');
+      if (!token) {
+        showAuthRequired();
+        setLoading(false);
+        return;
+      }
       const uploadRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/upload-pdf', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
+      if (uploadRes.status === 401) {
+        showAuthRequired();
+        setLoading(false);
+        return;
+      }
       const uploadData = await uploadRes.json();
       
       if (!uploadData.success) {
@@ -338,12 +396,20 @@ function DashboardContent() {
       // 2. Fetch Masterdata
       const mdRes = await fetch('https://teacherhub-backend-324760995892.asia-southeast1.run.app/api/moresor/masterdata', {
         method: 'POST',
-        
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           courseCode: uploadData.courseCode,
           classRoom: uploadData.classRoom
         })
       });
+      if (mdRes.status === 401) {
+        showAuthRequired();
+        setLoading(false);
+        return;
+      }
       
       let totalHours = 0;
       let mData = null;

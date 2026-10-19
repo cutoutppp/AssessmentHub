@@ -11,6 +11,27 @@ function escapeHtml(str: any): string {
     .replace(/'/g, '&#039;');
 }
 
+let isShowingLoginPrompt = false;
+const promptLogin = () => {
+  if (isShowingLoginPrompt) return;
+  isShowingLoginPrompt = true;
+  Swal.fire({
+    icon: 'warning',
+    title: 'กรุณาเข้าสู่ระบบ',
+    text: 'กรุณาเข้าสู่ระบบผ่าน AssessmentHub ก่อน',
+    confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+    confirmButtonColor: '#4f46e5',
+    showCancelButton: true,
+    cancelButtonText: 'ยกเลิก',
+    allowOutsideClick: false
+  }).then((res) => {
+    isShowingLoginPrompt = false;
+    if (res.isConfirmed) {
+      window.location.href = '/AssessmentHub/index.html';
+    }
+  });
+};
+
 export interface Wp16ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -150,10 +171,17 @@ export default function Wp16Modal({
 
         // 1. Try Backend API first
         try {
+          const token = localStorage.getItem('sgs_token');
+          const headers: Record<string, string> = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+
           const res = await fetch(
-            `${backendUrl}/api/wp16/students?teacher_name=${encodeURIComponent(teacherName)}&subject_code=${encodeURIComponent(selectedSubject)}`
+            `${backendUrl}/api/wp16/students?teacher_name=${encodeURIComponent(teacherName)}&subject_code=${encodeURIComponent(selectedSubject)}`,
+            { headers }
           );
-          if (res.ok) {
+          if (res.status === 401) {
+            promptLogin();
+          } else if (res.ok) {
             const data = await res.json();
             if (Array.isArray(data.students) && data.students.length > 0) {
               loadedStudents = data.students;
@@ -437,9 +465,17 @@ export default function Wp16Modal({
     };
 
     try {
+      const token = localStorage.getItem('sgs_token');
+      if (!token) {
+        promptLogin();
+        return;
+      }
       const res = await fetch(`${backendUrl}/api/wp16/student`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           teacher_name: teacherName,
           subject_code: selectedSubject,
@@ -450,11 +486,16 @@ export default function Wp16Modal({
           webhookUrl: webAppUrl,
         }),
       });
+      if (res.status === 401) {
+        promptLogin();
+        return;
+      }
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data.status === 'error') {
         throw new Error(data.message || `HTTP error ${res.status}`);
       }
     } catch (err: any) {
+      if (err?.message?.includes('กรุณาเข้าสู่ระบบ')) return;
       console.error('Failed to save manual student to backend:', err);
       Swal.fire({
         icon: 'error',
@@ -540,6 +581,11 @@ export default function Wp16Modal({
     });
     if (confirm.isConfirmed) {
       try {
+        const token = localStorage.getItem('sgs_token');
+        if (!token) {
+          promptLogin();
+          return;
+        }
         const queryParams = new URLSearchParams({
           subject_code: selectedSubject,
           student_id: studentId,
@@ -549,8 +595,17 @@ export default function Wp16Modal({
         }
         const res = await fetch(
           `${backendUrl}/api/wp16/student?${queryParams.toString()}`,
-          { method: 'DELETE' }
+          {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
         );
+        if (res.status === 401) {
+          promptLogin();
+          return;
+        }
         if (!res.ok) {
           throw new Error(`HTTP error ${res.status}`);
         }
@@ -656,11 +711,27 @@ export default function Wp16Modal({
         }
       }
 
+      const token = localStorage.getItem('sgs_token');
+      if (!token) {
+        promptLogin();
+        setSavingDoc(false);
+        return;
+      }
+
       const res = await fetch(`${backendUrl}/api/export/wp16/saved`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
+
+      if (res.status === 401) {
+        promptLogin();
+        setSavingDoc(false);
+        return;
+      }
 
       if (!res.ok) {
         const errText = await res.text();
@@ -691,6 +762,7 @@ export default function Wp16Modal({
         confirmButtonColor: '#3b82f6',
       });
     } catch (err: any) {
+      if (err?.message?.includes('กรุณาเข้าสู่ระบบ')) return;
       console.error(err);
       Swal.fire('ข้อผิดพลาด', err.message || 'ไม่สามารถดาวน์โหลดเอกสาร วผ.16 ได้', 'error');
     } finally {
@@ -700,6 +772,12 @@ export default function Wp16Modal({
 
   const handleDownloadZipAll = async () => {
     try {
+      const token = localStorage.getItem('sgs_token');
+      if (!token) {
+        promptLogin();
+        return;
+      }
+
       setZipping(true);
       Swal.fire({
         title: 'กำลังจัดทำ ZIP ทุกวิชา...',
@@ -713,7 +791,16 @@ export default function Wp16Modal({
       )}&academic_year=${encodeURIComponent(academicYear || '2569')}&semester=${encodeURIComponent(
         semester || '1'
       )}`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.status === 401) {
+        promptLogin();
+        setZipping(false);
+        return;
+      }
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(`เกิดข้อผิดพลาด (${res.status}): ${errText}`);
@@ -736,6 +823,7 @@ export default function Wp16Modal({
         confirmButtonColor: '#3b82f6',
       });
     } catch (err: any) {
+      if (err?.message?.includes('กรุณาเข้าสู่ระบบ')) return;
       console.error(err);
       Swal.fire('ข้อผิดพลาด', err.message || 'ไม่สามารถดาวน์โหลด ZIP ได้', 'error');
     } finally {

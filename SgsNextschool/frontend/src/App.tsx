@@ -123,6 +123,27 @@ const isLocal = window.location.hostname === 'localhost' ||
                 window.location.hostname.startsWith('172.');
 
 
+let isShowingLoginPrompt = false;
+export const promptLogin = () => {
+  if (isShowingLoginPrompt) return;
+  isShowingLoginPrompt = true;
+  Swal.fire({
+    icon: 'warning',
+    title: 'กรุณาเข้าสู่ระบบ',
+    text: 'กรุณาเข้าสู่ระบบผ่าน AssessmentHub ก่อน',
+    confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+    confirmButtonColor: '#4f46e5',
+    showCancelButton: true,
+    cancelButtonText: 'ยกเลิก',
+    allowOutsideClick: false
+  }).then((res) => {
+    isShowingLoginPrompt = false;
+    if (res.isConfirmed) {
+      window.location.href = '/AssessmentHub/index.html';
+    }
+  });
+};
+
 function App() {
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
@@ -157,6 +178,21 @@ function App() {
 
   // Resilient fetch with automatic failover between Render and Google Cloud Run
   const fetchWithFailover = async (endpoint: string, options?: RequestInit): Promise<Response> => {
+    const token = localStorage.getItem('sgs_token');
+    if (!token) {
+      promptLogin();
+      throw new Error("กรุณาเข้าสู่ระบบผ่าน AssessmentHub ก่อน");
+    }
+
+    const headers = new Headers(options?.headers || {});
+    if (!headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+    const mergedOptions: RequestInit = {
+      ...options,
+      headers
+    };
+
     const isLocalEnv = isLocal;
     const alternateRemote = backendUrl === PRIMARY_BACKEND ? BACKUP_BACKEND : PRIMARY_BACKEND;
     const candidates = isLocalEnv 
@@ -172,10 +208,16 @@ function App() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 25000);
         const res = await fetch(fullUrl, {
-          ...options,
+          ...mergedOptions,
           signal: options?.signal || controller.signal
         });
         clearTimeout(timeoutId);
+
+        // Unauthorized (401): user must login via AssessmentHub
+        if (res.status === 401) {
+          promptLogin();
+          return res;
+        }
 
         // If server is 502/503/504 (Render suspended / down), switch to backup and retry
         if ((res.status === 502 || res.status === 503 || res.status === 504) && i < candidates.length - 1) {
@@ -398,6 +440,12 @@ function App() {
       return
     }
 
+    const token = localStorage.getItem('sgs_token');
+    if (!token) {
+      promptLogin();
+      return;
+    }
+
     setLoading(true)
     setErrorMsg("")
     setResults(null)
@@ -421,6 +469,11 @@ function App() {
         body: formData,
       })
 
+      if (response.status === 401) {
+        promptLogin();
+        return;
+      }
+
       const data = await response.json()
       if (!response.ok) {
         setErrorMsg(data.detail || "เกิดข้อผิดพลาดในการตรวจสอบข้อมูล")
@@ -435,6 +488,9 @@ function App() {
       }
     } catch (err: any) {
       console.error(err);
+      if (err?.message?.includes('กรุณาเข้าสู่ระบบ')) {
+        return;
+      }
       const isNetworkErr = err?.message?.includes('fetch') || err?.name === 'TypeError';
       const msg = isNetworkErr
         ? (isLocal ? "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (กรุณารัน Backend ที่พอร์ต 8000)" : "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ Backend ได้ (เซิร์ฟเวอร์อาจกำลังตื่น หรือเน็ตเวิร์กขัดข้อง กรุณารอสักครู่)")
