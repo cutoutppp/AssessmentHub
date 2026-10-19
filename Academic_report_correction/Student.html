@@ -568,8 +568,23 @@
               .registerTask(rowId, specialId);
           });
         } else {
-          const response = await fetch(`${API_BASE_URL}?action=register-task&rowId=${rowId}&specialId=${encodeURIComponent(specialId)}`, { credentials: 'omit' });
-          res = await response.json();
+          const response = await fetch(API_BASE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              action: 'register-task',
+              rowId: rowId,
+              specialId: specialId,
+              studentId: CURRENT_STUDENT_ID
+            })
+          });
+          const text = await response.text();
+          try {
+            res = JSON.parse(text);
+          } catch (e) {
+            console.error('Non-JSON response from registerTask:', text);
+            throw new Error('ไม่สามารถประมวลผลคำตอบจากเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+          }
         }
 
         hideLoader();

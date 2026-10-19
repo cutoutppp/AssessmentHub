@@ -93,7 +93,7 @@ function doGet(e) {
       const forbiddenGetActions = [
         'direct-fix-records', 'clean-sync-wp16', 'sync-wp16-sheet',
         'submit-grades', 'approve', 'reject', 'update-pending-task',
-        'register-task', 'batch-register-tasks', 'batch-update-pending-tasks',
+        'batch-register-tasks', 'batch-update-pending-tasks',
         'sync-sgs', 'update-sgs-sync'
       ];
       if (forbiddenGetActions.indexOf(action) !== -1) {
@@ -105,6 +105,7 @@ function doGet(e) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
+      if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(e.parameter.rowId, e.parameter.specialId, e.parameter.taskDate))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'student-info') return ContentService.createTextOutput(JSON.stringify(getStudentData(e.parameter.studentId))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'get-ready-sgs') return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
       if (action === 'get-sgs-dashboard') return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
@@ -260,6 +261,7 @@ function doPost(e) {
       ))).setMimeType(ContentService.MimeType.JSON);
     }
     if (action === 'student-info') return ContentService.createTextOutput(JSON.stringify(getStudentData(params.studentId))).setMimeType(ContentService.MimeType.JSON);
+    if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(params.rowId, params.specialId, params.taskDate))).setMimeType(ContentService.MimeType.JSON);
     if (action === 'get-ready-sgs') return ContentService.createTextOutput(JSON.stringify(getReadySgsTasks())).setMimeType(ContentService.MimeType.JSON);
     if (action === 'get-sgs-dashboard') return ContentService.createTextOutput(JSON.stringify(getSgsSyncDashboard())).setMimeType(ContentService.MimeType.JSON);
 
@@ -274,7 +276,7 @@ function doPost(e) {
     const adminActions = ['direct-fix-records', 'clean-sync-wp16'];
     const writeActions = [
       'submit-grades', 'approve', 'reject', 'update-pending-task',
-      'register-task', 'batch-register-tasks', 'batch-update-pending-tasks',
+      'batch-register-tasks', 'batch-update-pending-tasks',
       'sync-sgs', 'sync-wp16-sheet'
     ];
 
@@ -299,7 +301,6 @@ function doPost(e) {
       if (action === 'approve') return ContentService.createTextOutput(JSON.stringify(approveGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'reject') return ContentService.createTextOutput(JSON.stringify(rejectGrades(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'update-pending-task') return ContentService.createTextOutput(JSON.stringify(updatePendingTask(params))).setMimeType(ContentService.MimeType.JSON);
-      if (action === 'register-task') return ContentService.createTextOutput(JSON.stringify(registerTask(params.rowId, params.specialId, params.taskDate))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'batch-register-tasks') return ContentService.createTextOutput(JSON.stringify(batchRegisterTasks(params.rowIds))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'batch-update-pending-tasks') {
         let items = params.items || params.payload || [];
