@@ -11,10 +11,23 @@ export default function Login() {
   const [showPin, setShowPin] = useState(false);
   const backendBaseUrl = 'https://teacherhub-backend-324760995892.asia-southeast1.run.app';
   
-  // First-time setup state
+  // First-time setup & change PIN state
   const [isFirstTime, setIsFirstTime] = useState(false);
+  const [isMustChange, setIsMustChange] = useState(false);
+  const [currentPin, setCurrentPin] = useState('');
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
+  const [firstTimeError, setFirstTimeError] = useState('');
+  const [mustChangeError, setMustChangeError] = useState('');
+  
+  const getErrorMessage = (data: any, fallback: string) => {
+    if (typeof data?.detail === 'string') return data.detail;
+    if (Array.isArray(data?.detail) && data.detail[0]?.msg) {
+      return data.detail.map((d: any) => d.msg).join(', ');
+    }
+    if (data?.message) return data.message;
+    return fallback;
+  };
   
   const navigate = useNavigate();
 
@@ -59,6 +72,11 @@ export default function Login() {
           setIsFirstTime(true);
           return;
         }
+        if (data.detail === 'MUST_CHANGE_PIN') {
+          setCurrentPin(pin);
+          setIsMustChange(true);
+          return;
+        }
         Swal.fire({
           icon: 'error',
           title: 'เข้าสู่ระบบไม่สำเร็จ',
@@ -80,21 +98,51 @@ export default function Login() {
 
   const handleFirstTimeSetup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFirstTimeError('');
+
     if (newPin !== confirmPin) {
+      const msg = 'กรุณายืนยันรหัส PIN ให้ตรงกัน';
+      setFirstTimeError(msg);
       Swal.fire({
         icon: 'error',
         title: 'รหัสไม่ตรงกัน',
-        text: 'กรุณายืนยันรหัส PIN ให้ตรงกัน',
+        text: msg,
         confirmButtonColor: '#4f46e5',
       });
       return;
     }
     
-    if (newPin.length < 6) {
+    if (!/^\d{6}$/.test(newPin)) {
+      const msg = 'รหัส PIN ใหม่ต้องเป็นตัวเลข 6 หลักเท่านั้น';
+      setFirstTimeError(msg);
       Swal.fire({
         icon: 'error',
-        title: 'รหัสสั้นเกินไป',
-        text: 'กรุณาตั้งรหัส PIN อย่างน้อย 6 หลัก',
+        title: 'รูปแบบรหัสไม่ถูกต้อง',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (newPin === '123456') {
+      const msg = 'ไม่อนุญาตให้ใช้รหัส 123456 กรุณาตั้งรหัสที่มีความปลอดภัย';
+      setFirstTimeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ปลอดภัย',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (idCard.length >= 6 && newPin === idCard.slice(-6)) {
+      const msg = 'ไม่อนุญาตให้ใช้เลข 6 ตัวท้ายของบัตรประชาชน';
+      setFirstTimeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ปลอดภัย',
+        text: msg,
         confirmButtonColor: '#4f46e5',
       });
       return;
@@ -108,9 +156,10 @@ export default function Login() {
         body: JSON.stringify({ idCard, newPin })
       });
       
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       
       if (response.ok) {
+        setFirstTimeError('');
         Swal.fire({
           icon: 'success',
           title: 'ตั้งรหัส PIN สำเร็จ',
@@ -123,18 +172,134 @@ export default function Login() {
           setConfirmPin('');
         });
       } else {
+        const errorMsg = getErrorMessage(data, 'ไม่สามารถตั้งรหัสผ่านใหม่ได้ กรุณาติดต่อผู้ดูแลระบบ');
+        setFirstTimeError(errorMsg);
         Swal.fire({
           icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: data.detail || 'ไม่สามารถตั้งรหัสผ่านใหม่ได้',
+          title: 'ตั้งรหัสไม่สำเร็จ',
+          text: errorMsg,
           confirmButtonColor: '#4f46e5',
         });
       }
-    } catch (err) {
+    } catch (err: any) {
+      const errorMsg = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้: ' + (err?.message || 'Network error');
+      setFirstTimeError(errorMsg);
       Swal.fire({
         icon: 'error',
-        title: 'เกิดข้อผิดพลาด',
-        text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+        title: 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
+        text: errorMsg,
+        confirmButtonColor: '#4f46e5',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChangePin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMustChangeError('');
+
+    if (newPin !== confirmPin) {
+      const msg = 'กรุณายืนยันรหัส PIN ให้ตรงกัน';
+      setMustChangeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ตรงกัน',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (!/^\d{6}$/.test(newPin)) {
+      const msg = 'รหัส PIN ใหม่ต้องเป็นตัวเลข 6 หลักเท่านั้น';
+      setMustChangeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รูปแบบรหัสไม่ถูกต้อง',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (newPin === currentPin) {
+      const msg = 'รหัส PIN ใหม่ต้องไม่ซ้ำกับรหัสเดิม';
+      setMustChangeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสซ้ำเดิม',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (newPin === '123456') {
+      const msg = 'ไม่อนุญาตให้ใช้รหัส 123456 กรุณาตั้งรหัสที่มีความปลอดภัย';
+      setMustChangeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ปลอดภัย',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    if (idCard.length >= 6 && newPin === idCard.slice(-6)) {
+      const msg = 'ไม่อนุญาตให้ใช้เลข 6 ตัวท้ายของบัตรประชาชน';
+      setMustChangeError(msg);
+      Swal.fire({
+        icon: 'error',
+        title: 'รหัสไม่ปลอดภัย',
+        text: msg,
+        confirmButtonColor: '#4f46e5',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${backendBaseUrl}/api/auth/change-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idCard, currentPin, newPin })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        setMustChangeError('');
+        Swal.fire({
+          icon: 'success',
+          title: 'เปลี่ยนรหัส PIN สำเร็จ',
+          text: 'กรุณาเข้าสู่ระบบด้วยรหัส PIN ใหม่ของคุณ',
+          confirmButtonColor: '#4f46e5',
+        }).then(() => {
+          setIsMustChange(false);
+          setPin('');
+          setCurrentPin('');
+          setNewPin('');
+          setConfirmPin('');
+        });
+      } else {
+        const errorMsg = getErrorMessage(data, 'ไม่สามารถเปลี่ยนรหัส PIN ได้ กรุณาติดต่อผู้ดูแลระบบ');
+        setMustChangeError(errorMsg);
+        Swal.fire({
+          icon: 'error',
+          title: 'เปลี่ยนรหัสไม่สำเร็จ',
+          text: errorMsg,
+          confirmButtonColor: '#4f46e5',
+        });
+      }
+    } catch (err: any) {
+      const errorMsg = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้: ' + (err?.message || 'Network error');
+      setMustChangeError(errorMsg);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
+        text: errorMsg,
         confirmButtonColor: '#4f46e5',
       });
     } finally {
@@ -276,12 +441,22 @@ export default function Login() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all p-6">
             <h3 className="text-xl font-bold text-slate-900 mb-2">ตั้งรหัส PIN ใหม่</h3>
             <p className="text-sm text-slate-500 mb-6">
-              คุณกำลังเข้าสู่ระบบครั้งแรก หรือใช้รหัสผ่านเริ่มต้น กรุณาตั้งรหัส PIN ใหม่ (อย่างน้อย 6 หลัก) เพื่อความปลอดภัย
+              คุณกำลังเข้าสู่ระบบครั้งแรก กรุณาตั้งรหัส PIN ใหม่ 6 หลักเพื่อความปลอดภัย
             </p>
+            
+            {firstTimeError && (
+              <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2.5 shadow-sm">
+                <span className="text-lg leading-none shrink-0">⚠️</span>
+                <div className="flex-1">
+                  <div className="font-bold">ตั้งรหัสไม่สำเร็จ</div>
+                  <div className="text-xs text-rose-600 mt-0.5 leading-relaxed">{firstTimeError}</div>
+                </div>
+              </div>
+            )}
             
             <form onSubmit={handleFirstTimeSetup} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700">รหัส PIN ใหม่</label>
+                <label className="block text-sm font-semibold text-slate-700">รหัส PIN ใหม่ (6 หลัก)</label>
                 <div className="mt-2 relative rounded-xl shadow-sm">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <KeyRound className="h-5 w-5 text-slate-400" />
@@ -289,6 +464,7 @@ export default function Login() {
                   <input
                     type="password"
                     maxLength={6}
+                    autoComplete="new-password"
                     required
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value)}
@@ -307,6 +483,7 @@ export default function Login() {
                   <input
                     type="password"
                     maxLength={6}
+                    autoComplete="new-password"
                     required
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value)}
@@ -320,6 +497,103 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setIsFirstTime(false)}
+                  className="flex-1 py-3 px-4 border border-slate-300 text-sm font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-500 hover:to-blue-400 shadow-md transition-colors"
+                >
+                  {loading ? 'กำลังบันทึก...' : 'บันทึกรหัสใหม่'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Must Change PIN Modal (for temporary PIN or forced PIN update) */}
+      {isMustChange && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all p-6">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">จำเป็นต้องเปลี่ยนรหัส PIN</h3>
+            <p className="text-sm text-slate-500 mb-6">
+              คุณเข้าสู่ระบบด้วยรหัส PIN ชั่วคราว หรือรหัสเดิมที่ต้องปรับปรุงความปลอดภัย กรุณาตั้งรหัส PIN ใหม่ (6 หลัก) เพื่อเข้าใช้งาน
+            </p>
+            
+            {mustChangeError && (
+              <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-2.5 shadow-sm">
+                <span className="text-lg leading-none shrink-0">⚠️</span>
+                <div className="flex-1">
+                  <div className="font-bold">เปลี่ยนรหัสไม่สำเร็จ</div>
+                  <div className="text-xs text-rose-600 mt-0.5 leading-relaxed">{mustChangeError}</div>
+                </div>
+              </div>
+            )}
+            
+            <form onSubmit={handleChangePin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">รหัส PIN ปัจจุบัน / รหัสชั่วคราว</label>
+                <div className="mt-2 relative rounded-xl shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <KeyRound className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    required
+                    value={currentPin}
+                    onChange={(e) => setCurrentPin(e.target.value)}
+                    className="block w-full pl-11 pr-3 py-3 sm:text-sm border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50 focus:bg-white"
+                    placeholder="••••••"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">รหัส PIN ใหม่ (6 หลัก)</label>
+                <div className="mt-2 relative rounded-xl shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <KeyRound className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    autoComplete="new-password"
+                    required
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value)}
+                    className="block w-full pl-11 pr-3 py-3 sm:text-sm border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50 focus:bg-white"
+                    placeholder="••••••"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">ยืนยันรหัส PIN ใหม่</label>
+                <div className="mt-2 relative rounded-xl shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <KeyRound className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    autoComplete="new-password"
+                    required
+                    value={confirmPin}
+                    onChange={(e) => setConfirmPin(e.target.value)}
+                    className="block w-full pl-11 pr-3 py-3 sm:text-sm border-slate-200 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50 focus:bg-white"
+                    placeholder="••••••"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-6 flex space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsMustChange(false)}
                   className="flex-1 py-3 px-4 border border-slate-300 text-sm font-bold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition-colors"
                 >
                   ยกเลิก
