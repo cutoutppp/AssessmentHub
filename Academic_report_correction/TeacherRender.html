@@ -830,7 +830,13 @@
 
           async function attemptFetch(attempt) {
             try {
-              const res = await fetch(fetchUrl, fetchOptions);
+              const controller = new AbortController();
+            const timeoutMs = isWriteAction ? 25000 : 15000;
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+              const res = await fetch(fetchUrl, { ...fetchOptions, signal: controller.signal });
+              clearTimeout(timeoutId);
               const text = await res.text();
               try {
                 const data = JSON.parse(text);
@@ -855,6 +861,10 @@
                 return { ok: false, retry: false, error: new Error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ' + text.slice(0, 150)) };
               }
             } catch(e) {
+              clearTimeout(timeoutId);
+              if (e.name === 'AbortError') {
+                return { ok: false, retry: false, error: new Error('เซิร์ฟเวอร์ตอบสนองช้าเกินกำหนด (Timeout ' + (timeoutMs/1000) + ' วินาที) กรุณากดส่งใหม่อีกครั้ง') };
+              }
               // Network error — อาจเป็น timeout ให้ retry ได้
               if (attempt < MAX_RETRIES) {
                 return { ok: false, retry: true, error: e };
@@ -997,8 +1007,14 @@
         reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
       }
       const tasks = [];
+      let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
+        if (!lines[i] || !lines[i].replace(/\t/g, '').trim()) {
+          consecutiveEmpty++;
+          if (consecutiveEmpty > 25 && i > 3000) break;
+          continue;
+        }
+        consecutiveEmpty = 0;
         const cells = lines[i].split('\t');
         const stuIdRaw = cleanCellStr(cells[idxStuId]);
         if (!stuIdRaw) continue;
@@ -1059,8 +1075,14 @@
         reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
       }
       const history = [];
+      let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
+        if (!lines[i] || !lines[i].replace(/\t/g, '').trim()) {
+          consecutiveEmpty++;
+          if (consecutiveEmpty > 25 && i > 3000) break;
+          continue;
+        }
+        consecutiveEmpty = 0;
         const cells = lines[i].split('\t');
         const stuIdRaw = cleanCellStr(cells[idxStuId]);
         if (!stuIdRaw) continue;
@@ -1109,8 +1131,14 @@
             idxTeacher = headers.indexOf('ครูผู้สอน');
       if (idxStuId === -1 || idxStatus === -1) throw new Error('Header mismatch');
       const tasks = [];
+      let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
+        if (!lines[i] || !lines[i].replace(/\t/g, '').trim()) {
+          consecutiveEmpty++;
+          if (consecutiveEmpty > 25 && i > 3000) break;
+          continue;
+        }
+        consecutiveEmpty = 0;
         const cells = lines[i].split('\t');
         const stuId = cleanCellStr(cells[idxStuId]);
         if (!stuId) continue;
@@ -1953,6 +1981,8 @@
       } catch (e) { 
         hideLoader(); 
         showDialog('ข้อผิดพลาด', 'ไม่สามารถส่งผลการเรียนได้: ' + e.message, 'error'); 
+      } finally {
+        hideLoader();
       }
     }
 
@@ -3017,8 +3047,14 @@
             iNewGrade = idx('ผลการเรียนใหม่'), iStatus = idx('สถานะระบบ'), iSpecialId = idx('เลขเฉพาะ');
 
       const readyTasks = [];
+      let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
+        if (!lines[i] || !lines[i].replace(/\t/g, '').trim()) {
+          consecutiveEmpty++;
+          if (consecutiveEmpty > 25 && i > 3000) break;
+          continue;
+        }
+        consecutiveEmpty = 0;
         const cells = lines[i].split('\t');
         if (getV(cells, iStatus) !== 'พร้อมทำงาน') continue;
 

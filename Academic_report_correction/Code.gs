@@ -87,6 +87,7 @@ function doGet(e) {
       if (action === 'tasks') return ContentService.createTextOutput(JSON.stringify(getTasksForAdmin(e.parameter.mode, e.parameter.keyword))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'history') return ContentService.createTextOutput(JSON.stringify(getHistoryForAdmin(e.parameter.mode, e.parameter.keyword))).setMimeType(ContentService.MimeType.JSON);
       if (action === 'approvals') return ContentService.createTextOutput(JSON.stringify(getPendingApprovals())).setMimeType(ContentService.MimeType.JSON);
+      if (action === 'cleanup-empty-rows') return ContentService.createTextOutput(JSON.stringify(cleanupEmptyRows())).setMimeType(ContentService.MimeType.JSON);
       
       if (action === 'check-id') return ContentService.createTextOutput(JSON.stringify(checkIdCardStatus(e.parameter.idCard))).setMimeType(ContentService.MimeType.JSON);
       // 🔒 ไม่อนุญาตให้ทำรายการเขียนหรือลบข้อมูลผ่าน GET เพื่อป้องกันการโจมตีหรือการคลิกลิงก์ทำลายข้อมูล
@@ -424,6 +425,44 @@ function bumpTaskCacheVersion_() {
   } catch (e) {}
 }
 
+function getLastRealRow_(sheet) {
+  if (!sheet) return 0;
+  var maxR = sheet.getMaxRows();
+  if (maxR <= 1) return maxR;
+  var checkLimit = Math.min(maxR, 8000);
+  // Column F is 'เลขประจำตัว' (column index 6)
+  var vals = sheet.getRange(1, 6, checkLimit, 1).getValues();
+  for (var r = vals.length - 1; r >= 0; r--) {
+    if (vals[r][0] !== '' && vals[r][0] !== null && vals[r][0] !== undefined) {
+      return r + 1;
+    }
+  }
+  return Math.min(sheet.getLastRow(), 8000);
+}
+
+function cleanupEmptyRows() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName('StudentRecords');
+  if (!sheet) return { success: false, message: 'ไม่พบชีต StudentRecords' };
+  var maxRows = sheet.getMaxRows();
+  var realLast = getLastRealRow_(sheet);
+  var safeKeep = Math.max(realLast + 30, 4050);
+  var deleted = 0;
+  if (maxRows > safeKeep) {
+    deleted = maxRows - safeKeep;
+    sheet.deleteRows(safeKeep + 1, deleted);
+  }
+  clearDashboardCache();
+  bumpTaskCacheVersion_();
+  return {
+    success: true,
+    realLastRow: realLast,
+    maxRowsBefore: maxRows,
+    maxRowsAfter: sheet.getMaxRows(),
+    deletedRows: deleted
+  };
+}
+
 function clearDashboardCache() {
   try {
     var cache = CacheService.getScriptCache();
@@ -458,9 +497,10 @@ function getInitialLoadData() {
 
     var studentSheet = ss.getSheetByName('StudentRecords');
     var studentValues = [];
-    if (studentSheet && studentSheet.getLastRow() > 0) {
+    var realLast = studentSheet ? getLastRealRow_(studentSheet) : 0;
+    if (studentSheet && realLast > 0) {
       var maxCols = Math.min(studentSheet.getLastColumn(), 18);
-      studentValues = studentSheet.getRange(1, 1, studentSheet.getLastRow(), maxCols).getValues();
+      studentValues = studentSheet.getRange(1, 1, realLast, maxCols).getValues();
     }
 
     var calSheet = ss.getSheetByName('Config_Calendar');
@@ -504,7 +544,8 @@ function getFilters(preloaded) {
     teacherData = ss.getSheetByName('Teacherdata').getDataRange().getValues().slice(1);
     var studentSheet = ss.getSheetByName('StudentRecords');
     var maxCols = studentSheet ? Math.min(studentSheet.getLastColumn(), 20) : 0;
-    recVals = (studentSheet && studentSheet.getLastRow() > 0) ? studentSheet.getRange(1, 1, studentSheet.getLastRow(), maxCols).getValues() : [];
+    var realLast = studentSheet ? getLastRealRow_(studentSheet) : 0;
+    recVals = (studentSheet && realLast > 0) ? studentSheet.getRange(1, 1, realLast, maxCols).getValues() : [];
   }
 
   var subjectGroupsSet = new Set();
@@ -575,7 +616,8 @@ function summarize(filters, preloaded) {
     teacherData = ss.getSheetByName('Teacherdata').getDataRange().getValues().slice(1);
     var studentSheet = ss.getSheetByName('StudentRecords');
     var maxCols = studentSheet ? Math.min(studentSheet.getLastColumn(), 20) : 0;
-    recValsRaw = (studentSheet && studentSheet.getLastRow() > 0) ? studentSheet.getRange(1, 1, studentSheet.getLastRow(), maxCols).getValues() : [];
+    var realLast = studentSheet ? getLastRealRow_(studentSheet) : 0;
+    recValsRaw = (studentSheet && realLast > 0) ? studentSheet.getRange(1, 1, realLast, maxCols).getValues() : [];
   }
 
   var roundsConfig = calData.filter(function(r) { return r[0]; }).map(function(r) {
@@ -926,7 +968,7 @@ function getTasksForAdmin(mode, keyword) {
 
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheetByName('StudentRecords');
-  const lastRow = sheet.getLastRow();
+  const lastRow = getLastRealRow_(sheet);
   if (lastRow < 2) return [];
   const maxCols = Math.min(sheet.getLastColumn(), 18);
   const data = sheet.getRange(1, 1, lastRow, maxCols).getValues();
@@ -998,7 +1040,7 @@ function getHistoryForAdmin(mode, keyword) {
 
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const sheet = ss.getSheetByName('StudentRecords');
-  const lastRow = sheet.getLastRow();
+  const lastRow = getLastRealRow_(sheet);
   if (lastRow < 2) return [];
   const maxCols = Math.min(sheet.getLastColumn(), 18);
   const data = sheet.getRange(1, 1, lastRow, maxCols).getValues();
@@ -1070,11 +1112,11 @@ function getHistoryForAdmin(mode, keyword) {
 function submitGrades(payload) {
   var lock = LockService.getScriptLock();
   try {
-    lock.waitLock(30000); 
+    lock.waitLock(15000); 
     bumpTaskCacheVersion_();
     const ss = SpreadsheetApp.openById(SHEET_ID);
     const sheet = ss.getSheetByName('StudentRecords');
-    const lastRow = sheet.getLastRow();
+    const lastRow = getLastRealRow_(sheet);
     const maxCols = Math.min(sheet.getLastColumn(), 18);
     const headers = sheet.getRange(1, 1, 1, maxCols).getValues()[0].map(cleanStr_);
     const idxSubjCode = headers.indexOf('รหัสวิชา');
@@ -1188,7 +1230,7 @@ function getPendingApprovals() {
 
   const ss = SpreadsheetApp.openById(SHEET_ID); 
   const sheet = ss.getSheetByName('StudentRecords');
-  const lastRow = sheet.getLastRow();
+  const lastRow = getLastRealRow_(sheet);
   if (lastRow < 2) return [];
   const maxCols = Math.min(sheet.getLastColumn(), 18);
   const data = sheet.getRange(1, 1, lastRow, maxCols).getValues(); 
@@ -1318,7 +1360,7 @@ function updatePendingTask(payload) {
     } else if (payload.specialId) {
       const idxSpecialId = headers.indexOf('เลขเฉพาะ') + 1;
       if (idxSpecialId > 0) {
-        const lastRow = sheet.getLastRow();
+        const lastRow = getLastRealRow_(sheet);
         if (lastRow >= 2) {
           const colValues = sheet.getRange(2, idxSpecialId, lastRow - 1, 1).getValues();
           for (let i = 0; i < colValues.length; i++) {
@@ -1958,7 +2000,7 @@ function registerTask(rowId, specialId, taskDate) {
     } else if (specialId) {
       var idxSpecialId = headers.indexOf('เลขเฉพาะ') + 1;
       if (idxSpecialId > 0) {
-        var lastRow = sheet.getLastRow();
+        var lastRow = getLastRealRow_(sheet);
         if (lastRow >= 2) {
           var colVals = sheet.getRange(2, idxSpecialId, lastRow - 1, 1).getValues();
           for (var i = 0; i < colVals.length; i++) {
