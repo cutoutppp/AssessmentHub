@@ -829,8 +829,7 @@
           }
 
           async function attemptFetch(attempt) {
-            try {
-              const controller = new AbortController();
+            const controller = new AbortController();
             const timeoutMs = isWriteAction ? 25000 : 15000;
             const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
