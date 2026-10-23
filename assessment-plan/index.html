@@ -2191,8 +2191,8 @@
     function initExamScores() {
       if (!currentCourse || !currentCourse.units) return;
       const savedConf = sgsConfirmations[currentCourse.course_code] || {};
-      const targetMid = savedConf.mid_exam !== undefined ? (parseInt(savedConf.mid_exam, 10) || 15) : 15;
-      const targetFin = savedConf.fin_exam !== undefined ? (parseInt(savedConf.fin_exam, 10) || 15) : 15;
+      const targetMid = savedConf.mid_exam !== undefined ? (parseInt(savedConf.mid_exam, 10) || 15) : (currentCourse.target_mid_score !== undefined ? currentCourse.target_mid_score : 15);
+      const targetFin = savedConf.fin_exam !== undefined ? (parseInt(savedConf.fin_exam, 10) || 15) : (currentCourse.target_fin_score !== undefined ? currentCourse.target_fin_score : 15);
       const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
       const preUnits = currentCourse.units.slice(0, cutoff);
       const postUnits = currentCourse.units.slice(cutoff);
@@ -2236,8 +2236,17 @@
       if (!currentCourse || !currentCourse.units) return;
       currentCourse.units.forEach(u => {
         if (!u.assessments || !Array.isArray(u.assessments) || u.assessments.length === 0) {
-          // If unit total score > 15, automatically split into multiple assessment rows so each is ≤ 15
-          if (u.score_total > 15) {
+          if (currentCourse.score_ratio === "80:20" || (currentCourse.course_name && currentCourse.course_name.includes("การป้องกันการทุจริต"))) {
+            u.assessments = [
+              {
+                eval_methods: u.eval_method || u.evaluation_methods || "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
+                score_k: u.score_k ?? 20,
+                score_p: (u.score_p && u.score_p > 0) ? u.score_p : "-",
+                score_a: (u.score_a && u.score_a > 0) ? u.score_a : "-",
+                score_total: u.score_total ?? 20
+              }
+            ];
+          } else if (u.score_total > 15) {
             const numRows = Math.ceil(u.score_total / 15);
             const targetPerRow = Math.floor(u.score_total / numRows);
             const rem = u.score_total - (targetPerRow * numRows);
@@ -2427,9 +2436,13 @@
       // Smart Defaults for Key Assignment (Assign & Due Dates)
       const cutoff = currentCourse.midterm_cutoff;
       const uPre = currentCourse.units[cutoff - 1] || currentCourse.units[0];
-      const defaultTask1Name = uPre ? `ชิ้นงานสรุปองค์ความรู้เรื่อง${uPre.unit_name}` : `ชิ้นงานสำคัญเรื่อง${c.course_name}`;
+      const defaultTask1Name = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
+        ? c.key_task
+        : (uPre ? `ชิ้นงานสรุปองค์ความรู้เรื่อง${uPre.unit_name}` : `ชิ้นงานสำคัญเรื่อง${c.course_name}`);
       
-      document.getElementById('inputTask1').value = (c.course_code === "ส33205") ? "จำลองการลงทุน" : defaultTask1Name;
+      document.getElementById('inputTask1').value = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
+        ? c.key_task
+        : ((c.course_code === "ส33205") ? "จำลองการลงทุน" : defaultTask1Name);
       document.getElementById('inputTask1Assign').value = "1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)";
       document.getElementById('datePickerTask1Assign').value = "2026-12-01";
       document.getElementById('inputTask1Due').value = "18 ธ.ค. 69 (สัปดาห์ที่ 8)";

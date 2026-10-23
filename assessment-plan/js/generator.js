@@ -629,7 +629,9 @@ async function generateAndDownloadDocx() {
     || document.getElementById('selectFinExamDuration')?.value 
     || "60";
 
-  const rawTask1 = document.getElementById('inputTask1')?.value.trim() || `ชิ้นงานสำคัญเรื่อง${c.course_name}`;
+  const rawTask1 = (document.getElementById('inputTask1')?.value !== undefined && document.getElementById('inputTask1')?.value !== "")
+    ? document.getElementById('inputTask1').value.trim()
+    : ((c.key_task !== undefined && c.key_task !== null && c.key_task !== "") ? c.key_task : `ชิ้นงานสำคัญเรื่อง${c.course_name}`);
   const task1 = keepTrailingNumberTogether(rawTask1);
   const task1Assign = document.getElementById('inputTask1Assign')?.value.trim() || "1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)";
   const task1Due = document.getElementById('inputTask1Due')?.value.trim() || "18 ธ.ค. 69 (สัปดาห์ที่ 8)";
@@ -1009,7 +1011,7 @@ async function generateAndDownloadDocx() {
       const unitCellText = `${cleanUnitName}\n(${u.hours}\u00A0ชั่วโมง)`;
 
       let mText = cleanThaiText(ass.eval_methods || '- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม').trim();
-      if (!isPost && unitIdx === 0 && aIdx === 0 && task1 && !mText.includes(task1)) {
+      if (!isPost && unitIdx === 0 && aIdx === 0 && task1 && task1 !== "-" && !mText.includes(task1)) {
         const keyBullet = formatKeyTaskBullet(task1);
         if (mText.includes("ชิ้นงานสำคัญ")) {
           mText = mText.replace(/ชิ้นงานสำคัญ/g, keyBullet);
@@ -1073,9 +1075,11 @@ async function generateAndDownloadDocx() {
       const kpiCode = isBasic ? getUnitKpiCode(u, idx + 1, c) : outcomeLabel(u);
       const sc = examScoreFor(examType, idx, totalUnitsInCycle);
 
-      const methodText = examType === 'mid'
-        ? "- แบบทดสอบกลางภาค\n(แบบปรนัย/อัตนัย)"
-        : "- แบบทดสอบปลายภาค\n(แบบปรนัย/อัตนัย)";
+      const isCorruptionCourse = (c.score_ratio === "80:20" || (c.course_name && c.course_name.includes("การป้องกันการทุจริต")));
+      const methodText = isCorruptionCourse
+        ? (examType === 'mid' ? "- แบบทดสอบวัดผลกลางภาคเรียน" : "- แบบทดสอบวัดผลปลายภาคเรียน")
+        : (examType === 'mid' ? "- แบบทดสอบกลางภาค\n(แบบปรนัย/อัตนัย)" : "- แบบทดสอบปลายภาค\n(แบบปรนัย/อัตนัย)");
+      const examRowTotal = isCorruptionCourse ? (examType === 'mid' ? midTot : finTot) : sc;
 
       if (isBasic) {
         // 10 cells
@@ -1088,7 +1092,7 @@ async function generateAndDownloadDocx() {
         setXmlCell(cells[6], sc, false, 32, 'center');
         setXmlCell(cells[7], "-", false, 32, 'center');
         setXmlCell(cells[8], "-", false, 32, 'center');
-        setXmlCell(cells[9], sc, true, 32, 'center');
+        setXmlCell(cells[9], examRowTotal, true, 32, 'center');
       } else {
         // 8 cells
         setXmlCell(cells[0], u.unit_no, false, 32, 'center');
@@ -1098,7 +1102,7 @@ async function generateAndDownloadDocx() {
         setXmlCell(cells[4], sc, false, 32, 'center');
         setXmlCell(cells[5], "-", false, 32, 'center');
         setXmlCell(cells[6], "-", false, 32, 'center');
-        setXmlCell(cells[7], sc, true, 32, 'center');
+        setXmlCell(cells[7], examRowTotal, true, 32, 'center');
       }
     }
 
@@ -1125,8 +1129,8 @@ async function generateAndDownloadDocx() {
     const spCells = subPreRow.getElementsByTagName("w:tc");
     setXmlCell(spCells[0], "รวมคะแนนวัดผลก่อนสอบกลางภาค", true, 32, 'center');
     setXmlCell(spCells[1], subPre.k, true, 32, 'center');
-    setXmlCell(spCells[2], subPre.p, true, 32, 'center');
-    setXmlCell(spCells[3], subPre.a, true, 32, 'center');
+    setXmlCell(spCells[2], subPre.p > 0 ? subPre.p : "-", true, 32, 'center');
+    setXmlCell(spCells[3], subPre.a > 0 ? subPre.a : "-", true, 32, 'center');
     setXmlCell(spCells[4], subPre.tot, true, 32, 'center');
     ensureRowCantSplit(subPreRow, false);
     t0.appendChild(subPreRow);
@@ -1134,7 +1138,8 @@ async function generateAndDownloadDocx() {
     // --- CYCLE 2: กลางภาค ---
     const c2Row = cycleProto.cloneNode(true);
     const midDurationText = formatExamDurationHour(midDuration);
-    setXmlCell(c2Row.getElementsByTagName("w:tc")[0], `2. การวัดผลกลางภาค (${midDurationText})`, true, 32, 'left');
+    const isOutOfSchedule = (c.exam_schedule === "สอบนอกตาราง" || midDuration === "สอบนอกตาราง");
+    setXmlCell(c2Row.getElementsByTagName("w:tc")[0], isOutOfSchedule ? "2. การวัดผลกลางภาค" : `2. การวัดผลกลางภาค (${midDurationText})`, true, 32, 'left');
     ensureRowCantSplit(c2Row, true);
     t0.appendChild(c2Row);
 
@@ -1179,8 +1184,8 @@ async function generateAndDownloadDocx() {
       const spotCells = subPostRow.getElementsByTagName("w:tc");
       setXmlCell(spotCells[0], "รวมคะแนนวัดผลหลังสอบกลางภาค", true, 32, 'center');
       setXmlCell(spotCells[1], subPost.k, true, 32, 'center');
-      setXmlCell(spotCells[2], subPost.p, true, 32, 'center');
-      setXmlCell(spotCells[3], subPost.a, true, 32, 'center');
+      setXmlCell(spotCells[2], subPost.p > 0 ? subPost.p : "-", true, 32, 'center');
+      setXmlCell(spotCells[3], subPost.a > 0 ? subPost.a : "-", true, 32, 'center');
       setXmlCell(spotCells[4], subPost.tot, true, 32, 'center');
       ensureRowCantSplit(subPostRow, false);
       t0.appendChild(subPostRow);
@@ -1189,7 +1194,7 @@ async function generateAndDownloadDocx() {
     // --- CYCLE 4: ปลายภาค ---
     const c4Row = cycleProto.cloneNode(true);
     const finDurationText = formatExamDurationHour(finDuration);
-    setXmlCell(c4Row.getElementsByTagName("w:tc")[0], `4. การวัดผลปลายภาค (${finDurationText})`, true, 32, 'left');
+    setXmlCell(c4Row.getElementsByTagName("w:tc")[0], isOutOfSchedule ? "4. การวัดผลปลายภาค" : `4. การวัดผลปลายภาค (${finDurationText})`, true, 32, 'left');
     ensureRowCantSplit(c4Row, true);
     t0.appendChild(c4Row);
 
@@ -1215,8 +1220,8 @@ async function generateAndDownloadDocx() {
     const gCells = grandRow.getElementsByTagName("w:tc");
     setXmlCell(gCells[0], "รวมคะแนนทั้งสิ้นตลอดภาคเรียน", true, 32, 'center');
     setXmlCell(gCells[1], grand.k, true, 32, 'center');
-    setXmlCell(gCells[2], grand.p, true, 32, 'center');
-    setXmlCell(gCells[3], grand.a, true, 32, 'center');
+    setXmlCell(gCells[2], grand.p > 0 ? grand.p : "-", true, 32, 'center');
+    setXmlCell(gCells[3], grand.a > 0 ? grand.a : "-", true, 32, 'center');
     setXmlCell(gCells[4], grand.tot, true, 32, 'center');
     ensureRowCantSplit(grandRow, false);
     t0.appendChild(grandRow);
@@ -1271,23 +1276,31 @@ async function generateAndDownloadDocx() {
     if (t3Rows.length > 1) {
       ensureRowCantSplit(t3Rows[1], false);
       const r1Cells = t3Rows[1].getElementsByTagName("w:tc");
-      setXmlCell(r1Cells[0], "1.1", false, 32, 'center');
-      setXmlCell(r1Cells[1], task1, false, 32, 'left');
-      setXmlCell(r1Cells[2], kpiRange1, false, 32, 'center');
-      setXmlCell(r1Cells[3], formatScheduleCell(task1Assign), false, 32, 'center'); // กำหนดมอบหมายงาน
-      setXmlCell(r1Cells[4], formatScheduleCell(task1Due), false, 32, 'center');    // กำหนดส่ง
+      if (task1 === "-" || c.key_task === "-") {
+        setXmlCell(r1Cells[0], "-", false, 32, 'center');
+        setXmlCell(r1Cells[1], "-", false, 32, 'center');
+        setXmlCell(r1Cells[2], "-", false, 32, 'center');
+        setXmlCell(r1Cells[3], "-", false, 32, 'center');
+        setXmlCell(r1Cells[4], "-", false, 32, 'center');
+      } else {
+        setXmlCell(r1Cells[0], "1.1", false, 32, 'center');
+        setXmlCell(r1Cells[1], task1, false, 32, 'left');
+        setXmlCell(r1Cells[2], kpiRange1, false, 32, 'center');
+        setXmlCell(r1Cells[3], formatScheduleCell(task1Assign), false, 32, 'center'); // กำหนดมอบหมายงาน
+        setXmlCell(r1Cells[4], formatScheduleCell(task1Due), false, 32, 'center');    // กำหนดส่ง
+      }
     }
     if (t3Rows.length > 2) {
       ensureRowCantSplit(t3Rows[2], false);
       const r2Cells = t3Rows[2].getElementsByTagName("w:tc");
-      if (task2) {
+      if (task2 && task1 !== "-") {
         setXmlCell(r2Cells[0], "1.2", false, 32, 'center');
         setXmlCell(r2Cells[1], task2, false, 32, 'left');
         setXmlCell(r2Cells[2], kpiRange2, false, 32, 'center');
         setXmlCell(r2Cells[3], formatScheduleCell(task2Assign), false, 32, 'center'); // กำหนดมอบหมายงาน
         setXmlCell(r2Cells[4], formatScheduleCell(task2Due), false, 32, 'center');    // กำหนดส่ง
       } else {
-        // Remove unused row 1.2 so the table is compact and clean when only 1 key task is specified
+        // Remove unused row 1.2 so the table is compact and clean when only 1 key task is specified or key task is -
         t3.removeChild(t3Rows[2]);
       }
     }
@@ -1363,13 +1376,48 @@ async function generateAndDownloadDocx() {
     }
     // 3. Header Line 3: Teachers
     else if (txt.startsWith("ครูผู้สอน") && !txt.includes("ลงชื่อ")) {
-      setXmlParagraphText(
-        p,
-        `ครูผู้สอน ${tStr}`,
-        true,
-        32,
-        { keepNext: true, before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
-      );
+      if (validTeachers.length > 2) {
+        // Group into lines of up to 3 teachers matching approved layout
+        const teacherLines = [];
+        for (let idx = 0; idx < validTeachers.length; idx += 3) {
+          const chunk = validTeachers.slice(idx, idx + 3).map((t, cIdx) => `${idx + cIdx + 1}. ${t}`).join(', ');
+          const isEnd = (idx + 3 >= validTeachers.length);
+          teacherLines.push(chunk + (isEnd ? '' : ', '));
+        }
+        setXmlParagraphText(
+          p,
+          `ครูผู้สอน \t${teacherLines[0]}`,
+          true,
+          32,
+          { keepNext: true, tabs: [{ val: 'left', pos: 851 }], before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
+        );
+        let insertAfterNode = p;
+        for (let lIdx = 1; lIdx < teacherLines.length; lIdx++) {
+          const pSub = createP();
+          setParagraphFormat(pSub, {
+            keepNext: true,
+            tabs: [{ val: 'left', pos: 851 }],
+            before: 0,
+            after: 0,
+            left: headerLeftIndent,
+            right: 0,
+            firstLine: 0,
+            jc: 'left'
+          });
+          pSub.appendChild(createTab(32));
+          pSub.appendChild(createRun(teacherLines[lIdx], true, 32));
+          body.insertBefore(pSub, insertAfterNode.nextSibling);
+          insertAfterNode = pSub;
+        }
+      } else {
+        setXmlParagraphText(
+          p,
+          `ครูผู้สอน ${tStr}`,
+          true,
+          32,
+          { keepNext: true, before: 0, after: 0, left: headerLeftIndent, right: 0, firstLine: 0, jc: 'left' }
+        );
+      }
     }
     // 3b. Header Dotted Separator Line (single non-wrapping centered line)
     else if (/^[….]+$/.test(txt)) {
@@ -1403,25 +1451,30 @@ async function generateAndDownloadDocx() {
         { keepNext: true, before: 100, after: 20, left: 0, right: 0, firstLine: 0, jc: 'left' }
       );
     } else if (txt.includes("อัตราส่วนการประเมินคะแนน")) {
+      const overallRatio = (c.score_ratio === "80:20" || (grand.tot === 100 && (subPre.tot + subPost.tot === 80))) ? "80 : 20" : "70 : 30";
       setXmlParagraphText(
         p,
-        `อัตราส่วนการประเมินคะแนน\t= 70 : 30`,
+        `อัตราส่วนการประเมินคะแนน\t= ${overallRatio}`,
         false,
         32,
         { keepNext: true, tabs: [{ val: 'left', pos: 4320 }], before: 0, after: 0, left: 720, firstLine: 0, jc: 'left' }
       );
     } else if (txt.includes("ระหว่างภาค") && txt.includes("กลางภาค") && txt.includes("ปลายภาค")) {
+      const breakdownRatio = (c.score_ratio === "80:20" || (grand.tot === 100 && (subPre.tot + subPost.tot === 80))) ? "80 : 10 : 10" : "70 : 15 : 15";
       setXmlParagraphText(
         p,
-        `ระหว่างภาค : กลางภาค : ปลายภาค\t= 70 : 15 : 15`,
+        `ระหว่างภาค : กลางภาค : ปลายภาค\t= ${breakdownRatio}`,
         false,
         32,
         { keepNext: true, tabs: [{ val: 'left', pos: 4320 }], before: 0, after: 0, left: 720, firstLine: 0, jc: 'left' }
       );
     } else if (txt.includes("K") && txt.includes("P") && txt.includes("A") && txt.includes("=")) {
+      const kVal = grand.k;
+      const pVal = grand.p > 0 ? grand.p : "-";
+      const aVal = grand.a > 0 ? grand.a : "-";
       setXmlParagraphText(
         p,
-        `K : P : A\t= ${grand.k} : ${grand.p} : ${grand.a}`,
+        `K : P : A\t= ${kVal} : ${pVal} : ${aVal}`,
         false,
         32,
         { keepNext: true, tabs: [{ val: 'left', pos: 4320 }], before: 0, after: 60, left: 720, firstLine: 0, jc: 'left' }
@@ -1442,13 +1495,23 @@ async function generateAndDownloadDocx() {
         { keepNext: true, before: 80, after: 20, left: 0, firstLine: 0, jc: 'left' }
       );
     } else if (txt.includes("กลางภาค") && txt.includes("นาที") && (txt.includes("ปลายภาค") || txt.includes("60"))) {
-      setXmlParagraphText(
-        p,
-        `กลางภาค...........${midDuration}......นาที    ปลายภาค...........${finDuration}......นาที`,
-        false,
-        32,
-        { before: 0, after: 80, left: 720, firstLine: 0, jc: 'left' }
-      );
+      if (c.exam_schedule === "สอบนอกตาราง" || midDuration === "สอบนอกตาราง") {
+        setXmlParagraphText(
+          p,
+          "สอบนอกตาราง",
+          false,
+          32,
+          { before: 0, after: 80, left: 720, firstLine: 0, jc: 'left' }
+        );
+      } else {
+        setXmlParagraphText(
+          p,
+          `กลางภาค...........${midDuration}......นาที    ปลายภาค...........${finDuration}......นาที`,
+          false,
+          32,
+          { before: 0, after: 80, left: 720, firstLine: 0, jc: 'left' }
+        );
+      }
     }
     // 7. Section 4: เกณฑ์การให้ระดับคะแนน
     else if (txt.includes("4. เกณฑ์การให้ระดับคะแนน")) {
@@ -1604,9 +1667,63 @@ async function generateAndDownloadDocx() {
       ? validTeachers
       : ["....................................................."];
 
-    teacherListForSig.forEach((tName, idx) => {
-      appendSignaturePair("ครูผู้สอน", tName, idx === 0);
-    });
+    if (teacherListForSig.length > 2) {
+      function appendTwoColumnSignaturePair(role1, person1, role2, person2, isFirst = false) {
+        const pLine = createP();
+        setParagraphFormat(pLine, {
+          keepNext: true,
+          tabs: [
+            { val: 'center', pos: 2400 },
+            { val: 'center', pos: 7200 }
+          ],
+          before: isFirst ? 120 : 180,
+          after: 0,
+          line: 240,
+          left: 0,
+          firstLine: 0,
+          jc: 'left'
+        });
+        pLine.appendChild(createTab(32));
+        pLine.appendChild(createRun(`ลงชื่อ..................................................${role1}`, false, 32));
+        if (person2) {
+          pLine.appendChild(createTab(32));
+          pLine.appendChild(createRun(`ลงชื่อ..................................................${role2}`, false, 32));
+        }
+        body.insertBefore(pLine, sigRefNode);
+
+        const pName = createP();
+        setParagraphFormat(pName, {
+          keepNext: true,
+          tabs: [
+            { val: 'center', pos: 2400 },
+            { val: 'center', pos: 7200 }
+          ],
+          before: 0,
+          after: 40,
+          line: 240,
+          left: 0,
+          firstLine: 0,
+          jc: 'left'
+        });
+        pName.appendChild(createTab(32));
+        pName.appendChild(createRun(`(${person1})`, false, 32));
+        if (person2) {
+          pName.appendChild(createTab(32));
+          pName.appendChild(createRun(`(${person2})`, false, 32));
+        }
+        body.insertBefore(pName, sigRefNode);
+      }
+
+      for (let tIdx = 0; tIdx < teacherListForSig.length; tIdx += 2) {
+        const t1 = teacherListForSig[tIdx];
+        const t2 = (tIdx + 1 < teacherListForSig.length) ? teacherListForSig[tIdx + 1] : null;
+        appendTwoColumnSignaturePair("ครูผู้สอน", t1, "ครูผู้สอน", t2, tIdx === 0);
+      }
+    } else {
+      teacherListForSig.forEach((tName, idx) => {
+        appendSignaturePair("ครูผู้สอน", tName, idx === 0);
+      });
+    }
 
     appendSignaturePair("หัวหน้างานวัดผลและประเมินผลการเรียนรู้", "นางสาวอโรชา สลุงใหญ่");
     appendSignaturePair("หัวหน้ากลุ่มบริหารวิชาการ", "นายพงศธร แสนเมือง");
