@@ -197,6 +197,9 @@
                 <span id="badgeTypeText">วิชาเพิ่มเติม</span>
                 <i class="ri-arrow-up-down-line text-[10px] opacity-75"></i>
               </button>
+              <span id="badgeLockedBlueprint" class="hidden bg-emerald-600/90 text-white text-xs font-bold px-3 py-1 rounded-lg border border-emerald-400/50 shadow-sm flex items-center gap-1">
+                <i class="ri-lock-fill text-amber-300"></i> ล็อกโครงสร้างตามแบบอนุมัติ วผ.19 (สัดส่วน 80:20 / สอบนอกตาราง)
+              </span>
             </div>
             <h2 id="viewCourseName" class="text-2xl sm:text-3xl font-black tracking-tight">การเงินและการลงทุน</h2>
             <p id="viewCourseMeta" class="text-white/80 text-sm font-normal">
@@ -728,15 +731,17 @@
       const code = currentCourse.course_code;
       if (!code) return;
 
+      const isCorruption = isAntiCorruptionCourse(currentCourse);
       const sgs = extractCourseSgsSlots(currentCourse);
       const existing = sgsConfirmations[code] || {};
       const midIn = document.getElementById('inputMidExamDuration');
       const finIn = document.getElementById('inputFinExamDuration');
-      const midDur = (midIn && midIn.value) ? (parseInt(midIn.value, 10) || null) : (existing.mid_exam_duration || null);
-      const finDur = (finIn && finIn.value) ? (parseInt(finIn.value, 10) || null) : (existing.fin_exam_duration || null);
+      const midDur = isCorruption ? null : ((midIn && midIn.value) ? (parseInt(midIn.value, 10) || null) : (existing.mid_exam_duration || null));
+      const finDur = isCorruption ? null : ((finIn && finIn.value) ? (parseInt(finIn.value, 10) || null) : (existing.fin_exam_duration || null));
       const inpClass = document.getElementById('inputCourseClassrooms');
       const classrooms = (inpClass && inpClass.value.trim()) ? inpClass.value.trim() : (currentCourse.classrooms || existing.classrooms || `${currentCourse.grade_level}`);
       const validTeachers = (currentCourse.teachers || []).filter(t => !isPlaceholderTeacher(t));
+      const finalTeachers = isCorruption ? ["....................................................."] : (validTeachers.length > 0 ? validTeachers : (existing.teachers || currentCourse.teachers || []));
 
       const draftPayload = {
         ...existing,
@@ -748,7 +753,7 @@
         learning_area: currentCourse.learning_area,
         grade_level: currentCourse.grade_level,
         classrooms: classrooms,
-        teachers: validTeachers.length > 0 ? validTeachers : (existing.teachers || currentCourse.teachers || []),
+        teachers: finalTeachers,
         pre_slots: Array.from({ length: 9 }, (_, i) => sgs.preSlots[i] ? sgs.preSlots[i].score : null),
         post_slots: Array.from({ length: 9 }, (_, i) => sgs.postSlots[i] ? sgs.postSlots[i].score : null),
         pre_sum: sgs.preSum,
@@ -759,7 +764,7 @@
         mid_exam_duration: midDur,
         fin_exam_duration: finDur,
         confirmed_status: existing.confirmed_status || 'รอยืนยัน',
-        midterm_cutoff: currentCourse.midterm_cutoff,
+        midterm_cutoff: isCorruption ? 2 : currentCourse.midterm_cutoff,
         units_snapshot: JSON.parse(JSON.stringify(currentCourse.units || [])),
         plan_saved_at: new Date().toISOString()
       };
@@ -844,15 +849,18 @@
 
       const preSum = preSlots.reduce((s, x) => s + x.score, 0);
       const postSum = postSlots.reduce((s, x) => s + x.score, 0);
+      const isCorruption = isAntiCorruptionCourse(course);
       const midExam = Array.isArray(course.midExamScores) && course.midExamScores.length > 0
         ? course.midExamScores.reduce((s, x) => s + (parseInt(x) || 0), 0)
-        : (course.midterm_exam_score || 15);
+        : (course.midterm_exam_score || (isCorruption ? 10 : 15));
       const finExam = Array.isArray(course.finExamScores) && course.finExamScores.length > 0
         ? course.finExamScores.reduce((s, x) => s + (parseInt(x) || 0), 0)
-        : (course.final_exam_score || 15);
+        : (course.final_exam_score || (isCorruption ? 10 : 15));
       const grandTotal = preSum + midExam + postSum + finExam;
-      const hasOver15 = preSlots.some(x => x.score > 15) || postSlots.some(x => x.score > 15);
-      const isBalanced5050 = (preSum === 35 && midExam === 15 && postSum === 35 && finExam === 15 && !hasOver15);
+      const hasOver15 = isCorruption ? false : (preSlots.some(x => x.score > 15) || postSlots.some(x => x.score > 15));
+      const isBalanced5050 = isCorruption
+        ? (preSum === 40 && midExam === 10 && postSum === 40 && finExam === 10)
+        : (preSum === 35 && midExam === 15 && postSum === 35 && finExam === 15 && !hasOver15);
 
       return {
         preSlots,
@@ -997,6 +1005,14 @@
       }
     }
 
+    function isAntiCorruptionCourse(c) {
+      if (!c) return false;
+      if (c.score_ratio === "80:20") return true;
+      if (c.course_name && c.course_name.includes("การป้องกันการทุจริต")) return true;
+      const codes = ["ส20223", "ส20224", "ส20225", "ส20226", "ส20227", "ส20228", "ส30247", "ส30248", "ส30249", "ส30250", "ส30251", "ส30252"];
+      return codes.includes(c.course_code);
+    }
+
     function isBasicCourse(course) {
       if (!course) return false;
       if (course._userToggledBasic !== undefined) return course._userToggledBasic;
@@ -1007,6 +1023,10 @@
 
     function toggleCourseType() {
       if (!currentCourse) return;
+      if (isAntiCorruptionCourse(currentCourse)) {
+        showToast("วิชาการป้องกันการทุจริตเป็นวิชาเพิ่มเติมตามโครงสร้างหลักสูตร (ล็อกประเภท)", "warning");
+        return;
+      }
       const current = isBasicCourse(currentCourse);
       currentCourse._userToggledBasic = !current;
       currentCourse.is_basic = !current;
@@ -1096,10 +1116,28 @@
 
     function renderTeacherTags() {
       const cont = document.getElementById('teachersTagContainer');
+      const openBtn = document.getElementById('btnOpenAddTeacher');
+      const addBox = document.getElementById('addTeacherBox');
       cont.innerHTML = '';
       if (!currentCourse.teachers || currentCourse.teachers.length === 0) {
         currentCourse.teachers = ['.....................................................'];
       }
+      const isCorruption = isAntiCorruptionCourse(currentCourse);
+      if (isCorruption) {
+        currentCourse.teachers = ['.....................................................'];
+        if (openBtn) openBtn.classList.add('hidden');
+        if (addBox) addBox.classList.add('hidden');
+        const tag = document.createElement('span');
+        tag.className = 'inline-flex items-center gap-1.5 px-3 py-1 bg-slate-800/80 border border-amber-400/40 text-amber-200 rounded-lg text-xs font-semibold backdrop-blur-sm';
+        tag.innerHTML = `
+          <i class="ri-lock-fill text-amber-400 text-sm"></i>
+          <span>ครูผู้สอน: เว้นว่าง (.....................................................) [ล็อกแบบตามมติโรงเรียน]</span>
+        `;
+        cont.appendChild(tag);
+        document.getElementById('sigTeacherName').textContent = '.....................................................';
+        return;
+      }
+      if (openBtn) openBtn.classList.remove('hidden');
       currentCourse.teachers.forEach((t, idx) => {
         const isPlaceholder = isPlaceholderTeacher(t);
         const tag = document.createElement('span');
@@ -1739,11 +1777,16 @@
     async function confirmCourseSgs(courseObj, silent = false) {
       if (!courseObj) return;
       const code = courseObj.course_code;
+      const isCorruption = isAntiCorruptionCourse(courseObj);
       const selectedFilterTeacher = document.getElementById('filterTeacherSelect')?.value?.trim() || '';
-      let validTeachers = (courseObj.teachers || []).filter(t => !isPlaceholderTeacher(t));
-      if (validTeachers.length === 0 && selectedFilterTeacher) {
+      let validTeachers = isCorruption ? ["....................................................."] : (courseObj.teachers || []).filter(t => !isPlaceholderTeacher(t));
+      if (!isCorruption && validTeachers.length === 0 && selectedFilterTeacher) {
         validTeachers = [selectedFilterTeacher];
         courseObj.teachers = [selectedFilterTeacher];
+      }
+      if (isCorruption) {
+        courseObj.teachers = ["....................................................."];
+        courseObj.midterm_cutoff = 2;
       }
 
       const sgs = extractCourseSgsSlots(courseObj);
@@ -1776,7 +1819,7 @@
         fin_exam: sgs.finExam,
         grand_total: sgs.grandTotal,
         confirmed_status: 'ยืนยัน',
-        confirmed_by: selectedFilterTeacher || (validTeachers[0] || 'ครูผู้สอนประจำวิชา'),
+        confirmed_by: isCorruption ? 'กลุ่มสาระการเรียนรู้สังคมศึกษาฯ (ล็อกแบบ วผ.19)' : (selectedFilterTeacher || (validTeachers[0] || 'ครูผู้สอนประจำวิชา')),
         confirmed_at: new Date().toISOString(),
         admin_checked: Boolean(existing.admin_checked),
         sgs_entered: Boolean(existing.sgs_entered),
@@ -2071,6 +2114,17 @@
       const select = document.getElementById('selectMidtermCutoff');
       const badge = document.getElementById('badgeCutoffRatio');
       select.innerHTML = '';
+
+      if (isAntiCorruptionCourse(currentCourse)) {
+        currentCourse.midterm_cutoff = 2;
+        select.innerHTML = '<option value="2" selected>จบหน่วยที่ 2: ความละอายและความไม่ทนต่อการทุจริต (ก่อน 9 ชม. / หลัง 9 ชม.) 🔒 [ล็อกแบบอนุมัติ]</option>';
+        select.disabled = true;
+        select.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-100');
+        badge.innerHTML = '🔒 ล็อก 2 : 2 หน่วย';
+        return;
+      }
+      select.disabled = false;
+      select.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-slate-100');
 
       if (!currentCourse || !currentCourse.units || currentCourse.units.length <= 1) {
         select.innerHTML = '<option value="1">หน่วยที่ 1 (วิชานี้มีหน่วยเดียว)</option>';
@@ -2388,9 +2442,12 @@
       const c = allCourses[code];
       if (!c) return;
       _isSelectingCourse = true;
+      const isCorruption = isAntiCorruptionCourse(c);
       const savedConf = sgsConfirmations[code] || {};
       currentCourse = JSON.parse(JSON.stringify(c)); // deep copy
-      if (Array.isArray(savedConf.units_snapshot) && savedConf.units_snapshot.length > 0) {
+
+      // If anti-corruption course, do NOT let savedConf.units_snapshot override the approved blueprint!
+      if (!isCorruption && Array.isArray(savedConf.units_snapshot) && savedConf.units_snapshot.length > 0) {
         currentCourse.units = JSON.parse(JSON.stringify(savedConf.units_snapshot));
       }
       if (typeof ensureCourseUnits === 'function') ensureCourseUnits(currentCourse);
@@ -2403,63 +2460,163 @@
       document.getElementById('badgeLearningArea').textContent = c.learning_area;
       currentCourse.is_basic = isBasicCourse(c);
       updateBadgeType();
+
+      // Lock badge toggle
+      const lockBadge = document.getElementById('badgeLockedBlueprint');
+      if (lockBadge) {
+        if (isCorruption) {
+          lockBadge.classList.remove('hidden');
+        } else {
+          lockBadge.classList.add('hidden');
+        }
+      }
+
       document.getElementById('viewCourseName').textContent = c.course_name;
       document.getElementById('viewCourseMeta').textContent = `ชั้น${c.grade_level} • ภาคเรียนที่ 2/2569 • ${c.total_hours} คาบ (${c.credits.toFixed(1)} หน่วยกิต)`;
       
-      // If a teacher is currently selected in the filter dropdown and this course has no assigned teacher yet, pre-fill them
-      const selectedFilterTeacher = document.getElementById('filterTeacherSelect')?.value?.trim();
-      if (selectedFilterTeacher && (currentCourse.teachers || []).every(isPlaceholderTeacher)) {
-        currentCourse.teachers = [selectedFilterTeacher];
+      // If anti-corruption, force teachers to blank placeholder, and DO NOT auto-fill teacher
+      if (isCorruption) {
+        currentCourse.teachers = ['.....................................................'];
+        currentCourse.midterm_cutoff = 2;
+        currentCourse.score_ratio = "80:20";
+        currentCourse.target_mid_score = 10;
+        currentCourse.target_fin_score = 10;
+        currentCourse.midExamScores = [5, 5];
+        currentCourse.finExamScores = [5, 5];
+        currentCourse.exam_schedule = "สอบนอกตาราง";
+        currentCourse.exam_duration_text = "สอบนอกตาราง";
+        currentCourse.key_task = "-";
+      } else {
+        const selectedFilterTeacher = document.getElementById('filterTeacherSelect')?.value?.trim();
+        if (selectedFilterTeacher && (currentCourse.teachers || []).every(isPlaceholderTeacher)) {
+          currentCourse.teachers = [selectedFilterTeacher];
+        }
+        currentCourse.midterm_cutoff = savedConf.midterm_cutoff || c.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
       }
 
       // Render Teacher Tags
       renderTeacherTags();
 
-      // Optimal Cutoff & Cutoff selector (preserve saved cutoff if present)
-      currentCourse.midterm_cutoff = savedConf.midterm_cutoff || c.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      // Optimal Cutoff & Cutoff selector
       updateCutoffSelector();
 
       // Initialize exam scores & sub-assessments
       initExamScores();
       initUnitAssessments();
 
-      // Load Exam Durations from sgsConfirmations (or leave blank if unset)
-      const savedMidDur = (savedConf.mid_exam_duration !== undefined && savedConf.mid_exam_duration !== null && savedConf.mid_exam_duration !== '') ? savedConf.mid_exam_duration : '';
-      const savedFinDur = (savedConf.fin_exam_duration !== undefined && savedConf.fin_exam_duration !== null && savedConf.fin_exam_duration !== '') ? savedConf.fin_exam_duration : '';
-      if (document.getElementById('inputMidExamDuration')) {
-        document.getElementById('inputMidExamDuration').value = savedMidDur ? String(savedMidDur) : '';
-      }
-      if (document.getElementById('inputFinExamDuration')) {
-        document.getElementById('inputFinExamDuration').value = savedFinDur ? String(savedFinDur) : '';
+      // Exam Durations
+      const midInput = document.getElementById('inputMidExamDuration');
+      const finInput = document.getElementById('inputFinExamDuration');
+      if (isCorruption) {
+        if (midInput) {
+          midInput.value = '';
+          midInput.placeholder = 'สอบนอกตาราง';
+          midInput.disabled = true;
+          midInput.classList.add('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (finInput) {
+          finInput.value = '';
+          finInput.placeholder = 'สอบนอกตาราง';
+          finInput.disabled = true;
+          finInput.classList.add('cursor-not-allowed', 'bg-slate-100');
+        }
+        document.querySelectorAll('[onclick^="setExamDuration"]').forEach(b => {
+          b.disabled = true;
+          b.classList.add('opacity-40', 'cursor-not-allowed');
+        });
+      } else {
+        const savedMidDur = (savedConf.mid_exam_duration !== undefined && savedConf.mid_exam_duration !== null && savedConf.mid_exam_duration !== '') ? savedConf.mid_exam_duration : '';
+        const savedFinDur = (savedConf.fin_exam_duration !== undefined && savedConf.fin_exam_duration !== null && savedConf.fin_exam_duration !== '') ? savedConf.fin_exam_duration : '';
+        if (midInput) {
+          midInput.value = savedMidDur ? String(savedMidDur) : '';
+          midInput.placeholder = 'ระบุนาที เช่น 60';
+          midInput.disabled = false;
+          midInput.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (finInput) {
+          finInput.value = savedFinDur ? String(savedFinDur) : '';
+          finInput.placeholder = 'ระบุนาที เช่น 60';
+          finInput.disabled = false;
+          finInput.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        document.querySelectorAll('[onclick^="setExamDuration"]').forEach(b => {
+          b.disabled = false;
+          b.classList.remove('opacity-40', 'cursor-not-allowed');
+        });
       }
 
       // Smart Defaults for Key Assignment (Assign & Due Dates)
-      const cutoff = currentCourse.midterm_cutoff;
-      const uPre = currentCourse.units[cutoff - 1] || currentCourse.units[0];
-      const defaultTask1Name = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
-        ? c.key_task
-        : (uPre ? `ชิ้นงานสรุปองค์ความรู้เรื่อง${uPre.unit_name}` : `ชิ้นงานสำคัญเรื่อง${c.course_name}`);
-      
-      document.getElementById('inputTask1').value = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
-        ? c.key_task
-        : ((c.course_code === "ส33205") ? "จำลองการลงทุน" : defaultTask1Name);
-      document.getElementById('inputTask1Assign').value = "1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)";
-      document.getElementById('datePickerTask1Assign').value = "2026-12-01";
-      document.getElementById('inputTask1Due').value = "18 ธ.ค. 69 (สัปดาห์ที่ 8)";
-      document.getElementById('datePickerTask1Due').value = "2026-12-18";
+      const task1Inp = document.getElementById('inputTask1');
+      const task1AssignInp = document.getElementById('inputTask1Assign');
+      const task1DueInp = document.getElementById('inputTask1Due');
+      const task1AssignPicker = document.getElementById('datePickerTask1Assign');
+      const task1DuePicker = document.getElementById('datePickerTask1Due');
+      const task2Inp = document.getElementById('inputTask2');
+      const task2AssignInp = document.getElementById('inputTask2Assign');
+      const task2DueInp = document.getElementById('inputTask2Due');
+      const task2AssignPicker = document.getElementById('datePickerTask2Assign');
+      const task2DuePicker = document.getElementById('datePickerTask2Due');
 
-      if (c.course_code === "ส33205") {
-        document.getElementById('inputTask2').value = "วางแผนวิธีการหาเงิน การวางแผนการใช้จ่ายเงิน การออมเงิน และประโยชน์ของการออมเงิน";
-        document.getElementById('inputTask2Assign').value = "25 - 29 ม.ค. 70 (สัปดาห์ที่ 14)";
-        document.getElementById('datePickerTask2Assign').value = "2027-01-25";
-        document.getElementById('inputTask2Due').value = "12 ก.พ. 70 (สัปดาห์ที่ 16)";
-        document.getElementById('datePickerTask2Due').value = "2027-02-12";
+      if (isCorruption) {
+        if (task1Inp) { task1Inp.value = "-"; task1Inp.disabled = true; task1Inp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task1AssignInp) { task1AssignInp.value = "-"; task1AssignInp.disabled = true; task1AssignInp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task1DueInp) { task1DueInp.value = "-"; task1DueInp.disabled = true; task1DueInp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task1AssignPicker) { task1AssignPicker.value = ""; task1AssignPicker.disabled = true; task1AssignPicker.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task1DuePicker) { task1DuePicker.value = ""; task1DuePicker.disabled = true; task1DuePicker.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+
+        if (task2Inp) { task2Inp.value = ""; task2Inp.disabled = true; task2Inp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task2AssignInp) { task2AssignInp.value = ""; task2AssignInp.disabled = true; task2AssignInp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task2DueInp) { task2DueInp.value = ""; task2DueInp.disabled = true; task2DueInp.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task2AssignPicker) { task2AssignPicker.value = ""; task2AssignPicker.disabled = true; task2AssignPicker.classList.add('cursor-not-allowed', 'bg-slate-100'); }
+        if (task2DuePicker) { task2DuePicker.value = ""; task2DuePicker.disabled = true; task2DuePicker.classList.add('cursor-not-allowed', 'bg-slate-100'); }
       } else {
-        document.getElementById('inputTask2').value = "";
-        document.getElementById('inputTask2Assign').value = "";
-        document.getElementById('datePickerTask2Assign').value = "";
-        document.getElementById('inputTask2Due').value = "";
-        document.getElementById('datePickerTask2Due').value = "";
+        const cutoff = currentCourse.midterm_cutoff;
+        const uPre = currentCourse.units[cutoff - 1] || currentCourse.units[0];
+        const defaultTask1Name = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
+          ? c.key_task
+          : (uPre ? `ชิ้นงานสรุปองค์ความรู้เรื่อง${uPre.unit_name}` : `ชิ้นงานสำคัญเรื่อง${c.course_name}`);
+        
+        if (task1Inp) {
+          task1Inp.value = (c.key_task !== undefined && c.key_task !== null && c.key_task !== "")
+            ? c.key_task
+            : ((c.course_code === "ส33205") ? "จำลองการลงทุน" : defaultTask1Name);
+          task1Inp.disabled = false;
+          task1Inp.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (task1AssignInp) {
+          task1AssignInp.value = "1 - 5 ธ.ค. 69 (สัปดาห์ที่ 6)";
+          task1AssignInp.disabled = false;
+          task1AssignInp.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (task1AssignPicker) {
+          task1AssignPicker.value = "2026-12-01";
+          task1AssignPicker.disabled = false;
+          task1AssignPicker.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (task1DueInp) {
+          task1DueInp.value = "18 ธ.ค. 69 (สัปดาห์ที่ 8)";
+          task1DueInp.disabled = false;
+          task1DueInp.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+        if (task1DuePicker) {
+          task1DuePicker.value = "2026-12-18";
+          task1DuePicker.disabled = false;
+          task1DuePicker.classList.remove('cursor-not-allowed', 'bg-slate-100');
+        }
+
+        if (c.course_code === "ส33205") {
+          if (task2Inp) { task2Inp.value = "วางแผนวิธีการหาเงิน การวางแผนการใช้จ่ายเงิน การออมเงิน และประโยชน์ของการออมเงิน"; task2Inp.disabled = false; task2Inp.classList.remove('cursor-not-allowed', 'bg-slate-100'); }
+          if (task2AssignInp) { task2AssignInp.value = "25 - 29 ม.ค. 70 (สัปดาห์ที่ 14)"; task2AssignInp.disabled = false; }
+          if (task2AssignPicker) { task2AssignPicker.value = "2027-01-25"; task2AssignPicker.disabled = false; }
+          if (task2DueInp) { task2DueInp.value = "12 ก.พ. 70 (สัปดาห์ที่ 16)"; task2DueInp.disabled = false; }
+          if (task2DuePicker) { task2DuePicker.value = "2027-02-12"; task2DuePicker.disabled = false; }
+        } else {
+          if (task2Inp) { task2Inp.value = ""; task2Inp.disabled = false; task2Inp.classList.remove('cursor-not-allowed', 'bg-slate-100'); }
+          if (task2AssignInp) { task2AssignInp.value = ""; task2AssignInp.disabled = false; }
+          if (task2AssignPicker) { task2AssignPicker.value = ""; task2AssignPicker.disabled = false; }
+          if (task2DueInp) { task2DueInp.value = ""; task2DueInp.disabled = false; }
+          if (task2DuePicker) { task2DuePicker.value = ""; task2DuePicker.disabled = false; }
+        }
       }
 
       // Sync filter dropdowns and visual card highlight
@@ -2496,13 +2653,17 @@
       const btnConfirmTop = document.getElementById('btnConfirmCurrentCourseSgs');
       const btnConfirmBottom = document.getElementById('btnBottomConfirmSgsOnly');
 
+      const isCorruption = isAntiCorruptionCourse(currentCourse);
+      const preTarget = isCorruption ? 40 : 35;
+      const postTarget = isCorruption ? 40 : 35;
+
       if (preBox) {
         let html = '';
         for (let i = 0; i < 9; i++) {
           const slot = sgs.preSlots[i];
           if (slot) {
             const subLabel = slot.sub_idx ? `.${slot.sub_idx}` : '';
-            const isOver = slot.score > 15;
+            const isOver = isCorruption ? false : (slot.score > 15);
             html += `
               <div class="px-2 py-1 rounded-lg border ${isOver ? 'bg-rose-100 border-rose-400 text-rose-800' : 'bg-blue-50 border-blue-200 text-blue-900'} text-center min-w-[44px]" title="ช่องที่ ${i + 1}: หน่วยที่ ${slot.unit_no} ${escapeHtml(slot.unit_name)} (K=${slot.k}, P=${slot.p}, A=${slot.a})">
                 <div class="text-[9px] text-blue-600/80 font-semibold">ช่อง ${i + 1} (น.${slot.unit_no}${subLabel})</div>
@@ -2519,9 +2680,9 @@
           }
         }
         html += `
-          <div class="px-2.5 py-1 rounded-lg ${sgs.preSum === 35 ? 'bg-blue-600 text-white' : 'bg-amber-500 text-white'} text-center ml-1 shadow-sm">
+          <div class="px-2.5 py-1 rounded-lg ${sgs.preSum === preTarget ? 'bg-blue-600 text-white' : 'bg-amber-500 text-white'} text-center ml-1 shadow-sm">
             <div class="text-[9px] opacity-90 font-semibold">รวมเก็บก่อน</div>
-            <div class="text-xs font-black">${sgs.preSum}/35</div>
+            <div class="text-xs font-black">${sgs.preSum}/${preTarget}</div>
           </div>
           <div class="px-2.5 py-1 rounded-lg bg-indigo-700 text-white text-center shadow-sm">
             <div class="text-[9px] opacity-90 font-semibold">กลางภาค</div>
@@ -2537,7 +2698,7 @@
           const slot = sgs.postSlots[i];
           if (slot) {
             const subLabel = slot.sub_idx ? `.${slot.sub_idx}` : '';
-            const isOver = slot.score > 15;
+            const isOver = isCorruption ? false : (slot.score > 15);
             html += `
               <div class="px-2 py-1 rounded-lg border ${isOver ? 'bg-rose-100 border-rose-400 text-rose-800' : 'bg-purple-50 border-purple-200 text-purple-900'} text-center min-w-[44px]" title="ช่องที่ ${i + 1}: หน่วยที่ ${slot.unit_no} ${escapeHtml(slot.unit_name)} (K=${slot.k}, P=${slot.p}, A=${slot.a})">
                 <div class="text-[9px] text-purple-600/80 font-semibold">ช่อง ${i + 1} (น.${slot.unit_no}${subLabel})</div>
@@ -2554,9 +2715,9 @@
           }
         }
         html += `
-          <div class="px-2.5 py-1 rounded-lg ${sgs.postSum === 35 ? 'bg-purple-600 text-white' : 'bg-amber-500 text-white'} text-center ml-1 shadow-sm">
+          <div class="px-2.5 py-1 rounded-lg ${sgs.postSum === postTarget ? 'bg-purple-600 text-white' : 'bg-amber-500 text-white'} text-center ml-1 shadow-sm">
             <div class="text-[9px] opacity-90 font-semibold">รวมเก็บหลัง</div>
-            <div class="text-xs font-black">${sgs.postSum}/35</div>
+            <div class="text-xs font-black">${sgs.postSum}/${postTarget}</div>
           </div>
           <div class="px-2.5 py-1 rounded-lg bg-fuchsia-700 text-white text-center shadow-sm">
             <div class="text-[9px] opacity-90 font-semibold">ปลายภาค</div>
@@ -2569,7 +2730,9 @@
       if (totalBadge) {
         if (sgs.isBalanced5050 && sgs.grandTotal === 100) {
           totalBadge.className = 'px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 border border-emerald-300 font-black text-xs';
-          totalBadge.textContent = `รวม ${sgs.grandTotal} คะแนน (50:50 พอดี ✅)`;
+          totalBadge.textContent = isCorruption
+            ? `รวม ${sgs.grandTotal} คะแนน (สัดส่วน 80:20 ล็อกแบบ ✅)`
+            : `รวม ${sgs.grandTotal} คะแนน (50:50 พอดี ✅)`;
         } else {
           totalBadge.className = 'px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 font-black text-xs';
           totalBadge.textContent = `รวม ${sgs.grandTotal} คะแนน (ก่อน ${sgs.preSum}+${sgs.midExam} | หลัง ${sgs.postSum}+${sgs.finExam})`;
@@ -2725,8 +2888,9 @@
       const tbody = document.getElementById('matrixTableBody');
       tbody.innerHTML = '';
 
+      const isCorruption = isAntiCorruptionCourse(currentCourse);
       const N = currentCourse.units.length;
-      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const cutoff = isCorruption ? 2 : (currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours));
       const preUnits = currentCourse.units.slice(0, cutoff);
       const postUnits = currentCourse.units.slice(cutoff);
 
@@ -2734,31 +2898,31 @@
       const postRange = (cutoff + 1 === N) ? `หน่วยที่ ${N}` : `หน่วยที่ ${cutoff + 1} - ${N}`;
 
       const midDur = document.getElementById('inputMidExamDuration')?.value || 60;
-      const midDurText = formatExamDurationHour(midDur);
+      const midDurText = isCorruption ? "สอบนอกตาราง" : formatExamDurationHour(midDur);
       const finDur = document.getElementById('inputFinExamDuration')?.value || 60;
-      const finDurText = formatExamDurationHour(finDur);
+      const finDurText = isCorruption ? "สอบนอกตาราง" : formatExamDurationHour(finDur);
 
       // Section 1: ก่อนกลางภาค
       appendSectionHeader(tbody, `1. การวัดผลก่อนสอบกลางภาค (${preRange})`, "bg-indigo-50/70 text-indigo-900");
-      preUnits.forEach((u, idx) => appendUnitRows(tbody, u, idx));
+      preUnits.forEach((u, idx) => appendUnitRows(tbody, u, idx, isCorruption));
       appendSubtotalRow(tbody, "รวมคะแนนวัดผลก่อนสอบกลางภาค", calculateSubtotal(preUnits));
 
       // Section 2: กลางภาค
-      appendSectionHeader(tbody, `2. การวัดผลกลางภาค (${midDurText}) [ครอบคลุม ${preRange}]`, "bg-amber-50/70 text-amber-900");
-      preUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'mid', preUnits.length));
+      appendSectionHeader(tbody, isCorruption ? `2. การวัดผลกลางภาค (สอบนอกตาราง) [ครอบคลุม ${preRange}]` : `2. การวัดผลกลางภาค (${midDurText}) [ครอบคลุม ${preRange}]`, "bg-amber-50/70 text-amber-900");
+      preUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'mid', preUnits.length, isCorruption));
       const midTot = (currentCourse.midExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
       appendSubtotalRow(tbody, "รวมคะแนนวัดผลกลางภาค", { k: midTot, p: 0, a: 0, tot: midTot });
 
       // Section 3: หลังกลางภาค
       if (postUnits.length > 0) {
         appendSectionHeader(tbody, `3. การวัดผลหลังสอบกลางภาค (${postRange})`, "bg-indigo-50/70 text-indigo-900");
-        postUnits.forEach((u, idx) => appendUnitRows(tbody, u, cutoff + idx));
+        postUnits.forEach((u, idx) => appendUnitRows(tbody, u, cutoff + idx, isCorruption));
         appendSubtotalRow(tbody, "รวมคะแนนวัดผลหลังสอบกลางภาค", calculateSubtotal(postUnits));
       }
 
       // Section 4: ปลายภาค
-      appendSectionHeader(tbody, `4. การวัดผลปลายภาค (${finDurText}) [ครอบคลุม ${postRange}]`, "bg-amber-50/70 text-amber-900");
-      postUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'fin', postUnits.length));
+      appendSectionHeader(tbody, isCorruption ? `4. การวัดผลปลายภาค (สอบนอกตาราง) [ครอบคลุม ${postRange}]` : `4. การวัดผลปลายภาค (${finDurText}) [ครอบคลุม ${postRange}]`, "bg-amber-50/70 text-amber-900");
+      postUnits.forEach((u, idx) => appendExamUnitRow(tbody, u, idx, 'fin', postUnits.length, isCorruption));
       const finTot = (currentCourse.finExamScores || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
       appendSubtotalRow(tbody, "รวมคะแนนวัดผลปลายภาค", { k: finTot, p: 0, a: 0, tot: finTot });
 
@@ -2782,7 +2946,7 @@
       tbody.appendChild(tr);
     }
 
-    function appendUnitRows(tbody, u, uIdx) {
+    function appendUnitRows(tbody, u, uIdx, isCorruption) {
       if (!u.assessments || !Array.isArray(u.assessments) || u.assessments.length === 0) {
         initUnitAssessments();
       }
@@ -2795,7 +2959,11 @@
 
         if (aIdx === 0) {
           // Primary row for the unit
-          const canSplitPrompt = (ass.score_total > 15) ? `
+          const canSplitPrompt = isCorruption ? `
+            <span class="mt-1 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-300">
+              <i class="ri-lock-fill text-amber-500"></i> ล็อกคะแนน 20 คะแนน (วผ.19)
+            </span>
+          ` : ((ass.score_total > 15) ? `
             <button type="button" onclick="splitUnitAssessment(${uIdx})" class="mt-1 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-800 transition-colors" title="คะแนนรวมเกิน 15 คะแนน แนะนำให้แยกเป็น 2 แถวเพื่อบันทึก SGS ได้">
               <i class="ri-split-cells-vertical"></i> แยกคะแนน 2 แถว (เกณฑ์ SGS)
             </button>
@@ -2803,22 +2971,21 @@
             <button type="button" onclick="addAssessmentRow(${uIdx})" class="mt-1 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 transition-colors" title="เพิ่มช่องประเมิน/แถวย่อยในหน่วยเดียวกัน">
               <i class="ri-add-line"></i> + เพิ่มแถวประเมินในหน่วยนี้
             </button>
-          `;
+          `);
 
-          tr.innerHTML = `
-            <td class="py-2.5 px-2 text-center font-bold text-slate-600 align-top pt-3">${u.unit_no}</td>
-            <td class="py-2.5 px-3 align-top">
-              <input type="text" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-primary rounded px-1 font-semibold text-slate-800 text-xs" 
-                value="${escapeHtml(u.unit_name)}" onchange="currentCourse.units[${uIdx}].unit_name=this.value;">
-              <div class="mt-1">${canSplitPrompt}</div>
-              ${renderOutcomeChips(uIdx)}
-            </td>
-            <td class="py-2.5 px-2 text-center align-top pt-2.5">
-              <input type="number" min="1" max="40" class="w-12 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-bold text-slate-700" 
-                value="${u.hours}" onchange="currentCourse.units[${uIdx}].hours=parseInt(this.value)||0; updateHourValidation();">
-            </td>
-            <td class="py-2 px-3">
-              <div class="space-y-1.5">
+          const unitNameHtml = isCorruption
+            ? `<span class="font-semibold text-slate-800 text-xs block py-1">${escapeHtml(u.unit_name)}</span>`
+            : `<input type="text" class="w-full bg-transparent border-0 focus:ring-1 focus:ring-primary rounded px-1 font-semibold text-slate-800 text-xs" 
+                value="${escapeHtml(u.unit_name)}" onchange="currentCourse.units[${uIdx}].unit_name=this.value;">`;
+
+          const hoursHtml = isCorruption
+            ? `<span class="font-bold text-slate-700 text-xs block py-1">${u.hours}</span>`
+            : `<input type="number" min="1" max="40" class="w-12 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-bold text-slate-700" 
+                value="${u.hours}" onchange="currentCourse.units[${uIdx}].hours=parseInt(this.value)||0; updateHourValidation();">`;
+
+          const evalHtml = isCorruption
+            ? `<div class="text-[11px] text-slate-700 whitespace-pre-line leading-relaxed py-1">${escapeHtml(ass.eval_methods)}</div>`
+            : `<div class="space-y-1.5">
                 <textarea rows="2" class="w-full text-[11px] bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-primary text-slate-700 leading-relaxed font-sans resize-y"
                   onchange="updateAssessmentEval(${uIdx}, 0, this.value);">${escapeHtml(ass.eval_methods)}</textarea>
                 <div class="flex flex-wrap gap-1 items-center">
@@ -2829,21 +2996,46 @@
                   <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'ชิ้นงานสำคัญ')" class="text-[10px] px-1.5 py-0.5 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 font-medium transition-colors">+ ชิ้นงานสำคัญ</button>
                   <button type="button" onclick="appendAssessmentEvalMethod(${uIdx}, 0, 'แบบทดสอบภาคปฏิบัติ')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-indigo-50 hover:text-primary text-slate-600 transition-colors">+ สอบปฏิบัติ</button>
                 </div>
-              </div>
+              </div>`;
+
+          const scoreKHtml = isCorruption
+            ? `<span class="font-bold text-slate-800 text-xs block py-1">${ass.score_k}</span>`
+            : `<input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_k > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_k}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_k', this.value)">`;
+
+          const scorePHtml = isCorruption
+            ? `<span class="text-slate-400 text-xs block py-1">-</span>`
+            : `<input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_p > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_p}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_p', this.value)">`;
+
+          const scoreAHtml = isCorruption
+            ? `<span class="text-slate-400 text-xs block py-1">-</span>`
+            : `<input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_a > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
+                value="${ass.score_a}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_a', this.value)">`;
+
+          tr.innerHTML = `
+            <td class="py-2.5 px-2 text-center font-bold text-slate-600 align-top pt-3">${u.unit_no}</td>
+            <td class="py-2.5 px-3 align-top">
+              ${unitNameHtml}
+              <div class="mt-1">${canSplitPrompt}</div>
+              ${renderOutcomeChips(uIdx)}
+            </td>
+            <td class="py-2.5 px-2 text-center align-top pt-2.5">
+              ${hoursHtml}
+            </td>
+            <td class="py-2 px-3">
+              ${evalHtml}
             </td>
             <td class="py-2 px-2 text-center align-top pt-2.5">
-              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_k > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
-                value="${ass.score_k}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_k', this.value)">
+              ${scoreKHtml}
             </td>
             <td class="py-2 px-2 text-center align-top pt-2.5">
-              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_p > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
-                value="${ass.score_p}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_p', this.value)">
+              ${scorePHtml}
             </td>
             <td class="py-2 px-2 text-center align-top pt-2.5">
-              <input type="number" min="0" max="15" class="w-10 text-center bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-xs font-semibold ${ass.score_a > 15 ? 'border-rose-500 text-rose-600 font-bold bg-rose-50' : ''}" 
-                value="${ass.score_a}" onchange="updateAssessmentScore(${uIdx}, 0, 'score_a', this.value)">
+              ${scoreAHtml}
             </td>
-            <td class="py-2 px-2 text-center font-bold align-top pt-3 ${ass.score_total > 15 ? 'text-rose-600 font-black' : 'text-indigo-700'}">${ass.score_total}</td>
+            <td class="py-2 px-2 text-center font-bold align-top pt-3 ${(!isCorruption && ass.score_total > 15) ? 'text-rose-600 font-black' : 'text-indigo-700'}">${ass.score_total}</td>
           `;
         } else {
           // Sub-row under the same unit
@@ -2893,21 +3085,30 @@
       });
     }
 
-    function appendExamUnitRow(tbody, u, idx, type, totalUnitsInCycle) {
+    function appendExamUnitRow(tbody, u, idx, type, totalUnitsInCycle, isCorruption) {
       const tr = document.createElement('tr');
       tr.className = "bg-amber-50/20 hover:bg-amber-50/40 transition-colors text-slate-700";
       const isLast = (idx === totalUnitsInCycle - 1);
       const durVal = type === 'mid' ? (document.getElementById('inputMidExamDuration')?.value || 60) : (document.getElementById('inputFinExamDuration')?.value || 60);
-      const durText = formatExamDurationHour(durVal);
-      const uName = isLast ? `${escapeHtml(u.unit_name)} (${durText})` : escapeHtml(u.unit_name);
-      const hoursText = isLast ? (parseInt(durVal) >= 60 ? Math.round(parseInt(durVal)/60) : durVal + " น.") : "-";
-      const evalMethod = type === 'mid' 
-        ? "- แบบทดสอบวัดผลกลางภาคเรียน (แบบปรนัย/อัตนัย)"
-        : "- แบบทดสอบวัดผลปลายภาคเรียน (แบบปรนัย/อัตนัย)";
+      const durText = isCorruption ? "สอบนอกตาราง" : formatExamDurationHour(durVal);
+      const uName = isCorruption 
+        ? escapeHtml(u.unit_name) 
+        : (isLast ? `${escapeHtml(u.unit_name)} (${durText})` : escapeHtml(u.unit_name));
+      const hoursText = isCorruption ? "-" : (isLast ? (parseInt(durVal) >= 60 ? Math.round(parseInt(durVal)/60) : durVal + " น.") : "-");
+      const evalMethod = isCorruption
+        ? (type === 'mid' ? "- แบบทดสอบวัดผลกลางภาคเรียน (สอบนอกตาราง)" : "- แบบทดสอบวัดผลปลายภาคเรียน (สอบนอกตาราง)")
+        : (type === 'mid' ? "- แบบทดสอบวัดผลกลางภาคเรียน (แบบปรนัย/อัตนัย)" : "- แบบทดสอบวัดผลปลายภาคเรียน (แบบปรนัย/อัตนัย)");
 
       const scores = type === 'mid' ? (currentCourse.midExamScores || []) : (currentCourse.finExamScores || []);
-      const sc = scores[idx] !== undefined ? scores[idx] : 0;
-      const isOver15 = sc > 15;
+      const sc = scores[idx] !== undefined ? scores[idx] : (isCorruption ? 5 : 0);
+      const isOver15 = !isCorruption && (sc > 15);
+
+      const scoreInputHtml = isCorruption
+        ? `<span class="font-bold text-amber-950 text-xs block py-0.5">${sc}</span>`
+        : `<input type="number" min="0" max="15" 
+            class="w-10 text-center bg-amber-50/90 border border-amber-300 rounded px-1 py-0.5 text-xs font-bold text-amber-950 focus:ring-1 focus:ring-amber-500 ${isOver15 ? 'border-rose-500 text-rose-600 bg-rose-50' : ''}" 
+            value="${sc}" 
+            onchange="updateExamScore('${type}', ${idx}, this.value)">`;
 
       tr.innerHTML = `
         <td class="py-2 px-2 text-center font-bold text-amber-700">${u.unit_no}</td>
@@ -2915,10 +3116,7 @@
         <td class="py-2 px-2 text-center font-bold text-slate-400">${hoursText}</td>
         <td class="py-2 px-3 text-[11px] text-slate-600 font-normal">${evalMethod}</td>
         <td class="py-2 px-2 text-center">
-          <input type="number" min="0" max="15" 
-            class="w-10 text-center bg-amber-50/90 border border-amber-300 rounded px-1 py-0.5 text-xs font-bold text-amber-950 focus:ring-1 focus:ring-amber-500 ${isOver15 ? 'border-rose-500 text-rose-600 bg-rose-50' : ''}" 
-            value="${sc}" 
-            onchange="updateExamScore('${type}', ${idx}, this.value)">
+          ${scoreInputHtml}
         </td>
         <td class="py-2 px-2 text-center text-slate-300">-</td>
         <td class="py-2 px-2 text-center text-slate-300">-</td>
@@ -2927,7 +3125,7 @@
       tbody.appendChild(tr);
     }
 
-    function updateExamScore(type, idx, val) {
+        function updateExamScore(type, idx, val) {
       const num = parseInt(val) || 0;
       if (type === 'mid') {
         if (!currentCourse.midExamScores) initExamScores();
@@ -2996,7 +3194,8 @@
     }
 
     function updateHourValidation() {
-      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
+      const isCorruption = isAntiCorruptionCourse(currentCourse);
+      const cutoff = isCorruption ? 2 : (currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours));
       const preUnits = currentCourse.units.slice(0, cutoff);
       const postUnits = currentCourse.units.slice(cutoff);
 
@@ -3013,7 +3212,11 @@
       const badge = document.getElementById('status5050Badge');
       const btnAuto = document.getElementById('btnAutoBalance');
 
-      if (preH === target && postH === target) {
+      if (isCorruption) {
+        badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1";
+        badge.innerHTML = '<i class="ri-checkbox-circle-fill"></i> ผ่านเกณฑ์สัดส่วนเวลาเรียน (9 + 9 ชม.)';
+        btnAuto.classList.add('hidden');
+      } else if (preH === target && postH === target) {
         badge.className = "text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1";
         badge.innerHTML = '<i class="ri-checkbox-circle-fill"></i> ผ่านเกณฑ์ 50:50';
         btnAuto.classList.add('hidden');
@@ -3026,7 +3229,11 @@
 
       // Grand totals update & validation
       const g = calculateGrandTotal(preUnits, postUnits);
-      document.getElementById('labelKPARatio').textContent = `${g.k} : ${g.p} : ${g.a}`;
+      if (isCorruption) {
+        document.getElementById('labelKPARatio').textContent = "100 : - : - (ความรู้ 100%)";
+      } else {
+        document.getElementById('labelKPARatio').textContent = `${g.k} : ${g.p} : ${g.a}`;
+      }
       
       const labelGrandTotal = document.getElementById('labelGrandTotal');
       const scoreValidationText = document.getElementById('scoreValidationText');
@@ -3041,26 +3248,33 @@
 
       // Check cell > 15 limit (SGS limit)
       let over15Items = [];
-      currentCourse.units.forEach((u) => {
-        (u.assessments || []).forEach((a, aIdx) => {
-          const rowTag = (u.assessments.length > 1) ? `หน่วยที่ ${u.unit_no} (แถวที่ ${aIdx + 1})` : `หน่วยที่ ${u.unit_no}`;
-          if (a.score_total > 15) {
-            over15Items.push(`${rowTag} รวม=${a.score_total}`);
-          } else {
-            if (a.score_k > 15) over15Items.push(`${rowTag} K=${a.score_k}`);
-            if (a.score_p > 15) over15Items.push(`${rowTag} P=${a.score_p}`);
-            if (a.score_a > 15) over15Items.push(`${rowTag} A=${a.score_a}`);
-          }
+      if (!isCorruption) {
+        currentCourse.units.forEach((u) => {
+          (u.assessments || []).forEach((a, aIdx) => {
+            const rowTag = (u.assessments.length > 1) ? `หน่วยที่ ${u.unit_no} (แถวที่ ${aIdx + 1})` : `หน่วยที่ ${u.unit_no}`;
+            if (a.score_total > 15) {
+              over15Items.push(`${rowTag} รวม=${a.score_total}`);
+            } else {
+              if (a.score_k > 15) over15Items.push(`${rowTag} K=${a.score_k}`);
+              if (a.score_p > 15) over15Items.push(`${rowTag} P=${a.score_p}`);
+              if (a.score_a > 15) over15Items.push(`${rowTag} A=${a.score_a}`);
+            }
+          });
         });
-      });
-      (currentCourse.midExamScores || []).forEach((sc, i) => {
-        if (sc > 15) over15Items.push(`สอบกลางภาคหน่วยที่ ${preUnits[i] ? preUnits[i].unit_no : i+1} (${sc})`);
-      });
-      (currentCourse.finExamScores || []).forEach((sc, i) => {
-        if (sc > 15) over15Items.push(`สอบปลายภาคหน่วยที่ ${postUnits[i] ? postUnits[i].unit_no : i+1} (${sc})`);
-      });
+        (currentCourse.midExamScores || []).forEach((sc, i) => {
+          if (sc > 15) over15Items.push(`สอบกลางภาคหน่วยที่ ${preUnits[i] ? preUnits[i].unit_no : i+1} (${sc})`);
+        });
+        (currentCourse.finExamScores || []).forEach((sc, i) => {
+          if (sc > 15) over15Items.push(`สอบปลายภาคหน่วยที่ ${postUnits[i] ? postUnits[i].unit_no : i+1} (${sc})`);
+        });
+      }
 
-      if (over15Items.length > 0) {
+      if (isCorruption) {
+        sgsLimitNotice.className = "text-emerald-700 font-bold flex items-center gap-1";
+        sgsLimitNotice.innerHTML = '<i class="ri-checkbox-circle-fill"></i> โครงสร้างตามแบบอนุมัติ วผ.19 (สัดส่วน 80:20 / ช่องละ 20 คะแนน / กลาง-ปลายภาคละ 10 คะแนน)';
+        if (btnAutoSplitOver15) btnAutoSplitOver15.classList.add('hidden');
+        if (btnAutoBalanceScores) btnAutoBalanceScores.classList.add('hidden');
+      } else if (over15Items.length > 0) {
         sgsLimitNotice.className = "text-rose-600 font-bold flex items-center gap-1";
         sgsLimitNotice.innerHTML = `<i class="ri-error-warning-fill"></i> มีช่องคะแนนเกิน 15: ${over15Items.join(', ')} (ระบบ SGS บันทึกได้สูงสุดช่องละ 15)`;
         if (btnAutoSplitOver15) {
@@ -3075,32 +3289,29 @@
         }
       }
 
-      if (btnAutoBalanceScores) {
+      if (!isCorruption && btnAutoBalanceScores) {
+        btnAutoBalanceScores.classList.remove('hidden');
         btnAutoBalanceScores.onclick = autoBalanceScores;
       }
 
-      const isPrePostBalanced = (g.subPre.tot === 35 && g.midTot === 15 && g.subPost.tot === 35 && g.finTot === 15);
+      const isPrePostBalanced = isCorruption
+        ? (g.subPre.tot === 40 && g.midTot === 10 && g.subPost.tot === 40 && g.finTot === 10)
+        : (g.subPre.tot === 35 && g.midTot === 15 && g.subPost.tot === 35 && g.finTot === 15);
 
       if (g.tot === 100 && isPrePostBalanced) {
         labelGrandTotal.className = "text-sm font-black text-emerald-600";
         scoreValidationText.className = "font-bold text-emerald-600 flex items-center gap-1";
-        scoreValidationText.innerHTML = '<i class="ri-check-line text-base"></i> คะแนนรวม 100 คะแนนพอดี แบ่งครึ่ง 50:50 (ก่อน 35+15 | หลัง 35+15)';
-        
-        if (over15Items.length > 0) {
-          scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs";
-          scoreAlertIcon.className = "ri-error-warning-fill text-rose-600 text-lg";
-          scoreAlertText.innerHTML = `<span><strong>แจ้งเตือน SGS:</strong> มีช่องคะแนนเกิน 15 คะแนน (${over15Items.join(', ')}) ซึ่งระบบ SGS ไม่สามารถบันทึกได้ กดปุ่มแยกแถวประเมินเพื่อแก้ไขทันที</span>`;
-          scoreAlertBanner.classList.remove('hidden');
-        } else {
-          scoreAlertBanner.classList.add('hidden');
-        }
+        scoreValidationText.innerHTML = isCorruption
+          ? '<i class="ri-check-line text-base"></i> คะแนนรวม 100 คะแนนพอดี สัดส่วน 80:20 (ก่อน 40+10 | หลัง 40+10 ล็อกแบบ วผ.19)'
+          : '<i class="ri-check-line text-base"></i> คะแนนรวม 100 คะแนนพอดี แบ่งครึ่ง 50:50 (ก่อน 35+15 | หลัง 35+15)';
+        scoreAlertBanner.classList.add('hidden');
       } else if (g.tot === 100 && !isPrePostBalanced) {
         labelGrandTotal.className = "text-sm font-black text-amber-600";
         scoreValidationText.className = "font-bold text-amber-600 flex items-center gap-1";
-        scoreValidationText.innerHTML = `<i class="ri-alert-line text-base"></i> รวม 100 คะแนน แต่ยังไม่แบ่งครึ่ง 35:35 (ปัจจุบัน ก่อน=${g.subPre.tot}+${g.midTot} | หลัง=${g.subPost.tot}+${g.finTot})`;
+        scoreValidationText.innerHTML = `<i class="ri-alert-line text-base"></i> รวม 100 คะแนน แต่ยังไม่แบ่งครึ่ง (ปัจจุบัน ก่อน=${g.subPre.tot}+${g.midTot} | หลัง=${g.subPost.tot}+${g.finTot})`;
         scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm";
         scoreAlertIcon.className = "ri-alert-fill text-amber-600 text-lg";
-        scoreAlertText.innerHTML = `<span><strong>สัดส่วนก่อน/หลังกลางภาคยังไม่แบ่งครึ่ง 50:50:</strong> ปัจจุบันเก็บก่อนกลางภาคได้ <strong>${g.subPre.tot}/35</strong> และหลังกลางภาคได้ <strong>${g.subPost.tot}/35</strong> คลิกปุ่มปรับเกลี่ยอัตโนมัติเพื่อให้ตรงกับตาราง SGS</span>`;
+        scoreAlertText.innerHTML = `<span><strong>สัดส่วนก่อน/หลังกลางภาคยังไม่สมดุล:</strong> ปัจจุบันเก็บก่อนกลางภาคได้ <strong>${g.subPre.tot}/${isCorruption ? 40 : 35}</strong> และหลังกลางภาคได้ <strong>${g.subPost.tot}/${isCorruption ? 40 : 35}</strong></span>`;
         scoreAlertBanner.classList.remove('hidden');
       } else if (g.tot < 100) {
         const diff = 100 - g.tot;
@@ -3110,7 +3321,7 @@
         
         scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm";
         scoreAlertIcon.className = "ri-alert-fill text-amber-600 text-lg";
-        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมยังไม่ครบ:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (ขาดอีก <strong class="text-amber-700">${diff}</strong> คะแนน) ปรับเพิ่มในตารางหรือคลิกปุ่มปรับเกลี่ย</span>`;
+        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมยังไม่ครบ:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (ขาดอีก <strong class="text-amber-700">${diff}</strong> คะแนน)</span>`;
         scoreAlertBanner.classList.remove('hidden');
       } else {
         const diff = g.tot - 100;
@@ -3118,121 +3329,16 @@
         scoreValidationText.className = "font-bold text-rose-600 flex items-center gap-1";
         scoreValidationText.innerHTML = `<i class="ri-close-circle-line text-base"></i> เกินมา ${diff} คะแนน (ปัจจุบัน ${g.tot}/100)`;
         
-        scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-rose-300 bg-rose-50 text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm";
+        scoreAlertBanner.className = "mb-3 p-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs";
         scoreAlertIcon.className = "ri-error-warning-fill text-rose-600 text-lg";
-        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมเกินกำหนด:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (เกินมา <strong class="text-rose-700">${diff}</strong> คะแนน) ให้ลดคะแนนหรือคลิกปุ่มปรับเกลี่ย</span>`;
+        scoreAlertText.innerHTML = `<span><strong>คะแนนรวมเกิน:</strong> ปัจจุบันได้ <strong>${g.tot}</strong> คะแนน (เกินมา <strong class="text-rose-700">${diff}</strong> คะแนน)</span>`;
         scoreAlertBanner.classList.remove('hidden');
       }
 
       updateLiveSgsPreviewStrip();
-      silentlySavePlanDraftForSgsConfirm(false);
     }
 
-    function distributeHalfFormativeScores(unitsSlice, targetSum) {
-      if (!unitsSlice || unitsSlice.length === 0) return;
-      const hoursList = unitsSlice.map(u => Math.max(1, parseInt(u.hours) || 1));
-      const totalH = hoursList.reduce((s, h) => s + h, 0);
-      let rawTargets = hoursList.map(h => Math.max(5, Math.round((h / totalH) * targetSum)));
-      let diff = targetSum - rawTargets.reduce((s, v) => s + v, 0);
-      let idx = 0;
-      while (diff !== 0 && idx < 200) {
-        const i = idx % rawTargets.length;
-        if (diff > 0) {
-          rawTargets[i] += 1;
-          diff -= 1;
-        } else if (diff < 0 && rawTargets[i] > 5) {
-          rawTargets[i] -= 1;
-          diff += 1;
-        }
-        idx++;
-      }
-
-      unitsSlice.forEach((u, i) => {
-        const unitTarget = rawTargets[i];
-        const numRows = Math.ceil(unitTarget / 15);
-        const perRow = Math.floor(unitTarget / numRows);
-        const remRow = unitTarget - (perRow * numRows);
-
-        u.assessments = [];
-        for (let r = 0; r < numRows; r++) {
-          const rowTarget = perRow + (r < remRow ? 1 : 0);
-          let k = Math.min(15, Math.max(1, Math.round(rowTarget * 0.50)));
-          let p = Math.min(15, Math.max(1, Math.round(rowTarget * 0.30)));
-          if (k + p > rowTarget) p = Math.max(0, rowTarget - k);
-          let a = Math.max(0, rowTarget - k - p);
-
-          const defaultEval = (r === 0)
-            ? (u.evaluation_methods ? u.evaluation_methods.split('\n---\n')[0] : "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม")
-            : "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน/ภาระงาน";
-
-          u.assessments.push({
-            eval_methods: defaultEval,
-            score_k: k,
-            score_p: p,
-            score_a: a,
-            score_total: k + p + a
-          });
-        }
-        syncUnitScores(u);
-      });
-    }
-
-    // Auto-balance scores to exact 50:50 (Pre 35+15=50 | Post 35+15=50) with SGS max 15 per entry constraint
-    function autoBalanceScores() {
-      if (!currentCourse || !currentCourse.units || currentCourse.units.length === 0) return;
-
-      const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
-      const preUnits = currentCourse.units.slice(0, cutoff);
-      const postUnits = currentCourse.units.slice(cutoff);
-
-      // 1. Balance Midterm Exam Scores (sum = 15)
-      const perMid = Math.floor(15 / preUnits.length);
-      const remMid = 15 - (perMid * preUnits.length);
-      currentCourse.midExamScores = preUnits.map((_, i) => perMid + (i < remMid ? 1 : 0));
-
-      // 2. Balance Final Exam Scores (sum = 15)
-      if (postUnits.length > 0) {
-        const perFin = Math.floor(15 / postUnits.length);
-        const remFin = 15 - (perFin * postUnits.length);
-        currentCourse.finExamScores = postUnits.map((_, i) => perFin + (i < remFin ? 1 : 0));
-      } else {
-        currentCourse.finExamScores = [];
-      }
-
-      // 3. Balance Formative Units: Pre-Midterm = 35 and Post-Midterm = 35
-      if (postUnits.length > 0) {
-        distributeHalfFormativeScores(preUnits, 35);
-        distributeHalfFormativeScores(postUnits, 35);
-      } else {
-        distributeHalfFormativeScores(preUnits, 70);
-      }
-
-      renderMatrixTable();
-      updateHourValidation();
-      showToast("ปรับเกลี่ยคะแนน 50:50 เรียบร้อยแล้ว ✅ (ก่อนกลางภาค 35+15 | หลังกลางภาค 35+15 ทุกช่อง ≤ 15)", "success");
-    }
-
-    function autoSplitAllOver15() {
-      if (!currentCourse || !currentCourse.units) return;
-      let count = 0;
-      currentCourse.units.forEach((u, uIdx) => {
-        let hasOver = false;
-        (u.assessments || []).forEach(a => {
-          if (a.score_total > 15 || a.score_k > 15 || a.score_p > 15 || a.score_a > 15) {
-            hasOver = true;
-          }
-        });
-        if (hasOver || (u.score_total > 15 && (!u.assessments || u.assessments.length <= 1))) {
-          splitUnitAssessment(uIdx);
-          count++;
-        }
-      });
-      if (count > 0) {
-        showToast(`แยกแถวคะแนนให้หน่วยที่เกิน 15 เรียบร้อยแล้ว ${count} หน่วย`, "success");
-      }
-    }
-
-    function autoBalanceHours() {
+        function autoBalanceHours() {
       const target = currentCourse.target_pre_hours;
       const cutoff = currentCourse.midterm_cutoff || getOptimalCutoff(currentCourse.units, currentCourse.target_pre_hours);
       
