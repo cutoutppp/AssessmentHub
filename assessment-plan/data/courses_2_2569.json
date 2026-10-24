@@ -2089,7 +2089,7 @@
       "3. ใช้หน่วยวัดและการแปลงหน่วยในการแก้ปัญหาที่เกี่ยวข้องกับความยาว พื้นที่ และปริมาตร จากสถานการณ์ในชีวิตจริงได้อย่างเหมาะสม",
       "4. ออกแบบและสร้างชิ้นงานอย่างง่ายโดยใช้รูปทรงเรขาคณิต พร้อมทั้งอธิบายเหตุผลในการเลือกใช้รูปทรงและขนาดโดยอ้างอิงหลักคณิตศาสตร์ 5. ประยุกต์ใช้กระบวนการออกแบบเชิงวิศวกรรม (Engineering Design Process) ในการวางแผน สร้าง ทดสอบ และปรับปรุงชิ้นงาน โดยแสดงหลักฐานการคิดอย่างเป็นลำดับขั้น"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -101260,7 +101260,8 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   },
   "ว22320": {
     "course_code": "ว22320",
@@ -101355,7 +101356,8 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   },
   "ว30274": {
     "course_code": "ว30274",
@@ -101450,7 +101452,8 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   },
   "ว30276": {
     "course_code": "ว30276",
@@ -101545,7 +101548,8 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   },
   "ว30295": {
     "course_code": "ว30295",
@@ -101640,7 +101644,8 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   },
   "ว30297": {
     "course_code": "ว30297",
@@ -101736,6 +101741,7 @@
     ],
     "midterm_cutoff": 1,
     "mid_exam": 15,
-    "fin_exam": 15
+    "fin_exam": 15,
+    "is_scheduled_term2": true
   }
 }
