@@ -125,7 +125,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "I30202": {
     "course_code": "I30202",
@@ -272,7 +275,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20201": {
     "course_code": "ค20201",
@@ -413,7 +419,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20202": {
     "course_code": "ค20202",
@@ -568,7 +577,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20203": {
     "course_code": "ค20203",
@@ -709,7 +721,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20204": {
     "course_code": "ค20204",
@@ -850,7 +865,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20205": {
     "course_code": "ค20205",
@@ -974,7 +992,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20207": {
     "course_code": "ค20207",
@@ -1115,7 +1136,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20208": {
     "course_code": "ค20208",
@@ -1270,7 +1294,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20209": {
     "course_code": "ค20209",
@@ -1411,7 +1438,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20210": {
     "course_code": "ค20210",
@@ -1552,7 +1582,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20211": {
     "course_code": "ค20211",
@@ -1676,7 +1709,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20212": {
     "course_code": "ค20212",
@@ -1785,7 +1821,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20213": {
     "course_code": "ค20213",
@@ -1926,7 +1965,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20214": {
     "course_code": "ค20214",
@@ -2067,7 +2109,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20215": {
     "course_code": "ค20215",
@@ -2192,7 +2237,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20216": {
     "course_code": "ค20216",
@@ -2317,7 +2365,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20217": {
     "course_code": "ค20217",
@@ -2458,7 +2509,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20218": {
     "course_code": "ค20218",
@@ -2599,7 +2653,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค21101": {
     "course_code": "ค21101",
@@ -2763,7 +2820,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค21102": {
     "course_code": "ค21102",
@@ -2915,7 +2975,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค21201": {
     "course_code": "ค21201",
@@ -3056,7 +3119,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค21202": {
     "course_code": "ค21202",
@@ -3198,7 +3264,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค22101": {
     "course_code": "ค22101",
@@ -3385,7 +3454,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค22102": {
     "course_code": "ค22102",
@@ -3569,7 +3641,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค22201": {
     "course_code": "ค22201",
@@ -3708,7 +3783,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค22202": {
     "course_code": "ค22202",
@@ -3826,7 +3904,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค23101": {
     "course_code": "ค23101",
@@ -4011,7 +4092,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค23102": {
     "course_code": "ค23102",
@@ -4182,7 +4266,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค23201": {
     "course_code": "ค23201",
@@ -4323,7 +4410,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค23202": {
     "course_code": "ค23202",
@@ -4465,7 +4555,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค30201": {
     "course_code": "ค30201",
@@ -4574,7 +4667,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค30202": {
     "course_code": "ค30202",
@@ -4683,7 +4779,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค30203": {
     "course_code": "ค30203",
@@ -4823,7 +4922,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค30204": {
     "course_code": "ค30204",
@@ -4980,7 +5082,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31101": {
     "course_code": "ค31101",
@@ -5120,7 +5225,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31102": {
     "course_code": "ค31102",
@@ -5266,7 +5374,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31201": {
     "course_code": "ค31201",
@@ -5408,7 +5519,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31202": {
     "course_code": "ค31202",
@@ -5552,7 +5666,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32101": {
     "course_code": "ค32101",
@@ -5692,7 +5809,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32102": {
     "course_code": "ค32102",
@@ -5835,7 +5955,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32201": {
     "course_code": "ค32201",
@@ -5976,7 +6099,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32202": {
     "course_code": "ค32202",
@@ -6118,7 +6244,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32203": {
     "course_code": "ค32203",
@@ -6259,7 +6388,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค32204": {
     "course_code": "ค32204",
@@ -6399,7 +6531,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33101": {
     "course_code": "ค33101",
@@ -6542,7 +6677,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33102": {
     "course_code": "ค33102",
@@ -6684,7 +6822,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33201": {
     "course_code": "ค33201",
@@ -6826,7 +6967,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33202": {
     "course_code": "ค33202",
@@ -6968,7 +7112,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33203": {
     "course_code": "ค33203",
@@ -7077,7 +7224,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20218": {
     "course_code": "ง20218",
@@ -7203,7 +7353,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20229": {
     "course_code": "ง20229",
@@ -7344,7 +7497,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20230": {
     "course_code": "ง20230",
@@ -7524,7 +7680,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20231": {
     "course_code": "ง20231",
@@ -7665,7 +7824,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20232": {
     "course_code": "ง20232",
@@ -7822,7 +7984,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20233": {
     "course_code": "ง20233",
@@ -7993,7 +8158,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20234": {
     "course_code": "ง20234",
@@ -8158,7 +8326,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20237": {
     "course_code": "ง20237",
@@ -8299,7 +8470,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20238": {
     "course_code": "ง20238",
@@ -8440,7 +8614,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20243": {
     "course_code": "ง20243",
@@ -8597,7 +8774,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20247": {
     "course_code": "ง20247",
@@ -8770,7 +8950,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20248": {
     "course_code": "ง20248",
@@ -8909,7 +9092,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20249": {
     "course_code": "ง20249",
@@ -9089,7 +9275,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20252": {
     "course_code": "ง20252",
@@ -9285,7 +9474,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง21102": {
     "course_code": "ง21102",
@@ -9406,7 +9598,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง22101": {
     "course_code": "ง22101",
@@ -9559,7 +9754,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง22102": {
     "course_code": "ง22102",
@@ -9672,7 +9870,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง23101": {
     "course_code": "ง23101",
@@ -9787,7 +9988,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง23102": {
     "course_code": "ง23102",
@@ -9909,7 +10113,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30201": {
     "course_code": "ง30201",
@@ -10105,7 +10312,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30202": {
     "course_code": "ง30202",
@@ -10262,7 +10472,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30203": {
     "course_code": "ง30203",
@@ -10435,7 +10648,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30205": {
     "course_code": "ง30205",
@@ -10630,7 +10846,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30206": {
     "course_code": "ง30206",
@@ -10846,7 +11065,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30207": {
     "course_code": "ง30207",
@@ -11040,7 +11262,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30208": {
     "course_code": "ง30208",
@@ -11280,7 +11505,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30209": {
     "course_code": "ง30209",
@@ -11453,7 +11681,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30210": {
     "course_code": "ง30210",
@@ -11626,7 +11857,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30211": {
     "course_code": "ง30211",
@@ -11844,7 +12078,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30212": {
     "course_code": "ง30212",
@@ -12063,7 +12300,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30213": {
     "course_code": "ง30213",
@@ -12220,7 +12460,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30217": {
     "course_code": "ง30217",
@@ -12331,7 +12574,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30219": {
     "course_code": "ง30219",
@@ -12473,7 +12719,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30220": {
     "course_code": "ง30220",
@@ -12645,7 +12894,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30221": {
     "course_code": "ง30221",
@@ -12864,7 +13116,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30222": {
     "course_code": "ง30222",
@@ -13028,7 +13283,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30223": {
     "course_code": "ง30223",
@@ -13247,7 +13505,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30224": {
     "course_code": "ง30224",
@@ -13486,7 +13747,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30225": {
     "course_code": "ง30225",
@@ -13659,7 +13923,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30231": {
     "course_code": "ง30231",
@@ -13790,7 +14057,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง31101": {
     "course_code": "ง31101",
@@ -13989,7 +14259,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง31102": {
     "course_code": "ง31102",
@@ -14151,7 +14424,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง32101": {
     "course_code": "ง32101",
@@ -14308,7 +14584,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง32102": {
     "course_code": "ง32102",
@@ -14472,7 +14751,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง33101": {
     "course_code": "ง33101",
@@ -14631,7 +14913,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง33102": {
     "course_code": "ง33102",
@@ -14795,7 +15080,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20201": {
     "course_code": "จ20201",
@@ -14990,7 +15278,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20202": {
     "course_code": "จ20202",
@@ -15148,7 +15439,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20203": {
     "course_code": "จ20203",
@@ -15321,7 +15615,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20204": {
     "course_code": "จ20204",
@@ -15494,7 +15791,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20205": {
     "course_code": "จ20205",
@@ -15650,7 +15950,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20206": {
     "course_code": "จ20206",
@@ -15823,7 +16126,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20207": {
     "course_code": "จ20207",
@@ -16042,7 +16348,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20208": {
     "course_code": "จ20208",
@@ -16185,7 +16494,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20209": {
     "course_code": "จ20209",
@@ -16358,7 +16670,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20210": {
     "course_code": "จ20210",
@@ -16530,7 +16845,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20211": {
     "course_code": "จ20211",
@@ -16726,7 +17044,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20217": {
     "course_code": "จ20217",
@@ -16899,7 +17220,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20218": {
     "course_code": "จ20218",
@@ -17071,7 +17395,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20219": {
     "course_code": "จ20219",
@@ -17212,7 +17539,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20220": {
     "course_code": "จ20220",
@@ -17367,7 +17697,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20221": {
     "course_code": "จ20221",
@@ -17522,7 +17855,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30207": {
     "course_code": "จ30207",
@@ -17695,7 +18031,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30208": {
     "course_code": "จ30208",
@@ -17851,7 +18190,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30209": {
     "course_code": "จ30209",
@@ -18021,7 +18363,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30210": {
     "course_code": "จ30210",
@@ -18194,7 +18539,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30211": {
     "course_code": "จ30211",
@@ -18365,7 +18713,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30212": {
     "course_code": "จ30212",
@@ -18558,7 +18909,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30213": {
     "course_code": "จ30213",
@@ -18729,7 +19083,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30214": {
     "course_code": "จ30214",
@@ -18899,7 +19256,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30215": {
     "course_code": "จ30215",
@@ -19072,7 +19432,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30216": {
     "course_code": "จ30216",
@@ -19245,7 +19608,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30217": {
     "course_code": "จ30217",
@@ -19417,7 +19783,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30218": {
     "course_code": "จ30218",
@@ -19558,7 +19927,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30219": {
     "course_code": "จ30219",
@@ -19698,7 +20070,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ30220": {
     "course_code": "จ30220",
@@ -19855,7 +20230,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ช2551": {
     "course_code": "ช2551",
@@ -20074,7 +20452,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ช2560": {
     "course_code": "ช2560",
@@ -20293,7 +20674,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท20210": {
     "course_code": "ท20210",
@@ -20434,7 +20818,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท21101": {
     "course_code": "ท21101",
@@ -20631,7 +21018,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท21102": {
     "course_code": "ท21102",
@@ -20776,7 +21166,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท22101": {
     "course_code": "ท22101",
@@ -20971,7 +21364,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท22102": {
     "course_code": "ท22102",
@@ -21195,7 +21591,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท23101": {
     "course_code": "ท23101",
@@ -21378,7 +21777,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท23102": {
     "course_code": "ท23102",
@@ -21542,7 +21944,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30203": {
     "course_code": "ท30203",
@@ -21667,7 +22072,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30204": {
     "course_code": "ท30204",
@@ -21824,7 +22232,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30205": {
     "course_code": "ท30205",
@@ -21997,7 +22408,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30206": {
     "course_code": "ท30206",
@@ -22154,7 +22568,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30207": {
     "course_code": "ท30207",
@@ -22295,7 +22712,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30208": {
     "course_code": "ท30208",
@@ -22468,7 +22888,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30209": {
     "course_code": "ท30209",
@@ -22611,7 +23034,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30211": {
     "course_code": "ท30211",
@@ -22784,7 +23210,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30212": {
     "course_code": "ท30212",
@@ -22957,7 +23386,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30213": {
     "course_code": "ท30213",
@@ -23130,7 +23562,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30214": {
     "course_code": "ท30214",
@@ -23303,7 +23738,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31101": {
     "course_code": "ท31101",
@@ -23484,7 +23922,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31102": {
     "course_code": "ท31102",
@@ -23665,7 +24106,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32101": {
     "course_code": "ท32101",
@@ -23838,7 +24282,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32102": {
     "course_code": "ท32102",
@@ -24006,7 +24453,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท33101": {
     "course_code": "ท33101",
@@ -24273,7 +24723,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท33102": {
     "course_code": "ท33102",
@@ -24549,7 +25002,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20217": {
     "course_code": "พ20217",
@@ -24745,7 +25201,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20220": {
     "course_code": "พ20220",
@@ -24932,7 +25391,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20221": {
     "course_code": "พ20221",
@@ -25151,7 +25613,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20222": {
     "course_code": "พ20222",
@@ -25324,7 +25789,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20223": {
     "course_code": "พ20223",
@@ -25501,7 +25969,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20224": {
     "course_code": "พ20224",
@@ -25720,7 +26191,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ20225": {
     "course_code": "พ20225",
@@ -25892,7 +26366,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ21101": {
     "course_code": "พ21101",
@@ -26081,7 +26558,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ21102": {
     "course_code": "พ21102",
@@ -26290,7 +26770,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ22101": {
     "course_code": "พ22101",
@@ -26463,7 +26946,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ22102": {
     "course_code": "พ22102",
@@ -26666,7 +27152,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ23101": {
     "course_code": "พ23101",
@@ -26837,7 +27326,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ23102": {
     "course_code": "พ23102",
@@ -27074,7 +27566,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30201": {
     "course_code": "พ30201",
@@ -27199,7 +27694,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30202": {
     "course_code": "พ30202",
@@ -27441,7 +27939,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30203": {
     "course_code": "พ30203",
@@ -27637,7 +28138,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30204": {
     "course_code": "พ30204",
@@ -27856,7 +28360,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30205": {
     "course_code": "พ30205",
@@ -28075,7 +28582,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ30206": {
     "course_code": "พ30206",
@@ -28216,7 +28726,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ31101": {
     "course_code": "พ31101",
@@ -28361,7 +28874,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ31102": {
     "course_code": "พ31102",
@@ -28507,7 +29023,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ32101": {
     "course_code": "พ32101",
@@ -28634,7 +29153,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ32102": {
     "course_code": "พ32102",
@@ -28760,7 +29282,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ33101": {
     "course_code": "พ33101",
@@ -28905,7 +29430,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ33102": {
     "course_code": "พ33102",
@@ -29056,7 +29584,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20201": {
     "course_code": "ว20201",
@@ -29181,7 +29712,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20202": {
     "course_code": "ว20202",
@@ -29326,7 +29860,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20203": {
     "course_code": "ว20203",
@@ -29467,7 +30004,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20204": {
     "course_code": "ว20204",
@@ -29608,7 +30148,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20205": {
     "course_code": "ว20205",
@@ -29749,7 +30292,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20206": {
     "course_code": "ว20206",
@@ -29890,7 +30436,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20207": {
     "course_code": "ว20207",
@@ -30031,7 +30580,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20208": {
     "course_code": "ว20208",
@@ -30171,7 +30723,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20221": {
     "course_code": "ว20221",
@@ -30334,7 +30889,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20230": {
     "course_code": "ว20230",
@@ -30475,7 +31033,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20231": {
     "course_code": "ว20231",
@@ -30617,7 +31178,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20232": {
     "course_code": "ว20232",
@@ -30782,7 +31346,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21101": {
     "course_code": "ว21101",
@@ -30979,7 +31546,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21102": {
     "course_code": "ว21102",
@@ -31136,7 +31706,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21201": {
     "course_code": "ว21201",
@@ -31277,7 +31850,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21202": {
     "course_code": "ว21202",
@@ -31418,7 +31994,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21203": {
     "course_code": "ว21203",
@@ -31575,7 +32154,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21205": {
     "course_code": "ว21205",
@@ -31684,7 +32266,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21207": {
     "course_code": "ว21207",
@@ -31793,7 +32378,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21208": {
     "course_code": "ว21208",
@@ -31947,7 +32535,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22101": {
     "course_code": "ว22101",
@@ -32146,7 +32737,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22102": {
     "course_code": "ว22102",
@@ -32338,7 +32932,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22201": {
     "course_code": "ว22201",
@@ -32495,7 +33092,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22202": {
     "course_code": "ว22202",
@@ -32620,7 +33220,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22203": {
     "course_code": "ว22203",
@@ -32761,7 +33364,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22204": {
     "course_code": "ว22204",
@@ -32902,7 +33508,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22205": {
     "course_code": "ว22205",
@@ -33056,7 +33665,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22206": {
     "course_code": "ว22206",
@@ -33181,7 +33793,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22208": {
     "course_code": "ว22208",
@@ -33306,7 +33921,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23101": {
     "course_code": "ว23101",
@@ -33479,7 +34097,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23102": {
     "course_code": "ว23102",
@@ -33658,7 +34279,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23201": {
     "course_code": "ว23201",
@@ -33831,7 +34455,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23202": {
     "course_code": "ว23202",
@@ -33985,7 +34612,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23203": {
     "course_code": "ว23203",
@@ -34126,7 +34756,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23204": {
     "course_code": "ว23204",
@@ -34299,7 +34932,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23207": {
     "course_code": "ว23207",
@@ -34453,7 +35089,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23209": {
     "course_code": "ว23209",
@@ -34594,7 +35233,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30101": {
     "course_code": "ว30101",
@@ -34799,7 +35441,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30102": {
     "course_code": "ว30102",
@@ -34990,7 +35635,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30103": {
     "course_code": "ว30103",
@@ -35208,7 +35856,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30104": {
     "course_code": "ว30104",
@@ -35526,7 +36177,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30105": {
     "course_code": "ว30105",
@@ -35712,7 +36366,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30106": {
     "course_code": "ว30106",
@@ -35843,7 +36500,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30201": {
     "course_code": "ว30201",
@@ -35984,7 +36644,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30202": {
     "course_code": "ว30202",
@@ -36109,7 +36772,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30203": {
     "course_code": "ว30203",
@@ -36234,7 +36900,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30204": {
     "course_code": "ว30204",
@@ -36359,7 +37028,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30205": {
     "course_code": "ว30205",
@@ -36484,7 +37156,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30206": {
     "course_code": "ว30206",
@@ -36625,7 +37300,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30207": {
     "course_code": "ว30207",
@@ -36750,7 +37428,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30208": {
     "course_code": "ว30208",
@@ -36875,7 +37556,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30209": {
     "course_code": "ว30209",
@@ -37000,7 +37684,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30210": {
     "course_code": "ว30210",
@@ -37125,7 +37812,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30211": {
     "course_code": "ว30211",
@@ -37321,7 +38011,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30212": {
     "course_code": "ว30212",
@@ -37480,7 +38173,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30213": {
     "course_code": "ว30213",
@@ -37607,7 +38303,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30214": {
     "course_code": "ว30214",
@@ -37736,7 +38435,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30215": {
     "course_code": "ว30215",
@@ -37875,7 +38577,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30216": {
     "course_code": "ว30216",
@@ -38016,7 +38721,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30217": {
     "course_code": "ว30217",
@@ -38157,7 +38865,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30218": {
     "course_code": "ว30218",
@@ -38282,7 +38993,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30222": {
     "course_code": "ว30222",
@@ -38408,7 +39122,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30223": {
     "course_code": "ว30223",
@@ -38534,7 +39251,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30224": {
     "course_code": "ว30224",
@@ -38730,7 +39450,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30225": {
     "course_code": "ว30225",
@@ -38903,7 +39626,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30226": {
     "course_code": "ว30226",
@@ -39044,7 +39770,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30227": {
     "course_code": "ว30227",
@@ -39185,7 +39914,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30241": {
     "course_code": "ว30241",
@@ -39383,7 +40115,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30242": {
     "course_code": "ว30242",
@@ -39525,7 +40260,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30243": {
     "course_code": "ว30243",
@@ -39668,7 +40406,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30244": {
     "course_code": "ว30244",
@@ -39826,7 +40567,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30245": {
     "course_code": "ว30245",
@@ -39969,7 +40713,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30246": {
     "course_code": "ว30246",
@@ -40127,7 +40874,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30247": {
     "course_code": "ว30247",
@@ -40268,7 +41018,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30261": {
     "course_code": "ว30261",
@@ -40409,7 +41162,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30262": {
     "course_code": "ว30262",
@@ -40566,7 +41322,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30269": {
     "course_code": "ว30269",
@@ -40707,7 +41466,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30270": {
     "course_code": "ว30270",
@@ -40850,7 +41612,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30277": {
     "course_code": "ว30277",
@@ -41007,7 +41772,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20212": {
     "course_code": "ศ20212",
@@ -41164,7 +41932,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20213": {
     "course_code": "ศ20213",
@@ -41344,7 +42115,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20214": {
     "course_code": "ศ20214",
@@ -41517,7 +42291,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20215": {
     "course_code": "ศ20215",
@@ -41674,7 +42451,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20216": {
     "course_code": "ศ20216",
@@ -41847,7 +42627,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20217": {
     "course_code": "ศ20217",
@@ -42004,7 +42787,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20228": {
     "course_code": "ศ20228",
@@ -42145,7 +42931,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20231": {
     "course_code": "ศ20231",
@@ -42302,7 +43091,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20232": {
     "course_code": "ศ20232",
@@ -42459,7 +43251,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20233": {
     "course_code": "ศ20233",
@@ -42631,7 +43426,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20234": {
     "course_code": "ศ20234",
@@ -42803,7 +43601,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20235": {
     "course_code": "ศ20235",
@@ -42975,7 +43776,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20236": {
     "course_code": "ศ20236",
@@ -43148,7 +43952,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ20237": {
     "course_code": "ศ20237",
@@ -43328,7 +44135,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ21101": {
     "course_code": "ศ21101",
@@ -43499,7 +44309,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ21102": {
     "course_code": "ศ21102",
@@ -43698,7 +44511,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ22102": {
     "course_code": "ศ22102",
@@ -43868,7 +44684,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ23101": {
     "course_code": "ศ23101",
@@ -44067,7 +44886,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30201": {
     "course_code": "ศ30201",
@@ -44208,7 +45030,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30202": {
     "course_code": "ศ30202",
@@ -44349,7 +45174,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30203": {
     "course_code": "ศ30203",
@@ -44490,7 +45318,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30204": {
     "course_code": "ศ30204",
@@ -44631,7 +45462,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30205": {
     "course_code": "ศ30205",
@@ -44772,7 +45606,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30206": {
     "course_code": "ศ30206",
@@ -44913,7 +45750,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30207": {
     "course_code": "ศ30207",
@@ -45086,7 +45926,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30208": {
     "course_code": "ศ30208",
@@ -45259,7 +46102,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30209": {
     "course_code": "ศ30209",
@@ -45432,7 +46278,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30210": {
     "course_code": "ศ30210",
@@ -45621,7 +46470,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30212": {
     "course_code": "ศ30212",
@@ -45778,7 +46630,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30213": {
     "course_code": "ศ30213",
@@ -45952,7 +46807,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30214": {
     "course_code": "ศ30214",
@@ -46124,7 +46982,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30215": {
     "course_code": "ศ30215",
@@ -46281,7 +47142,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30216": {
     "course_code": "ศ30216",
@@ -46453,7 +47317,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30217": {
     "course_code": "ศ30217",
@@ -46625,7 +47492,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ30218": {
     "course_code": "ศ30218",
@@ -46798,7 +47668,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31101": {
     "course_code": "ศ31101",
@@ -46953,7 +47826,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31102": {
     "course_code": "ศ31102",
@@ -47126,7 +48002,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31201": {
     "course_code": "ศ31201",
@@ -47268,7 +48147,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31202": {
     "course_code": "ศ31202",
@@ -47409,7 +48291,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31203": {
     "course_code": "ศ31203",
@@ -47551,7 +48436,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31204": {
     "course_code": "ศ31204",
@@ -47724,7 +48612,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31206": {
     "course_code": "ศ31206",
@@ -47896,7 +48787,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31207": {
     "course_code": "ศ31207",
@@ -48037,7 +48931,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31208": {
     "course_code": "ศ31208",
@@ -48178,7 +49075,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31209": {
     "course_code": "ศ31209",
@@ -48319,7 +49219,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31210": {
     "course_code": "ศ31210",
@@ -48492,7 +49395,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31211": {
     "course_code": "ศ31211",
@@ -48673,7 +49579,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31212": {
     "course_code": "ศ31212",
@@ -48846,7 +49755,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31213": {
     "course_code": "ศ31213",
@@ -48987,7 +49899,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31214": {
     "course_code": "ศ31214",
@@ -49128,7 +50043,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31215": {
     "course_code": "ศ31215",
@@ -49269,7 +50187,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31216": {
     "course_code": "ศ31216",
@@ -49441,7 +50362,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31217": {
     "course_code": "ศ31217",
@@ -49598,7 +50522,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31218": {
     "course_code": "ศ31218",
@@ -49755,7 +50682,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31219": {
     "course_code": "ศ31219",
@@ -49895,7 +50825,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31220": {
     "course_code": "ศ31220",
@@ -50035,7 +50968,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31221": {
     "course_code": "ศ31221",
@@ -50176,7 +51112,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31222": {
     "course_code": "ศ31222",
@@ -50349,7 +51288,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31223": {
     "course_code": "ศ31223",
@@ -50530,7 +51472,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31224": {
     "course_code": "ศ31224",
@@ -50711,7 +51656,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32101": {
     "course_code": "ศ32101",
@@ -50834,7 +51782,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32102": {
     "course_code": "ศ32102",
@@ -51007,7 +51958,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32105": {
     "course_code": "ศ32105",
@@ -51164,7 +52118,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32201": {
     "course_code": "ศ32201",
@@ -51305,7 +52262,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32202": {
     "course_code": "ศ32202",
@@ -51446,7 +52406,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32203": {
     "course_code": "ศ32203",
@@ -51587,7 +52550,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32204": {
     "course_code": "ศ32204",
@@ -51760,7 +52726,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32205": {
     "course_code": "ศ32205",
@@ -51917,7 +52886,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32206": {
     "course_code": "ศ32206",
@@ -52090,7 +53062,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32207": {
     "course_code": "ศ32207",
@@ -52214,7 +53189,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32208": {
     "course_code": "ศ32208",
@@ -52355,7 +53333,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32209": {
     "course_code": "ศ32209",
@@ -52496,7 +53477,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32210": {
     "course_code": "ศ32210",
@@ -52669,7 +53653,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32211": {
     "course_code": "ศ32211",
@@ -52850,7 +53837,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32212": {
     "course_code": "ศ32212",
@@ -53030,7 +54020,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32213": {
     "course_code": "ศ32213",
@@ -53171,7 +54164,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32214": {
     "course_code": "ศ32214",
@@ -53312,7 +54308,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32215": {
     "course_code": "ศ32215",
@@ -53453,7 +54452,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32216": {
     "course_code": "ศ32216",
@@ -53626,7 +54628,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32217": {
     "course_code": "ศ32217",
@@ -53783,7 +54788,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32218": {
     "course_code": "ศ32218",
@@ -53956,7 +54964,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32219": {
     "course_code": "ศ32219",
@@ -54097,7 +55108,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32220": {
     "course_code": "ศ32220",
@@ -54238,7 +55252,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32221": {
     "course_code": "ศ32221",
@@ -54363,7 +55380,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32222": {
     "course_code": "ศ32222",
@@ -54536,7 +55556,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32223": {
     "course_code": "ศ32223",
@@ -54716,7 +55739,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ32224": {
     "course_code": "ศ32224",
@@ -54889,7 +55915,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33101": {
     "course_code": "ศ33101",
@@ -55062,7 +56091,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33102": {
     "course_code": "ศ33102",
@@ -55205,7 +56237,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33201": {
     "course_code": "ศ33201",
@@ -55346,7 +56381,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33202": {
     "course_code": "ศ33202",
@@ -55487,7 +56525,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33203": {
     "course_code": "ศ33203",
@@ -55628,7 +56669,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33204": {
     "course_code": "ศ33204",
@@ -55801,7 +56845,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33206": {
     "course_code": "ศ33206",
@@ -55958,7 +57005,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33207": {
     "course_code": "ศ33207",
@@ -56099,7 +57149,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33208": {
     "course_code": "ศ33208",
@@ -56240,7 +57293,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33209": {
     "course_code": "ศ33209",
@@ -56381,7 +57437,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33210": {
     "course_code": "ศ33210",
@@ -56554,7 +57613,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33211": {
     "course_code": "ศ33211",
@@ -56734,7 +57796,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33212": {
     "course_code": "ศ33212",
@@ -56914,7 +57979,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33213": {
     "course_code": "ศ33213",
@@ -57055,7 +58123,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33214": {
     "course_code": "ศ33214",
@@ -57196,7 +58267,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33215": {
     "course_code": "ศ33215",
@@ -57337,7 +58411,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33216": {
     "course_code": "ศ33216",
@@ -57494,7 +58571,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33217": {
     "course_code": "ศ33217",
@@ -57667,7 +58747,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33218": {
     "course_code": "ศ33218",
@@ -57824,7 +58907,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33219": {
     "course_code": "ศ33219",
@@ -57965,7 +59051,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33220": {
     "course_code": "ศ33220",
@@ -58106,7 +59195,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33221": {
     "course_code": "ศ33221",
@@ -58247,7 +59339,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33222": {
     "course_code": "ศ33222",
@@ -58420,7 +59515,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33223": {
     "course_code": "ศ33223",
@@ -58600,7 +59698,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33224": {
     "course_code": "ศ33224",
@@ -58773,7 +59874,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20201": {
     "course_code": "ส20201",
@@ -58946,7 +60050,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20202": {
     "course_code": "ส20202",
@@ -59119,7 +60226,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20203": {
     "course_code": "ส20203",
@@ -59260,7 +60370,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20207": {
     "course_code": "ส20207",
@@ -59456,7 +60569,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20209": {
     "course_code": "ส20209",
@@ -59581,7 +60697,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20210": {
     "course_code": "ส20210",
@@ -59722,7 +60841,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20211": {
     "course_code": "ส20211",
@@ -59863,7 +60985,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20212": {
     "course_code": "ส20212",
@@ -60004,7 +61129,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20213": {
     "course_code": "ส20213",
@@ -60130,7 +61258,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20218": {
     "course_code": "ส20218",
@@ -60303,7 +61434,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20219": {
     "course_code": "ส20219",
@@ -60460,7 +61594,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20220": {
     "course_code": "ส20220",
@@ -60617,7 +61754,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20221": {
     "course_code": "ส20221",
@@ -60790,7 +61930,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20222": {
     "course_code": "ส20222",
@@ -60947,7 +62090,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20223": {
     "course_code": "ส20223",
@@ -61091,7 +62237,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20224": {
     "course_code": "ส20224",
@@ -61235,7 +62384,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20225": {
     "course_code": "ส20225",
@@ -61379,7 +62531,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20226": {
     "course_code": "ส20226",
@@ -61523,7 +62678,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20227": {
     "course_code": "ส20227",
@@ -61667,7 +62825,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20228": {
     "course_code": "ส20228",
@@ -61811,7 +62972,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส20229": {
     "course_code": "ส20229",
@@ -61984,7 +63148,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20230": {
     "course_code": "ส20230",
@@ -62164,7 +63331,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20231": {
     "course_code": "ส20231",
@@ -62337,7 +63507,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20232": {
     "course_code": "ส20232",
@@ -62510,7 +63683,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส20241": {
     "course_code": "ส20241",
@@ -62667,7 +63843,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส21101": {
     "course_code": "ส21101",
@@ -62877,7 +64056,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส21102": {
     "course_code": "ส21102",
@@ -63059,7 +64241,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส21103": {
     "course_code": "ส21103",
@@ -63252,7 +64437,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส21104": {
     "course_code": "ส21104",
@@ -63429,7 +64617,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส22101": {
     "course_code": "ส22101",
@@ -63715,7 +64906,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส22102": {
     "course_code": "ส22102",
@@ -63866,7 +65060,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส22103": {
     "course_code": "ส22103",
@@ -64139,7 +65336,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส23101": {
     "course_code": "ส23101",
@@ -64440,7 +65640,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 7,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส23102": {
     "course_code": "ส23102",
@@ -64591,7 +65794,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส23103": {
     "course_code": "ส23103",
@@ -64820,7 +66026,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส23104": {
     "course_code": "ส23104",
@@ -64982,7 +66191,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30201": {
     "course_code": "ส30201",
@@ -65123,7 +66335,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30202": {
     "course_code": "ส30202",
@@ -65296,7 +66511,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30203": {
     "course_code": "ส30203",
@@ -65453,7 +66671,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30204": {
     "course_code": "ส30204",
@@ -65594,7 +66815,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30205": {
     "course_code": "ส30205",
@@ -65751,7 +66975,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30206": {
     "course_code": "ส30206",
@@ -65924,7 +67151,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30207": {
     "course_code": "ส30207",
@@ -66065,7 +67295,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30236": {
     "course_code": "ส30236",
@@ -66238,7 +67471,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30237": {
     "course_code": "ส30237",
@@ -66411,7 +67647,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30243": {
     "course_code": "ส30243",
@@ -66552,7 +67791,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30244": {
     "course_code": "ส30244",
@@ -66725,7 +67967,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30245": {
     "course_code": "ส30245",
@@ -66898,7 +68143,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30246": {
     "course_code": "ส30246",
@@ -67092,7 +68340,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30247": {
     "course_code": "ส30247",
@@ -67236,7 +68487,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30248": {
     "course_code": "ส30248",
@@ -67380,7 +68634,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30249": {
     "course_code": "ส30249",
@@ -67524,7 +68781,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30250": {
     "course_code": "ส30250",
@@ -67668,7 +68928,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30251": {
     "course_code": "ส30251",
@@ -67812,7 +69075,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30252": {
     "course_code": "ส30252",
@@ -67956,7 +69222,10 @@
     ],
     "exam_schedule": "สอบนอกตาราง",
     "exam_duration_text": "สอบนอกตาราง",
-    "key_task": "-"
+    "key_task": "-",
+    "midterm_cutoff": 2,
+    "mid_exam": 10,
+    "fin_exam": 10
   },
   "ส30253": {
     "course_code": "ส30253",
@@ -68175,7 +69444,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30254": {
     "course_code": "ส30254",
@@ -68315,7 +69587,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30255": {
     "course_code": "ส30255",
@@ -68488,7 +69763,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30256": {
     "course_code": "ส30256",
@@ -68660,7 +69938,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30257": {
     "course_code": "ส30257",
@@ -68801,7 +70082,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30258": {
     "course_code": "ส30258",
@@ -68958,7 +70242,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30259": {
     "course_code": "ส30259",
@@ -69115,7 +70402,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30260": {
     "course_code": "ส30260",
@@ -69256,7 +70546,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30261": {
     "course_code": "ส30261",
@@ -69452,7 +70745,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30262": {
     "course_code": "ส30262",
@@ -69609,7 +70905,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30263": {
     "course_code": "ส30263",
@@ -69782,7 +71081,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30264": {
     "course_code": "ส30264",
@@ -70001,7 +71303,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30265": {
     "course_code": "ส30265",
@@ -70113,7 +71418,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30266": {
     "course_code": "ส30266",
@@ -70270,7 +71578,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30267": {
     "course_code": "ส30267",
@@ -70442,7 +71753,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30268": {
     "course_code": "ส30268",
@@ -70615,7 +71929,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31101": {
     "course_code": "ส31101",
@@ -70843,7 +72160,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31102": {
     "course_code": "ส31102",
@@ -71014,7 +72334,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31103": {
     "course_code": "ส31103",
@@ -71147,7 +72470,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31104": {
     "course_code": "ส31104",
@@ -71281,7 +72607,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31201": {
     "course_code": "ส31201",
@@ -71477,7 +72806,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31203": {
     "course_code": "ส31203",
@@ -71696,7 +73028,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31204": {
     "course_code": "ส31204",
@@ -71869,7 +73204,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31205": {
     "course_code": "ส31205",
@@ -72065,7 +73403,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31206": {
     "course_code": "ส31206",
@@ -72206,7 +73547,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส31207": {
     "course_code": "ส31207",
@@ -72347,7 +73691,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32101": {
     "course_code": "ส32101",
@@ -72590,7 +73937,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32102": {
     "course_code": "ส32102",
@@ -72751,7 +74101,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32103": {
     "course_code": "ส32103",
@@ -72920,7 +74273,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32104": {
     "course_code": "ส32104",
@@ -73067,7 +74423,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32201": {
     "course_code": "ส32201",
@@ -73286,7 +74645,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32202": {
     "course_code": "ส32202",
@@ -73427,7 +74789,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32203": {
     "course_code": "ส32203",
@@ -73584,7 +74949,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32204": {
     "course_code": "ส32204",
@@ -73826,7 +75194,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส32205": {
     "course_code": "ส32205",
@@ -73984,7 +75355,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33101": {
     "course_code": "ส33101",
@@ -74177,7 +75551,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33102": {
     "course_code": "ส33102",
@@ -74332,7 +75709,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33201": {
     "course_code": "ส33201",
@@ -74501,7 +75881,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33202": {
     "course_code": "ส33202",
@@ -74697,7 +76080,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33203": {
     "course_code": "ส33203",
@@ -74838,7 +76224,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส33205": {
     "course_code": "ส33205",
@@ -75011,7 +76400,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20201": {
     "course_code": "อ20201",
@@ -75154,7 +76546,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20202": {
     "course_code": "อ20202",
@@ -75295,7 +76690,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20203": {
     "course_code": "อ20203",
@@ -75437,7 +76835,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20204": {
     "course_code": "อ20204",
@@ -75578,7 +76979,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20205": {
     "course_code": "อ20205",
@@ -75747,7 +77151,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20206": {
     "course_code": "อ20206",
@@ -75916,7 +77323,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20207": {
     "course_code": "อ20207",
@@ -76057,7 +77467,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20208": {
     "course_code": "อ20208",
@@ -76197,7 +77610,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20209": {
     "course_code": "อ20209",
@@ -76322,7 +77738,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20210": {
     "course_code": "อ20210",
@@ -76479,7 +77898,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20211": {
     "course_code": "อ20211",
@@ -76637,7 +78059,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20212": {
     "course_code": "อ20212",
@@ -76779,7 +78204,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20213": {
     "course_code": "อ20213",
@@ -76951,7 +78379,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20214": {
     "course_code": "อ20214",
@@ -77123,7 +78554,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20215": {
     "course_code": "อ20215",
@@ -77295,7 +78729,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20216": {
     "course_code": "อ20216",
@@ -77467,7 +78904,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20217": {
     "course_code": "อ20217",
@@ -77610,7 +79050,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20218": {
     "course_code": "อ20218",
@@ -77751,7 +79194,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20219": {
     "course_code": "อ20219",
@@ -77892,7 +79338,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20220": {
     "course_code": "อ20220",
@@ -78033,7 +79482,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20221": {
     "course_code": "อ20221",
@@ -78174,7 +79626,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20222": {
     "course_code": "อ20222",
@@ -78347,7 +79802,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20223": {
     "course_code": "อ20223",
@@ -78519,7 +79977,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20224": {
     "course_code": "อ20224",
@@ -78662,7 +80123,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20225": {
     "course_code": "อ20225",
@@ -78805,7 +80269,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20226": {
     "course_code": "อ20226",
@@ -78978,7 +80445,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20227": {
     "course_code": "อ20227",
@@ -79151,7 +80621,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20228": {
     "course_code": "อ20228",
@@ -79294,7 +80767,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20230": {
     "course_code": "อ20230",
@@ -79465,7 +80941,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20231": {
     "course_code": "อ20231",
@@ -79635,7 +81114,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20232": {
     "course_code": "อ20232",
@@ -79758,7 +81240,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20233": {
     "course_code": "อ20233",
@@ -79881,7 +81366,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20234": {
     "course_code": "อ20234",
@@ -80075,7 +81563,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20235": {
     "course_code": "อ20235",
@@ -80270,7 +81761,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20236": {
     "course_code": "อ20236",
@@ -80443,7 +81937,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20237": {
     "course_code": "อ20237",
@@ -80616,7 +82113,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20238": {
     "course_code": "อ20238",
@@ -80835,7 +82335,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 5,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20240": {
     "course_code": "อ20240",
@@ -80993,7 +82496,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20241": {
     "course_code": "อ20241",
@@ -81166,7 +82672,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20242": {
     "course_code": "อ20242",
@@ -81324,7 +82833,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20243": {
     "course_code": "อ20243",
@@ -81497,7 +83009,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20244": {
     "course_code": "อ20244",
@@ -81713,7 +83228,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20245": {
     "course_code": "อ20245",
@@ -81856,7 +83374,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ21101": {
     "course_code": "อ21101",
@@ -82037,7 +83558,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ21102": {
     "course_code": "อ21102",
@@ -82221,7 +83745,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ22101": {
     "course_code": "อ22101",
@@ -82364,7 +83891,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ22102": {
     "course_code": "อ22102",
@@ -82509,7 +84039,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ23101": {
     "course_code": "อ23101",
@@ -82708,7 +84241,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ23102": {
     "course_code": "อ23102",
@@ -82909,7 +84445,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30208": {
     "course_code": "อ30208",
@@ -83050,7 +84589,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30209": {
     "course_code": "อ30209",
@@ -83246,7 +84788,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30210": {
     "course_code": "อ30210",
@@ -83420,7 +84965,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30211": {
     "course_code": "อ30211",
@@ -83563,7 +85111,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30212": {
     "course_code": "อ30212",
@@ -83707,7 +85258,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30213": {
     "course_code": "อ30213",
@@ -83878,7 +85432,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30214": {
     "course_code": "อ30214",
@@ -84047,7 +85604,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30215": {
     "course_code": "อ30215",
@@ -84217,7 +85777,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30216": {
     "course_code": "อ30216",
@@ -84388,7 +85951,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30217": {
     "course_code": "อ30217",
@@ -84528,7 +86094,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30218": {
     "course_code": "อ30218",
@@ -84669,7 +86238,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30219": {
     "course_code": "อ30219",
@@ -84810,7 +86382,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30221": {
     "course_code": "อ30221",
@@ -84983,7 +86558,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30222": {
     "course_code": "อ30222",
@@ -85154,7 +86732,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30223": {
     "course_code": "อ30223",
@@ -85326,7 +86907,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30224": {
     "course_code": "อ30224",
@@ -85470,7 +87054,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30225": {
     "course_code": "อ30225",
@@ -85641,7 +87228,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30226": {
     "course_code": "อ30226",
@@ -85788,7 +87378,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30227": {
     "course_code": "อ30227",
@@ -85929,7 +87522,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30228": {
     "course_code": "อ30228",
@@ -86072,7 +87668,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30229": {
     "course_code": "อ30229",
@@ -86242,7 +87841,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30230": {
     "course_code": "อ30230",
@@ -86414,7 +88016,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30231": {
     "course_code": "อ30231",
@@ -86570,7 +88175,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30232": {
     "course_code": "อ30232",
@@ -86727,7 +88335,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 3,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30233": {
     "course_code": "อ30233",
@@ -86837,7 +88448,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30234": {
     "course_code": "อ30234",
@@ -86978,7 +88592,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ31101": {
     "course_code": "อ31101",
@@ -87145,7 +88762,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ31102": {
     "course_code": "อ31102",
@@ -87305,7 +88925,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ32101": {
     "course_code": "อ32101",
@@ -87476,7 +89099,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ32102": {
     "course_code": "อ32102",
@@ -87654,7 +89280,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ33101": {
     "course_code": "อ33101",
@@ -87833,7 +89462,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ33102": {
     "course_code": "อ33102",
@@ -88017,7 +89649,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21103": {
     "course_code": "ว21103",
@@ -88168,7 +89803,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22103": {
     "course_code": "ว22103",
@@ -88319,7 +89957,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23103": {
     "course_code": "ว23103",
@@ -88470,7 +90111,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว21104": {
     "course_code": "ว21104",
@@ -88619,7 +90263,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22104": {
     "course_code": "ว22104",
@@ -88769,7 +90416,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว23104": {
     "course_code": "ว23104",
@@ -88919,7 +90569,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส22104": {
     "course_code": "ส22104",
@@ -89066,7 +90719,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ21104": {
     "course_code": "พ21104",
@@ -89209,7 +90865,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ22104": {
     "course_code": "พ22104",
@@ -89358,7 +91017,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ23104": {
     "course_code": "พ23104",
@@ -89504,7 +91166,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ21103": {
     "course_code": "พ21103",
@@ -89659,7 +91324,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ22103": {
     "course_code": "พ22103",
@@ -89818,7 +91486,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "พ23103": {
     "course_code": "พ23103",
@@ -89979,7 +91650,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ22101": {
     "course_code": "ศ22101",
@@ -90158,7 +91832,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ23102": {
     "course_code": "ศ23102",
@@ -90325,7 +92002,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง21101": {
     "course_code": "ง21101",
@@ -90471,7 +92151,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20224": {
     "course_code": "ว20224",
@@ -90611,7 +92294,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20223": {
     "course_code": "ว20223",
@@ -90751,7 +92437,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20233": {
     "course_code": "ว20233",
@@ -90891,7 +92580,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22207": {
     "course_code": "ว22207",
@@ -91031,7 +92723,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "I20201": {
     "course_code": "I20201",
@@ -91171,7 +92866,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "I20202": {
     "course_code": "I20202",
@@ -91312,7 +93010,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ20239": {
     "course_code": "อ20239",
@@ -91452,7 +93153,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20212": {
     "course_code": "จ20212",
@@ -91592,7 +93296,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20222": {
     "course_code": "ว20222",
@@ -91732,7 +93439,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว20209": {
     "course_code": "ว20209",
@@ -91872,7 +93582,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30221": {
     "course_code": "ว30221",
@@ -91983,7 +93696,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30267": {
     "course_code": "ว30267",
@@ -92123,7 +93839,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30268": {
     "course_code": "ว30268",
@@ -92263,7 +93982,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30265": {
     "course_code": "ว30265",
@@ -92403,7 +94125,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30266": {
     "course_code": "ว30266",
@@ -92543,7 +94268,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30263": {
     "course_code": "ว30263",
@@ -92683,7 +94411,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30264": {
     "course_code": "ว30264",
@@ -92823,7 +94554,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30293": {
     "course_code": "ว30293",
@@ -92963,7 +94697,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30287": {
     "course_code": "ว30287",
@@ -93103,7 +94840,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30288": {
     "course_code": "ว30288",
@@ -93244,7 +94984,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30289": {
     "course_code": "ว30289",
@@ -93384,7 +95127,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30290": {
     "course_code": "ว30290",
@@ -93525,7 +95271,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30235": {
     "course_code": "อ30235",
@@ -93665,7 +95414,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30236": {
     "course_code": "อ30236",
@@ -93806,7 +95558,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30201": {
     "course_code": "อ30201",
@@ -93946,7 +95701,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30202": {
     "course_code": "อ30202",
@@ -94087,7 +95845,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30203": {
     "course_code": "อ30203",
@@ -94227,7 +95988,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30204": {
     "course_code": "อ30204",
@@ -94367,7 +96131,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30205": {
     "course_code": "อ30205",
@@ -94507,7 +96274,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30206": {
     "course_code": "อ30206",
@@ -94647,7 +96417,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "อ30237": {
     "course_code": "อ30237",
@@ -94787,7 +96560,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30282": {
     "course_code": "ว30282",
@@ -94927,7 +96703,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30298": {
     "course_code": "ว30298",
@@ -95068,7 +96847,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30210": {
     "course_code": "ท30210",
@@ -95208,7 +96990,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30208": {
     "course_code": "ส30208",
@@ -95348,7 +97133,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31201": {
     "course_code": "ท31201",
@@ -95488,7 +97276,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31203": {
     "course_code": "ท31203",
@@ -95628,7 +97419,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32201": {
     "course_code": "ท32201",
@@ -95768,7 +97562,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32202": {
     "course_code": "ท32202",
@@ -95908,7 +97705,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท33201": {
     "course_code": "ท33201",
@@ -96048,7 +97848,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท33203": {
     "course_code": "ท33203",
@@ -96189,7 +97992,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31205": {
     "course_code": "ท31205",
@@ -96329,7 +98135,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท31206": {
     "course_code": "ท31206",
@@ -96469,7 +98278,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32203": {
     "course_code": "ท32203",
@@ -96609,7 +98421,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท32204": {
     "course_code": "ท32204",
@@ -96749,7 +98564,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30201": {
     "course_code": "ท30201",
@@ -96889,7 +98707,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ท30202": {
     "course_code": "ท30202",
@@ -97029,7 +98850,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30296": {
     "course_code": "ว30296",
@@ -97169,7 +98993,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31203": {
     "course_code": "ค31203",
@@ -97309,7 +99136,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค31204": {
     "course_code": "ค31204",
@@ -97449,7 +99279,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค33204": {
     "course_code": "ค33204",
@@ -97589,7 +99422,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30232": {
     "course_code": "ง30232",
@@ -97729,7 +99565,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30204": {
     "course_code": "ง30204",
@@ -97869,7 +99708,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง30226": {
     "course_code": "ง30226",
@@ -98009,7 +99851,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30278": {
     "course_code": "ว30278",
@@ -98149,7 +99994,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30279": {
     "course_code": "ว30279",
@@ -98289,7 +100137,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30280": {
     "course_code": "ว30280",
@@ -98429,7 +100280,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30269": {
     "course_code": "ส30269",
@@ -98569,7 +100423,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ส30270": {
     "course_code": "ส30270",
@@ -98709,7 +100566,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ31205": {
     "course_code": "ศ31205",
@@ -98849,7 +100709,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ศ33205": {
     "course_code": "ศ33205",
@@ -98989,7 +100852,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "จ20213": {
     "course_code": "จ20213",
@@ -99129,7 +100995,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ง20250": {
     "course_code": "ง20250",
@@ -99293,7 +101162,10 @@
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
-    "key_task": ""
+    "key_task": "",
+    "midterm_cutoff": 4,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ค20206": {
     "course_code": "ค20206",
@@ -99385,7 +101257,10 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว22320": {
     "course_code": "ว22320",
@@ -99477,7 +101352,10 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30274": {
     "course_code": "ว30274",
@@ -99569,7 +101447,10 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30276": {
     "course_code": "ว30276",
@@ -99661,7 +101542,10 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30295": {
     "course_code": "ว30295",
@@ -99753,7 +101637,10 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   },
   "ว30297": {
     "course_code": "ว30297",
@@ -99846,6 +101733,9 @@
           }
         ]
       }
-    ]
+    ],
+    "midterm_cutoff": 1,
+    "mid_exam": 15,
+    "fin_exam": 15
   }
 }

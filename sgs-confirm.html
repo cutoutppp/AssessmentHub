@@ -631,7 +631,7 @@
       // Initialize base plan units and blank exam durations by default
       Object.values(allCourses).forEach(c => {
         c._originalPlanUnits = JSON.parse(JSON.stringify(c.units || []));
-        c._originalPlanCutoff = c.midterm_cutoff || 1;
+        c._originalPlanCutoff = c.midterm_cutoff || getOptimalCutoff(c.units, c.target_pre_hours) || 1;
         c._planMidExam = c.mid_exam !== undefined ? parseInt(c.mid_exam, 10) : 15;
         c._planFinExam = c.fin_exam !== undefined ? parseInt(c.fin_exam, 10) : 15;
         c._inlineMidDuration = null;
@@ -908,10 +908,35 @@
       await confirmAllMyCourses();
     }
 
+    // Optimal Cutoff Calculator for 50:50 hour and score distribution
+    function getOptimalCutoff(units, targetPreHours) {
+      if (!units || units.length <= 1) return 1;
+      const N = units.length;
+      let bestCutoff = 1;
+      let minDiff = Infinity;
+      const totalSum = units.reduce((s, u) => s + (u.hours || 0), 0);
+      const target = (targetPreHours && targetPreHours > 0) ? targetPreHours : Math.round(totalSum / 2);
+      let accHours = 0;
+      for (let k = 1; k < N; k++) {
+        accHours += (units[k - 1].hours || 0);
+        const diff = Math.abs(accHours - target);
+        if (diff < minDiff) {
+          minDiff = diff;
+          bestCutoff = k;
+        } else if (diff === minDiff) {
+          const half = N / 2;
+          if (Math.abs(k - half) < Math.abs(bestCutoff - half)) {
+            bestCutoff = k;
+          }
+        }
+      }
+      return bestCutoff;
+    }
+
     // 3. Extract & Manage 9 Inline SGS Slots Helper
     function ensureInlineSlots(course) {
       if (!course) return;
-      const cutoff = course.midterm_cutoff || 1;
+      const cutoff = course.midterm_cutoff || getOptimalCutoff(course.units, course.target_pre_hours) || 1;
       const units = course.units || [];
       const preUnits = units.slice(0, cutoff);
       const postUnits = units.slice(cutoff);
@@ -1050,7 +1075,7 @@
       if (!course) return null;
       const units = course._originalPlanUnits || course.units || [];
       if (!units || units.length === 0) return null;
-      const cutoff = course._originalPlanCutoff || course.midterm_cutoff || 1;
+      const cutoff = course._originalPlanCutoff || course.midterm_cutoff || getOptimalCutoff(units, course.target_pre_hours) || 1;
       const preUnits = units.slice(0, cutoff);
       const postUnits = units.slice(cutoff);
 
@@ -1347,7 +1372,7 @@
 
     function syncInlineSlotsBackToUnits(course) {
       if (!course || !course.units) return;
-      const cutoff = course.midterm_cutoff || 1;
+      const cutoff = course.midterm_cutoff || getOptimalCutoff(course.units, course.target_pre_hours) || 1;
       const preUnits = course.units.slice(0, cutoff);
       const postUnits = course.units.slice(cutoff);
 
