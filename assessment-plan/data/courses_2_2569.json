@@ -49879,7 +49879,7 @@
       "ผลการเรียนรู้ที่ 3: บรรเลงเพลงสองชั้นขั้นกลางโดยใช้เทคนิคพิเศษเฉพาะเครื่องดนตรีได้ถูกต้อง",
       "ผลการเรียนรู้ที่ 4: แสดงทักษะการใช้น้ำหนักในการบรรเลงได้อย่างเหมาะสม"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -50023,7 +50023,7 @@
       "ผลการเรียนรู้ที่ 3: บรรเลงเพลงสองชั้นขั้นต้นที่มีลีลาทำนองปานกลางได้ (อย่างน้อย 2 เพลง)",
       "ผลการเรียนรู้ที่ 4: รักษาความเร็วและจังหวะในการบรรเลงร่วมกับผู้อื่นได้อย่างมั่นคง"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -50167,7 +50167,7 @@
       "4, 5",
       "ผลการเรียนรู้ที่ 4: แสดงทักษะการรับ-ส่งจังหวะและทำนองเพลงได้อย่างเป็นระบบ"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -62260,9 +62260,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62273,11 +62273,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62285,9 +62292,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62298,11 +62305,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62310,9 +62324,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -62323,11 +62337,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62335,9 +62356,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -62348,11 +62369,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -62554,9 +62582,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62567,11 +62595,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62579,9 +62614,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62592,11 +62627,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62604,9 +62646,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -62617,11 +62659,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62629,9 +62678,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -62642,11 +62691,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -62848,9 +62904,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62861,11 +62917,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62873,9 +62936,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62886,11 +62949,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62898,9 +62968,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -62911,11 +62981,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62923,9 +63000,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -62936,11 +63013,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -68510,9 +68594,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -68523,11 +68607,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68535,9 +68626,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -68548,11 +68639,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68560,9 +68658,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -68573,11 +68671,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68585,9 +68690,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -68598,11 +68703,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -68804,9 +68916,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -68817,11 +68929,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68829,9 +68948,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -68842,11 +68961,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68854,9 +68980,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -68867,11 +68993,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68879,9 +69012,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -68892,11 +69025,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -69098,9 +69238,9 @@
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -69111,11 +69251,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69123,9 +69270,9 @@
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -69136,11 +69283,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69148,9 +69302,9 @@
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -69161,11 +69315,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69173,9 +69334,9 @@
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -69186,11 +69347,18 @@
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -101203,28 +101371,35 @@
         "unit_no": "1",
         "unit_name": "ทักษะและการประยุกต์ทางคณิตศาสตร์ 1",
         "hours": 10,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การคิดคำนวณและการให้เหตุผลทางคณิตศาสตร์"
         ],
         "eval_method": "- แบบฝึกหัดและใบงาน\n- การทดสอบย่อย",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรมและการทำกิจกรรม",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- แบบทดสอบย่อยท้ายหน่วย",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101232,28 +101407,35 @@
         "unit_no": "2",
         "unit_name": "ทักษะและการประยุกต์ทางคณิตศาสตร์ 2",
         "hours": 10,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การเชื่อมโยงความรู้สู่การแก้โจทย์ปัญหา"
         ],
         "eval_method": "- แบบฝึกหัดและใบงาน\n- การประเมินชิ้นงาน",
         "assessments": [
           {
-            "eval_methods": "- การประเมินใบงานและภาระงาน",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบย่อยท้ายหน่วย",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
@@ -101299,28 +101481,35 @@
         "unit_no": "1",
         "unit_name": "การสืบเสาะและการทดลองพลังสิบ",
         "hours": 19,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "กระบวนการสืบเสาะและการทดลองเชิงวิทยาศาสตร์"
         ],
         "eval_method": "- รายงานการทดลอง\n- การสังเกตการปฏิบัติการ",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตทักษะปฏิบัติการทดลอง",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การประเมินรายงานผลการทดลอง",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101328,28 +101517,35 @@
         "unit_no": "2",
         "unit_name": "นวัตกรรมและโครงงานพลังสิบ",
         "hours": 19,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การสร้างสรรค์นวัตกรรมสะเต็มศึกษา"
         ],
         "eval_method": "- รายงานโครงงาน\n- การนำเสนอผลงาน",
         "assessments": [
           {
-            "eval_methods": "- การประเมินชิ้นงาน/โครงงาน",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การนำเสนอผลงานและการทดสอบ",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
@@ -101395,28 +101591,35 @@
         "unit_no": "1",
         "unit_name": "หลักการและพื้นฐานแอนิเมชัน",
         "hours": 19,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "ประวัติและหลักการสร้างภาพเคลื่อนไหว 12 ข้อ"
         ],
         "eval_method": "- ใบงานการออกแบบสตอรี่บอร์ด\n- การปฏิบัติการสร้างภาพเคลื่อนไหวเบื้องต้น",
         "assessments": [
           {
-            "eval_methods": "- ประเมินสตอรี่บอร์ดและคาร์แรคเตอร์",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- ปฏิบัติการสร้างภาพเคลื่อนไหวสั้น",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101424,28 +101627,35 @@
         "unit_no": "2",
         "unit_name": "การผลิตผลงานแอนิเมชัน",
         "hours": 19,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การเรนเดอร์ ใส่เสียง และเผยแพร่ผลงาน"
         ],
         "eval_method": "- ประเมินชิ้นงานแอนิเมชันสมบูรณ์\n- การนำเสนอผลงาน",
         "assessments": [
           {
-            "eval_methods": "- ประเมินความสมบูรณ์ของแอนิเมชัน",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
             "score_k": 4,
             "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบปฏิบัติการและเผยแพร่ผลงาน",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
@@ -101491,28 +101701,35 @@
         "unit_no": "1",
         "unit_name": "พื้นฐานการออกแบบและพัฒนาเว็บไซต์",
         "hours": 19,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "โครงสร้าง HTML และการจัดรูปแบบด้วย CSS"
         ],
         "eval_method": "- การประเมินใบงานและการฝึกปฏิบัติ\n- ทดสอบปฏิบัติสร้างเว็บเพจ",
         "assessments": [
           {
-            "eval_methods": "- ประเมินหน้าเว็บเพจเดี่ยว",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- ทดสอบปฏิบัติการจัดเลย์เอาต์เว็บ",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101520,28 +101737,35 @@
         "unit_no": "2",
         "unit_name": "การพัฒนาและเผยแพร่เว็บไซต์สมบูรณ์",
         "hours": 19,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "Responsive Web Design และการอัปโหลดสู่โฮสติ้ง"
         ],
         "eval_method": "- ประเมินเว็บไซต์โครงการ\n- การนำเสนอและการทดสอบสมรรถนะ",
         "assessments": [
           {
-            "eval_methods": "- ประเมินชิ้นงานเว็บไซต์สมบูรณ์",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
             "score_k": 4,
             "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบปฏิบัติการแก้โจทย์เว็บ",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
@@ -101587,28 +101811,35 @@
         "unit_no": "1",
         "unit_name": "พื้นฐานการพาณิชย์อิเล็กทรอนิกส์",
         "hours": 10,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "โมเดลธุรกิจออนไลน์และการตลาดดิจิทัล"
         ],
         "eval_method": "- ใบงานการวิเคราะห์กลุ่มเป้าหมาย\n- แผนธุรกิจเบื้องต้น",
         "assessments": [
           {
-            "eval_methods": "- ประเมินใบงานการวิเคราะห์ตลาด",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- ทดสอบความรู้เรื่องการตลาดดิจิทัล",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101616,28 +101847,35 @@
         "unit_no": "2",
         "unit_name": "การสร้างและบริหารร้านค้าออนไลน์",
         "hours": 10,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การเปิดร้าน การทำคอนเทนต์ และระบบชำระเงิน"
         ],
         "eval_method": "- ประเมินร้านค้าออนไลน์\n- รายงานยอดขายและผลการดำเนินงาน",
         "assessments": [
           {
-            "eval_methods": "- ประเมินหน้าร้านและคอนเทนต์โปรโมท",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
             "score_k": 4,
             "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- ประเมินผลการขายและการปิดการขาย",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
@@ -101684,28 +101922,35 @@
         "unit_no": "1",
         "unit_name": "การวางแผนและพัฒนาข้อเสนอโครงงาน",
         "hours": 19,
-        "score_k": 10,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การเลือกหัวข้อและการเขียนข้อเสนอโครงงานคอมพิวเตอร์"
         ],
         "eval_method": "- ประเมินเค้าโครงงานคอมพิวเตอร์\n- การนำเสนอความก้าวหน้า",
         "assessments": [
           {
-            "eval_methods": "- ประเมินเอกสารข้อเสนอโครงงาน",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
             "score_k": 5,
             "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การนำเสนอและสัมภาษณ์ความก้าวหน้า",
-            "score_k": 5,
-            "score_p": 4,
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       },
@@ -101713,28 +101958,35 @@
         "unit_no": "2",
         "unit_name": "การพัฒนาและการนำเสนอโครงงานสมบูรณ์",
         "hours": 19,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 15,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 35,
         "concepts": [
           "การทดสอบระบบ คู่มือการใช้งาน และการเผยแพร่ผลงาน"
         ],
         "eval_method": "- ประเมินชิ้นงาน/โปรแกรมโครงงาน\n- รายงานโครงงาน 5 บทและการนำเสนอ",
         "assessments": [
           {
-            "eval_methods": "- ประเมินความสมบูรณ์ของชิ้นงานโครงงาน",
+            "eval_methods": "- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/ชิ้นงาน",
             "score_k": 4,
             "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- ประเมินรูปเล่มรายงานและการนำเสนอผลงาน",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 6,
+            "score_p": 6,
+            "score_a": 3,
+            "score_total": 15
           }
         ]
       }
