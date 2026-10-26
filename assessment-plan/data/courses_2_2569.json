@@ -1993,99 +1993,101 @@
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "การสร้างพื้นฐานทางเรขาคณิต",
+        "unit_name": "เรขาคณิตสามมิติและการมองภาพ",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 8,
-        "score_a": 1,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
         "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 8,
+            "eval_methods": "- แบบฝึกทักษะการมองภาพด้านหน้า ด้านข้าง ด้านบน",
+            "score_k": 4,
+            "score_p": 3,
             "score_a": 1,
-            "score_total": 15
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- แบบทดสอบย่อยรูปเรขาคณิตสามมิติ",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "2",
-        "unit_name": "พื้นฐานมิติสัมพันธ์และมุมมองทางวิศวกรรม",
+        "unit_name": "การเขียนแบบและภาพฉายเชิงวิศวกรรม",
         "hours": 5,
-        "score_k": 9,
+        "score_k": 8,
         "score_p": 10,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 20,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "eval_methods": "- ปฏิบัติการเขียนภาพออบลิกและไอโซเมตริก",
             "score_k": 4,
-            "score_p": 4,
-            "score_a": 0,
-            "score_total": 8
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 5,
-            "score_p": 6,
+            "eval_methods": "- การเขียนแบบภาพฉายเชิงวิศวกรรม",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
-            "score_total": 12
+            "score_total": 10
           }
         ]
       },
       {
         "unit_no": "3",
-        "unit_name": "การวัดและการออกแบบเชิงวิศวกรรม",
-        "hours": 3,
-        "score_k": 4,
-        "score_p": 5,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "unit_name": "ความสัมพันธ์มิติและการตัดขวาง",
+        "hours": 5,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "eval_methods": "- ใบงานการวิเคราะห์ภาพตัดขวาง",
             "score_k": 4,
-            "score_p": 5,
+            "score_p": 3,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- แบบทดสอบความสัมพันธ์เชิงมิติ",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "4",
-        "unit_name": "โครงงานมิติสัมพันธ์เชิงวิศวกรรม",
-        "hours": 6,
-        "score_k": 9,
-        "score_p": 13,
-        "score_a": 3,
-        "score_total": 25,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "unit_name": "การสร้างแบบจำลอง 3 มิติเชิงประยุกต์",
+        "hours": 4,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "eval_methods": "- การสร้างชิ้นงานแบบจำลอง 3 มิติ",
             "score_k": 4,
             "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 5,
-            "score_p": 8,
-            "score_a": 2,
-            "score_total": 15
+            "eval_methods": "- การนำเสนอและประเมินผลชิ้นงาน",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -7247,60 +7249,71 @@
     "course_code": "ง20218",
     "course_name": "ผลิตภัณฑ์จากวัสดุท้องถิ่น",
     "learning_area": "การงานอาชีพ",
-    "grade_level": "ม.1",
+    "grade_level": "ม.2",
     "credits": 1.0,
     "total_hours": 40,
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
     ],
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "ผลิตภัณฑ์",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
+        "unit_name": "ความรู้ทั่วไปเกี่ยวกับผลิตภัณฑ์และวัสดุท้องถิ่น",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "ความรู้ทั่วไปเกี่ยวกับผลิตภัณฑ์และวัสดุท้องถิ่น"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปเกี่ยวกับผลิตภัณฑ์และวัสดุท้องถิ่น ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปเกี่ยวกับผลิตภัณฑ์และวัสดุท้องถิ่น ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "2",
-        "unit_name": "วัสดุท้องถิ่น",
-        "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
+        "unit_name": "การออกแบบและเตรียมวัสดุในท้องถิ่น",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
         "score_a": 2,
         "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การออกแบบและเตรียมวัสดุในท้องถิ่น"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การออกแบบและเตรียมวัสดุในท้องถิ่น (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การออกแบบและเตรียมวัสดุในท้องถิ่น (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -7308,36 +7321,61 @@
       },
       {
         "unit_no": "3",
-        "unit_name": "ผลิตภัณฑ์จากวัสดุท้องถิ่น",
-        "hours": 19,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
+        "unit_name": "ปฏิบัติการสร้างสรรค์ผลิตภัณฑ์จากวัสดุท้องถิ่น",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "ปฏิบัติการสร้างสรรค์ผลิตภัณฑ์จากวัสดุท้องถิ่น"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: ปฏิบัติการสร้างสรรค์ผลิตภัณฑ์จากวัสดุท้องถิ่น (การประยุกต์ใช้)",
+            "score_k": 4,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: ปฏิบัติการสร้างสรรค์ผลิตภัณฑ์จากวัสดุท้องถิ่น",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การตกแต่ง การบรรจุภัณฑ์ และการจัดจำหน่าย",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การตกแต่ง การบรรจุภัณฑ์ และการจัดจำหน่าย"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การตกแต่ง การบรรจุภัณฑ์ และการจัดจำหน่าย",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การตกแต่ง การบรรจุภัณฑ์ และการจัดจำหน่าย",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       }
@@ -7348,7 +7386,7 @@
       "อธิบายความหมายผลิตภัณฑ์จากวัสดุท้องถิ่นได้",
       "สร้างผลิตภัณฑ์จากวัสดุท้องถิ่นได้"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -7520,53 +7558,71 @@
     "course_code": "ง20230",
     "course_name": "อาหารจานเดียว",
     "learning_area": "การงานอาชีพ",
-    "grade_level": "ม.1",
+    "grade_level": "ม.3",
     "credits": 1.0,
     "total_hours": 40,
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
+      "นางสาวศิริรัตน์ คำอยู่"
     ],
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "ความรู้ทั่วไปเกี่ยวกับอาหารจาน เดียว",
-        "hours": 4,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
+        "unit_name": "ความรู้ทั่วไปและสุขาภิบาลอาหารจานเดียว",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "ความรู้ทั่วไปและสุขาภิบาลอาหารจานเดียว"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปและสุขาภิบาลอาหารจานเดียว ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
             "score_a": 1,
-            "score_total": 5
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปและสุขาภิบาลอาหารจานเดียว ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "2",
-        "unit_name": "มาตราส่วนชั่ง ตวง วัด ที่ใช้ในการประกอบอาหาร",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "การเตรียมวัตถุดิบและอุปกรณ์ประกอบอาหาร",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การเตรียมวัตถุดิบและอุปกรณ์ประกอบอาหาร"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การเตรียมวัตถุดิบและอุปกรณ์ประกอบอาหาร (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การเตรียมวัตถุดิบและอุปกรณ์ประกอบอาหาร (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -7574,20 +7630,29 @@
       },
       {
         "unit_no": "3",
-        "unit_name": "การเลือกซื้อ การเก็บรักษาวัตถุดิบ ในการประกอบอาหารจานเดียว",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "การฝึกปฏิบัติการปรุงอาหารจานเดียวเมนูยอดนิยม",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การฝึกปฏิบัติการปรุงอาหารจานเดียวเมนูยอดนิยม"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การฝึกปฏิบัติการปรุงอาหารจานเดียวเมนูยอดนิยม (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การฝึกปฏิบัติการปรุงอาหารจานเดียวเมนูยอดนิยม",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -7595,71 +7660,31 @@
       },
       {
         "unit_no": "4",
-        "unit_name": "เลือกใช้และเก็บรักษาวัสดุอุปกรณ์",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "เทคนิคในการประกอบอาหารจาน เดียว",
-        "hours": 17,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "6",
-        "unit_name": "การขาย",
-        "hours": 2,
-        "score_k": 8,
-        "score_p": 5,
+        "unit_name": "การจัดตกแต่ง การคิดต้นทุน และการจำหน่าย",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การจัดตกแต่ง การคิดต้นทุน และการจำหน่าย"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การจัดตกแต่ง การคิดต้นทุน และการจำหน่าย",
+            "score_k": 2,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การจัดตกแต่ง การคิดต้นทุน และการจำหน่าย",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       }
@@ -7695,7 +7720,7 @@
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
-    "midterm_cutoff": 4,
+    "midterm_cutoff": 2,
     "mid_exam": 15,
     "fin_exam": 15
   },
@@ -7853,9 +7878,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นางสาวภรณ์มิน โสภาพล"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -7977,7 +8000,7 @@
       "ผลการเรียนรู้ที่ 5: อธิบายและปฏิบัติการขยายพันธุ์พืชในรูปแบบต่าง ๆ ได้อย่างน้อย 3 ชนิด",
       "ผลการเรียนรู้ที่ 6: ปฏิบัติการคำนวณค่าใช้จ่าย การกำหนดราคาขาย การจัดจำหน่าย รวมทั้งหมด 6 ผลการเรียนรู้"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -8007,53 +8030,71 @@
     "course_code": "ง20233",
     "course_name": "การเพาะเลี้ยงปลาสวยงามเบื้องต้น",
     "learning_area": "การงานอาชีพ",
-    "grade_level": "ม.3",
+    "grade_level": "ม.1",
     "credits": 1.0,
     "total_hours": 40,
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายพนม บุญมางำ"
     ],
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "หลักการทั่ว ๆ ไปของการเพาะเลี้ยงปลาสวยงาม",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "หลักการทั่วไปและความสำคัญของปลาสวยงาม",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "หลักการทั่วไปและความสำคัญของปลาสวยงาม"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "eval_methods": "- ใบงาน/กิจกรรม: หลักการทั่วไปและความสำคัญของปลาสวยงาม ตอนที่ 1",
+            "score_k": 4,
             "score_p": 3,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: หลักการทั่วไปและความสำคัญของปลาสวยงาม ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "2",
-        "unit_name": "อาหารและการให้อาหารปลาสวยงาม",
-        "hours": 6,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "การเตรียมอุปกรณ์และการจัดการสภาพแวดล้อม",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การเตรียมอุปกรณ์และการจัดการสภาพแวดล้อม"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การเตรียมอุปกรณ์และการจัดการสภาพแวดล้อม (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: การเตรียมอุปกรณ์และการจัดการสภาพแวดล้อม (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -8061,85 +8102,61 @@
       },
       {
         "unit_no": "3",
-        "unit_name": "หลักการและวิธีการในการเพาะเลี้ยงพันธุ์ปลาสวยงาม",
-        "hours": 8,
+        "unit_name": "การเพาะพันธุ์และการอนุบาลลูกปลาสวยงาม",
+        "hours": 13,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 10,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การเพาะพันธุ์และการอนุบาลลูกปลาสวยงาม"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การเพาะพันธุ์และการอนุบาลลูกปลาสวยงาม (การประยุกต์ใช้)",
+            "score_k": 4,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การเพาะพันธุ์และการอนุบาลลูกปลาสวยงาม",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
       {
         "unit_no": "4",
-        "unit_name": "การอนุบาลลูกพันธุ์ปลาสวยงาม",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
+        "unit_name": "การป้องกันโรคและการจัดการผลผลิตเพื่อการค้า",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การป้องกันโรคและการจัดการผลผลิตเพื่อการค้า"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การป้องกันโรคและการจัดการผลผลิตเพื่อการค้า",
+            "score_k": 2,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "โรคปลาสวยงามและหลักการป้องกันรักษา",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
+            "score_a": 1,
+            "score_total": 8
+          },
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การป้องกันโรคและการจัดการผลผลิตเพื่อการค้า",
+            "score_k": 3,
             "score_p": 3,
             "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "6",
-        "unit_name": "การจัดจำหน่ายปลาสวยงาม",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_total": 7
           }
         ]
       }
@@ -8150,7 +8167,7 @@
       "ผลการเรียนรู้ที่ 3: มีความรู้เกี่ยวกับโรคที่เกิดกับปลาสวยงามและหลักในการป้องกัน",
       "ผลการเรียนรู้ที่ 4: มีความรู้ ทักษะ ในการคัดปลาและการบรรจุสำหรับจำหน่าย รวมทั้งหมด 4 ผลการเรียนรู้"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -8173,7 +8190,7 @@
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
-    "midterm_cutoff": 3,
+    "midterm_cutoff": 2,
     "mid_exam": 15,
     "fin_exam": 15
   },
@@ -8497,9 +8514,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -8606,7 +8621,7 @@
       "2. วิเคราะห์วางแผน ออกแบบ ชิ้นงานได้อย่างเหมาะสม",
       "4. ปฏิบัติการประดิษฐ์ชิ้นงาน ของใช้ภายในบ้านจากวัสดุต่างๆ 5. มีเจตคติที่ดี มีประสบการณ์ เกิดความภาคภูมิใจและเห็นแนวทางในการประกอบอาชีพ"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -25418,9 +25433,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นายศราวุฒิ บำรุงศิลป์"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -25601,7 +25614,7 @@
       "ผลการเรียนรู้ที่13 รู้และเข้าใจกติกาการแข่งขันเซปักตะกร้อ",
       "ผลการเรียนรู้ที่14 บอกความรู้ของการทดสอบสมรรถภาพทางกายได้อย่างถูกต้อง ผลการเรียนรู้ที่15 อธิบายวิธีการประเมินผลสมรรถภาพทางกายได้อย่างถูกต้อง"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -25640,9 +25653,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นายทวีศักดิ์ พิทักษ์ศร"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -25779,7 +25790,7 @@
       "ผลการเรียนรู้ที่ 7 การตีลูกหยอด ผลการเรียนรู้ที่ 8 การตีลูกพร้อม",
       "ผลการเรียนรู้ที่ 9 กติกาการแข่งขัน"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -30152,33 +30163,29 @@
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวปรียาภรณ์ ผังคี",
-      "นายสายันต์ เย็นเจริญ"
+      "นางสาวปรียาภรณ์ ผังคี"
     ],
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "พื้นฐานเภสัชกรรม รอบรู้เรื่องฉลากและโฆษณา",
+        "unit_name": "พืชสมุนไพรในท้องถิ่น",
         "hours": 5,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 10,
+        "score_p": 8,
         "score_a": 2,
         "score_total": 20,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ใบงานการสำรวจพืชสมุนไพรในท้องถิ่น",
+            "score_k": 5,
+            "score_p": 4,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- แบบทดสอบชนิดและสรรพคุณสมุนไพร",
+            "score_k": 5,
+            "score_p": 4,
             "score_a": 1,
             "score_total": 10
           }
@@ -30186,48 +30193,49 @@
       },
       {
         "unit_no": "2",
-        "unit_name": "สมุนไพรในท้องถิ่น",
+        "unit_name": "สรรพคุณและสารสำคัญในพืชสมุนไพร",
         "hours": 4,
         "score_k": 8,
         "score_p": 5,
         "score_a": 2,
         "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "eval_methods": "- การทดลองสกัดสารสำคัญเบื้องต้น",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- ใบงานบันทึกผลการทดลอง",
+            "score_k": 4,
+            "score_p": 2,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "3",
-        "unit_name": "เภสัชกรน้อยลงมือปฏิบัติ พื้นฐานเภสัชกรรม",
+        "unit_name": "การแปรรูปและพัฒนาผลิตภัณฑ์สมุนไพร",
         "hours": 6,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 8,
+        "score_p": 10,
         "score_a": 2,
         "score_total": 20,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการแปรรูปผลิตภัณฑ์สมุนไพร",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- การประเมินคุณภาพและความปลอดภัย",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -30235,22 +30243,26 @@
       },
       {
         "unit_no": "4",
-        "unit_name": "รอบรู้เรื่องฉลากและโฆษณา",
+        "unit_name": "การนำเสนอโครงงานเภสัชกรน้อย",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 5,
+        "score_p": 8,
         "score_a": 2,
         "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
+            "eval_methods": "- การนำเสนอโครงงาน/นิทรรศการ",
+            "score_k": 2,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- รายงานสรุปผลโครงงาน",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       }
@@ -42868,10 +42880,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นายศราวุฒิ จังหวัดเขต",
-      "นายอิฐสรา บุญคล้าย"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -42978,7 +42987,7 @@
       "3. การบรรเลงดนตรีในชีวิตประจำวัน",
       "4. เปรียบเทียบความแตกต่างระหว่างงานดนตรีของตนเองและผู้อื่น"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -43013,10 +43022,7 @@
     "is_basic": false,
     "target_pre_hours": 19,
     "target_post_hours": 19,
-    "teachers": [
-      "นายศราวุฒิ จังหวัดเขต",
-      "นางสาวขนิษฐา หรั่งแร่"
-    ],
+    "teachers": [],
     "units": [
       {
         "unit_no": "1",
@@ -43138,7 +43144,7 @@
       "4. บรรเลงดนตรีเดี่ยวและรวมวงในเพลงที่กำหนดให้ได้ด้วยความชื่นชม",
       "5. การนำแสดงดนตรีในโอกาสต่างๆ ได้อย่างเหมาะสม"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -101351,41 +101357,59 @@
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "ความรู้เบื้องต้นเกี่ยวกับงานปูน",
-        "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "ความรู้เบื้องต้นและเครื่องมืออุปกรณ์งานปูน",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "ความรู้เบื้องต้นและเครื่องมืออุปกรณ์งานปูน"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้เบื้องต้นและเครื่องมืออุปกรณ์งานปูน ตอนที่ 1",
+            "score_k": 4,
             "score_p": 3,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้เบื้องต้นและเครื่องมืออุปกรณ์งานปูน ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       },
       {
         "unit_no": "2",
-        "unit_name": "เครื่องมือและอุปกรณ์ในงานปูน",
-        "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "หลักการออกแบบและการผสมปูน",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "หลักการออกแบบและการผสมปูน"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: หลักการออกแบบและการผสมปูน (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: หลักการออกแบบและการผสมปูน (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -101393,20 +101417,29 @@
       },
       {
         "unit_no": "3",
-        "unit_name": "หลักการออกแบบและการอ่านแบบงานปูน",
-        "hours": 7,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "unit_name": "ปฏิบัติการหล่อและปั้นผลิตภัณฑ์งานปูน",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "ปฏิบัติการหล่อและปั้นผลิตภัณฑ์งานปูน"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: ปฏิบัติการหล่อและปั้นผลิตภัณฑ์งานปูน (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: ปฏิบัติการหล่อและปั้นผลิตภัณฑ์งานปูน",
+            "score_k": 4,
+            "score_p": 5,
             "score_a": 1,
             "score_total": 10
           }
@@ -101414,57 +101447,31 @@
       },
       {
         "unit_no": "4",
-        "unit_name": "การประมาณราคาและทำบัญชีรายรับ-รายจ่าย",
-        "hours": 4,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
+        "unit_name": "การตกแต่ง การประมาณราคา และการจำหน่าย",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
         "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การตกแต่ง การประมาณราคา และการจำหน่าย"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "ผลิตภัณฑ์งานปูน",
-        "hours": 19,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การตกแต่ง การประมาณราคา และการจำหน่าย",
+            "score_k": 2,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การตกแต่ง การประมาณราคา และการจำหน่าย",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
           }
         ]
       }
@@ -101498,7 +101505,7 @@
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
-    "midterm_cutoff": 4,
+    "midterm_cutoff": 2,
     "mid_exam": 15,
     "fin_exam": 15
   },
@@ -102318,6 +102325,1406 @@
           },
           {
             "eval_methods": "- ตรวจแบบบันทึกบัญชีต้นทุนและผลกำไร-ขาดทุน",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "พ20226": {
+    "course_code": "พ20226",
+    "course_name": "ฟุตบอล",
+    "learning_area": "สุขศึกษาและพลศึกษา",
+    "grade_level": "ม.1",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายศราวุฒิ บำรุงศิลป์"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้ทั่วไปและทักษะพื้นฐานกีฬาฟุตบอล",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้ทั่วไปและทักษะพื้นฐานกีฬาฟุตบอล"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปและทักษะพื้นฐานกีฬาฟุตบอล ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปและทักษะพื้นฐานกีฬาฟุตบอล ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "ทักษะการควบคุมและการส่งลูกฟุตบอล",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะการควบคุมและการส่งลูกฟุตบอล"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะการควบคุมและการส่งลูกฟุตบอล (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะการควบคุมและการส่งลูกฟุตบอล (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "ทักษะการยิงประตูและการป้องกัน",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะการยิงประตูและการป้องกัน"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: ทักษะการยิงประตูและการป้องกัน (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: ทักษะการยิงประตูและการป้องกัน",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "กลยุทธ์การเล่นเป็นทีมและกติกาการแข่งขัน",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "กลยุทธ์การเล่นเป็นทีมและกติกาการแข่งขัน"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: กลยุทธ์การเล่นเป็นทีมและกติกาการแข่งขัน",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: กลยุทธ์การเล่นเป็นทีมและกติกาการแข่งขัน",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20219": {
+    "course_code": "ศ20219",
+    "course_name": "วงปี่พาทย์มอญ",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.1",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายศราวุฒิ จังหวัดเขต"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ประวัติและเครื่องดนตรีในวงปี่พาทย์มอญ",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ประวัติและเครื่องดนตรีในวงปี่พาทย์มอญ"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ประวัติและเครื่องดนตรีในวงปี่พาทย์มอญ ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ประวัติและเครื่องดนตรีในวงปี่พาทย์มอญ ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "ทักษะพื้นฐานการบรรเลงเครื่องดนตรีมอญ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะพื้นฐานการบรรเลงเครื่องดนตรีมอญ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะพื้นฐานการบรรเลงเครื่องดนตรีมอญ (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะพื้นฐานการบรรเลงเครื่องดนตรีมอญ (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การบรรเลงบทเพลงประจำวงปี่พาทย์มอญ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การบรรเลงบทเพลงประจำวงปี่พาทย์มอญ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การบรรเลงบทเพลงประจำวงปี่พาทย์มอญ (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การบรรเลงบทเพลงประจำวงปี่พาทย์มอญ",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การรวมวงและการอนุรักษ์ดนตรีไทย",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การรวมวงและการอนุรักษ์ดนตรีไทย"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การรวมวงและการอนุรักษ์ดนตรีไทย",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การรวมวงและการอนุรักษ์ดนตรีไทย",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ง20219": {
+    "course_code": "ง20219",
+    "course_name": "งานประดิษฐ์ของชำร่วย",
+    "learning_area": "การงานอาชีพ",
+    "grade_level": "ม.1",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้ทั่วไปและหลักการออกแบบของชำร่วย",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้ทั่วไปและหลักการออกแบบของชำร่วย"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปและหลักการออกแบบของชำร่วย ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปและหลักการออกแบบของชำร่วย ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "เทคนิคการประดิษฐ์ของชำร่วยจากวัสดุหลากหลาย",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "เทคนิคการประดิษฐ์ของชำร่วยจากวัสดุหลากหลาย"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการประดิษฐ์ของชำร่วยจากวัสดุหลากหลาย (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการประดิษฐ์ของชำร่วยจากวัสดุหลากหลาย (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การสร้างสรรค์ชิ้นงานของชำร่วยตามความต้องการ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การสร้างสรรค์ชิ้นงานของชำร่วยตามความต้องการ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การสร้างสรรค์ชิ้นงานของชำร่วยตามความต้องการ (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การสร้างสรรค์ชิ้นงานของชำร่วยตามความต้องการ",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "บรรจุภัณฑ์ การคิดต้นทุน และการจัดจำหน่าย",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "บรรจุภัณฑ์ การคิดต้นทุน และการจัดจำหน่าย"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: บรรจุภัณฑ์ การคิดต้นทุน และการจัดจำหน่าย",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: บรรจุภัณฑ์ การคิดต้นทุน และการจัดจำหน่าย",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "พ20219": {
+    "course_code": "พ20219",
+    "course_name": "กรีฑา",
+    "learning_area": "สุขศึกษาและพลศึกษา",
+    "grade_level": "ม.2",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายทวีศักดิ์ พิทักษ์ศร"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้ทั่วไปและทักษะการเคลื่อนไหวในกรีฑา",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้ทั่วไปและทักษะการเคลื่อนไหวในกรีฑา"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปและทักษะการเคลื่อนไหวในกรีฑา ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปและทักษะการเคลื่อนไหวในกรีฑา ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "ทักษะกรีฑาประเภทลู่",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะกรีฑาประเภทลู่"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะกรีฑาประเภทลู่ (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะกรีฑาประเภทลู่ (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "ทักษะกรีฑาประเภทลาน",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะกรีฑาประเภทลาน"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: ทักษะกรีฑาประเภทลาน (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: ทักษะกรีฑาประเภทลาน",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "กฎ กติกา การตัดสิน และการเสริมสร้างสมรรถภาพ",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "กฎ กติกา การตัดสิน และการเสริมสร้างสมรรถภาพ"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: กฎ กติกา การตัดสิน และการเสริมสร้างสมรรถภาพ",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: กฎ กติกา การตัดสิน และการเสริมสร้างสมรรถภาพ",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20222": {
+    "course_code": "ศ20222",
+    "course_name": "วงอังกะลุง",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.2",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายศราวุฒิ จังหวัดเขต"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้เบื้องต้นและโครงสร้างของอังกะลุง",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้เบื้องต้นและโครงสร้างของอังกะลุง"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้เบื้องต้นและโครงสร้างของอังกะลุง ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้เบื้องต้นและโครงสร้างของอังกะลุง ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "ทักษะพื้นฐานการเขย่าอังกะลุงและการอ่านโน้ต",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "ทักษะพื้นฐานการเขย่าอังกะลุงและการอ่านโน้ต"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะพื้นฐานการเขย่าอังกะลุงและการอ่านโน้ต (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: ทักษะพื้นฐานการเขย่าอังกะลุงและการอ่านโน้ต (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การบรรเลงเพลงไทยและเพลงประยุกต์",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การบรรเลงเพลงไทยและเพลงประยุกต์"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การบรรเลงเพลงไทยและเพลงประยุกต์ (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การบรรเลงเพลงไทยและเพลงประยุกต์",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การบรรเลงรวมวงและการนำเสนอผลงาน",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การบรรเลงรวมวงและการนำเสนอผลงาน"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การบรรเลงรวมวงและการนำเสนอผลงาน",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การบรรเลงรวมวงและการนำเสนอผลงาน",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ง20242": {
+    "course_code": "ง20242",
+    "course_name": "งานอิเล็กทรอนิกส์เบื้องต้น",
+    "learning_area": "การงานอาชีพ",
+    "grade_level": "ม.2",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นางสาวภรณ์มิน โสภาพล"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้พื้นฐานและความปลอดภัยในงานอิเล็กทรอนิกส์",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้พื้นฐานและความปลอดภัยในงานอิเล็กทรอนิกส์"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้พื้นฐานและความปลอดภัยในงานอิเล็กทรอนิกส์ ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้พื้นฐานและความปลอดภัยในงานอิเล็กทรอนิกส์ ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "อุปกรณ์อิเล็กทรอนิกส์และเครื่องมือวัด",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "อุปกรณ์อิเล็กทรอนิกส์และเครื่องมือวัด"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: อุปกรณ์อิเล็กทรอนิกส์และเครื่องมือวัด (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: อุปกรณ์อิเล็กทรอนิกส์และเครื่องมือวัด (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การบัดกรีและการประกอบวงจรอิเล็กทรอนิกส์เบื้องต้น",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การบัดกรีและการประกอบวงจรอิเล็กทรอนิกส์เบื้องต้น"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การบัดกรีและการประกอบวงจรอิเล็กทรอนิกส์เบื้องต้น (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การบัดกรีและการประกอบวงจรอิเล็กทรอนิกส์เบื้องต้น",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การทดสอบวงจรและการประยุกต์ใช้งาน",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การทดสอบวงจรและการประยุกต์ใช้งาน"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การทดสอบวงจรและการประยุกต์ใช้งาน",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การทดสอบวงจรและการประยุกต์ใช้งาน",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20210": {
+    "course_code": "ศ20210",
+    "course_name": "การขับร้องเพลงไทยลูกทุ่ง",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.2",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นางสาวขนิษฐา หรั่งแร่"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ความรู้ทั่วไปและประวัติเพลงไทยลูกทุ่ง",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ความรู้ทั่วไปและประวัติเพลงไทยลูกทุ่ง"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ความรู้ทั่วไปและประวัติเพลงไทยลูกทุ่ง ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ความรู้ทั่วไปและประวัติเพลงไทยลูกทุ่ง ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "เทคนิคการเปล่งเสียงและการใช้ลมหายใจ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "เทคนิคการเปล่งเสียงและการใช้ลมหายใจ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการเปล่งเสียงและการใช้ลมหายใจ (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการเปล่งเสียงและการใช้ลมหายใจ (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การฝึกปฏิบัติการขับร้องเพลงลูกทุ่ง",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การฝึกปฏิบัติการขับร้องเพลงลูกทุ่ง"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การฝึกปฏิบัติการขับร้องเพลงลูกทุ่ง (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การฝึกปฏิบัติการขับร้องเพลงลูกทุ่ง",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "ลีลา อารมณ์เพลง และการนำเสนอบนเวที",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ลีลา อารมณ์เพลง และการนำเสนอบนเวที"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: ลีลา อารมณ์เพลง และการนำเสนอบนเวที",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: ลีลา อารมณ์เพลง และการนำเสนอบนเวที",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20224": {
+    "course_code": "ศ20224",
+    "course_name": "ดนตรีไทยพิธีกรรม",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.3",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายศราวุฒิ จังหวัดเขต"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "บทบาทของดนตรีไทยในพิธีกรรมและวิถีชีวิต",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "บทบาทของดนตรีไทยในพิธีกรรมและวิถีชีวิต"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: บทบาทของดนตรีไทยในพิธีกรรมและวิถีชีวิต ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: บทบาทของดนตรีไทยในพิธีกรรมและวิถีชีวิต ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "บทเพลงและวงดนตรีสำหรับงานพิธีมงคล",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "บทเพลงและวงดนตรีสำหรับงานพิธีมงคล"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: บทเพลงและวงดนตรีสำหรับงานพิธีมงคล (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: บทเพลงและวงดนตรีสำหรับงานพิธีมงคล (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "บทเพลงและวงดนตรีสำหรับงานพิธีอวมงคล",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "บทเพลงและวงดนตรีสำหรับงานพิธีอวมงคล"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: บทเพลงและวงดนตรีสำหรับงานพิธีอวมงคล (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: บทเพลงและวงดนตรีสำหรับงานพิธีอวมงคล",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การปฏิบัติรวมวงและมารยาทในงานพิธีกรรม",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การปฏิบัติรวมวงและมารยาทในงานพิธีกรรม"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การปฏิบัติรวมวงและมารยาทในงานพิธีกรรม",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การปฏิบัติรวมวงและมารยาทในงานพิธีกรรม",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20230": {
+    "course_code": "ศ20230",
+    "course_name": "ขับร้องประสานเสียง",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.3",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นายอิฐสรา บุญคล้าย"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ทฤษฎีเสียงและโสตทักษะเบื้องต้น",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ทฤษฎีเสียงและโสตทักษะเบื้องต้น"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ทฤษฎีเสียงและโสตทักษะเบื้องต้น ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ทฤษฎีเสียงและโสตทักษะเบื้องต้น ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "เทคนิคการเปล่งเสียงและการควบคุมลมหายใจ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "เทคนิคการเปล่งเสียงและการควบคุมลมหายใจ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการเปล่งเสียงและการควบคุมลมหายใจ (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการเปล่งเสียงและการควบคุมลมหายใจ (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การฝึกปฏิบัติขับร้องประสานเสียงในบทเพลง",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การฝึกปฏิบัติขับร้องประสานเสียงในบทเพลง"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การฝึกปฏิบัติขับร้องประสานเสียงในบทเพลง (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การฝึกปฏิบัติขับร้องประสานเสียงในบทเพลง",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การผสมเสียงรวมคณะและการแสดงขับร้อง",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การผสมเสียงรวมคณะและการแสดงขับร้อง"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การผสมเสียงรวมคณะและการแสดงขับร้อง",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การผสมเสียงรวมคณะและการแสดงขับร้อง",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      }
+    ]
+  },
+  "ศ20241": {
+    "course_code": "ศ20241",
+    "course_name": "ศิลปะการขับร้องเพลงไทยลูกกรุง",
+    "learning_area": "ศิลปะ",
+    "grade_level": "ม.3",
+    "credits": 1.0,
+    "total_hours": 40,
+    "is_basic": false,
+    "target_pre_hours": 19,
+    "target_post_hours": 19,
+    "teachers": [
+      "นางสาวขนิษฐา หรั่งแร่"
+    ],
+    "is_scheduled_term2": true,
+    "midterm_cutoff": 2,
+    "mid_exam": 15,
+    "fin_exam": 15,
+    "units": [
+      {
+        "unit_no": "1",
+        "unit_name": "ประวัติและคุณค่าของเพลงไทยลูกกรุง",
+        "hours": 6,
+        "score_k": 7,
+        "score_p": 6,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "ประวัติและคุณค่าของเพลงไทยลูกกรุง"
+        ],
+        "eval_method": "- ประเมินใบงาน/กิจกรรม\n- การสังเกตพฤติกรรมการเรียนรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ใบงาน/กิจกรรม: ประวัติและคุณค่าของเพลงไทยลูกกรุง ตอนที่ 1",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การปฏิบัติ/แบบทดสอบย่อย: ประวัติและคุณค่าของเพลงไทยลูกกรุง ตอนที่ 2",
+            "score_k": 3,
+            "score_p": 3,
+            "score_a": 1,
+            "score_total": 7
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "เทคนิคการออกเสียงและการเอื้อนบทเพลงลูกกรุง",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "เทคนิคการออกเสียงและการเอื้อนบทเพลงลูกกรุง"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติ\n- แบบทดสอบความรู้",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการออกเสียงและการเอื้อนบทเพลงลูกกรุง (ขั้นพื้นฐาน)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ปฏิบัติการ/ชิ้นงาน: เทคนิคการออกเสียงและการเอื้อนบทเพลงลูกกรุง (ขั้นพัฒนา)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การขับร้องบทเพลงไทยลูกกรุงอมตะ",
+        "hours": 13,
+        "score_k": 8,
+        "score_p": 10,
+        "score_a": 2,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [
+          "การขับร้องบทเพลงไทยลูกกรุงอมตะ"
+        ],
+        "eval_method": "- ประเมินทักษะการปฏิบัติขั้นประยุกต์\n- การสังเกตพฤติกรรมกลุ่ม",
+        "assessments": [
+          {
+            "eval_methods": "- ปฏิบัติการ/ภาระงาน: การขับร้องบทเพลงไทยลูกกรุงอมตะ (การประยุกต์ใช้)",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินชิ้นงาน/ผลการปฏิบัติ: การขับร้องบทเพลงไทยลูกกรุงอมตะ",
+            "score_k": 4,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "การถ่ายทอดอารมณ์ บุคลิกภาพ และการนำเสนอ",
+        "hours": 8,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [
+          "การถ่ายทอดอารมณ์ บุคลิกภาพ และการนำเสนอ"
+        ],
+        "eval_method": "- ประเมินการนำเสนอผลงาน\n- การสะท้อนคิดและการประเมินตนเอง",
+        "assessments": [
+          {
+            "eval_methods": "- ประเมินการนำเสนอ/การแสดงผลงาน: การถ่ายทอดอารมณ์ บุคลิกภาพ และการนำเสนอ",
+            "score_k": 2,
+            "score_p": 5,
+            "score_a": 1,
+            "score_total": 8
+          },
+          {
+            "eval_methods": "- การจัดทำรายงาน/การสรุปผลการเรียนรู้: การถ่ายทอดอารมณ์ บุคลิกภาพ และการนำเสนอ",
             "score_k": 3,
             "score_p": 3,
             "score_a": 1,

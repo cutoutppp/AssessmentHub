@@ -483,8 +483,15 @@
         const raw = localStorage.getItem(SGS_STORAGE_KEY);
         if (raw) {
           sgsConfirmations = JSON.parse(raw) || {};
-          if (sgsConfirmations['ง20234']) {
-            delete sgsConfirmations['ง20234'];
+          const obsoleteCodes = ['ง20234', 'ศ20231', 'พ20221', 'ศ20228', 'ง20238', 'พ20222', 'ง20232'];
+          let purged = false;
+          obsoleteCodes.forEach(c => {
+            if (sgsConfirmations[c]) {
+              delete sgsConfirmations[c];
+              purged = true;
+            }
+          });
+          if (purged) {
             localStorage.setItem(SGS_STORAGE_KEY, JSON.stringify(sgsConfirmations));
           }
         }
