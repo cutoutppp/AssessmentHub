@@ -147,7 +147,7 @@
       "นางสาวพรปวีณา แจ่มสุวรรณ",
       "นางสาวณัฏฐ์จิรา วงษ์ประไพ",
       "นางสาววิภา ศรีไพร",
-      "นางสาววิรัญญา จึงจรรยา"
+      "ครููภาษาจีน (รับย้าย)"
     ],
     "units": [
       {
@@ -3479,7 +3479,7 @@
     "teachers": [
       "นายดวงเด่น เต่าเถื่อน",
       "นางสาวฤกษ์วดี อินทร์ตาล",
-      "นางสาวกาญจนา กุลสันเทียะ"
+      "ครูใหม่"
     ],
     "units": [
       {
@@ -3814,7 +3814,7 @@
     "target_post_hours": 19,
     "teachers": [
       "นางสาวฤกษ์วดี อินทร์ตาล",
-      "นางสาวกาญจนา กุลสันเทียะ"
+      "ครูใหม่"
     ],
     "units": [
       {
@@ -4122,9 +4122,9 @@
     "target_pre_hours": 29,
     "target_post_hours": 29,
     "teachers": [
-      "นางเพ็ญนภา ดอกกุหลาบ",
       "นางประพาฬรัตน์ เอี่ยมโซ้",
-      "นางสาวกาญจนา กุลสันเทียะ"
+      "นางเพ็ญนภา ดอกกุหลาบ",
+      "ครูใหม่"
     ],
     "units": [
       {
@@ -4441,7 +4441,7 @@
     "target_post_hours": 19,
     "teachers": [
       "นางเพ็ญนภา ดอกกุหลาบ",
-      "นางสาวกาญจนา กุลสันเทียะ"
+      "ครูใหม่"
     ],
     "units": [
       {
@@ -7527,7 +7527,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
     ],
     "units": [
       {
@@ -7672,7 +7672,7 @@
       "ผลการเรียนรู้ที่ 5: มีความรู้ ทักษะ และประสบการณ์ในการทำอาหารจานเดียวประเภทต่าง ๆ",
       "ผลการเรียนรู้ที่ 6: มีความรู้ ทักษะ ในการคำนวณค่าใช้จ่าย กำหนดราคาในการจัดจำหน่าย ทำบัญชรายรับ รายจ่าย ในการทำอาชีพอาหารจานเดียว รวมทั้งหมด 6 ผลการเรียนรู้"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -7854,7 +7854,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นางสาวภรณ์มิน โสภาพล"
     ],
     "units": [
       {
@@ -7977,7 +7977,7 @@
       "ผลการเรียนรู้ที่ 5: อธิบายและปฏิบัติการขยายพันธุ์พืชในรูปแบบต่าง ๆ ได้อย่างน้อย 3 ชนิด",
       "ผลการเรียนรู้ที่ 6: ปฏิบัติการคำนวณค่าใช้จ่าย การกำหนดราคาขาย การจัดจำหน่าย รวมทั้งหมด 6 ผลการเรียนรู้"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -8188,7 +8188,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นางสาวศรีไพร พูลหลำ"
     ],
     "units": [
       {
@@ -8319,7 +8319,7 @@
       "ผลการเรียนรู้ที่ 6: ผู้เรียนประยุกต์ใช้ความรู้เกี่ยวกับขนมไทยเพื่อวางแผนการขายและออกแบบขนมไทยได้อย่างสร้างสรรค์ผ่านกระบวนการทำงานกลุ่ม รวมทั้งหมด 6 ผลการเรียนรู้",
       "ผลการเรียนรู้ที่ 5: ผู้เรียนปฏิบัติการประกอบขนมไทยแต่ละประเภทจนเกิดความชำนาญ พร้อมทั้งนำเสนอผลงานจาการปฏิบัติ"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -8500,7 +8500,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นางสาวณัฏฐ์จิรา วงษ์ประไพ"
     ],
     "units": [
       {
@@ -8608,7 +8608,7 @@
       "2. วิเคราะห์วางแผน ออกแบบ ชิ้นงานได้อย่างเหมาะสม",
       "4. ปฏิบัติการประดิษฐ์ชิ้นงาน ของใช้ภายในบ้านจากวัสดุต่างๆ 5. มีเจตคติที่ดี มีประสบการณ์ เกิดความภาคภูมิใจและเห็นแนวทางในการประกอบอาชีพ"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -25421,7 +25421,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายศราวุฒิ บำรุงศิลป์"
     ],
     "units": [
       {
@@ -25603,7 +25603,7 @@
       "ผลการเรียนรู้ที่13 รู้และเข้าใจกติกาการแข่งขันเซปักตะกร้อ",
       "ผลการเรียนรู้ที่14 บอกความรู้ของการทดสอบสมรรถภาพทางกายได้อย่างถูกต้อง ผลการเรียนรู้ที่15 อธิบายวิธีการประเมินผลสมรรถภาพทางกายได้อย่างถูกต้อง"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -25643,7 +25643,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายทวีศักดิ์ พิทักษ์ศร"
     ],
     "units": [
       {
@@ -25781,7 +25781,7 @@
       "ผลการเรียนรู้ที่ 7 การตีลูกหยอด ผลการเรียนรู้ที่ 8 การตีลูกพร้อม",
       "ผลการเรียนรู้ที่ 9 กติกาการแข่งขัน"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -25999,7 +25999,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายวีรภัทร กองแก้ว"
     ],
     "units": [
       {
@@ -26181,7 +26181,7 @@
       "ผลการเรียนรู้ที่ 7: ทักษะการเคลื่อนไหว",
       "ผลการเรียนรู้ที่ 8: ทักษะการแตะชูลูกวอลเลย์บอล"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -30154,7 +30154,8 @@
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวปรียาภรณ์ ผังคี",
+      "นายสายันต์ เย็นเจริญ"
     ],
     "units": [
       {
@@ -30262,7 +30263,7 @@
       "ข้อ 4 ข้อ 1, 2",
       "ข้อ 5"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -31941,7 +31942,7 @@
       "ข้อ 5, 6",
       "ข้อ 7"
     ],
-    "is_scheduled_term2": true,
+    "is_scheduled_term2": false,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -42870,7 +42871,8 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายศราวุฒิ จังหวัดเขต",
+      "นายอิฐสรา บุญคล้าย"
     ],
     "units": [
       {
@@ -42978,7 +42980,7 @@
       "3. การบรรเลงดนตรีในชีวิตประจำวัน",
       "4. เปรียบเทียบความแตกต่างระหว่างงานดนตรีของตนเองและผู้อื่น"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -43014,7 +43016,8 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายศราวุฒิ จังหวัดเขต",
+      "นางสาวขนิษฐา หรั่งแร่"
     ],
     "units": [
       {
@@ -43137,7 +43140,7 @@
       "4. บรรเลงดนตรีเดี่ยวและรวมวงในเพลงที่กำหนดให้ได้ด้วยความชื่นชม",
       "5. การนำแสดงดนตรีในโอกาสต่างๆ ได้อย่างเหมาะสม"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -85110,7 +85113,7 @@
   },
   "อ30210": {
     "course_code": "อ30210",
-    "course_name": "English for Portfolio Building",
+    "course_name": "ภาษาอังกฤษอ่าน-เขียน 4",
     "learning_area": "ภาษาต่างประเทศ",
     "grade_level": "ม.5",
     "credits": 1.0,
@@ -85120,25 +85123,33 @@
     "target_post_hours": 19,
     "teachers": [
       "นางสาวสุภาภรณ์ แก่นรอด",
-      "Mr.Lutgardo T. Tablate"
+      "Mr. Lutgardo T. Tablate"
     ],
     "units": [
       {
         "unit_no": "1",
-        "unit_name": "Brand Identity",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "unit_name": "Reading Strategies & Main Ideas",
+        "hours": 10,
+        "score_k": 10,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 20,
+        "concepts": [
+          "กลวิธีการอ่านเพื่อระบุใจความสำคัญและรายละเอียดสนับสนุน"
+        ],
+        "eval_method": "- แบบทดสอบย่อย\n- ใบงานการอ่าน",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "eval_methods": "- แบบทดสอบย่อย",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- ใบงานการอ่าน",
+            "score_k": 5,
+            "score_p": 4,
             "score_a": 1,
             "score_total": 10
           }
@@ -85146,106 +85157,88 @@
       },
       {
         "unit_no": "2",
-        "unit_name": "Evidence Curation",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "unit_name": "Context Clues & Vocabulary in Use",
+        "hours": 9,
+        "score_k": 8,
+        "score_p": 5,
+        "score_a": 2,
+        "score_total": 15,
+        "concepts": [
+          "การเดาความหมายคำศัพท์จากบริบทและรากศัพท์"
+        ],
+        "eval_method": "- ใบกิจกรรมคำศัพท์\n- การทดสอบระหว่างเรียน",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "eval_methods": "- ใบกิจกรรมคำศัพท์",
+            "score_k": 4,
+            "score_p": 2,
+            "score_a": 1,
+            "score_total": 7
+          },
+          {
+            "eval_methods": "- การทดสอบระหว่างเรียน",
+            "score_k": 4,
             "score_p": 3,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 8
           }
         ]
       },
       {
         "unit_no": "3",
-        "unit_name": "Professional Resume",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
+        "unit_name": "Paragraph Organization & Cohesion",
+        "hours": 10,
+        "score_k": 10,
+        "score_p": 8,
         "score_a": 2,
-        "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "score_total": 20,
+        "concepts": [
+          "โครงสร้างย่อหน้า การใช้คำเชื่อม และความเป็นเอกภาพในการเขียน"
+        ],
+        "eval_method": "- ชิ้นงานการเขียนย่อหน้า\n- การสังเกตพฤติกรรม",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "eval_methods": "- ชิ้นงานการเขียนย่อหน้า",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การฝึกปฏิบัติการเขียน",
+            "score_k": 5,
+            "score_p": 4,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
       {
         "unit_no": "4",
-        "unit_name": "Narrative Mastery",
+        "unit_name": "Summary & Critical Response",
         "hours": 9,
         "score_k": 8,
         "score_p": 5,
         "score_a": 2,
         "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
+        "concepts": [
+          "การเขียนสรุปความและการเขียนแสดงความคิดเห็นเชิงวิจารณ์"
+        ],
+        "eval_method": "- ชิ้นงานสรุปความ\n- การประเมินตนเองและเพื่อน",
         "assessments": [
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "Winner’s Pitch",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
+            "eval_methods": "- ชิ้นงานสรุปความ",
+            "score_k": 4,
+            "score_p": 2,
+            "score_a": 1,
+            "score_total": 7
+          },
           {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "eval_methods": "- การเขียนแสดงความคิดเห็น",
+            "score_k": 4,
             "score_p": 3,
             "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "6",
-        "unit_name": "Digital Showcase",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_total": 8
           }
         ]
       }
@@ -85269,19 +85262,17 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      8,
+      7
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      8,
+      7
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
-    "midterm_cutoff": 3,
+    "midterm_cutoff": 2,
     "mid_exam": 15,
     "fin_exam": 15
   },
@@ -101357,7 +101348,7 @@
     "target_pre_hours": 19,
     "target_post_hours": 19,
     "teachers": [
-      "....................................................."
+      "นายวายุ ก้งทอง"
     ],
     "units": [
       {
@@ -101487,7 +101478,7 @@
       "สามารถคำนวณประมาณราคาได้ในเบื้องต้น และทำบัญชีรายรับ รายจ่ายได้",
       "ปฏิบัติงานผลิตภัณฑ์งานปูนต่างๆได้ถูกต้องและปลอดภัย"
     ],
-    "is_scheduled_term2": false,
+    "is_scheduled_term2": true,
     "score_ratio": "70:30",
     "ratio_display": "",
     "kpa_ratio": "",
@@ -101524,7 +101515,7 @@
     "target_pre_hours": 10,
     "target_post_hours": 10,
     "teachers": [
-      "นางสาวกาญจนา กุลสันเทียะ"
+      "ครูใหม่"
     ],
     "score_ratio": "70:30",
     "ratio_display": "70:30",
