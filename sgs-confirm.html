@@ -322,7 +322,7 @@
 
         <!-- Filters Bar -->
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-4 text-xs">
-          <div class="sm:col-span-4">
+          <div class="sm:col-span-3">
             <label for="adminAreaFilter" class="block font-semibold text-slate-600 mb-1">กลุ่มสาระการเรียนรู้</label>
             <select id="adminAreaFilter" onchange="renderAdminTable()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400">
               <option value="">-- ทุกกลุ่มสาระฯ --</option>
@@ -338,6 +338,13 @@
             </select>
           </div>
           <div class="sm:col-span-3">
+            <label for="adminTermFilter" class="block font-semibold text-slate-600 mb-1">ภาคเรียนที่เปิดสอน</label>
+            <select id="adminTermFilter" onchange="renderAdminTable()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400 font-semibold text-slate-800">
+              <option value="term2" selected>เฉพาะภาคเรียนที่ 2/2569 (วิชาปัจจุบัน 211 วิชา)</option>
+              <option value="all">ทุกรายวิชาในฐานข้อมูลหลักสูตร (631 วิชา)</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2">
             <label for="adminStatusFilter" class="block font-semibold text-slate-600 mb-1">สถานะยืนยัน</label>
             <select id="adminStatusFilter" onchange="renderAdminTable()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400">
               <option value="all">ทั้งหมด (ยืนยันแล้ว + รอยืนยัน)</option>
@@ -345,7 +352,7 @@
               <option value="pending">เฉพาะที่ยังไม่ยืนยัน ⏳</option>
             </select>
           </div>
-          <div class="sm:col-span-5">
+          <div class="sm:col-span-4">
             <label for="adminSearchInput" class="block font-semibold text-slate-600 mb-1">ค้นหารหัสวิชา / ชื่อวิชา / ครูผู้สอน</label>
             <input type="search" id="adminSearchInput" oninput="renderAdminTable()" placeholder="พิมพ์ค้นหา เช่น ว21102 หรือชื่อครู..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 focus:border-indigo-400" />
           </div>
@@ -474,7 +481,13 @@
     function initStorageAndFirebase() {
       try {
         const raw = localStorage.getItem(SGS_STORAGE_KEY);
-        if (raw) sgsConfirmations = JSON.parse(raw) || {};
+        if (raw) {
+          sgsConfirmations = JSON.parse(raw) || {};
+          if (sgsConfirmations['ง20234']) {
+            delete sgsConfirmations['ง20234'];
+            localStorage.setItem(SGS_STORAGE_KEY, JSON.stringify(sgsConfirmations));
+          }
+        }
       } catch (e) {
         console.warn('LocalStorage parse error:', e);
       }
@@ -494,6 +507,24 @@
 
           sgsDb.collection('survey_config').onSnapshot((snapshot) => {
             let changed = false;
+
+            // Handle deleted documents in real-time
+            snapshot.docChanges().forEach((change) => {
+              if (change.type === 'removed') {
+                const docId = change.doc.id;
+                if (docId && docId.startsWith('sgs_2569_2_')) {
+                  const code = docId.replace('sgs_2569_2_', '');
+                  if (sgsConfirmations[code]) {
+                    delete sgsConfirmations[code];
+                    changed = true;
+                  }
+                  if (allCourses[code] && !allCourses[code].is_scheduled_term2) {
+                    allCourses[code].teachers = [];
+                  }
+                }
+              }
+            });
+
             snapshot.forEach((doc) => {
               if (doc.id && doc.id.startsWith('sgs_2569_2_')) {
                 const data = doc.data();
@@ -502,7 +533,7 @@
                   const targetCourse = allCourses[data.course_code];
                   if (targetCourse) {
                     if (data.classrooms) targetCourse.classrooms = data.classrooms;
-                    if (Array.isArray(data.teachers) && data.teachers.length > 0) {
+                    if (Array.isArray(data.teachers) && data.teachers.length > 0 && targetCourse.is_scheduled_term2) {
                       targetCourse.teachers = mergeCourseTeachers(targetCourse, data.teachers, null);
                     }
                     if (data.plan_saved_at && Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
@@ -642,7 +673,7 @@
       Object.entries(sgsConfirmations).forEach(([code, data]) => {
         if (allCourses[code]) {
           if (data.classrooms) allCourses[code].classrooms = data.classrooms;
-          if (Array.isArray(data.teachers) && data.teachers.length > 0) {
+          if (Array.isArray(data.teachers) && data.teachers.length > 0 && allCourses[code].is_scheduled_term2) {
             allCourses[code].teachers = mergeCourseTeachers(allCourses[code], data.teachers, null);
           }
           if (data.plan_saved_at && Array.isArray(data.units_snapshot) && data.units_snapshot.length > 0) {
@@ -798,6 +829,7 @@
       }
 
       const myCourses = Object.values(allCourses).filter(c =>
+        c.is_scheduled_term2 &&
         (c.teachers || []).some(t => normalizeTeacherKey(t) === normalizeTeacherKey(canonicalName))
       );
 
@@ -1577,8 +1609,8 @@
         });
       }
 
-      // From courses data
-      Object.values(allCourses).forEach(c => {
+      // From courses data (scheduled in Term 2)
+      Object.values(allCourses).filter(c => c.is_scheduled_term2).forEach(c => {
         if (!selectedArea || c.learning_area === selectedArea || (selectedArea.includes('สังคม') && (c.learning_area || '').includes('สังคม')) || (selectedArea.includes('วิทย') && (c.learning_area || '').includes('วิทย'))) {
           (c.teachers || []).forEach(t => {
             const clean = String(t || '').trim();
@@ -1701,8 +1733,9 @@
       if (!selectedTeacherName) return;
 
       const targetKey = normalizeTeacherKey(selectedTeacherName);
-      // Find courses for this teacher (match exact or normalized key)
+      // Find courses for this teacher (match exact or normalized key) and ensure scheduled in Term 2
       let courses = Object.values(allCourses).filter(c =>
+        c.is_scheduled_term2 &&
         (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
       );
 
@@ -2126,6 +2159,7 @@
       if (!selectedTeacherName) return;
       const targetKey = normalizeTeacherKey(selectedTeacherName);
       const courses = Object.values(allCourses).filter(c =>
+        c.is_scheduled_term2 &&
         (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
       );
       if (courses.length === 0) {
@@ -2244,7 +2278,10 @@
         { key: 'กิจกรรมพัฒนาผู้เรียน', icon: 'ri-compass-3-line', color: 'slate' }
       ];
 
-      const allList = Object.values(allCourses);
+      const termFilter = document.getElementById('adminTermFilter')?.value || 'term2';
+      const allList = termFilter === 'term2'
+        ? Object.values(allCourses).filter(c => c.is_scheduled_term2)
+        : Object.values(allCourses);
       grid.innerHTML = '';
 
       areaDefinitions.forEach(def => {
@@ -2326,11 +2363,13 @@
       const tbody = document.getElementById('adminTableBody');
       const area = document.getElementById('adminAreaFilter')?.value || '';
       const status = document.getElementById('adminStatusFilter')?.value || 'all';
+      const termFilter = document.getElementById('adminTermFilter')?.value || 'term2';
       const q = document.getElementById('adminSearchInput')?.value?.trim().toLowerCase() || '';
 
       renderAdminAreaDashboard();
 
       let list = Object.values(allCourses);
+      if (termFilter === 'term2') list = list.filter(c => c.is_scheduled_term2);
       if (area) list = list.filter(c => c.learning_area === area);
       if (status === 'confirmed') list = list.filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน');
       if (status === 'pending') list = list.filter(c => sgsConfirmations[c.course_code]?.confirmed_status !== 'ยืนยัน');
@@ -2351,14 +2390,17 @@
 
       currentFilteredAdminList = list;
 
-      // Update Counters
-      const totalAll = Object.values(allCourses).length;
-      const totalConfirmed = Object.values(allCourses).filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
+      // Update Counters based on termFilter
+      const baseStatsList = termFilter === 'term2'
+        ? Object.values(allCourses).filter(c => c.is_scheduled_term2)
+        : Object.values(allCourses);
+      const totalAll = baseStatsList.length;
+      const totalConfirmed = baseStatsList.filter(c => sgsConfirmations[c.course_code]?.confirmed_status === 'ยืนยัน').length;
       const totalPending = totalAll - totalConfirmed;
-      const totalEntered = Object.values(allCourses).filter(c => sgsConfirmations[c.course_code]?.sgs_entered).length;
+      const totalEntered = baseStatsList.filter(c => sgsConfirmations[c.course_code]?.sgs_entered).length;
       const pct = Math.round((totalConfirmed / totalAll) * 100) || 0;
 
-      document.getElementById('adminStatTotal').textContent = `${totalAll} รายวิชา`;
+      document.getElementById('adminStatTotal').textContent = `${totalAll} วิชา`;
       document.getElementById('adminStatConfirmed').textContent = `${totalConfirmed} วิชา (${pct}%)`;
       document.getElementById('adminStatPending').textContent = `${totalPending} วิชา`;
       document.getElementById('adminStatEntered').textContent = `${totalEntered} วิชา`;
