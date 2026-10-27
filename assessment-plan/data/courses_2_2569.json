@@ -1998,24 +1998,17 @@
         "unit_no": "1",
         "unit_name": "เรขาคณิตสามมิติและการมองภาพ",
         "hours": 4,
-        "score_k": 7,
-        "score_p": 6,
-        "score_a": 2,
+        "score_k": 6,
+        "score_p": 8,
+        "score_a": 1,
         "score_total": 15,
         "assessments": [
           {
             "eval_methods": "- แบบฝึกทักษะการมองภาพด้านหน้า ด้านข้าง ด้านบน",
-            "score_k": 4,
-            "score_p": 3,
+            "score_k": 6,
+            "score_p": 8,
             "score_a": 1,
-            "score_total": 8
-          },
-          {
-            "eval_methods": "- แบบทดสอบย่อยรูปเรขาคณิตสามมิติ",
-            "score_k": 3,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 7
+            "score_total": 15
           }
         ]
       },
@@ -2023,24 +2016,24 @@
         "unit_no": "2",
         "unit_name": "การเขียนแบบและภาพฉายเชิงวิศวกรรม",
         "hours": 5,
-        "score_k": 8,
+        "score_k": 9,
         "score_p": 10,
-        "score_a": 2,
+        "score_a": 1,
         "score_total": 20,
         "assessments": [
           {
             "eval_methods": "- ปฏิบัติการเขียนภาพออบลิกและไอโซเมตริก",
             "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "score_p": 4,
+            "score_a": 0,
+            "score_total": 8
           },
           {
             "eval_methods": "- การเขียนแบบภาพฉายเชิงวิศวกรรม",
-            "score_k": 4,
-            "score_p": 5,
+            "score_k": 5,
+            "score_p": 6,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 12
           }
         ]
       },
@@ -2048,24 +2041,17 @@
         "unit_no": "3",
         "unit_name": "ความสัมพันธ์มิติและการตัดขวาง",
         "hours": 5,
-        "score_k": 7,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 4,
+        "score_p": 5,
+        "score_a": 1,
+        "score_total": 10,
         "assessments": [
           {
             "eval_methods": "- ใบงานการวิเคราะห์ภาพตัดขวาง",
             "score_k": 4,
-            "score_p": 3,
+            "score_p": 5,
             "score_a": 1,
-            "score_total": 8
-          },
-          {
-            "eval_methods": "- แบบทดสอบความสัมพันธ์เชิงมิติ",
-            "score_k": 3,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 7
+            "score_total": 10
           }
         ]
       },
@@ -2073,10 +2059,10 @@
         "unit_no": "4",
         "unit_name": "การสร้างแบบจำลอง 3 มิติเชิงประยุกต์",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 9,
+        "score_p": 13,
+        "score_a": 3,
+        "score_total": 25,
         "assessments": [
           {
             "eval_methods": "- การสร้างชิ้นงานแบบจำลอง 3 มิติ",
@@ -2087,10 +2073,10 @@
           },
           {
             "eval_methods": "- การนำเสนอและประเมินผลชิ้นงาน",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 8,
+            "score_a": 2,
+            "score_total": 15
           }
         ]
       }
@@ -4714,34 +4700,20 @@
         "unit_no": "1",
         "unit_name": "กระบวน การแก้ปัญหา",
         "hours": 9,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
+        "score_k": 10,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 10,
+            "score_p": 15,
+            "score_a": 5,
+            "score_total": 30
           }
         ]
       },
@@ -4749,34 +4721,20 @@
         "unit_no": "2",
         "unit_name": "การให้เหตุผลและการนำเสนอทางคณิตศาสตร์ได้",
         "hours": 9,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
+        "score_k": 10,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 10,
+            "score_p": 15,
+            "score_a": 5,
+            "score_total": 30
           }
         ]
       }
@@ -4786,7 +4744,7 @@
       "2. มีความเป็นผู้นำทางการคิดแก้ปัญหาและพัฒนางานอย่างสร้างสรรค์"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "60:40",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -4796,17 +4754,17 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      15
+      20
     ],
     "finExamScores": [
-      15
+      20
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 1,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 20,
+    "fin_exam": 20
   },
   "ค30203": {
     "course_code": "ค30203",
@@ -12151,9 +12109,9 @@
         "unit_no": "1",
         "unit_name": "เครื่องมือวัด",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 5,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12161,9 +12119,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 5,
             "score_total": 10
           }
         ]
@@ -12172,30 +12130,9 @@
         "unit_no": "2",
         "unit_name": "โต๊ะฝึกงานไม้",
         "hours": 4,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "เครื่องมือตัดไม้",
-        "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12203,9 +12140,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "เครื่องมือตัดไม้",
+        "hours": 5,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 10,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -12214,9 +12172,9 @@
         "unit_no": "4",
         "unit_name": "เครื่องมือไสไม้",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12224,9 +12182,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -12235,9 +12193,9 @@
         "unit_no": "5",
         "unit_name": "เครื่องมือเจาะไม้",
         "hours": 8,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12245,9 +12203,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -12256,9 +12214,9 @@
         "unit_no": "6",
         "unit_name": "เครื่องมือตอกและขันเกลียว",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12266,9 +12224,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -12277,30 +12235,9 @@
         "unit_no": "7",
         "unit_name": "เครื่องมือประกอบไม้",
         "hours": 3,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
-          }
-        ]
-      },
-      {
-        "unit_no": "8",
-        "unit_name": "การเข้าไม้",
-        "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12308,9 +12245,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "8",
+        "unit_name": "การเข้าไม้",
+        "hours": 4,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 10,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -12327,7 +12285,7 @@
       "1. ผู้เรียนบอกความหมายและรูปร่างของการเข้าเดือยไม้แบบต่างๆได้"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -12337,23 +12295,23 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      4,
-      4,
-      4,
-      3
+      0,
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      4,
-      4,
-      4,
-      3
+      5,
+      5,
+      5,
+      5
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 4,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ง30213": {
     "course_code": "ง30213",
@@ -12972,9 +12930,9 @@
         "unit_no": "1",
         "unit_name": "การบริหารการเงินขององค์กร",
         "hours": 2,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -12982,9 +12940,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -12993,9 +12951,9 @@
         "unit_no": "2",
         "unit_name": "งบการเงิน",
         "hours": 3,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -13003,9 +12961,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -13014,9 +12972,9 @@
         "unit_no": "3",
         "unit_name": "การวิเคราะห์ทางการเงิน",
         "hours": 2,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -13024,9 +12982,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -13035,30 +12993,9 @@
         "unit_no": "4",
         "unit_name": "วางแผนและพยากรณ์ทางการเงิน",
         "hours": 2,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "เครื่องมือทางการเงิน",
-        "hours": 3,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -13066,9 +13003,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "5",
+        "unit_name": "เครื่องมือทางการเงิน",
+        "hours": 3,
+        "score_k": 5,
+        "score_p": 3,
+        "score_a": 2,
+        "score_total": 10,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -13077,9 +13035,9 @@
         "unit_no": "6",
         "unit_name": "แหล่งเงินทุน และต้นทุนของเงินทุน",
         "hours": 2,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -13087,9 +13045,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -13098,9 +13056,9 @@
         "unit_no": "7",
         "unit_name": "เงินทุนหมุนเวียน",
         "hours": 2,
-        "score_k": 6,
+        "score_k": 5,
         "score_p": 3,
-        "score_a": 1,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -13108,9 +13066,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -13119,20 +13077,20 @@
         "unit_no": "8",
         "unit_name": "เจตคติที่ดีต่อการบริหารการเงิน",
         "hours": 2,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
+        "score_k": 5,
+        "score_p": 3,
+        "score_a": 2,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 10
           }
         ]
       }
@@ -13148,7 +13106,7 @@
       "ผลการเรียนรู้ที่ 8: แสดงพฤติกรรมการทำงานอย่างมีวินัย รับผิดชอบ ซื่อสัตย์ และมีเจตคติที่ดีต่อการบริหารการเงินรวม ๘ ผลการเรียนรู้"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -13158,23 +13116,23 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      4,
-      4,
-      4,
-      3
+      0,
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      4,
-      4,
-      4,
-      3
+      5,
+      5,
+      5,
+      5
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 4,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ง30222": {
     "course_code": "ง30222",
@@ -14338,10 +14296,10 @@
         "unit_no": "1",
         "unit_name": "การขยายพันธุ์พืช",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 10,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 20,
         "indicators": [
           "ตัวชี้วัดระหว่างทาง ง1.1 ม.4/1 อธิบายวิธีการทำงานเพื่อการดำรงชีวิต ง1.1 ม.4/3 มีทักษะการจัดการในการทำงาน ง1.1 ม.4/4 มีทักษะกระบวนการแก้ปัญหาในการทำงาน ง1.1 ม.4/5 มีทักษะในการแสวงหาความรู้เพื่อการดำรงชีวิต ง1.1 ม.4/6 มีคุณธรรม และลักษณะนิสัยในการทำงาน ง1.1 ม.4/7 ใช้พลังงาน ทรัพยากร ในการทำงานอย่างคุ้มค่าและยั่งยืน เพื่อการอนุรักษ์สิ่งแวดล้อม 🔹 **ตัวชี้วัด สพฐ.:** ง 1.1 ม.4/1, ง 1.1 ม.4/3, ง 1.1 ม.4/4, ง 1.1 ม.4/5, ง 1.1 ม.4/6, ง 1.1 ม.4/7",
           "ตัวชี้วัดระหว่างทาง ง1.1 ม.4/1 อธิบายวิธีการทำงานเพื่อการดำรงชีวิต ง1.1 ม.4/3 มีทักษะการจัดการในการทำงาน ง1.1 ม.4/4 มีทักษะกระบวนการแก้ปัญหาในการทำงาน ง1.1 ม.4/5 มีทักษะในการแสวงหาความรู้เพื่อการดำรงชีวิต ง1.1 ม.4/6 มีคุณธรรม และลักษณะนิสัยในการทำงาน ง1.1 ม.4/7 ใช้พลังงาน ทรัพยากร ในการทำงานอย่างคุ้มค่าและยั่งยืน เพื่อการอนุรักษ์สิ่งแวดล้อม ตัวชี้วัดปลายทาง ง1.1 ม.4/2สร้างผลงานอย่างมีความคิด สร้างสรรค์ และมีทักษะ การทำงานร่วมกัน 🔹 **ตัวชี้วัด สพฐ.:** ง 1.1 ม.4/1, ง 1.1 ม.4/3, ง 1.1 ม.4/4, ง 1.1 ม.4/5, ง 1.1 ม.4/6, ง 1.1 ม.4/7, ง 1.1 ม.4/2"
@@ -14351,10 +14309,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 10,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 20
           }
         ]
       },
@@ -14362,10 +14320,10 @@
         "unit_no": "2",
         "unit_name": "การเลี้ยงสัตว์",
         "hours": 5,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 10,
+        "score_p": 10,
+        "score_a": 5,
+        "score_total": 25,
         "indicators": [
           "ตัวชี้วัดระหว่างทาง ง1.1 ม.4/1 อธิบายวิธีการทำงานเพื่อการดำรงชีวิต ง1.1 ม.4/3 มีทักษะการจัดการในการทำงาน ง1.1 ม.4/4 มีทักษะกระบวนการแก้ปัญหาในการทำงาน ง1.1 ม.4/5 มีทักษะในการแสวงหาความรู้เพื่อการดำรงชีวิต ง1.1 ม.4/6 มีคุณธรรม และลักษณะนิสัยในการทำงาน ง1.1 ม.4/7 ใช้พลังงาน ทรัพยากร ในการทำงานอย่างคุ้มค่าและยั่งยืน เพื่อการอนุรักษ์สิ่งแวดล้อม ตัวชี้วัดปลายทาง ง1.1 ม.4/2 สร้างผลงานอย่างมีความคิด สร้างสรรค์ และมีทักษะ การทำงานร่วมกัน 🔹 **ตัวชี้วัด สพฐ.:** ง 1.1 ม.4/1, ง 1.1 ม.4/3, ง 1.1 ม.4/4, ง 1.1 ม.4/5, ง 1.1 ม.4/6, ง 1.1 ม.4/7, ง 1.1 ม.4/2",
           "ง 1.1 ม.4-6/1 (ระหว่างทาง): อธิบายวิธีการทำงานเพื่อการดำรงชีวิต"
@@ -14375,17 +14333,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 10,
+            "score_p": 10,
+            "score_a": 5,
+            "score_total": 25
           }
         ]
       },
@@ -14393,9 +14344,9 @@
         "unit_no": "3",
         "unit_name": "เพิ่มมูลค่าผลผลิต",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [
           "ง 1.1 ม.4-6/2 (ปลายทาง): สร้างผลงานอย่างมี ความคิดสร้างสรรค์และมีทักษะ การทำงานร่วมกัน",
@@ -14406,9 +14357,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -14417,9 +14368,9 @@
         "unit_no": "4",
         "unit_name": "การถนอมอาหาร",
         "hours": 6,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 15,
+        "score_a": 0,
         "score_total": 20,
         "indicators": [
           "ง 1.1 ม.4-6/4 (ระหว่างทาง): มีทักษะกระบวนการแก้ปัญหาในการทำงาน",
@@ -14432,17 +14383,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 15,
+            "score_a": 0,
+            "score_total": 20
           }
         ]
       }
@@ -14460,7 +14404,7 @@
       "ง 1.1 ม.4-6/7 (ระหว่างทาง): ใช้พลังงาน ทรัพยากรในการทำงาน อย่างคุ้มค่าและยั่งยืน เพื่อการอนุรักษ์สิ่งแวดล้อม"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -14470,19 +14414,19 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ง32101": {
     "course_code": "ง32101",
@@ -14663,9 +14607,9 @@
         "unit_no": "1",
         "unit_name": "ช่างไฟฟ้าในบ้าน",
         "hours": 5,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
+        "score_k": 10,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 20,
         "indicators": [
           "ง 1.1 ม.4-6/1 (ระหว่างทาง): อธิบายวิธีการทำงานเพื่อการดำรงชีวิต",
@@ -14676,17 +14620,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 10,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 20
           }
         ]
       },
@@ -14694,10 +14631,10 @@
         "unit_no": "2",
         "unit_name": "งานใบตอง",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 10,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 20,
         "indicators": [
           "ง 1.1 ม.4-6/3 (ระหว่างทาง): มีทักษะการจัดการในการทำงาน",
           "ง 1.1 ม.4-6/4 (ระหว่างทาง): มีทักษะกระบวนการแก้ปัญหาในการทำงาน"
@@ -14707,10 +14644,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 10,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 20
           }
         ]
       },
@@ -14718,9 +14655,9 @@
         "unit_no": "3",
         "unit_name": "ธุรกิจขนาดกลาง และธุรกิจขนาดย่อม",
         "hours": 5,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 5,
         "score_total": 20,
         "indicators": [
           "ง 1.1 ม.4-6/5 (ระหว่างทาง): มีทักษะในการแสวงหาความรู้เพื่อการ ดำรงชีวิต",
@@ -14731,17 +14668,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 5,
+            "score_total": 20
           }
         ]
       },
@@ -14749,10 +14679,10 @@
         "unit_no": "4",
         "unit_name": "เทคโนโลยีกับอาชีพ",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 5,
+        "score_total": 20,
         "indicators": [
           "ง 1.1 ม.4-6/7 (ระหว่างทาง): ใช้พลังงาน ทรัพยากรในการทำงาน อย่างคุ้มค่าและยั่งยืน เพื่อการอนุรักษ์สิ่งแวดล้อม",
           "ง 2.1 ม.4-6/2 (ระหว่างทาง): เลือกและใช้เทคโนโลยีอย่างเหมาะสม กับอาชีพ",
@@ -14765,10 +14695,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 5,
+            "score_total": 20
           }
         ]
       }
@@ -14787,7 +14717,7 @@
       "ง 2.1 ม.4-6/4 (ปลายทาง): มีคุณลักษณะ ที่ดีต่ออาชีพ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -14797,19 +14727,19 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ง33101": {
     "course_code": "ง33101",
@@ -22506,20 +22436,20 @@
         "unit_no": "1",
         "unit_name": "ศิลปะแห่งวิจารณ์และปรัชญาสุนทรียศาสตร์",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 7,
+        "score_p": 3,
+        "score_a": 0,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 7,
+            "score_p": 3,
+            "score_a": 0,
+            "score_total": 10
           }
         ]
       },
@@ -22527,26 +22457,19 @@
         "unit_no": "2",
         "unit_name": "วรรณศิลป์และสุนทรียภาพในระดับภาษา",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 7,
+        "score_p": 3,
+        "score_a": 0,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
+            "score_k": 7,
             "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -22555,8 +22478,8 @@
         "unit_no": "3",
         "unit_name": "วิจารณ์สื่อร่วมสมัยผ่านภาษาและวัฒนธรรม",
         "hours": 7,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 6,
+        "score_p": 7,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
@@ -22565,8 +22488,8 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 6,
+            "score_p": 7,
             "score_a": 2,
             "score_total": 15
           }
@@ -22576,20 +22499,20 @@
         "unit_no": "4",
         "unit_name": "การวิจารณ์เชิงสร้างสรรค์และสุนทรียทางภาษา",
         "hours": 7,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 8,
+        "score_a": 2,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 8,
+            "score_a": 2,
+            "score_total": 15
           }
         ]
       },
@@ -22597,19 +22520,26 @@
         "unit_no": "5",
         "unit_name": "จรรยาบรรณวิจารณ์และสืบสานคุณค่าภาษาไทย",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 8,
+        "score_p": 6,
+        "score_a": 6,
+        "score_total": 20,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
+            "score_k": 4,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 3,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 4,
+            "score_p": 3,
+            "score_a": 3,
             "score_total": 10
           }
         ]
@@ -24022,10 +23952,10 @@
         "unit_no": "1",
         "unit_name": "หัวใจชายหนุ่ม (1)",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 15,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 25,
         "indicators": [
           "ท 4.1 ม.4-6/2 (ระหว่างทาง): ใช้คำและกลุ่มคำสร้างประโยคตรงตาม วัตถุประสงค์",
           "ท 1.1 ม.4-6/2 (ปลายทาง): ตีความ แปล ความและขยายความเรื่องที่อ่าน",
@@ -24037,9 +23967,16 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
+            "score_k": 5,
             "score_p": 5,
-            "score_a": 2,
+            "score_a": 0,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 10,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -24048,10 +23985,10 @@
         "unit_no": "2",
         "unit_name": "ทุกข์ของขาวนาในบทกวี",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 10,
         "indicators": [
           "ท 1.1 ม.4-6/6 (ระหว่างทาง): ตอบคำถามจากการอ่าน ประเภทต่าง ๆ ภายในเวลาที่กำหนด",
           "ท 2.1 ม.4-6/2 (ระหว่างทาง): เขียนเรียงความ",
@@ -24063,16 +24000,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -24081,10 +24011,10 @@
         "unit_no": "3",
         "unit_name": "มงคลสูตรคำฉันท์",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 5,
+        "score_total": 15,
         "indicators": [
           "ท 1.1 ม.4-6/4 (ปลายทาง): คาดคะเน เหตุการณ์จากเรื่องที่อ่าน และ ประเมินค่าเพื่อนำความรู้ความคิดไปใช้ ตัดสินใจแก้ปัญหาในการดำเนินชีวิต",
           "ท 5.1 ม.4-6/4 (ระหว่างทาง): สังเคราะห์ข้อคิดจากวรรณคดีและวรรณกรรม เพื่อนำไปประยุกต์ใช้ในชีวิตจริง",
@@ -24096,17 +24026,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 5,
+            "score_total": 15
           }
         ]
       },
@@ -24114,10 +24037,10 @@
         "unit_no": "4",
         "unit_name": "มหาเวสสันดรชาดก (1)",
         "hours": 8,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 10,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 20,
         "indicators": [
           "ท 5.1 ม.4-6/3 (ระหว่างทาง): วิเคราะห์และประเมินคุณค่าด้านวรรณศิลป์ ของวรรณคดีและวรรณกรรมในฐานะที่เป็นมรดกทาง วัฒนธรรมของชาติ",
           "ท 3.1 ม.4-6/3 (ปลายทาง): ประเมินเรื่องที่ฟัง และดู แล้วกำหนดแนวทางนำไป ประยุกต์ใช้ในการดำเนินชีวิต",
@@ -24132,10 +24055,17 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
+            "score_k": 5,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 0,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 10
           }
         ]
       }
@@ -30225,23 +30155,23 @@
         "unit_no": "1",
         "unit_name": "พืชสมุนไพรในท้องถิ่น",
         "hours": 5,
-        "score_k": 10,
+        "score_k": 13,
         "score_p": 8,
-        "score_a": 2,
-        "score_total": 20,
+        "score_a": 4,
+        "score_total": 25,
         "assessments": [
           {
             "eval_methods": "- ใบงานการสำรวจพืชสมุนไพรในท้องถิ่น",
-            "score_k": 5,
-            "score_p": 4,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 10,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 15
           },
           {
             "eval_methods": "- แบบทดสอบชนิดและสรรพคุณสมุนไพร",
-            "score_k": 5,
-            "score_p": 4,
-            "score_a": 1,
+            "score_k": 3,
+            "score_p": 5,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -30250,24 +30180,17 @@
         "unit_no": "2",
         "unit_name": "สรรพคุณและสารสำคัญในพืชสมุนไพร",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 7,
+        "score_p": 2,
+        "score_a": 1,
+        "score_total": 10,
         "assessments": [
           {
             "eval_methods": "- การทดลองสกัดสารสำคัญเบื้องต้น",
-            "score_k": 4,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 8
-          },
-          {
-            "eval_methods": "- ใบงานบันทึกผลการทดลอง",
-            "score_k": 4,
+            "score_k": 7,
             "score_p": 2,
             "score_a": 1,
-            "score_total": 7
+            "score_total": 10
           }
         ]
       },
@@ -30275,23 +30198,23 @@
         "unit_no": "3",
         "unit_name": "การแปรรูปและพัฒนาผลิตภัณฑ์สมุนไพร",
         "hours": 6,
-        "score_k": 8,
-        "score_p": 10,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 13,
+        "score_p": 8,
+        "score_a": 4,
+        "score_total": 25,
         "assessments": [
           {
             "eval_methods": "- ปฏิบัติการแปรรูปผลิตภัณฑ์สมุนไพร",
-            "score_k": 4,
-            "score_p": 5,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 10,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 15
           },
           {
             "eval_methods": "- การประเมินคุณภาพและความปลอดภัย",
-            "score_k": 4,
+            "score_k": 3,
             "score_p": 5,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -30300,24 +30223,17 @@
         "unit_no": "4",
         "unit_name": "การนำเสนอโครงงานเภสัชกรน้อย",
         "hours": 3,
-        "score_k": 5,
-        "score_p": 8,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 7,
+        "score_p": 2,
+        "score_a": 1,
+        "score_total": 10,
         "assessments": [
           {
             "eval_methods": "- การนำเสนอโครงงาน/นิทรรศการ",
-            "score_k": 2,
-            "score_p": 5,
+            "score_k": 7,
+            "score_p": 2,
             "score_a": 1,
-            "score_total": 8
-          },
-          {
-            "eval_methods": "- รายงานสรุปผลโครงงาน",
-            "score_k": 3,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 7
+            "score_total": 10
           }
         ]
       }
@@ -30948,20 +30864,20 @@
         "unit_no": "1",
         "unit_name": "พื้นฐานระบบสมองกลฝังตัว",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 0,
+        "score_total": 5,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 0,
+            "score_total": 5
           }
         ]
       },
@@ -30969,20 +30885,20 @@
         "unit_no": "2",
         "unit_name": "การติดตั้งและการเขียนโปรแกรม",
         "hours": 7,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -30990,19 +30906,26 @@
         "unit_no": "3",
         "unit_name": "การเชื่อมต่ออุปกรณ์และเซนเซอร์",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 20,
+        "score_a": 0,
+        "score_total": 25,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -31011,20 +30934,20 @@
         "unit_no": "4",
         "unit_name": "การสื่อสารและระบบ IoT",
         "hours": 4,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -31032,34 +30955,27 @@
         "unit_no": "5",
         "unit_name": "การสร้างนวัตกรรมสมองกลฝังตัว",
         "hours": 19,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 5,
+        "score_total": 20,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 0,
+            "score_p": 0,
+            "score_a": 5,
+            "score_total": 5
           }
         ]
       }
@@ -31071,7 +30987,7 @@
       "ผลการเรียนรู้ที่ 5: ออกแบบ สร้าง ทดสอบ และนำเสนอนวัตกรรมสมองกลฝังตัวเพื่อแก้ปัญหาใน ชีวิตประจำวัน โดยใช้กระบวนการออกแบบเชิงวิศวกรรมและทำงานร่วมกับผู้อื่นได้อย่างมีความรับผิดชอบ | การสื่อสารข้อมูลผ่าน Wi-Fi/Bluetooth การรับ–ส่งข้อมูล และการควบคุมอุปกรณ์ผ่านเครือข่าย | 4 | 5 | 10 | - | **15** | | 5 | **การสร้างนวัตกรรมสมองกลฝังตัว** | - | กระบวนการออกแบบเชิงวิศวกรรม การพัฒนาชิ้นงาน การทดสอบ ปรับปรุง และนำเสนอผลงาน / มีเจตคติที่ดีต่อการใช้เทคโนโลยีในการเขียนโปรแกรมควบคุมหุ่นยนต์ | 14 | 5 | 10 | 5 | **15** | | | **รวม เวลาเรียน / คะแนนระหว่างภาคเรียน** | | | **38** | **25** | **50** | **5** | **80** | | | **ปลายภาคเรียน** | | | **2** | **20** | **-** | **-** | **20** | | | **รวมตลอดภาคเรียน** | | | **40** | **20** | **80** | **-** | **100** |"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -31081,20 +30997,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      4,
-      4,
-      4,
-      3
+      0,
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      15
+      20
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 4,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ว20230": {
     "course_code": "ว20230",
@@ -31259,20 +31175,20 @@
         "unit_no": "1",
         "unit_name": "จัดการข้อมูลและสื่อสารด้วย Google Drive และ Gmail",
         "hours": 8,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 3,
+        "score_p": 6,
+        "score_a": 1,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 3,
+            "score_p": 6,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -31280,27 +31196,27 @@
         "unit_no": "2",
         "unit_name": "สร้างเอกสารด้วย Google Docs",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 8,
+        "score_p": 20,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -31308,20 +31224,20 @@
         "unit_no": "3",
         "unit_name": "สร้างงานนำเสนอด้วย Google Slides",
         "hours": 8,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 3,
+        "score_p": 6,
+        "score_a": 1,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 3,
+            "score_p": 6,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -31329,27 +31245,27 @@
         "unit_no": "4",
         "unit_name": "จัดการตารางคำนวณด้วย Google Sheets",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 8,
+        "score_p": 20,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       }
@@ -31362,7 +31278,7 @@
       "5. ใช้งาน Google Sheets ในการจัดระเบียบข้อมูล ประมวลผล และใช้สูตรคำนวณเบื้องต้นได้"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -31372,19 +31288,19 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ว20232": {
     "course_code": "ว20232",
@@ -32557,50 +32473,8 @@
         "unit_no": "1",
         "unit_name": "พลังงานน้ำ",
         "hours": 6,
-        "score_k": 6,
+        "score_k": 10,
         "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "2",
-        "unit_name": "พลังงานลม",
-        "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "พลังงานแสงอาทิตย์",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
@@ -32609,8 +32483,50 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 10,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "พลังงานลม",
+        "hours": 4,
+        "score_k": 5,
+        "score_p": 3,
+        "score_a": 2,
+        "score_total": 10,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "พลังงานแสงอาทิตย์",
+        "hours": 9,
+        "score_k": 10,
+        "score_p": 3,
+        "score_a": 2,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 10,
+            "score_p": 3,
             "score_a": 2,
             "score_total": 15
           }
@@ -32620,8 +32536,8 @@
         "unit_no": "4",
         "unit_name": "พลังงานชีวมวล",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 10,
+        "score_p": 3,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
@@ -32630,8 +32546,8 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 10,
+            "score_p": 3,
             "score_a": 2,
             "score_total": 15
           }
@@ -32641,27 +32557,20 @@
         "unit_no": "5",
         "unit_name": "พลังงานนิวเคลียร์",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 10,
+        "score_p": 3,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
+            "score_k": 10,
             "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_a": 2,
+            "score_total": 15
           }
         ]
       }
@@ -33847,8 +33756,8 @@
         "unit_no": "1",
         "unit_name": "World of Automation",
         "hours": 8,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 10,
+        "score_p": 3,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
@@ -33857,8 +33766,8 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 10,
+            "score_p": 3,
             "score_a": 2,
             "score_total": 15
           }
@@ -33868,37 +33777,9 @@
         "unit_no": "2",
         "unit_name": "Life Made Easier with Automation",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "Smart Home Project",
-        "hours": 19,
         "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
+        "score_p": 10,
+        "score_a": 5,
         "score_total": 35,
         "indicators": [],
         "concepts": [],
@@ -33906,24 +33787,31 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
+            "score_k": 20,
+            "score_p": 10,
+            "score_a": 5,
+            "score_total": 35
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "Smart Home Project",
+        "hours": 19,
+        "score_k": 10,
+        "score_p": 7,
+        "score_a": 3,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
           {
-            "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 10,
+            "score_p": 7,
+            "score_a": 3,
+            "score_total": 20
           }
         ]
       }
@@ -36384,104 +36272,12 @@
         "unit_no": "2",
         "unit_name": "การเปลี่ยนแปลงและผลกระทบของเทคโนโลยี",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [
-          "ว 4.1 ม.4/5 (ปลายทาง): ใช้ความรู้และทักษะ เกี่ยวกับวัสดุ อุปกรณ์ เครื่องมือ กลไก ไฟฟ้าและอิเล็กทรอนิกส์ และเทคโนโลยีที่ซับซ้อนในการ แก้ปัญหาหรือพัฒนางานได้อย่าง ถูกต้อง เหมาะสมและปลอดภัย"
-        ],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "ความสัมพันธ์ของเทคโนโลยีกับศาสตร์อื่น",
-        "hours": 1,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [
-          "ว 4.1 ม.4/2 (ระหว่างทาง): ระบุปัญหาหรือความต้องการที่มีผลกระทบต่อ สังคม รวบรวม วิเคราะห์ข้อมูลและแนวคิดที่เกี่ยวข้องกับ ปัญหาที่มีความซับซ้อน เพื่อสังเคราะห์วิธีการ เทคนิคในการ แก้ปัญหา โดยคำนึงถึงความถูกต้องด้านทรัพย์สินทางปัญญา"
-        ],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "4",
-        "unit_name": "วัสดุ อุปกรณ์ และเครื่องมือพื้นฐาน",
-        "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [
-          "ว 4.1 ม.4/3 (ระหว่างทาง): ออกแบบวิธีการแก้ปัญหา โดยวิเคราะห์ เปรียบเทียบ และตัดสินใจเลือกข้อมูลที่จำเป็นภายใต้เงื่อนไข และทรัพยากรที่มีอยู่ นำเสนอแนวทางการแก้ปัญหาให้ผู้อื่น เข้าใจด้วยเทคนิคหรือวิธีการที่หลากหลาย โดยใช้ซอฟต์แวร์ ช่วยในการออกแบบ วางแผนขั้นตอนการทำงานและดำเนินการ แก้ปัญหา"
-        ],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "กลไกและระบบอิเล็กทรอนิกส์",
-        "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [
-          "ว 4.1 ม.4/4 (ระหว่างทาง): ทดสอบ ประเมินผล วิเคราะห์ และให้เหตุผล ของปัญหาหรือข้อบกพร่องที่เกิดขึ้นภายใต้กรอบเงื่อนไข หาแนวทางการปรับปรุงแก้ไขและนำเสนอผลการแก้ปัญหา พร้อมทั้งเสนอแนวทางการพัฒนาต่อยอด"
-        ],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "6",
-        "unit_name": "กระบวนการออกแบบ เชิงวิศวกรรม",
-        "hours": 3,
         "score_k": 8,
         "score_p": 5,
         "score_a": 2,
         "score_total": 15,
         "indicators": [
-          "ว 4.1 ม.5/1 (ปลายทาง): ประยุกต์ใช้ความรู้ และทักษะจากศาสตร์ต่าง ๆ รวมทั้งทรัพยากรในการทำโครงงาน เพื่อแก้ปัญหาหรือพัฒนางาน"
+          "ว 4.1 ม.4/5 (ปลายทาง): ใช้ความรู้และทักษะ เกี่ยวกับวัสดุ อุปกรณ์ เครื่องมือ กลไก ไฟฟ้าและอิเล็กทรอนิกส์ และเทคโนโลยีที่ซับซ้อนในการ แก้ปัญหาหรือพัฒนางานได้อย่าง ถูกต้อง เหมาะสมและปลอดภัย"
         ],
         "concepts": [],
         "eval_method": "",
@@ -36492,6 +36288,98 @@
             "score_p": 5,
             "score_a": 2,
             "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "ความสัมพันธ์ของเทคโนโลยีกับศาสตร์อื่น",
+        "hours": 1,
+        "score_k": 10,
+        "score_p": 0,
+        "score_a": 0,
+        "score_total": 10,
+        "indicators": [
+          "ว 4.1 ม.4/2 (ระหว่างทาง): ระบุปัญหาหรือความต้องการที่มีผลกระทบต่อ สังคม รวบรวม วิเคราะห์ข้อมูลและแนวคิดที่เกี่ยวข้องกับ ปัญหาที่มีความซับซ้อน เพื่อสังเคราะห์วิธีการ เทคนิคในการ แก้ปัญหา โดยคำนึงถึงความถูกต้องด้านทรัพย์สินทางปัญญา"
+        ],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 10,
+            "score_p": 0,
+            "score_a": 0,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "วัสดุ อุปกรณ์ และเครื่องมือพื้นฐาน",
+        "hours": 3,
+        "score_k": 10,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 15,
+        "indicators": [
+          "ว 4.1 ม.4/3 (ระหว่างทาง): ออกแบบวิธีการแก้ปัญหา โดยวิเคราะห์ เปรียบเทียบ และตัดสินใจเลือกข้อมูลที่จำเป็นภายใต้เงื่อนไข และทรัพยากรที่มีอยู่ นำเสนอแนวทางการแก้ปัญหาให้ผู้อื่น เข้าใจด้วยเทคนิคหรือวิธีการที่หลากหลาย โดยใช้ซอฟต์แวร์ ช่วยในการออกแบบ วางแผนขั้นตอนการทำงานและดำเนินการ แก้ปัญหา"
+        ],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 10,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "5",
+        "unit_name": "กลไกและระบบอิเล็กทรอนิกส์",
+        "hours": 3,
+        "score_k": 10,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 15,
+        "indicators": [
+          "ว 4.1 ม.4/4 (ระหว่างทาง): ทดสอบ ประเมินผล วิเคราะห์ และให้เหตุผล ของปัญหาหรือข้อบกพร่องที่เกิดขึ้นภายใต้กรอบเงื่อนไข หาแนวทางการปรับปรุงแก้ไขและนำเสนอผลการแก้ปัญหา พร้อมทั้งเสนอแนวทางการพัฒนาต่อยอด"
+        ],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 10,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "6",
+        "unit_name": "กระบวนการออกแบบ เชิงวิศวกรรม",
+        "hours": 3,
+        "score_k": 10,
+        "score_p": 0,
+        "score_a": 0,
+        "score_total": 10,
+        "indicators": [
+          "ว 4.1 ม.5/1 (ปลายทาง): ประยุกต์ใช้ความรู้ และทักษะจากศาสตร์ต่าง ๆ รวมทั้งทรัพยากรในการทำโครงงาน เพื่อแก้ปัญหาหรือพัฒนางาน"
+        ],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 10,
+            "score_p": 0,
+            "score_a": 0,
+            "score_total": 10
           }
         ]
       }
@@ -36505,7 +36393,7 @@
       "ว 4.1 ม.5/1 (ปลายทาง): ประยุกต์ใช้ความรู้ และทักษะจากศาสตร์ต่าง ๆ รวมทั้งทรัพยากรในการทำโครงงาน เพื่อแก้ปัญหาหรือพัฒนางาน"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -36515,21 +36403,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ว30106": {
     "course_code": "ว30106",
@@ -38168,27 +38056,20 @@
         "unit_no": "1",
         "unit_name": "สารละลายและปริมาณสัมพันธ์",
         "hours": 15,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 9,
+        "score_p": 13,
+        "score_a": 1,
+        "score_total": 23,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 9,
+            "score_p": 13,
             "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_total": 23
           }
         ]
       },
@@ -38196,20 +38077,20 @@
         "unit_no": "2",
         "unit_name": "เอนไซม์",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 2,
+        "score_p": 4,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 8,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 2,
+            "score_p": 4,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 8
           }
         ]
       },
@@ -38217,20 +38098,20 @@
         "unit_no": "3",
         "unit_name": "กล้องจุลทรรศน์",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
+        "score_k": 2,
+        "score_p": 5,
         "score_a": 1,
-        "score_total": 10,
+        "score_total": 8,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 5,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 8
           }
         ]
       },
@@ -38238,20 +38119,20 @@
         "unit_no": "4",
         "unit_name": "การแบ่งนิวเคลียส",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
+        "score_k": 2,
+        "score_p": 4,
         "score_a": 1,
-        "score_total": 10,
+        "score_total": 7,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 4,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 7
           }
         ]
       },
@@ -38259,20 +38140,20 @@
         "unit_no": "5",
         "unit_name": "งานและพลังงาน",
         "hours": 10,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 10,
+        "score_p": 12,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 24,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 10,
+            "score_p": 12,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 24
           }
         ]
       }
@@ -41394,9 +41275,9 @@
         "unit_no": "1",
         "unit_name": "รู้จัก Canva และหลักการออกแบบเบื้องต้น",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -41404,9 +41285,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -41415,30 +41296,9 @@
         "unit_no": "2",
         "unit_name": "วางแผนความคิดด้วย Mind Mapping",
         "hours": 6,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "การสร้างงานนำเสนอและ Infographic",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -41446,9 +41306,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "การสร้างงานนำเสนอและ Infographic",
+        "hours": 9,
+        "score_k": 4,
+        "score_p": 10,
+        "score_a": 1,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 4,
+            "score_p": 10,
+            "score_a": 1,
             "score_total": 15
           }
         ]
@@ -41457,27 +41338,27 @@
         "unit_no": "4",
         "unit_name": "การออกแบบสื่อประชาสัมพันธ์และวิดีโอ",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 0,
+        "score_p": 23,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 25,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 0,
+            "score_p": 9,
             "score_a": 1,
             "score_total": 10
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 0,
+            "score_p": 14,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -41485,9 +41366,9 @@
         "unit_no": "5",
         "unit_name": "การสร้างเว็บไซต์และแฟ้มสะสมผลงาน (Portfolio)",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 0,
+        "score_p": 14,
+        "score_a": 1,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -41495,9 +41376,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 0,
+            "score_p": 14,
+            "score_a": 1,
             "score_total": 15
           }
         ]
@@ -41512,7 +41393,7 @@
       "6. มีความรับผิดชอบต่อการทำงานร่วมกับผู้อื่นผ่านระบบออนไลน์ได้อย่างเหมาะสม (A)"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -41522,20 +41403,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ว30269": {
     "course_code": "ว30269",
@@ -44539,8 +44420,8 @@
         "unit_name": "การละคร",
         "hours": 7,
         "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_p": 4,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [
           "ศ 3.2 ม.1/2 (ระหว่างทาง): บรรยายประเภทของละครไทย ในแต่ละยุคสมัย",
@@ -44552,8 +44433,8 @@
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
             "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_p": 4,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -44562,10 +44443,10 @@
         "unit_no": "2",
         "unit_name": "นาฏยศัพท์และภาษาท่า",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 2,
+        "score_p": 13,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [
           "ศ 3.2 ม.2/3 (ระหว่างทาง): อธิบายอิทธิพลของวัฒนธรรมที่มีผลต่อเนื้อหา ของละคร",
           "ศ 3.2 ม.1/1 (ปลายทาง): ระบุปัจจัยที่มีผลต่อ การเปลี่ยนแปลงของนาฏศิลป์ นาฏศิลป์พื้นบ้าน ละครไทยและ ละครพื้นบ้าน"
@@ -44575,10 +44456,10 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 2,
+            "score_p": 13,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -44586,8 +44467,8 @@
         "unit_no": "3",
         "unit_name": "สร้างสรรค์กิจกรรมการแสดง",
         "hours": 7,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 3,
+        "score_p": 10,
         "score_a": 2,
         "score_total": 15,
         "indicators": [
@@ -44599,8 +44480,8 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 3,
+            "score_p": 10,
             "score_a": 2,
             "score_total": 15
           }
@@ -44610,10 +44491,10 @@
         "unit_no": "4",
         "unit_name": "การแสดงนาฏศิลป์ไทยและรำวงมาตรฐาน",
         "hours": 10,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 3,
+        "score_p": 15,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 20,
         "indicators": [
           "ศ 3.1 ม.1/5 (ระหว่างทาง): ใช้เกณฑ์ง่าย ๆ ที่กำหนดให้ในการพิจารณา คุณภาพ การแสดงที่ชม โดยเน้นเรื่องการใช้เสียงการแสดงท่า และการเคลื่อนไหว",
           "ศ 3.1 ม.2/1 (ระหว่างทาง): อธิบายการบูรณาการศิลปะแขนงอื่น ๆ กับการแสดง"
@@ -44623,10 +44504,17 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 0,
+            "score_p": 15,
+            "score_a": 0,
             "score_total": 15
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 3,
+            "score_p": 0,
+            "score_a": 2,
+            "score_total": 5
           }
         ]
       },
@@ -44634,9 +44522,9 @@
         "unit_no": "5",
         "unit_name": "การแสดงนาฏศิลป์พื้นเมืองและนานาชาติ",
         "hours": 7,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [
           "ศ 3.1 ม.1/4 (ปลายทาง): ใช้ทักษะการทำงาน เป็นกลุ่มในกระบวนการผลติ การแสดง",
@@ -44647,9 +44535,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -44658,9 +44546,9 @@
         "unit_no": "6",
         "unit_name": "นักแสดงและผู้ชม",
         "hours": 2,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 0,
         "score_total": 5,
         "indicators": [
           "ศ 3.1 ม.2/4 (ระหว่างทาง): เสนอข้อคิดเห็นในการปรับปรุงการแสดง",
@@ -44672,9 +44560,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 0,
             "score_total": 5
           }
         ]
@@ -44696,7 +44584,7 @@
       "ศ 3.1 ม.2/5 (ระหว่างทาง): เชื่อมโยงการเรียนรู้ระหว่างนาฏศิลป์และการละคร กับสาระการเรียนรู้อื่น ๆ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -44706,21 +44594,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ22102": {
     "course_code": "ศ22102",
@@ -47371,9 +47259,9 @@
         "unit_no": "1",
         "unit_name": "ประวัติ วงดนตรีไทย",
         "hours": 2,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 5,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -47381,9 +47269,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 5,
             "score_total": 10
           }
         ]
@@ -47392,9 +47280,9 @@
         "unit_no": "2",
         "unit_name": "ทฤษฎีโน้ตไทยเบื้องต้น",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -47402,9 +47290,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -47413,20 +47301,20 @@
         "unit_no": "3",
         "unit_name": "หลักการบรรเลงเครื่องดนตรี",
         "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 0,
+        "score_p": 20,
+        "score_a": 0,
+        "score_total": 20,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 0,
+            "score_p": 20,
+            "score_a": 0,
+            "score_total": 20
           }
         ]
       },
@@ -47434,20 +47322,20 @@
         "unit_no": "4",
         "unit_name": "การดูแลรักษาเครื่องดนตรี",
         "hours": 1,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 0,
+        "score_total": 5,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 0,
+            "score_total": 5
           }
         ]
       },
@@ -47455,20 +47343,20 @@
         "unit_no": "5",
         "unit_name": "ศัพท์สังคีต",
         "hours": 2,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 0,
+        "score_total": 5,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 0,
+            "score_total": 5
           }
         ]
       },
@@ -47476,19 +47364,26 @@
         "unit_no": "6",
         "unit_name": "ปฏิบัติเครื่องดนตรี",
         "hours": 6,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 0,
+        "score_p": 20,
+        "score_a": 10,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 5,
+            "score_total": 15
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 5,
             "score_total": 15
           }
         ]
@@ -47502,7 +47397,7 @@
       "5. นักเรียนรู้ถึงวิธีการดูแล บำรุงรักษาเครื่องดนตรีได้อย่างถูกต้อง"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -47512,21 +47407,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ30217": {
     "course_code": "ศ30217",
@@ -47721,30 +47616,9 @@
         "unit_no": "1",
         "unit_name": "ประวัติเทคโนโลยีดนตรี",
         "hours": 2,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "2",
-        "unit_name": "เรียบเรียงเสียงประสาน",
-        "hours": 4,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 10,
+        "score_p": 0,
+        "score_a": 5,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -47752,9 +47626,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 10,
+            "score_p": 0,
+            "score_a": 5,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "เรียบเรียงเสียงประสาน",
+        "hours": 4,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -47763,30 +47658,9 @@
         "unit_no": "3",
         "unit_name": "คอมพิวเตอร์ช่วยงานดนตรี",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "4",
-        "unit_name": "Sibelius",
-        "hours": 4,
-        "score_k": 8,
+        "score_k": 10,
         "score_p": 5,
-        "score_a": 2,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -47794,9 +47668,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
+            "score_k": 10,
             "score_p": 5,
-            "score_a": 2,
+            "score_a": 0,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "Sibelius",
+        "hours": 4,
+        "score_k": 0,
+        "score_p": 15,
+        "score_a": 0,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 0,
+            "score_p": 15,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -47805,9 +47700,9 @@
         "unit_no": "5",
         "unit_name": "การสร้างสกอร์",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 0,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -47815,9 +47710,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -47826,9 +47721,9 @@
         "unit_no": "6",
         "unit_name": "ซอฟแวร์สำหรับงานดนตรี",
         "hours": 2,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 0,
+        "score_a": 5,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -47836,9 +47731,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 0,
+            "score_a": 5,
             "score_total": 10
           }
         ]
@@ -47853,7 +47748,7 @@
       "6. การใช้เทคโนโลยีและนวัตกรรม"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -47863,21 +47758,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31101": {
     "course_code": "ศ31101",
@@ -48055,10 +47950,10 @@
         "unit_no": "1",
         "unit_name": "วิวัฒนาการของนาฏศิลป์และการละคร ไทย",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 10,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [
           "ศ 3.2 ม.4-6/3 (ปลายทาง): บรรยาย วิวัฒนาการของนาฏศิลป์และ การละครไทย ตั้งแต่อดีตจนถึง ปัจจุบัน"
         ],
@@ -48067,10 +47962,10 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 10,
+            "score_p": 5,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -48078,10 +47973,10 @@
         "unit_no": "2",
         "unit_name": "การแสดงนาฏศิลป์ไทย",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [
           "ศ 3.1 ม.4-6/1 (ระหว่างทาง): มีทักษะในการแสดงหลากหลายรูปแบบ"
         ],
@@ -48090,10 +47985,10 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -48101,10 +47996,10 @@
         "unit_no": "3",
         "unit_name": "นาฏยละครสร้างสรรค์ประดิษฐ์",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 5,
+        "score_p": 15,
+        "score_a": 0,
+        "score_total": 20,
         "indicators": [
           "ศ 3.1 ม.4-6/2 (ระหว่างทาง): สร้างสรรค์ละครสั้นในรูปแบบที่ชื่นชอบ"
         ],
@@ -48113,10 +48008,17 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
             "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_a": 0,
+            "score_total": 10
           }
         ]
       },
@@ -48124,10 +48026,10 @@
         "unit_no": "4",
         "unit_name": "การวิจารณ์งานนาฏศิลป์และละคร",
         "hours": 6,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 5,
+        "score_total": 15,
         "indicators": [
           "ศ 3.2 ม.4-6/1 (ระหว่างทาง): เปรียบเทียบการนำการแสดงไปใช้ในโอกาส ต่าง ๆ"
         ],
@@ -48136,17 +48038,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 5,
+            "score_total": 15
           }
         ]
       },
@@ -48154,9 +48049,9 @@
         "unit_no": "5",
         "unit_name": "อนุรักษ์สืบสานการแสดงพื้นบ้านสะท้อนภูมิปัญญาท้องถิ่นของตนเอง",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 0,
+        "score_p": 10,
+        "score_a": 5,
         "score_total": 15,
         "indicators": [
           "ศ 3.1 ม.4-6/4 (ระหว่างทาง): วิจารณ์การแสดงตามหลักนาฏศิลป์ และการละคร",
@@ -48169,9 +48064,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 5,
             "score_total": 15
           }
         ]
@@ -48188,7 +48083,7 @@
       "ศ 3.1 ม.4-6/7 (ระหว่างทาง): พัฒนาและใช้เกณฑ์การประเมินในการ ประเมินการแสดง"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -48198,20 +48093,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31201": {
     "course_code": "ศ31201",
@@ -50592,9 +50487,9 @@
         "unit_name": "รู้จักเครื่องเป่าและการดูแลรักษา",
         "hours": 6,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -50602,9 +50497,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       },
@@ -50612,27 +50507,27 @@
         "unit_no": "2",
         "unit_name": "พื้นฐานการหายใจและการควบคุมลม",
         "hours": 13,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -50640,9 +50535,9 @@
         "unit_no": "3",
         "unit_name": "การอ่านโน้ตและจังหวะดนตรีเบื้องต้น",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 4,
+        "score_p": 11,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -50650,9 +50545,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -50661,9 +50556,9 @@
         "unit_no": "4",
         "unit_name": "การบรรเลงบทเพลงในชีวิตประจำวัน",
         "hours": 8,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 8,
+        "score_p": 0,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -50671,9 +50566,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 8,
+            "score_p": 0,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -50682,20 +50577,20 @@
         "unit_no": "5",
         "unit_name": "การบรรเลงเดี่ยวและรวมวงเบื้องต้น",
         "hours": 2,
-        "score_k": 6,
-        "score_p": 3,
+        "score_k": 4,
+        "score_p": 10,
         "score_a": 1,
-        "score_total": 10,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       }
@@ -50708,7 +50603,7 @@
       "5. บรรเลงเดี่ยวและบรรเลงรวมวงเบื้องต้นได้"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -50718,20 +50613,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31218": {
     "course_code": "ศ31218",
@@ -50752,9 +50647,9 @@
         "unit_name": "พื้นฐานวงโยธวาทิตและรูปแบบการเดินแถว",
         "hours": 7,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -50762,9 +50657,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       },
@@ -50772,27 +50667,27 @@
         "unit_no": "2",
         "unit_name": "ทักษะการยืน เดิน และการเคลื่อนไหวตามจังหวะ",
         "hours": 12,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -50800,9 +50695,9 @@
         "unit_no": "3",
         "unit_name": "การปฏิบัติตามคำสั่งและการแปรแถวเบื้องต้",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 4,
+        "score_p": 11,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -50810,9 +50705,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -50821,9 +50716,9 @@
         "unit_no": "4",
         "unit_name": "การบรรเลงเครื่องดนตรีขณะเดินแถว",
         "hours": 7,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 8,
+        "score_p": 0,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -50831,9 +50726,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 8,
+            "score_p": 0,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -50842,20 +50737,20 @@
         "unit_no": "5",
         "unit_name": "การปฏิบัติรวมวงโยธวาทิต",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
+        "score_k": 4,
+        "score_p": 10,
         "score_a": 1,
-        "score_total": 10,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       }
@@ -50868,7 +50763,7 @@
       "5. ปฏิบัติการเดินแถวและบรรเลงร่วมกับวงได้อย่างพร้อมเพรียง"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -50878,20 +50773,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31219": {
     "course_code": "ศ31219",
@@ -50912,9 +50807,9 @@
         "unit_name": "ทบทวนพื้นฐานการวาดเส้นขั้นพัฒนา",
         "hours": 6,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -50922,9 +50817,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       },
@@ -50932,27 +50827,27 @@
         "unit_no": "2",
         "unit_name": "แสง เงา น้ำหนัก และพื้นผิว",
         "hours": 13,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -50960,27 +50855,27 @@
         "unit_no": "3",
         "unit_name": "การวาดเส้นจากธรรมชาติและบุคคล",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -50989,9 +50884,9 @@
         "unit_name": "การสร้างสรรค์และการนำเสนอผลงาน",
         "hours": 8,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -50999,9 +50894,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       }
@@ -51013,7 +50908,7 @@
       "4. แสดงออกถึงความตั้งใจ มุ่งมั่น มีวินัย และความรับผิดชอบในการทำงาน เห็นคุณค่าและ ความสำคัญของงานวาดเส้น และมีเจตคติที่ดีต่อการเรียนรู้ศิลปะ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -51023,19 +50918,19 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31220": {
     "course_code": "ศ31220",
@@ -51200,9 +51095,9 @@
         "unit_name": "ความรู้พื้นฐานงานภาพพิมพ์",
         "hours": 6,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -51210,9 +51105,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       },
@@ -51220,27 +51115,27 @@
         "unit_no": "2",
         "unit_name": "วัสดุ อุปกรณ์ และเทคนิคภาพพิมพ์",
         "hours": 13,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -51248,27 +51143,27 @@
         "unit_no": "3",
         "unit_name": "การสร้างสรรค์งานภาพพิมพ์เบื้องต้น",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 8,
+        "score_p": 21,
+        "score_a": 1,
+        "score_total": 30,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 4,
+            "score_p": 11,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 4,
+            "score_p": 10,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -51277,9 +51172,9 @@
         "unit_name": "การพัฒนาและการนำเสนอผลงาน",
         "hours": 8,
         "score_k": 8,
-        "score_p": 5,
+        "score_p": 0,
         "score_a": 2,
-        "score_total": 15,
+        "score_total": 10,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
@@ -51287,9 +51182,9 @@
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
             "score_k": 8,
-            "score_p": 5,
+            "score_p": 0,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
           }
         ]
       }
@@ -51301,7 +51196,7 @@
       "4. แสดงออกถึงความมุ่งมั่น มีวินัย ความรับผิดชอบ ความรอบคอบและความปลอดภัยในการทำงาน เห็นคุณค่าและความสำคัญของงานภาพพิมพ์ และมีเจตคติที่ดีต่อการเรียนรู้ศิลปะ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -51311,19 +51206,19 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      8,
-      7
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 2,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31222": {
     "course_code": "ศ31222",
@@ -51343,9 +51238,9 @@
         "unit_no": "1",
         "unit_name": "ความรู้เบื้องต้นเกี่ยวกับรำแม่บทเล็ก",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 10,
+        "score_p": 0,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51353,9 +51248,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 10,
+            "score_p": 0,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -51364,30 +51259,9 @@
         "unit_no": "2",
         "unit_name": "จังหวะ ดนตรี และเพลงประกอบรำแม่บทเล็ก",
         "hours": 6,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "ทักษะพื้นฐานทางนาฏศิลป์ไทย",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -51395,9 +51269,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "3",
+        "unit_name": "ทักษะพื้นฐานทางนาฏศิลป์ไทย",
+        "hours": 9,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -51406,9 +51301,9 @@
         "unit_no": "4",
         "unit_name": "ภาษาท่าและท่ารำแม่บทเล็ก",
         "hours": 6,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51416,9 +51311,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -51427,9 +51322,9 @@
         "unit_no": "5",
         "unit_name": "การปฏิบัติการแสดงรำแม่บทเล็ก",
         "hours": 4,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 0,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51437,9 +51332,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -51448,20 +51343,27 @@
         "unit_no": "6",
         "unit_name": "การแสดงรำแม่บทเล็กและการอนุรักษ์นาฏศิลป์ไทย",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 0,
+        "score_p": 10,
+        "score_a": 10,
+        "score_total": 20,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 0,
+            "score_p": 0,
+            "score_a": 10,
+            "score_total": 10
           }
         ]
       }
@@ -51475,7 +51377,7 @@
       "6. เห็นคุณค่าและมีจิตสำนึกในการอนุรักษ์ศิลปวัฒนธรรมไทยผ่านการแสดงรำแม่บทเล็กได้"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -51485,21 +51387,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      5,
-      5,
-      5
+      7,
+      7,
+      6
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31223": {
     "course_code": "ศ31223",
@@ -51519,30 +51421,9 @@
         "unit_no": "1",
         "unit_name": "ความรู้พื้นฐานการแต่งหน้าเพื่อการแสดง",
         "hours": 3,
-        "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
-        "score_total": 5,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
-            "score_total": 5
-          }
-        ]
-      },
-      {
-        "unit_no": "2",
-        "unit_name": "โครงสร้างใบหน้าและทฤษฎีสี",
-        "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 8,
+        "score_p": 0,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51550,9 +51431,30 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 8,
+            "score_p": 0,
+            "score_a": 2,
+            "score_total": 10
+          }
+        ]
+      },
+      {
+        "unit_no": "2",
+        "unit_name": "โครงสร้างใบหน้าและทฤษฎีสี",
+        "hours": 3,
+        "score_k": 8,
+        "score_p": 0,
+        "score_a": 2,
+        "score_total": 10,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 8,
+            "score_p": 0,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -51561,9 +51463,9 @@
         "unit_no": "3",
         "unit_name": "อุปกรณ์ เครื่องสำอาง และสุขอนามัย",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 2,
+        "score_p": 8,
+        "score_a": 0,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51571,9 +51473,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 2,
+            "score_p": 8,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -51582,29 +51484,8 @@
         "unit_no": "4",
         "unit_name": "เทคนิคการแต่งหน้าพื้นฐาน",
         "hours": 10,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          }
-        ]
-      },
-      {
-        "unit_no": "5",
-        "unit_name": "เทคนิคการแต่งหน้าตัวละครและการออกแบบ",
-        "hours": 8,
-        "score_k": 8,
-        "score_p": 5,
+        "score_k": 3,
+        "score_p": 10,
         "score_a": 2,
         "score_total": 15,
         "indicators": [],
@@ -51612,10 +51493,31 @@
         "eval_method": "",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 3,
+            "score_p": 10,
             "score_a": 2,
+            "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "5",
+        "unit_name": "เทคนิคการแต่งหน้าตัวละครและการออกแบบ",
+        "hours": 8,
+        "score_k": 2,
+        "score_p": 10,
+        "score_a": 3,
+        "score_total": 15,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 2,
+            "score_p": 10,
+            "score_a": 3,
             "score_total": 15
           }
         ]
@@ -51624,8 +51526,8 @@
         "unit_no": "6",
         "unit_name": "การปฏิบัติจริงและการนำเสนอผลงาน",
         "hours": 11,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 0,
+        "score_p": 18,
         "score_a": 2,
         "score_total": 20,
         "indicators": [],
@@ -51634,16 +51536,16 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 0,
+            "score_p": 8,
+            "score_a": 2,
             "score_total": 10
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 0,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -51658,7 +51560,7 @@
       "6. นำเสนอผลงานและทำงานร่วมกับผู้อื่นได้อย่างมีความรับผิดชอบ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -51668,21 +51570,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      4,
-      4,
-      4,
-      3
+      0,
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 4,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ31224": {
     "course_code": "ศ31224",
@@ -51703,8 +51605,8 @@
         "unit_name": "ความรู้พื้นฐานเกี่ยวกับการแสดงพื้นบ้าน",
         "hours": 2,
         "score_k": 3,
-        "score_p": 1,
-        "score_a": 1,
+        "score_p": 0,
+        "score_a": 2,
         "score_total": 5,
         "indicators": [],
         "concepts": [],
@@ -51713,8 +51615,8 @@
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
             "score_k": 3,
-            "score_p": 1,
-            "score_a": 1,
+            "score_p": 0,
+            "score_a": 2,
             "score_total": 5
           }
         ]
@@ -51723,9 +51625,9 @@
         "unit_no": "2",
         "unit_name": "การแสดงแสดงพื้นบ้านเมืองละโว้",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 3,
+        "score_p": 5,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51733,9 +51635,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 3,
+            "score_p": 5,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -51744,9 +51646,9 @@
         "unit_no": "3",
         "unit_name": "ดนตรีและเครื่องแต่งกายพื้นบ้าน",
         "hours": 5,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 3,
+        "score_p": 5,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51754,9 +51656,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 3,
+            "score_p": 5,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -51765,9 +51667,9 @@
         "unit_no": "4",
         "unit_name": "ทักษะพื้นฐานการรำนาฏศิลป์พื้นบ้าน",
         "hours": 7,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
+        "score_k": 3,
+        "score_p": 5,
+        "score_a": 2,
         "score_total": 10,
         "indicators": [],
         "concepts": [],
@@ -51775,9 +51677,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 3,
+            "score_p": 5,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -51786,26 +51688,26 @@
         "unit_no": "5",
         "unit_name": "ปฏิบัติท่ารำนาฏศิลป์พื้นบ้านเมืองละโว้",
         "hours": 14,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 0,
+        "score_p": 23,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 25,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 0,
+            "score_p": 15,
+            "score_a": 0,
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 0,
+            "score_p": 8,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -51814,20 +51716,27 @@
         "unit_no": "6",
         "unit_name": "การสร้างชิ้นงานและการนำเสนอ",
         "hours": 5,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 0,
+        "score_p": 15,
+        "score_a": 5,
+        "score_total": 20,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 0,
+            "score_p": 15,
+            "score_a": 0,
             "score_total": 15
+          },
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 0,
+            "score_p": 0,
+            "score_a": 5,
+            "score_total": 5
           }
         ]
       }
@@ -51841,7 +51750,7 @@
       "6. แสดงความภาคภูมิใจและมีส่วนร่วมในการอนุรักษ์วัฒนธรรมท้องถิ่น"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -51851,21 +51760,21 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      4,
-      4,
-      4,
-      3
+      0,
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 4,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ32101": {
     "course_code": "ศ32101",
@@ -52011,10 +51920,10 @@
         "unit_no": "1",
         "unit_name": "โน้ตและสัญลักษณ์ทางดนตรี",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
+        "score_total": 15,
         "indicators": [
           "ศ 2.1 ม.4-6/4 (ระหว่างทาง): อ่าน เขียน โน้ตดนตรีไทยและสากล ในอัตราจังหวะต่าง ๆ"
         ],
@@ -52023,10 +51932,10 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
           }
         ]
       },
@@ -52034,10 +51943,10 @@
         "unit_no": "2",
         "unit_name": "การปฏิบัติเครื่องดนตรี",
         "hours": 3,
-        "score_k": 6,
-        "score_p": 3,
-        "score_a": 1,
-        "score_total": 10,
+        "score_k": 10,
+        "score_p": 15,
+        "score_a": 0,
+        "score_total": 25,
         "indicators": [
           "ศ 2.2 ม.4-6/3 (ปลายทาง): เปรียบเทียบลกั ษณะ เด่นของดนตรีในวัฒนธรรมต่าง ๆ"
         ],
@@ -52046,9 +51955,16 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
+            "score_total": 15
+          },
+          {
+            "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -52057,9 +51973,9 @@
         "unit_no": "3",
         "unit_name": "การวิจารณ์ผลงานทางดนตรี",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 10,
+        "score_a": 0,
         "score_total": 15,
         "indicators": [
           "ศ 2.1 ม.4-6/5 (ปลายทาง): ร้องเพลง หรือเล่นดนตรีเดี่ยวและ รวมวง โ ด ย เน้นเทคนิคการแสดงออก และคุณภาพของการแสดง"
@@ -52069,9 +51985,9 @@
         "assessments": [
           {
             "eval_methods": "- กิจกรรม/ใบงาน\n- แบบทดสอบย่อย\n- การสังเกตพฤติกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 10,
+            "score_a": 0,
             "score_total": 15
           }
         ]
@@ -52080,10 +51996,10 @@
         "unit_no": "4",
         "unit_name": "บทบาทของดนตรีต่อสังคม",
         "hours": 7,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 5,
+        "score_a": 0,
+        "score_total": 10,
         "indicators": [
           "ศ 2.1 ม.4-6/6 (ระหว่างทาง): สร้างเกณฑ์สำหรับประเมินคุณภาพ การประพันธ์และการเล่นดนตรี ของตนเองและผู้อื่นได้อย่าง เหมาะสม"
         ],
@@ -52092,16 +52008,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
+            "score_k": 5,
+            "score_p": 5,
+            "score_a": 0,
             "score_total": 10
           }
         ]
@@ -52110,9 +52019,9 @@
         "unit_no": "5",
         "unit_name": "การประยุกต์ใช้และการอนุรักษ์ดนตรี",
         "hours": 2,
-        "score_k": 8,
+        "score_k": 5,
         "score_p": 5,
-        "score_a": 2,
+        "score_a": 5,
         "score_total": 15,
         "indicators": [
           "ศ 2.1 ม.4-6/7 (ระหว่างทาง): เปรียบเทียบอารมณ์และความรู้สึก ที่ได้รับจากงานดนตรีที่มาจากวัฒนธรรมต่างกัน",
@@ -52125,9 +52034,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
+            "score_k": 5,
             "score_p": 5,
-            "score_a": 2,
+            "score_a": 5,
             "score_total": 15
           }
         ]
@@ -52144,7 +52053,7 @@
       "ศ 2.2 ม.4-6/5 (ปลายทาง): นำเสนอแนวทาง ในการส่งเสริมและอนุรักษ์ดนตรี ในฐานะมรดกของชาติ"
     ],
     "is_scheduled_term2": true,
-    "score_ratio": "70:30",
+    "score_ratio": "80:20",
     "ratio_display": "",
     "kpa_ratio": "",
     "score_pre_mid": null,
@@ -52154,20 +52063,20 @@
     "target_mid_score": null,
     "target_fin_score": null,
     "midExamScores": [
-      5,
-      5,
-      5
+      0,
+      0,
+      0
     ],
     "finExamScores": [
-      8,
-      7
+      10,
+      10
     ],
     "exam_schedule": "",
     "exam_duration_text": "",
     "key_task": "",
     "midterm_cutoff": 3,
-    "mid_exam": 15,
-    "fin_exam": 15
+    "mid_exam": 0,
+    "fin_exam": 20
   },
   "ศ32105": {
     "course_code": "ศ32105",
@@ -56320,10 +56229,10 @@
         "unit_no": "1",
         "unit_name": "หลักการสร้างงานศิลป์จากศิลปิน",
         "hours": 6,
-        "score_k": 12,
-        "score_p": 6,
+        "score_k": 4,
+        "score_p": 24,
         "score_a": 2,
-        "score_total": 20,
+        "score_total": 30,
         "indicators": [
           "ศ 1.1 ม.4-6/2 (ระหว่างทาง): บรรยายจุดประสงค์และเนื้อหาของงาน ทัศนศิลป์ โดยใช้ศัพท์ทางทัศนศิลป์",
           "ศ 1.1 ม.4-6/6 (ระหว่างทาง): ออกแบบงานทัศนศิลป์ได้เหมาะกับโอกาส และสถานที่",
@@ -56334,17 +56243,17 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 12,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 12,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -56352,10 +56261,10 @@
         "unit_no": "2",
         "unit_name": "โครงสร้างทางกายภาพ",
         "hours": 3,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 2,
+        "score_p": 8,
+        "score_a": 0,
+        "score_total": 10,
         "indicators": [
           "ศ 1.2 ม.4-6/10 (ปลายทาง): สร้างสรรค์งาน ทัศนศิลป์ไทย สากล โดยศึกษาจาก แนวคิดและวิธีการสร้างงานของ ศิลปินที่ตนชื่นชอบ",
           "ศ 1.1 ม.4-6/3 (ระหว่างทาง): วิเคราะห์การเลือกใช้วัสดุอุปกรณ์ และเทคนิคของศิลปินในการแสดงออกทางทัศนศิลป์",
@@ -56366,10 +56275,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
+            "score_k": 2,
+            "score_p": 8,
+            "score_a": 0,
+            "score_total": 10
           }
         ]
       },
@@ -56377,10 +56286,10 @@
         "unit_no": "3",
         "unit_name": "งานทัศนศิลป์จากศิลปิน",
         "hours": 9,
-        "score_k": 20,
-        "score_p": 11,
-        "score_a": 4,
-        "score_total": 35,
+        "score_k": 4,
+        "score_p": 24,
+        "score_a": 2,
+        "score_total": 30,
         "indicators": [
           "ศ 1.2 ม.4-6/1 (ปลายทาง): วิเคราะห์ และ เปรียบเทียบงานทัศนศิลป์ ในรูปแบบตะวันออกและรูปแบบ ตะวันตก",
           "ศ 1.1 ม.4-6/11 (ระหว่างทาง): วาดภาพ ระบายสีเป็นภาพล้อเลียน หรือภาพการ์ตูนเพื่อแสดงความคิดเห็นเกี่ยวกับสภาพสังคม ในปัจจุบัน",
@@ -56391,23 +56300,16 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 12,
             "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           },
           {
             "eval_methods": "- การประเมินชิ้นงาน/ภาระงาน",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 2,
+            "score_p": 12,
             "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบย่อยระหว่างเรียน",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
             "score_total": 15
           }
         ]
@@ -87778,27 +87680,20 @@
         "unit_no": "1",
         "unit_name": "Say that again",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 9,
+        "score_a": 1,
+        "score_total": 15,
         "indicators": [],
         "concepts": [],
         "eval_method": "",
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 5,
+            "score_p": 9,
             "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -87806,30 +87701,9 @@
         "unit_no": "2",
         "unit_name": "It’s that way",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
-        "indicators": [],
-        "concepts": [],
-        "eval_method": "",
-        "assessments": [
-          {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
-            "score_total": 15
-          }
-        ]
-      },
-      {
-        "unit_no": "3",
-        "unit_name": "Family Portrait",
-        "hours": 10,
-        "score_k": 12,
+        "score_k": 10,
         "score_p": 6,
-        "score_a": 2,
+        "score_a": 4,
         "score_total": 20,
         "indicators": [],
         "concepts": [],
@@ -87837,27 +87711,27 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           },
           {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
       },
       {
-        "unit_no": "4",
-        "unit_name": "About tomorrow",
-        "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "unit_no": "3",
+        "unit_name": "Family Portrait",
+        "hours": 10,
+        "score_k": 5,
+        "score_p": 9,
+        "score_a": 1,
         "score_total": 15,
         "indicators": [],
         "concepts": [],
@@ -87865,10 +87739,38 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 9,
+            "score_a": 1,
             "score_total": 15
+          }
+        ]
+      },
+      {
+        "unit_no": "4",
+        "unit_name": "About tomorrow",
+        "hours": 9,
+        "score_k": 10,
+        "score_p": 6,
+        "score_a": 4,
+        "score_total": 20,
+        "indicators": [],
+        "concepts": [],
+        "eval_method": "",
+        "assessments": [
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 10
           }
         ]
       }
@@ -89646,9 +89548,9 @@
         "unit_no": "1",
         "unit_name": "Unit 5 WHO ARE YOU?",
         "hours": 10,
-        "score_k": 12,
+        "score_k": 10,
         "score_p": 6,
-        "score_a": 2,
+        "score_a": 4,
         "score_total": 20,
         "indicators": [
           "ต 1.1 ม.4-6/1 (ระหว่างทาง): ปฏิบัติตามคำแนะนำในคู่มือการใช้งานต่าง ๆ คำชี้แจง คำอธิบาย และคำบรรยายที่ฟัง และอ่าน",
@@ -89661,16 +89563,16 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           },
           {
             "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
+            "score_k": 5,
             "score_p": 3,
-            "score_a": 1,
+            "score_a": 2,
             "score_total": 10
           }
         ]
@@ -89679,9 +89581,9 @@
         "unit_no": "2",
         "unit_name": "A HISTORY OF THE FUTURE",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
+        "score_k": 5,
+        "score_p": 9,
+        "score_a": 1,
         "score_total": 15,
         "indicators": [
           "ต 1.2 ม.4-6/2 (ระหว่างทาง): เลือกและใช้คำขอร้อง ให้คำแนะ คำชี้แจง และคำอธิบายอย่างคล่องแคล่ว",
@@ -89694,9 +89596,9 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
-            "score_a": 2,
+            "score_k": 5,
+            "score_p": 9,
+            "score_a": 1,
             "score_total": 15
           }
         ]
@@ -89705,10 +89607,10 @@
         "unit_no": "3",
         "unit_name": "EXPLORING ENVIRONMENTAL POLICIES",
         "hours": 10,
-        "score_k": 12,
-        "score_p": 6,
-        "score_a": 2,
-        "score_total": 20,
+        "score_k": 5,
+        "score_p": 9,
+        "score_a": 1,
+        "score_total": 15,
         "indicators": [
           "ต 1.3 ม.4-6/1 (ปลายทาง): พูดและเขียนนำเสนอข้อมูล เกี่ยวกับตนเอง ประสบการณ์ ข่าว/ เหตุการณ์ เรื่องและประเด็นต่าง ๆ ท ี่อ ย ู่ใ น ความสนใจของสังคม",
           "ต 1.3 ม.4-6/3 (ระหว่างทาง): พูดและเขียนแสดงความคิดเห็นเกี่ยวกับ กิจกรรม ประสบการณ์ และเหตุการณ์ ทั้งในท้องถิ่น สังคม และโลก พร้อมทั้งให้เหตุผลและยกตัวอย่างประกอบ",
@@ -89720,17 +89622,10 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 6,
-            "score_p": 3,
+            "score_k": 5,
+            "score_p": 9,
             "score_a": 1,
-            "score_total": 10
-          },
-          {
-            "eval_methods": "- การทดสอบระหว่างเรียน\n- การประเมินชิ้นงาน",
-            "score_k": 6,
-            "score_p": 3,
-            "score_a": 1,
-            "score_total": 10
+            "score_total": 15
           }
         ]
       },
@@ -89738,10 +89633,10 @@
         "unit_no": "4",
         "unit_name": "WHAT WILL YOU BE HAVING?",
         "hours": 9,
-        "score_k": 8,
-        "score_p": 5,
-        "score_a": 2,
-        "score_total": 15,
+        "score_k": 10,
+        "score_p": 6,
+        "score_a": 4,
+        "score_total": 20,
         "indicators": [
           "ต 3.1 ม.4-6/1 (ระหว่างทาง): ค้นคว้า/สืบค้น บันทึก สรุป และแสดงความ คิดเห็นเกี่ยวกับข้อมูลที่เกี่ยวข้องกับกลุ่มสาระการเรียนรู้อื่น จากแหล่งการเรียนรู้ต่าง ๆ และนำเสนอด้วยการพูด และการเขียน",
           "ต 1.1 ม.4-6/3 (ปลายทาง): อธิบายและเขียน ประโยค และข้อความ ให้สัมพันธ์กับสื่อที่ไม่ใช้ความเรียง รูปแบบต่าง ๆ ที่อ่าน รวมทั้งระบุ และเขียนสื่อที่ไม่ใช่ความเรียง รูปแบบต่าง ๆ ให้สัมพันธ์กับ ประโยค และข้อความที่ฟังหรืออ่าน",
@@ -89755,10 +89650,17 @@
         "assessments": [
           {
             "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
-            "score_k": 8,
-            "score_p": 5,
+            "score_k": 5,
+            "score_p": 3,
             "score_a": 2,
-            "score_total": 15
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การสังเกตพฤติกรรม\n- การประเมินใบงาน/กิจกรรม",
+            "score_k": 5,
+            "score_p": 3,
+            "score_a": 2,
+            "score_total": 10
           }
         ]
       }
