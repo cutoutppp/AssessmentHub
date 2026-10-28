@@ -1058,11 +1058,32 @@ let overallPct = totalPop > 0 ? Math.round((problemStudents / totalPop) * 100) :
       });
     }
 
+    function normalizeTeacherName(name) {
+      if (!name) return '';
+      return String(name)
+        .replace(/^(คุณครู|ครู|ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร\.|ผศ\.|รศ\.|ศ\.|นางสาว|น\.ส\.|นาย|นาง|ส\.ต\.ท\.|สาว)\s*/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    }
+
+    function isTeacherMatch(rowTeacher, searchKey) {
+      if (!rowTeacher || !searchKey) return false;
+      const normRow = normalizeTeacherName(rowTeacher);
+      const normKey = normalizeTeacherName(searchKey);
+      if (!normRow || !normKey) return false;
+      if (normRow === normKey) return true;
+      if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
+      const words = normKey.split(' ').filter(w => w.length >= 2);
+      if (words.length > 0 && words.every(w => normRow.includes(w))) return true;
+      return false;
+    }
+
     function getTeacherDetails(teacherName) {
       let details = [];
       BASE_S_LIST.forEach(s => {
         (s.details || []).forEach(d => {
-          if (d.teacher === teacherName) {
+          if (isTeacherMatch(d.teacher, teacherName)) {
             details.push({
               stuName: s.name,
               stuId: s.id,

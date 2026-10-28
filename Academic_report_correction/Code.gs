@@ -703,7 +703,7 @@ function summarize(filters, preloaded) {
     if (f.grade && grade !== f.grade) return;
     if (f.room && room !== f.room) return;
     if (f.subjectGroup && subjGrp !== f.subjectGroup) return;
-    if (f.teacher && firstTeacher !== f.teacher) return; 
+    if (f.teacher && !isTeacherMatch_(firstTeacher, f.teacher)) return; 
 
     let statusSys = cleanStr_(r['สถานะระบบ']);
     let isF = (statusSys === 'ซิงค์แล้ว' || statusSys === 'เสร็จสิ้น');
@@ -951,11 +951,32 @@ function verifyPinLogin(idCard, pin) {
 
 function getTeacherTasks(teacherName) { return getTasksForAdmin('teacher', teacherName); }
 
+function normalizeTeacherName_(name) {
+  if (!name) return '';
+  return String(name)
+    .replace(/^(คุณครู|ครู|ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร\.|ผศ\.|รศ\.|ศ\.|นางสาว|น\.ส\.|นาย|นาง|ส\.ต\.ท\.|สาว)\s*/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function isTeacherMatch_(rowTeacher, searchKey) {
+  if (!rowTeacher || !searchKey) return false;
+  const normRow = normalizeTeacherName_(rowTeacher);
+  const normKey = normalizeTeacherName_(searchKey);
+  if (!normRow || !normKey) return false;
+  if (normRow === normKey) return true;
+  if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
+  const words = normKey.split(' ').filter(function(w) { return w.length >= 2; });
+  if (words.length > 0 && words.every(function(w) { return normRow.indexOf(w) !== -1; })) return true;
+  return false;
+}
+
 function getTasksForAdmin(mode, keyword) {
-  let cleanKey = String(keyword || '').trim().toLowerCase();
+  let cleanKey = String(keyword || '').trim();
   if(!cleanKey) return [];
 
-  // ⚡ High-Speed Server Cache (5 mins)
+  // ⚡ High-Speed Server Cache (30 mins, invalidated on edit/submit)
   var ver = getTaskCacheVersion_();
   var safeKey = encodeURIComponent(cleanKey).replace(/%/g, '_').slice(0, 40);
   var cacheKey = 'tsk_' + ver + '_' + (mode || 't') + '_' + safeKey;
@@ -988,15 +1009,22 @@ function getTasksForAdmin(mode, keyword) {
         idxTaskDate = headers.indexOf('วันที่รับงาน');
 
   let tasks = [];
-  let reqTeacherName = ''; if (mode === 'teacher') reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
 
   for(let i=1; i<data.length; i++) {
     let stuIdRaw = data[i][idxStuId]; if (!stuIdRaw) continue; 
     let rowStatus = cleanStr_(data[i][idxStatus]) || 'รอแก้ไข';
     if (rowStatus === 'รอแก้ไข') {
       let match = false;
-      if (mode === 'teacher') { let rowTeacher = cleanStr_(data[i][idxTeacher]).toLowerCase(); if (rowTeacher.includes(reqTeacherName)) match = true; } 
-      else if (mode === 'student') { let sId = String(stuIdRaw).toLowerCase(); let sName = cleanStr_(data[i][idxStuName]).toLowerCase(); if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true; }
+      if (mode === 'teacher') { 
+        let rowTeacher = cleanStr_(data[i][idxTeacher]); 
+        if (isTeacherMatch_(rowTeacher, cleanKey)) match = true; 
+      } 
+      else if (mode === 'student') { 
+        let sId = String(stuIdRaw).toLowerCase(); 
+        let sName = cleanStr_(data[i][idxStuName]).toLowerCase(); 
+        let cleanLower = cleanKey.toLowerCase();
+        if (sId.includes(cleanLower) || sName.includes(cleanLower)) match = true; 
+      }
       if (match) {
         tasks.push({ 
           rowId: i + 1, 
@@ -1060,8 +1088,6 @@ function getHistoryForAdmin(mode, keyword) {
         idxPendingTask = headers.indexOf('งานค้าง');
 
   let history = [];
-  let reqTeacherName = '';
-  if (mode === 'teacher') reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
 
   for(let i=1; i<data.length; i++) {
     let stuIdRaw = data[i][idxStuId];
@@ -1072,12 +1098,13 @@ function getHistoryForAdmin(mode, keyword) {
     if (rowStatus !== 'รอแก้ไข' && rowStatus !== '') { 
       let match = false;
       if (mode === 'teacher') {
-        let rowTeacher = cleanStr_(data[i][idxTeacher]).toLowerCase();
-        if (rowTeacher.includes(reqTeacherName)) match = true;
+        let rowTeacher = cleanStr_(data[i][idxTeacher]);
+        if (isTeacherMatch_(rowTeacher, cleanKey)) match = true;
       } else if (mode === 'student') {
         let sId = String(stuIdRaw).toLowerCase();
         let sName = cleanStr_(data[i][idxStuName]).toLowerCase();
-        if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true;
+        let cleanLower = cleanKey.toLowerCase();
+        if (sId.includes(cleanLower) || sName.includes(cleanLower)) match = true;
       }
 
       if (match) {

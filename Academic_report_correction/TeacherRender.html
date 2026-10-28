@@ -922,22 +922,59 @@
     // ==========================================
     // ⚡ FAST PERSISTENT CACHE & DIRECT SHEET READER (สำหรับมือถือ)
     // ==========================================
+    const FAST_CACHE_TTL = 15 * 60 * 1000; // 15 นาที
+
+    function normalizeTeacherName(name) {
+      if (!name) return '';
+      return String(name)
+        .replace(/^(คุณครู|ครู|ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร.|ผศ.|รศ.|ศ.|นางสาว|น.ส.|นาย|นาง|ส.ต.ท.|สาว)\s*/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    }
+
+    function isTeacherMatch(rowTeacher, searchKey) {
+      if (!rowTeacher || !searchKey) return false;
+      const normRow = normalizeTeacherName(rowTeacher);
+      const normKey = normalizeTeacherName(searchKey);
+      if (!normRow || !normKey) return false;
+      if (normRow === normKey) return true;
+      if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
+      const words = normKey.split(' ').filter(w => w.length >= 2);
+      if (words.length > 0 && words.every(w => normRow.includes(w))) return true;
+      return false;
+    }
+
     function readFastCache(key) {
+      if (!key) return null;
       try {
         const sVal = sessionStorage.getItem(key);
-        if (sVal) return JSON.parse(sVal);
+        if (sVal) {
+          const parsed = JSON.parse(sVal);
+          if (parsed && typeof parsed === 'object' && parsed.ts && (Date.now() - parsed.ts < FAST_CACHE_TTL)) {
+            return parsed.data;
+          }
+          if (Array.isArray(parsed)) return parsed;
+        }
       } catch (e) {}
       try {
         const lVal = localStorage.getItem(key);
-        if (lVal) return JSON.parse(lVal);
+        if (lVal) {
+          const parsed = JSON.parse(lVal);
+          if (parsed && typeof parsed === 'object' && parsed.ts && (Date.now() - parsed.ts < FAST_CACHE_TTL)) {
+            return parsed.data;
+          }
+          if (Array.isArray(parsed)) return parsed;
+        }
       } catch (e) {}
       return null;
     }
 
     function writeFastCache(key, data) {
-      const str = JSON.stringify(data || []);
-      try { sessionStorage.setItem(key, str); } catch (e) {}
-      try { localStorage.setItem(key, str); } catch (e) {}
+      if (!key) return;
+      const payload = JSON.stringify({ data: data || [], ts: Date.now() });
+      try { sessionStorage.setItem(key, payload); } catch (e) {}
+      try { localStorage.setItem(key, payload); } catch (e) {}
     }
 
     let _DIRECT_SHEET_CACHE = null;
@@ -1001,10 +1038,6 @@
             idxTaskDate = headers.indexOf('วันที่รับงาน');
       if (idxStuId === -1 || idxTeacher === -1) throw new Error('Header mismatch');
 
-      let reqTeacherName = '';
-      if (mode === 'teacher') {
-        reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
-      }
       const tasks = [];
       let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
@@ -1022,12 +1055,13 @@
 
         let match = false;
         if (mode === 'teacher') {
-          const rowTeacher = cleanCellStr(cells[idxTeacher]).toLowerCase();
-          if (rowTeacher.includes(reqTeacherName)) match = true;
+          const rowTeacher = cleanCellStr(cells[idxTeacher]);
+          if (isTeacherMatch(rowTeacher, cleanKey)) match = true;
         } else if (mode === 'student') {
           const sId = stuIdRaw.toLowerCase();
           const sName = (idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '').toLowerCase();
-          if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true;
+          const cleanLower = cleanKey.toLowerCase();
+          if (sId.includes(cleanLower) || sName.includes(cleanLower)) match = true;
         }
         if (match) {
           const taskDate = idxTaskDate !== -1 ? cleanCellStr(cells[idxTaskDate]) : '';
@@ -1069,10 +1103,6 @@
             idxPendingTask = headers.indexOf('งานค้าง');
       if (idxStuId === -1 || idxTeacher === -1) throw new Error('Header mismatch');
 
-      let reqTeacherName = '';
-      if (mode === 'teacher') {
-        reqTeacherName = cleanKey.replace(/^(นาย|นาง|นางสาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.|สาว)/, '').trim();
-      }
       const history = [];
       let consecutiveEmpty = 0;
       for (let i = 1; i < lines.length; i++) {
@@ -1090,12 +1120,13 @@
 
         let match = false;
         if (mode === 'teacher') {
-          const rowTeacher = cleanCellStr(cells[idxTeacher]).toLowerCase();
-          if (rowTeacher.includes(reqTeacherName)) match = true;
+          const rowTeacher = cleanCellStr(cells[idxTeacher]);
+          if (isTeacherMatch(rowTeacher, cleanKey)) match = true;
         } else if (mode === 'student') {
           const sId = stuIdRaw.toLowerCase();
           const sName = (idxStuName !== -1 ? cleanCellStr(cells[idxStuName]) : '').toLowerCase();
-          if (sId.includes(cleanKey) || sName.includes(cleanKey)) match = true;
+          const cleanLower = cleanKey.toLowerCase();
+          if (sId.includes(cleanLower) || sName.includes(cleanLower)) match = true;
         }
         if (match) {
           history.push({
@@ -1214,9 +1245,42 @@
         setTimeout(() => configureApiUrl(), 300);
       }
       const urlId = urlParams.get('id');
+      const urlName = urlParams.get('name');
       // 🛡️ ล้างพารามิเตอร์ query ออกจาก URL ทันทีเพื่อป้องกันข้อมูลรั่วไหลใน browser history และ referrer
       if (window.location.search) {
         window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // 🛡️ หากมีการส่ง id มาทาง URL และไม่ตรงกับเซสชันเดิม ให้ล้างเซสชันเก่าทันทีเพื่อป้องกันครูเห็นงานสลับคน
+      if (urlId) {
+        const cleanUrlId = String(urlId).replace(/[^0-9]/g, '').slice(0, 13);
+        const storedSgs = localStorage.getItem('sgs_user');
+        if (storedSgs) {
+          try {
+            const u = JSON.parse(storedSgs);
+            const uId = String((u && (u.userid || u.idCard)) || '').replace(/[^0-9]/g, '').slice(0, 13);
+            if (uId && cleanUrlId && uId !== cleanUrlId) {
+              localStorage.removeItem('sgs_user');
+              localStorage.removeItem('teac_session_v3');
+              localStorage.removeItem('teac_token');
+              localStorage.removeItem('last_teacher_name');
+              clearAllDataCaches();
+            }
+          } catch(e) {}
+        }
+        const storedSess = localStorage.getItem('teac_session_v3');
+        if (storedSess) {
+          try {
+            const s = JSON.parse(storedSess);
+            const sId = String((s && s.id) || '').replace(/[^0-9]/g, '').slice(0, 13);
+            if (sId && cleanUrlId && sId !== cleanUrlId) {
+              localStorage.removeItem('teac_session_v3');
+              localStorage.removeItem('teac_token');
+              localStorage.removeItem('last_teacher_name');
+              clearAllDataCaches();
+            }
+          } catch(e) {}
+        }
       }
 
       // 1. ตรวจสอบการล็อกอินมาจากระบบกลาง AssessmentHub (sgs_user ใน localStorage)
@@ -1225,12 +1289,19 @@
         try {
           const user = JSON.parse(sgsUser);
           if (user && (user.userid || user.idCard)) {
+            const incomingTeacher = user.name || ((user.prefix || '') + (user.firstname || '') + ' ' + (user.lastname || '')).trim();
+            const prevTeacher = localStorage.getItem('last_teacher_name');
+            if (prevTeacher && incomingTeacher && prevTeacher !== incomingTeacher) {
+              clearAllDataCaches();
+            }
             TEMP_IDCARD = user.userid || user.idCard;
             CURRENT_USER_ID = TEMP_IDCARD;
-            CURRENT_TEACHER = user.name || ((user.prefix || '') + (user.firstname || '') + ' ' + (user.lastname || '')).trim();
+            CURRENT_TEACHER = incomingTeacher;
             CURRENT_TEACHER_NAME = CURRENT_TEACHER;
             IS_ADMIN = checkIsSuperuser(user, TEMP_IDCARD);
             SESSION_TOKEN = user.token || localStorage.getItem('teac_token') || '';
+            localStorage.setItem('last_teacher_name', CURRENT_TEACHER);
+            localStorage.setItem('last_teacher_id', TEMP_IDCARD);
             document.getElementById('loginScreen').classList.add('hidden');
             setupDashboard();
             return;
@@ -1449,6 +1520,10 @@
       try {
         const res = await verifyTeacherPin(TEMP_IDCARD, pin);
         if(res.success) {
+          const prevName = localStorage.getItem('last_teacher_name');
+          if (prevName && prevName !== res.name) {
+            clearAllDataCaches();
+          }
           // 🛡️ จัดเก็บ Session แบบ Token-based พร้อม Expiry เพื่อป้องกัน Plaintext PIN ตกค้าง
           const sessionObj = {
             id: TEMP_IDCARD,
