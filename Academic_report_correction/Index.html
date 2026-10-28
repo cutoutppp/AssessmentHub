@@ -1058,6 +1058,10 @@ let overallPct = totalPop > 0 ? Math.round((problemStudents / totalPop) * 100) :
       });
     }
 
+    function cleanThaiAccents(str) {
+      return String(str || '').replace(/[์่้๊๋็]/g, '');
+    }
+
     function normalizeTeacherName(name) {
       if (!name) return '';
       return String(name)
@@ -1067,15 +1071,46 @@ let overallPct = totalPop > 0 ? Math.round((problemStudents / totalPop) * 100) :
         .toLowerCase();
     }
 
-    function isTeacherMatch(rowTeacher, searchKey) {
-      if (!rowTeacher || !searchKey) return false;
-      const normRow = normalizeTeacherName(rowTeacher);
+    function matchSingleTeacher_(rowPart, searchKey) {
+      if (!rowPart || !searchKey) return false;
+      const normRow = normalizeTeacherName(rowPart);
       const normKey = normalizeTeacherName(searchKey);
       if (!normRow || !normKey) return false;
       if (normRow === normKey) return true;
-      if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
-      const words = normKey.split(' ').filter(w => w.length >= 2);
-      if (words.length > 0 && words.every(w => normRow.includes(w))) return true;
+
+      const rowWords = normRow.split(' ').filter(Boolean);
+      const keyWords = normKey.split(' ').filter(Boolean);
+      const rowFirst = rowWords[0] || '';
+      const keyFirst = keyWords[0] || '';
+
+      const rowFirstClean = cleanThaiAccents(rowFirst);
+      const keyFirstClean = cleanThaiAccents(keyFirst);
+
+      const firstNamesMatch = (rowFirst === keyFirst) ||
+        (rowFirstClean === keyFirstClean) ||
+        (keyFirst.length >= 6 && rowFirst.startsWith(keyFirst)) ||
+        (rowFirst.length >= 6 && keyFirst.startsWith(rowFirst));
+
+      if (keyWords.length === 1) {
+        if (keyFirst.length < 5 && rowFirst !== keyFirst) return false;
+        return firstNamesMatch;
+      }
+
+      if (firstNamesMatch && keyWords.length > 1) {
+        const keyLast = keyWords.slice(1).join(' ');
+        const rowLast = rowWords.slice(1).join(' ');
+        return rowLast.includes(keyLast) || keyLast.includes(rowLast);
+      }
+
+      return false;
+    }
+
+    function isTeacherMatch(rowTeacher, searchKey) {
+      if (!rowTeacher || !searchKey) return false;
+      const parts = String(rowTeacher).split(/[,/;&]|และ/).map(s => s.trim()).filter(Boolean);
+      for (const part of parts) {
+        if (matchSingleTeacher_(part, searchKey)) return true;
+      }
       return false;
     }
 

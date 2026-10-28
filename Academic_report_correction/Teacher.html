@@ -68,7 +68,14 @@
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 md:p-8 rounded-[2rem] shadow-sm mb-6 border border-slate-100 gap-4">
       <div class="flex items-center gap-4">
         <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30 border-2 border-white"><i class="material-icons-round text-3xl">school</i></div>
-        <div><p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1" id="roleBadge">Teacher Workspace</p><h1 class="text-2xl md:text-3xl font-black text-slate-800" id="teacherNameDisplay">ยินดีต้อนรับ</h1></div>
+        <div>
+          <p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-1" id="roleBadge">Teacher Workspace</p>
+          <h1 class="text-2xl md:text-3xl font-black text-slate-800" id="teacherNameDisplay">ยินดีต้อนรับ</h1>
+          <button type="button" onclick="logout()" class="text-xs text-slate-400 hover:text-rose-600 transition-colors flex items-center gap-1 mt-1 cursor-pointer">
+            <i class="material-icons-round text-xs">switch_account</i>
+            <span>ไม่ใช่คุณ? ออกจากระบบ / สลับบัญชีครู</span>
+          </button>
+        </div>
       </div>
       <div class="flex gap-2">
         <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?openExternalBrowser=1' : 'Index.html' ?>" target="_top" onclick="goToIndex(event)" id="backToDashboardBtn" class="w-auto px-4 h-12 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm border border-blue-200 gap-2 cursor-pointer"><i class="material-icons-round text-sm">dashboard</i> <span class="text-sm">หน้าแดชบอร์ด</span></a>
@@ -924,24 +931,59 @@
     // ==========================================
     const FAST_CACHE_TTL = 15 * 60 * 1000; // 15 นาที
 
+    function cleanThaiAccents(str) {
+      return String(str || '').replace(/[์่้๊๋็]/g, '');
+    }
+
     function normalizeTeacherName(name) {
       if (!name) return '';
       return String(name)
-        .replace(/^(คุณครู|ครู|ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร.|ผศ.|รศ.|ศ.|นางสาว|น.ส.|นาย|นาง|ส.ต.ท.|สาว)\s*/g, '')
+        .replace(/^(คุณครู|ครู|ว่าที่\s*ร\.ต\.หญิง|ว่าที่\s*ร\.ต\.|ว่าที่ร้อยตรีหญิง|ว่าที่ร้อยตรี|ดร\.|ผศ\.|รศ\.|ศ\.|นางสาว|น\.ส\.|นาย|นาง|ส\.ต\.ท\.|สาว)\s*/g, '')
         .replace(/\s+/g, ' ')
         .trim()
         .toLowerCase();
     }
 
-    function isTeacherMatch(rowTeacher, searchKey) {
-      if (!rowTeacher || !searchKey) return false;
-      const normRow = normalizeTeacherName(rowTeacher);
+    function matchSingleTeacher_(rowPart, searchKey) {
+      if (!rowPart || !searchKey) return false;
+      const normRow = normalizeTeacherName(rowPart);
       const normKey = normalizeTeacherName(searchKey);
       if (!normRow || !normKey) return false;
       if (normRow === normKey) return true;
-      if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
-      const words = normKey.split(' ').filter(w => w.length >= 2);
-      if (words.length > 0 && words.every(w => normRow.includes(w))) return true;
+
+      const rowWords = normRow.split(' ').filter(Boolean);
+      const keyWords = normKey.split(' ').filter(Boolean);
+      const rowFirst = rowWords[0] || '';
+      const keyFirst = keyWords[0] || '';
+
+      const rowFirstClean = cleanThaiAccents(rowFirst);
+      const keyFirstClean = cleanThaiAccents(keyFirst);
+
+      const firstNamesMatch = (rowFirst === keyFirst) ||
+        (rowFirstClean === keyFirstClean) ||
+        (keyFirst.length >= 6 && rowFirst.startsWith(keyFirst)) ||
+        (rowFirst.length >= 6 && keyFirst.startsWith(rowFirst));
+
+      if (keyWords.length === 1) {
+        if (keyFirst.length < 5 && rowFirst !== keyFirst) return false;
+        return firstNamesMatch;
+      }
+
+      if (firstNamesMatch && keyWords.length > 1) {
+        const keyLast = keyWords.slice(1).join(' ');
+        const rowLast = rowWords.slice(1).join(' ');
+        return rowLast.includes(keyLast) || keyLast.includes(rowLast);
+      }
+
+      return false;
+    }
+
+    function isTeacherMatch(rowTeacher, searchKey) {
+      if (!rowTeacher || !searchKey) return false;
+      const parts = String(rowTeacher).split(/[,/;&]|และ/).map(s => s.trim()).filter(Boolean);
+      for (const part of parts) {
+        if (matchSingleTeacher_(part, searchKey)) return true;
+      }
       return false;
     }
 
@@ -954,7 +996,8 @@
           if (parsed && typeof parsed === 'object' && parsed.ts && (Date.now() - parsed.ts < FAST_CACHE_TTL)) {
             return parsed.data;
           }
-          if (Array.isArray(parsed)) return parsed;
+          // Purge legacy array cache
+          try { localStorage.removeItem(key); sessionStorage.removeItem(key); } catch(e) {}
         }
       } catch (e) {}
       try {
@@ -964,7 +1007,8 @@
           if (parsed && typeof parsed === 'object' && parsed.ts && (Date.now() - parsed.ts < FAST_CACHE_TTL)) {
             return parsed.data;
           }
-          if (Array.isArray(parsed)) return parsed;
+          // Purge legacy array cache
+          try { localStorage.removeItem(key); sessionStorage.removeItem(key); } catch(e) {}
         }
       } catch (e) {}
       return null;
@@ -1217,6 +1261,19 @@
 
     let _teacherAppInitialized = false;
     async function initTeacherApp() {
+      // 🛡️ Bump cache version & invalidate stale caches across all devices
+      const APP_CACHE_VER = '20261028_v4';
+      if (localStorage.getItem('app_cache_ver') !== APP_CACHE_VER) {
+        try { clearAllDataCaches(); } catch(e) {}
+        localStorage.removeItem('teac_session_v3');
+        localStorage.removeItem('teac_token');
+        localStorage.removeItem('last_teacher_name');
+        localStorage.removeItem('last_teacher_id');
+        localStorage.removeItem('last_teacher_is_admin');
+        localStorage.removeItem('sgs_user');
+        sessionStorage.clear();
+        localStorage.setItem('app_cache_ver', APP_CACHE_VER);
+      }
       if (_teacherAppInitialized) return;
       _teacherAppInitialized = true;
 
@@ -1328,9 +1385,10 @@
       }
 
       // 3. หากไม่มีประวัติ ให้แสดงหน้ากรอกเลขบัตร 13 หลัก พร้อมดึงเลขบัตรเดิมที่เคยกรอก (ถ้ามี)
-      const lastId = urlId || localStorage.getItem('last_teacher_id');
-      if (lastId && document.getElementById('idCardInput')) {
-        document.getElementById('idCardInput').value = String(lastId).replace(/[^0-9]/g, '').slice(0, 13);
+      if (urlId && document.getElementById('idCardInput')) {
+        document.getElementById('idCardInput').value = String(urlId).replace(/[^0-9]/g, '').slice(0, 13);
+      } else if (document.getElementById('idCardInput')) {
+        document.getElementById('idCardInput').value = '';
       }
       showLoginStep('idCardStep');
     }
@@ -1562,9 +1620,12 @@
            localStorage.removeItem('last_teacher_name');
            localStorage.removeItem('last_teacher_id');
            localStorage.removeItem('last_teacher_is_admin');
+           localStorage.removeItem('sgs_user');
+           localStorage.removeItem('sgs_token');
+           sessionStorage.clear();
            SESSION_TOKEN = '';
            try { clearAllDataCaches(); } catch(e) {}
-           window.location.reload();
+           window.location.replace(window.location.pathname);
          }
       });
     }

@@ -695,7 +695,7 @@ function summarize(filters, preloaded) {
     let year = rawYear.split('/')[0].trim();
     let term = cleanStr_(r['ภาคเรียนที่']); let subjCode = cleanStr_(r['รหัสวิชา']);
     let rawTeacher = cleanStr_(r['ครูผู้สอน']).replace(/\s+/g, ' '); let firstTeacher = rawTeacher.split(',')[0].trim();
-    let teacherNameClean = firstTeacher.replace(/^(นาย|นาง|นางสาว|สาว|ว่าที่ร้อยตรี|ว่าที่ร\.ต\.|ส\.ต\.ท\.)/, '').trim() || '(ไม่ระบุ)';
+    let teacherNameClean = normalizeTeacherName_(firstTeacher) || '(ไม่ระบุ)';
     let subjGrp = teacherDeptMap[firstTeacher] || teacherDeptMap[teacherNameClean] || subjectGroupFromCode(subjCode);
     let grade = cleanStr_(r['ชั้น']), room = cleanStr_(r['ห้อง']), oldG = cleanStr_(r['ผลการเรียนเดิม']);
 
@@ -951,6 +951,10 @@ function verifyPinLogin(idCard, pin) {
 
 function getTeacherTasks(teacherName) { return getTasksForAdmin('teacher', teacherName); }
 
+function cleanThaiAccents_(str) {
+  return String(str || '').replace(/[์่้๊๋็]/g, '');
+}
+
 function normalizeTeacherName_(name) {
   if (!name) return '';
   return String(name)
@@ -960,15 +964,46 @@ function normalizeTeacherName_(name) {
     .toLowerCase();
 }
 
-function isTeacherMatch_(rowTeacher, searchKey) {
-  if (!rowTeacher || !searchKey) return false;
-  const normRow = normalizeTeacherName_(rowTeacher);
-  const normKey = normalizeTeacherName_(searchKey);
+function matchSingleTeacher_(rowPart, searchKey) {
+  if (!rowPart || !searchKey) return false;
+  var normRow = normalizeTeacherName_(rowPart);
+  var normKey = normalizeTeacherName_(searchKey);
   if (!normRow || !normKey) return false;
   if (normRow === normKey) return true;
-  if (normRow.includes(normKey) || normKey.includes(normRow)) return true;
-  const words = normKey.split(' ').filter(function(w) { return w.length >= 2; });
-  if (words.length > 0 && words.every(function(w) { return normRow.indexOf(w) !== -1; })) return true;
+
+  var rowWords = normRow.split(' ').filter(Boolean);
+  var keyWords = normKey.split(' ').filter(Boolean);
+  var rowFirst = rowWords[0] || '';
+  var keyFirst = keyWords[0] || '';
+
+  var rowFirstClean = cleanThaiAccents_(rowFirst);
+  var keyFirstClean = cleanThaiAccents_(keyFirst);
+
+  var firstNamesMatch = (rowFirst === keyFirst) ||
+    (rowFirstClean === keyFirstClean) ||
+    (keyFirst.length >= 6 && rowFirst.indexOf(keyFirst) === 0) ||
+    (rowFirst.length >= 6 && keyFirst.indexOf(rowFirst) === 0);
+
+  if (keyWords.length === 1) {
+    if (keyFirst.length < 5 && rowFirst !== keyFirst) return false;
+    return firstNamesMatch;
+  }
+
+  if (firstNamesMatch && keyWords.length > 1) {
+    var keyLast = keyWords.slice(1).join(' ');
+    var rowLast = rowWords.slice(1).join(' ');
+    return rowLast.indexOf(keyLast) !== -1 || keyLast.indexOf(rowLast) !== -1;
+  }
+
+  return false;
+}
+
+function isTeacherMatch_(rowTeacher, searchKey) {
+  if (!rowTeacher || !searchKey) return false;
+  var parts = String(rowTeacher).split(/[,/;&]|และ/).map(function(s) { return s.trim(); }).filter(Boolean);
+  for (var i = 0; i < parts.length; i++) {
+    if (matchSingleTeacher_(parts[i], searchKey)) return true;
+  }
   return false;
 }
 
