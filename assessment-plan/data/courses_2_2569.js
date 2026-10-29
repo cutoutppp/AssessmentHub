@@ -9496,7 +9496,7 @@ window.COURSES_2_2569 = {
   },
   "ง21102": {
     "course_code": "ง21102",
-    "course_name": "การงานอาชีพ 1",
+    "course_name": "การงานอาชีพ 2",
     "learning_area": "การงานอาชีพ",
     "grade_level": "ม.1",
     "credits": 0.5,
