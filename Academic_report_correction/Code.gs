@@ -955,6 +955,19 @@ function cleanThaiAccents_(str) {
   return String(str || '').replace(/[์่้๊๋็]/g, '');
 }
 
+function canonicalThai_(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/[ก-ฮ]์/g, '')
+    .replace(/[์่้๊๋็]/g, '')
+    .replace(/[ศษ]/g, 'ส')
+    .replace(/ณ/g, 'น')
+    .replace(/ภ/g, 'พ')
+    .replace(/ญ/g, 'น')
+    .trim()
+    .toLowerCase();
+}
+
 function normalizeTeacherName_(name) {
   if (!name) return '';
   return String(name)
@@ -979,6 +992,17 @@ function matchSingleTeacher_(rowPart, searchKey) {
   var rowFirstClean = cleanThaiAccents_(rowFirst);
   var keyFirstClean = cleanThaiAccents_(keyFirst);
 
+  var rowLast = rowWords.slice(1).join(' ');
+  var keyLast = keyWords.slice(1).join(' ');
+
+  // 1. ค้นหาด้วยนามสกุลอย่างเดียว (เช่น แซ่เฒ่า, ปานกล่ำ, โพธิ์ภาสี, งามวิริยะประเสริฐ)
+  if (keyWords.length === 1 && keyFirst.length >= 4 && rowLast) {
+    if (rowLast.indexOf(keyFirst) !== -1 || cleanThaiAccents_(rowLast).indexOf(keyFirstClean) !== -1) {
+      return true;
+    }
+  }
+
+  // 2. ตรวจสอบชื่อตัว
   var firstNamesMatch = (rowFirst === keyFirst) ||
     (rowFirstClean === keyFirstClean) ||
     (keyFirst.length >= 6 && rowFirst.indexOf(keyFirst) === 0) ||
@@ -989,10 +1013,21 @@ function matchSingleTeacher_(rowPart, searchKey) {
     return firstNamesMatch;
   }
 
-  if (firstNamesMatch && keyWords.length > 1) {
-    var keyLast = keyWords.slice(1).join(' ');
-    var rowLast = rowWords.slice(1).join(' ');
-    return rowLast.indexOf(keyLast) !== -1 || keyLast.indexOf(rowLast) !== -1;
+  if (keyWords.length > 1) {
+    if (keyLast && rowLast) {
+      var lastMatch = rowLast.indexOf(keyLast) !== -1 || keyLast.indexOf(rowLast) !== -1 ||
+        cleanThaiAccents_(rowLast).indexOf(cleanThaiAccents_(keyLast)) !== -1 ||
+        cleanThaiAccents_(keyLast).indexOf(cleanThaiAccents_(rowLast)) !== -1;
+
+      var rowFirstCanon = canonicalThai_(rowFirst);
+      var keyFirstCanon = canonicalThai_(keyFirst);
+      var canonFirstMatch = rowFirstCanon.length >= 5 && keyFirstCanon.length >= 5 &&
+        (rowFirstCanon === keyFirstCanon || rowFirstCanon.indexOf(keyFirstCanon) === 0 || keyFirstCanon.indexOf(rowFirstCanon) === 0);
+
+      if (lastMatch && (firstNamesMatch || canonFirstMatch)) return true;
+      if (!lastMatch) return false;
+    }
+    return firstNamesMatch;
   }
 
   return false;

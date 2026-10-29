@@ -937,6 +937,19 @@
       return String(str || '').replace(/[์่้๊๋็]/g, '');
     }
 
+    function canonicalThai(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/[ก-ฮ]์/g, '')
+        .replace(/[์่้๊๋็]/g, '')
+        .replace(/[ศษ]/g, 'ส')
+        .replace(/ณ/g, 'น')
+        .replace(/ภ/g, 'พ')
+        .replace(/ญ/g, 'น')
+        .trim()
+        .toLowerCase();
+    }
+
     function normalizeTeacherName(name) {
       if (!name) return '';
       return String(name)
@@ -961,20 +974,45 @@
       const rowFirstClean = cleanThaiAccents(rowFirst);
       const keyFirstClean = cleanThaiAccents(keyFirst);
 
+      const rowLast = rowWords.slice(1).join(' ');
+      const keyLast = keyWords.slice(1).join(' ');
+
+      // 1. ค้นหาด้วยนามสกุลอย่างเดียว (เช่น แซ่เฒ่า, ปานกล่ำ, โพธิ์ภาสี, งามวิริยะประเสริฐ)
+      if (keyWords.length === 1 && keyFirst.length >= 4 && rowLast) {
+        if (rowLast.includes(keyFirst) || cleanThaiAccents(rowLast).includes(keyFirstClean)) {
+          return true;
+        }
+      }
+
+      // 2. ตรวจสอบชื่อตัว (ต้องตรงกันอย่างแท้จริง หรือนำหน้าด้วยพยางค์ยาว >= 6 ตัวอักษร)
       const firstNamesMatch = (rowFirst === keyFirst) ||
         (rowFirstClean === keyFirstClean) ||
         (keyFirst.length >= 6 && rowFirst.startsWith(keyFirst)) ||
         (rowFirst.length >= 6 && keyFirst.startsWith(rowFirst));
 
+      // หากค้นหาคำเดียว (ชื่อตัวอย่างเดียว)
       if (keyWords.length === 1) {
         if (keyFirst.length < 5 && rowFirst !== keyFirst) return false;
         return firstNamesMatch;
       }
 
-      if (firstNamesMatch && keyWords.length > 1) {
-        const keyLast = keyWords.slice(1).join(' ');
-        const rowLast = rowWords.slice(1).join(' ');
-        return rowLast.includes(keyLast) || keyLast.includes(rowLast);
+      // หากค้นหาหลายคำ (มีชื่อ + นามสกุล)
+      if (keyWords.length > 1) {
+        if (keyLast && rowLast) {
+          const lastMatch = rowLast.includes(keyLast) || keyLast.includes(rowLast) ||
+            cleanThaiAccents(rowLast).includes(cleanThaiAccents(keyLast)) ||
+            cleanThaiAccents(keyLast).includes(cleanThaiAccents(rowLast));
+
+          // หากนามสกุลตรงกัน อนุโลมการสะกดชื่อตัวที่เสียงเดียวกัน (เช่น ศิริวรรณ vs สิริวรรญ์)
+          const rowFirstCanon = canonicalThai(rowFirst);
+          const keyFirstCanon = canonicalThai(keyFirst);
+          const canonFirstMatch = rowFirstCanon.length >= 5 && keyFirstCanon.length >= 5 &&
+            (rowFirstCanon === keyFirstCanon || rowFirstCanon.startsWith(keyFirstCanon) || keyFirstCanon.startsWith(rowFirstCanon));
+
+          if (lastMatch && (firstNamesMatch || canonFirstMatch)) return true;
+          if (!lastMatch) return false;
+        }
+        return firstNamesMatch;
       }
 
       return false;
@@ -1264,7 +1302,7 @@
     let _teacherAppInitialized = false;
     async function initTeacherApp() {
       // 🛡️ Bump cache version & invalidate stale caches across all devices
-      const APP_CACHE_VER = '20261028_v4';
+      const APP_CACHE_VER = '20261029_v1';
       if (localStorage.getItem('app_cache_ver') !== APP_CACHE_VER) {
         try { clearAllDataCaches(); } catch(e) {}
         localStorage.removeItem('teac_session_v3');
