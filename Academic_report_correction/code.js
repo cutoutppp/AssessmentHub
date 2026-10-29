@@ -407,12 +407,12 @@ function getTaskCacheVersion_() {
     var cache = CacheService.getScriptCache();
     var ver = cache.get('tasks_cache_version');
     if (!ver) {
-      ver = '1';
+      ver = '20261029_v2';
       cache.put('tasks_cache_version', ver, 21600);
     }
     return ver;
   } catch (e) {
-    return '1';
+    return '20261029_v2';
   }
 }
 
@@ -423,6 +423,13 @@ function bumpTaskCacheVersion_() {
     cache.put('tasks_cache_version', newVer, 21600);
     cache.remove('pending_approvals_cache');
   } catch (e) {}
+}
+
+function getSafeCacheKey_(prefix, mode, key) {
+  var ver = getTaskCacheVersion_();
+  var raw = (mode || 't') + '_' + String(key || '').trim().toLowerCase();
+  var safeHash = Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, raw, Utilities.Charset.UTF_8)).replace(/=/g, '');
+  return (prefix || 'tsk') + '_' + ver + '_' + safeHash;
 }
 
 function getLastRealRow_(sheet) {
@@ -1047,9 +1054,7 @@ function getTasksForAdmin(mode, keyword) {
   if(!cleanKey) return [];
 
   // ⚡ High-Speed Server Cache (30 mins, invalidated on edit/submit)
-  var ver = getTaskCacheVersion_();
-  var safeKey = encodeURIComponent(cleanKey).replace(/%/g, '_').slice(0, 40);
-  var cacheKey = 'tsk_' + ver + '_' + (mode || 't') + '_' + safeKey;
+  var cacheKey = getSafeCacheKey_('tsk', mode, cleanKey);
   try {
     var cached = getCacheChunked_(cacheKey);
     if (cached) {
@@ -1126,9 +1131,7 @@ function getHistoryForAdmin(mode, keyword) {
   if(!cleanKey) return [];
 
   // ⚡ High-Speed Server Cache (30 mins, invalidated on edit/submit)
-  var ver = getTaskCacheVersion_();
-  var safeKey = encodeURIComponent(cleanKey).replace(/%/g, '_').slice(0, 40);
-  var cacheKey = 'hst_' + ver + '_' + (mode || 't') + '_' + safeKey;
+  var cacheKey = getSafeCacheKey_('hst', mode, cleanKey);
   try {
     var cached = getCacheChunked_(cacheKey);
     if (cached) {
