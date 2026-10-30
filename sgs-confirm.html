@@ -657,6 +657,8 @@
     async function initData() {
       if (window.COURSES_DATA) {
         allCourses = window.COURSES_DATA;
+      } else if (window.COURSES_2_2569) {
+        allCourses = window.COURSES_2_2569;
       } else {
         try {
           const res = await fetch('assessment-plan/data/courses_2_2569.json');
@@ -670,10 +672,10 @@
       Object.values(allCourses).forEach(c => {
         c._originalPlanUnits = JSON.parse(JSON.stringify(c.units || []));
         c._originalPlanCutoff = c.midterm_cutoff || getOptimalCutoff(c.units, c.target_pre_hours) || 1;
-        c._planMidExam = c.mid_exam !== undefined ? parseInt(c.mid_exam, 10) : 15;
-        c._planFinExam = c.fin_exam !== undefined ? parseInt(c.fin_exam, 10) : 15;
-        c._inlineMidDuration = null;
-        c._inlineFinDuration = null;
+        c._planMidExam = c.mid_exam !== undefined ? parseInt(c.mid_exam, 10) : (isAntiCorruptionCourse(c) ? 10 : 15);
+        c._planFinExam = c.fin_exam !== undefined ? parseInt(c.fin_exam, 10) : (isAntiCorruptionCourse(c) ? 10 : 15);
+        c._inlineMidDuration = (c.mid_exam_duration && parseInt(c.mid_exam_duration, 10) > 0) ? parseInt(c.mid_exam_duration, 10) : (isAntiCorruptionCourse(c) ? 50 : null);
+        c._inlineFinDuration = (c.fin_exam_duration && parseInt(c.fin_exam_duration, 10) > 0) ? parseInt(c.fin_exam_duration, 10) : (isAntiCorruptionCourse(c) ? 50 : null);
       });
 
       // Apply overrides from local confirmations while preserving all co-teachers
@@ -717,6 +719,13 @@
       });
     }
 
+    function isAntiCorruptionCourse(c) {
+      if (!c) return false;
+      if (c.course_name && c.course_name.includes("การป้องกันการทุจริต")) return true;
+      const codes = ["ส20223", "ส20224", "ส20225", "ส20226", "ส20227", "ส20228", "ส30247", "ส30248", "ส30249", "ส30250", "ส30251", "ส30252"];
+      return codes.includes(c.course_code);
+    }
+
     function normalizeTeacherKey(name) {
       if (!name) return '';
       return String(name).trim()
@@ -738,7 +747,7 @@
           merged.push(t);
         }
       });
-      if (extraTeacher && !isPlaceholderTeacher(extraTeacher)) {
+      if (extraTeacher && !isPlaceholderTeacher(extraTeacher) && !extraTeacher.includes('[กลุ่มสาระฯ]')) {
         const ek = normalizeTeacherKey(extraTeacher);
         if (ek && !seenKeys.has(ek)) {
           seenKeys.add(ek);
@@ -1034,24 +1043,24 @@
       if (course._inlineMidExam === undefined) {
         course._inlineMidExam = sgsConfirmations[course.course_code]?.mid_exam !== undefined
           ? parseInt(sgsConfirmations[course.course_code].mid_exam, 10)
-          : 15;
+          : (course.mid_exam !== undefined ? parseInt(course.mid_exam, 10) : (isAntiCorruptionCourse(course) ? 10 : 15));
       }
       if (course._inlineFinExam === undefined) {
         course._inlineFinExam = sgsConfirmations[course.course_code]?.fin_exam !== undefined
           ? parseInt(sgsConfirmations[course.course_code].fin_exam, 10)
-          : 15;
+          : (course.fin_exam !== undefined ? parseInt(course.fin_exam, 10) : (isAntiCorruptionCourse(course) ? 10 : 15));
       }
       if (course._inlineMidDuration === undefined) {
         const savedDur = sgsConfirmations[course.course_code]?.mid_exam_duration;
         course._inlineMidDuration = (savedDur !== undefined && savedDur !== null && savedDur !== '' && parseInt(savedDur, 10) > 0)
           ? parseInt(savedDur, 10)
-          : null;
+          : (course.mid_exam_duration ? parseInt(course.mid_exam_duration, 10) : (isAntiCorruptionCourse(course) ? 50 : null));
       }
       if (course._inlineFinDuration === undefined) {
         const savedDur = sgsConfirmations[course.course_code]?.fin_exam_duration;
         course._inlineFinDuration = (savedDur !== undefined && savedDur !== null && savedDur !== '' && parseInt(savedDur, 10) > 0)
           ? parseInt(savedDur, 10)
-          : null;
+          : (course.fin_exam_duration ? parseInt(course.fin_exam_duration, 10) : (isAntiCorruptionCourse(course) ? 50 : null));
       }
     }
 
@@ -1104,7 +1113,8 @@
       const grandTotal = preSum + midExam + postSum + finExam;
       const hasOver15 = course._inlinePreScores.some(v => (parseInt(v, 10) || 0) > 15) ||
                         course._inlinePostScores.some(v => (parseInt(v, 10) || 0) > 15);
-      const is5050 = (preSum + midExam === 50 && postSum + finExam === 50 && grandTotal === 100 && !hasOver15 && midDuration > 0 && finDuration > 0);
+      const isAnti = isAntiCorruptionCourse(course);
+      const is5050 = (preSum + midExam === 50 && postSum + finExam === 50 && grandTotal === 100 && !hasOver15 && (isAnti || (midDuration > 0 && finDuration > 0)));
 
       return { preSlots, postSlots, preSum, midExam, postSum, finExam, grandTotal, midDuration, finDuration, hasOver15, is5050 };
     }
@@ -1199,11 +1209,13 @@
       }
 
       // 5. Exam durations must be entered (> 0)
-      if (!sgs.midDuration || sgs.midDuration <= 0) {
-        errors.push(`ยังไม่ได้ระบุ "เวลาสอบกลางภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
-      }
-      if (!sgs.finDuration || sgs.finDuration <= 0) {
-        errors.push(`ยังไม่ได้ระบุ "เวลาสอบปลายภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
+      if (!isAntiCorruptionCourse(c)) {
+        if (!sgs.midDuration || sgs.midDuration <= 0) {
+          errors.push(`ยังไม่ได้ระบุ "เวลาสอบกลางภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
+        }
+        if (!sgs.finDuration || sgs.finDuration <= 0) {
+          errors.push(`ยังไม่ได้ระบุ "เวลาสอบปลายภาค" (กรุณากรอกเวลาสอบ เช่น 60 นาที)`);
+        }
       }
 
       // 6. Check if scores deviate from assessment plan (วผ.19)
@@ -1640,6 +1652,13 @@
         return a.localeCompare(b, 'th');
       });
 
+      if (!selectedArea || selectedArea.includes('สังคม')) {
+        const opt = document.createElement('option');
+        opt.value = '[กลุ่มสาระฯ] วิชาการป้องกันการทุจริต (ม.1 - ม.6)';
+        opt.textContent = '🛡️ [กลุ่มสาระฯ] วิชาการป้องกันการทุจริต (ม.1 - ม.6)';
+        select.appendChild(opt);
+      }
+
       sorted.forEach(name => {
         const code = getTeacherCodeByName(name);
         const opt = document.createElement('option');
@@ -1670,6 +1689,14 @@
         document.getElementById('teacherEmptyPrompt').classList.remove('hidden');
         document.getElementById('teacherCourseCardsList').innerHTML = '';
         document.getElementById('teacherCourseCardsList').appendChild(document.getElementById('teacherEmptyPrompt'));
+        return;
+      }
+
+      if (selectedTeacherName.includes('การป้องกันการทุจริต')) {
+        document.getElementById('selectedTeacherDisplayName').textContent = 'รายวิชาการป้องกันการทุจริต (ม.1 - ม.6)';
+        document.getElementById('selectedTeacherAreaBadge').textContent = 'กลุ่มสาระการเรียนรู้สังคมศึกษาฯ';
+        document.getElementById('teacherCourseSummaryBar').classList.remove('hidden');
+        renderTeacherCards();
         return;
       }
 
@@ -1741,10 +1768,15 @@
 
       const targetKey = normalizeTeacherKey(selectedTeacherName);
       // Find courses for this teacher (match exact or normalized key) and ensure scheduled in Term 2
-      let courses = Object.values(allCourses).filter(c =>
-        c.is_scheduled_term2 &&
-        (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
-      );
+      let courses = [];
+      if (selectedTeacherName.includes('การป้องกันการทุจริต')) {
+        courses = Object.values(allCourses).filter(c => c.is_scheduled_term2 && isAntiCorruptionCourse(c));
+      } else {
+        courses = Object.values(allCourses).filter(c =>
+          c.is_scheduled_term2 &&
+          (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
+        );
+      }
 
 
       // Sort: Term 2 first
@@ -2075,7 +2107,7 @@
         mid_exam_duration: sgs.midDuration,
         fin_exam_duration: sgs.finDuration,
         confirmed_status: 'ยืนยัน',
-        confirmed_by: selectedTeacherName || existing.confirmed_by || (mergedTeachers[0]) || 'ครูผู้สอน',
+        confirmed_by: (selectedTeacherName && selectedTeacherName.includes('การป้องกันการทุจริต')) ? 'กลุ่มสาระการเรียนรู้สังคมศึกษาฯ' : (selectedTeacherName || existing.confirmed_by || (mergedTeachers[0]) || 'ครูผู้สอน'),
         confirmed_at: new Date().toISOString(),
         admin_checked: Boolean(existing.admin_checked),
         sgs_entered: Boolean(existing.sgs_entered),
@@ -2165,10 +2197,15 @@
     async function confirmAllMyCourses() {
       if (!selectedTeacherName) return;
       const targetKey = normalizeTeacherKey(selectedTeacherName);
-      const courses = Object.values(allCourses).filter(c =>
-        c.is_scheduled_term2 &&
-        (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
-      );
+      let courses = [];
+      if (selectedTeacherName.includes('การป้องกันการทุจริต')) {
+        courses = Object.values(allCourses).filter(c => c.is_scheduled_term2 && isAntiCorruptionCourse(c));
+      } else {
+        courses = Object.values(allCourses).filter(c =>
+          c.is_scheduled_term2 &&
+          (c.teachers || []).some(t => t === selectedTeacherName || normalizeTeacherKey(t) === targetKey)
+        );
+      }
       if (courses.length === 0) {
         showToast("ไม่พบรายวิชาที่ต้องยืนยัน", "error");
         return;
@@ -2225,7 +2262,7 @@
           mid_exam_duration: sgs.midDuration,
           fin_exam_duration: sgs.finDuration,
           confirmed_status: 'ยืนยัน',
-          confirmed_by: existing.confirmed_status === 'ยืนยัน' && existing.confirmed_by ? existing.confirmed_by : selectedTeacherName,
+          confirmed_by: existing.confirmed_status === 'ยืนยัน' && existing.confirmed_by ? existing.confirmed_by : ((selectedTeacherName && selectedTeacherName.includes('การป้องกันการทุจริต')) ? 'กลุ่มสาระการเรียนรู้สังคมศึกษาฯ' : selectedTeacherName),
           confirmed_at: existing.confirmed_status === 'ยืนยัน' && existing.confirmed_at ? existing.confirmed_at : new Date().toISOString(),
           admin_checked: Boolean(existing.admin_checked),
           sgs_entered: Boolean(existing.sgs_entered),

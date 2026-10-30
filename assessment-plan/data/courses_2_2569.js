@@ -62284,7 +62284,10 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวอัจฉรา จันทร์ผ่อง",
+      "นางสาวน้ำมนต์ ฤาชัย",
+      "นางสาวปรารถนา คำสีทิพย์",
+      "นางสาวนรกมล บุญศรี"
     ],
     "units": [
       {
@@ -62418,7 +62421,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20224": {
     "course_code": "ส20224",
@@ -62431,7 +62436,10 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวอัจฉรา จันทร์ผ่อง",
+      "นางสาวน้ำมนต์ ฤาชัย",
+      "นางสาวปรารถนา คำสีทิพย์",
+      "นางสาวนรกมล บุญศรี"
     ],
     "units": [
       {
@@ -62593,7 +62601,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20225": {
     "course_code": "ส20225",
@@ -62606,7 +62616,10 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวกุลชญา เจริญสลุง",
+      "นางสาวปรารถนา คำสีทิพย์",
+      "นางสาวนรกมล บุญศรี",
+      "นางสาวสุภาวดี แก้วถึง"
     ],
     "units": [
       {
@@ -62740,7 +62753,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20226": {
     "course_code": "ส20226",
@@ -62753,7 +62768,10 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวกุลชญา เจริญสลุง",
+      "นางสาวปรารถนา คำสีทิพย์",
+      "นางสาวนรกมล บุญศรี",
+      "นางสาวสุภาวดี แก้วถึง"
     ],
     "units": [
       {
@@ -62915,7 +62933,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20227": {
     "course_code": "ส20227",
@@ -62928,7 +62948,9 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวชนาภา อุบลวัตร์",
+      "นางสาวสุภาวดี แก้วถึง",
+      "นางสาวพรปวีณา แจ่มสุวรรณ"
     ],
     "units": [
       {
@@ -63062,7 +63084,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20228": {
     "course_code": "ส20228",
@@ -63075,7 +63099,9 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นางสาวชนาภา อุบลวัตร์",
+      "นางสาวสุภาวดี แก้วถึง",
+      "นางสาวพรปวีณา แจ่มสุวรรณ"
     ],
     "units": [
       {
@@ -63237,7 +63263,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส20229": {
     "course_code": "ส20229",
@@ -68708,7 +68736,13 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายนนทกานต์ พรมมา",
+      "นายพงศธร แสนเมือง",
+      "นางสาวสุนิษา อินทรโชติ",
+      "นายพีรวัฒน์ แสงเงิน",
+      "นางสาวไอลดา พิณพาทย์",
+      "นายจักรพงษ์ งามวิริยะประเสริฐ",
+      "นางสาวกุลชญา เจริญสลุง"
     ],
     "units": [
       {
@@ -68842,7 +68876,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30248": {
     "course_code": "ส30248",
@@ -68855,7 +68891,13 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายนนทกานต์ พรมมา",
+      "นายพงศธร แสนเมือง",
+      "นางสาวสุนิษา อินทรโชติ",
+      "นายพีรวัฒน์ แสงเงิน",
+      "นางสาวไอลดา พิณพาทย์",
+      "นายจักรพงษ์ งามวิริยะประเสริฐ",
+      "นางสาวกุลชญา เจริญสลุง"
     ],
     "units": [
       {
@@ -69017,7 +69059,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30249": {
     "course_code": "ส30249",
@@ -69030,7 +69074,11 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายนนทกานต์ พรมมา",
+      "นางสาวพรปวีณา แจ่มสุวรรณ",
+      "นายจักรพงษ์ งามวิริยะประเสริฐ",
+      "นางสาวสุนิษา อินทรโชติ",
+      "นายจักรกฤษณ์ โพธิ์ภาสี"
     ],
     "units": [
       {
@@ -69164,7 +69212,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30250": {
     "course_code": "ส30250",
@@ -69177,7 +69227,11 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายนนทกานต์ พรมมา",
+      "นางสาวพรปวีณา แจ่มสุวรรณ",
+      "นายจักรพงษ์ งามวิริยะประเสริฐ",
+      "นางสาวสุนิษา อินทรโชติ",
+      "นายจักรกฤษณ์ โพธิ์ภาสี"
     ],
     "units": [
       {
@@ -69339,7 +69393,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30251": {
     "course_code": "ส30251",
@@ -69352,7 +69408,11 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายพงศธร แสนเมือง",
+      "นายจักรกฤษณ์ โพธิ์ภาสี",
+      "นางสาวนรกมล บุญศรี",
+      "นายพีรวัฒน์ แสงเงิน",
+      "นางสาวชนาภา อุบลวัตร์"
     ],
     "units": [
       {
@@ -69486,7 +69546,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30252": {
     "course_code": "ส30252",
@@ -69499,7 +69561,11 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "....................................................."
+      "นายพงศธร แสนเมือง",
+      "นายจักรกฤษณ์ โพธิ์ภาสี",
+      "นางสาวนรกมล บุญศรี",
+      "นายพีรวัฒน์ แสงเงิน",
+      "นางสาวชนาภา อุบลวัตร์"
     ],
     "units": [
       {
@@ -69661,7 +69727,9 @@ window.COURSES_2_2569 = {
     "key_task": "-",
     "midterm_cutoff": 2,
     "mid_exam": 10,
-    "fin_exam": 10
+    "fin_exam": 10,
+    "mid_exam_duration": 50,
+    "fin_exam_duration": 50
   },
   "ส30253": {
     "course_code": "ส30253",

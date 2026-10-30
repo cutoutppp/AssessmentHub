@@ -731,12 +731,12 @@
       const existing = sgsConfirmations[code] || {};
       const midIn = document.getElementById('inputMidExamDuration');
       const finIn = document.getElementById('inputFinExamDuration');
-      const midDur = isCorruption ? null : ((midIn && midIn.value) ? (parseInt(midIn.value, 10) || null) : (existing.mid_exam_duration || null));
-      const finDur = isCorruption ? null : ((finIn && finIn.value) ? (parseInt(finIn.value, 10) || null) : (existing.fin_exam_duration || null));
+      const midDur = isCorruption ? (existing.mid_exam_duration || 50) : ((midIn && midIn.value) ? (parseInt(midIn.value, 10) || null) : (existing.mid_exam_duration || null));
+      const finDur = isCorruption ? (existing.fin_exam_duration || 50) : ((finIn && finIn.value) ? (parseInt(finIn.value, 10) || null) : (existing.fin_exam_duration || null));
       const inpClass = document.getElementById('inputCourseClassrooms');
       const classrooms = (inpClass && inpClass.value.trim()) ? inpClass.value.trim() : (currentCourse.classrooms || existing.classrooms || `${currentCourse.grade_level}`);
       const validTeachers = (currentCourse.teachers || []).filter(t => !isPlaceholderTeacher(t));
-      const finalTeachers = isCorruption ? ["....................................................."] : (validTeachers.length > 0 ? validTeachers : (existing.teachers || currentCourse.teachers || []));
+      const finalTeachers = validTeachers.length > 0 ? validTeachers : (existing.teachers || currentCourse.teachers || []);
 
       const draftPayload = {
         ...existing,
@@ -1002,7 +1002,6 @@
 
     function isAntiCorruptionCourse(c) {
       if (!c) return false;
-      if (c.score_ratio === "80:20") return true;
       if (c.course_name && c.course_name.includes("การป้องกันการทุจริต")) return true;
       const codes = ["ส20223", "ส20224", "ส20225", "ส20226", "ส20227", "ส20228", "ส30247", "ส30248", "ส30249", "ส30250", "ส30251", "ส30252"];
       return codes.includes(c.course_code);
@@ -1118,8 +1117,7 @@
         currentCourse.teachers = ['.....................................................'];
       }
       const isCorruption = isAntiCorruptionCourse(currentCourse);
-      if (isCorruption) {
-        currentCourse.teachers = ['.....................................................'];
+      if (isCorruption && (!currentCourse.teachers || currentCourse.teachers.length === 0 || currentCourse.teachers.every(isPlaceholderTeacher))) {
         if (openBtn) openBtn.classList.add('hidden');
         if (addBox) addBox.classList.add('hidden');
         const tag = document.createElement('span');
@@ -1774,13 +1772,12 @@
       const code = courseObj.course_code;
       const isCorruption = isAntiCorruptionCourse(courseObj);
       const selectedFilterTeacher = document.getElementById('filterTeacherSelect')?.value?.trim() || '';
-      let validTeachers = isCorruption ? ["....................................................."] : (courseObj.teachers || []).filter(t => !isPlaceholderTeacher(t));
-      if (!isCorruption && validTeachers.length === 0 && selectedFilterTeacher) {
+      let validTeachers = (courseObj.teachers || []).filter(t => !isPlaceholderTeacher(t));
+      if (validTeachers.length === 0 && selectedFilterTeacher) {
         validTeachers = [selectedFilterTeacher];
         courseObj.teachers = [selectedFilterTeacher];
       }
       if (isCorruption) {
-        courseObj.teachers = ["....................................................."];
         courseObj.midterm_cutoff = 2;
       }
 
@@ -2469,9 +2466,11 @@
       document.getElementById('viewCourseName').textContent = c.course_name;
       document.getElementById('viewCourseMeta').textContent = `ชั้น${c.grade_level} • ภาคเรียนที่ 2/2569 • ${c.total_hours} คาบ (${c.credits.toFixed(1)} หน่วยกิต)`;
       
-      // If anti-corruption, force teachers to blank placeholder, and DO NOT auto-fill teacher
+      // If anti-corruption, preserve grade-level teachers or default to blank placeholder if none
       if (isCorruption) {
-        currentCourse.teachers = ['.....................................................'];
+        if (!currentCourse.teachers || currentCourse.teachers.length === 0 || currentCourse.teachers.every(isPlaceholderTeacher)) {
+          currentCourse.teachers = ['.....................................................'];
+        }
         currentCourse.midterm_cutoff = 2;
         currentCourse.score_ratio = "80:20";
         currentCourse.target_mid_score = 10;
