@@ -1111,9 +1111,11 @@
         ? parseInt(course._inlineFinDuration, 10)
         : null;
       const grandTotal = preSum + midExam + postSum + finExam;
-      const hasOver15 = course._inlinePreScores.some(v => (parseInt(v, 10) || 0) > 15) ||
-                        course._inlinePostScores.some(v => (parseInt(v, 10) || 0) > 15);
       const isAnti = isAntiCorruptionCourse(course);
+      const hasOver15 = isAnti ? false : (
+        course._inlinePreScores.some(v => (parseInt(v, 10) || 0) > 15) ||
+        course._inlinePostScores.some(v => (parseInt(v, 10) || 0) > 15)
+      );
       const is5050 = (preSum + midExam === 50 && postSum + finExam === 50 && grandTotal === 100 && !hasOver15 && (isAnti || (midDuration > 0 && finDuration > 0)));
 
       return { preSlots, postSlots, preSum, midExam, postSum, finExam, grandTotal, midDuration, finDuration, hasOver15, is5050 };
@@ -1164,25 +1166,27 @@
       const sgs = getSgsSlots(c);
       const errors = [];
 
-      // 1. Each formative slot must be <= 15
-      const overPreIndices = [];
-      c._inlinePreScores.forEach((v, idx) => {
-        if (v !== null && v !== undefined && v > 15) {
-          overPreIndices.push(idx + 1);
+      // 1. Each formative slot must be <= 15 (except anti-corruption courses which use M.2 unit structure)
+      if (!isAntiCorruptionCourse(c)) {
+        const overPreIndices = [];
+        c._inlinePreScores.forEach((v, idx) => {
+          if (v !== null && v !== undefined && v > 15) {
+            overPreIndices.push(idx + 1);
+          }
+        });
+        if (overPreIndices.length > 0) {
+          errors.push(`คะแนนเก็บก่อนกลางภาค: ช่องที่ ${overPreIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
         }
-      });
-      if (overPreIndices.length > 0) {
-        errors.push(`คะแนนเก็บก่อนกลางภาค: ช่องที่ ${overPreIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
-      }
 
-      const overPostIndices = [];
-      c._inlinePostScores.forEach((v, idx) => {
-        if (v !== null && v !== undefined && v > 15) {
-          overPostIndices.push(idx + 1);
+        const overPostIndices = [];
+        c._inlinePostScores.forEach((v, idx) => {
+          if (v !== null && v !== undefined && v > 15) {
+            overPostIndices.push(idx + 1);
+          }
+        });
+        if (overPostIndices.length > 0) {
+          errors.push(`คะแนนเก็บหลังกลางภาค: ช่องที่ ${overPostIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
         }
-      });
-      if (overPostIndices.length > 0) {
-        errors.push(`คะแนนเก็บหลังกลางภาค: ช่องที่ ${overPostIndices.join(', ')} เกิน 15 คะแนน (ระบบ SGS กำหนดห้ามเกิน 15 คะแนนต่อช่อง)`);
       }
 
       // 2. Pre-midterm total must equal 50
@@ -1823,7 +1827,7 @@
           const valScore = c._inlinePreScores[i];
           const meta = c._preMeta[i];
           const hasVal = valScore !== null && valScore !== undefined && valScore > 0;
-          const isOver = hasVal && valScore > 15;
+          const isOver = !isAntiCorruptionCourse(c) && hasVal && valScore > 15;
           const unitTitle = meta
             ? `หน่วยที่ ${meta.unit_no}: ${meta.unit_name}${meta.sub_idx ? ` (ครั้งที่ ${meta.sub_idx})` : ''}`
             : `ช่องคะแนนก่อนกลางภาคที่ ${i + 1} (พิมพ์ตัวเลขเพื่อกำหนดคะแนน)`;
@@ -1844,7 +1848,7 @@
                 id="slot-inp-${code}-pre-${i}"
                 type="number"
                 min="0"
-                max="15"
+                max="${isAntiCorruptionCourse(c) ? 20 : 15}"
                 placeholder="-"
                 value="${hasVal ? valScore : ''}"
                 oninput="onInlineSlotInput('${code}', 'pre', ${i}, this.value)"
@@ -1861,7 +1865,7 @@
           const valScore = c._inlinePostScores[i];
           const meta = c._postMeta[i];
           const hasVal = valScore !== null && valScore !== undefined && valScore > 0;
-          const isOver = hasVal && valScore > 15;
+          const isOver = !isAntiCorruptionCourse(c) && hasVal && valScore > 15;
           const unitTitle = meta
             ? `หน่วยที่ ${meta.unit_no}: ${meta.unit_name}${meta.sub_idx ? ` (ครั้งที่ ${meta.sub_idx})` : ''}`
             : `ช่องคะแนนหลังกลางภาคที่ ${i + 1} (พิมพ์ตัวเลขเพื่อกำหนดคะแนน)`;
@@ -1882,7 +1886,7 @@
                 id="slot-inp-${code}-post-${i}"
                 type="number"
                 min="0"
-                max="15"
+                max="${isAntiCorruptionCourse(c) ? 20 : 15}"
                 placeholder="-"
                 value="${hasVal ? valScore : ''}"
                 oninput="onInlineSlotInput('${code}', 'post', ${i}, this.value)"

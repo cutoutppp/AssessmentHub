@@ -62284,19 +62284,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวอัจฉรา จันทร์ผ่อง",
-      "นางสาวน้ำมนต์ ฤาชัย",
-      "นางสาวปรารถนา คำสีทิพย์",
-      "นางสาวนรกมล บุญศรี"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62307,11 +62304,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62319,9 +62323,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62332,11 +62336,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62344,9 +62355,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -62357,11 +62368,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62369,9 +62387,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -62382,11 +62400,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -62436,10 +62461,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวอัจฉรา จันทร์ผ่อง",
-      "นางสาวน้ำมนต์ ฤาชัย",
-      "นางสาวปรารถนา คำสีทิพย์",
-      "นางสาวนรกมล บุญศรี"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
@@ -62616,19 +62638,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวกุลชญา เจริญสลุง",
-      "นางสาวปรารถนา คำสีทิพย์",
-      "นางสาวนรกมล บุญศรี",
-      "นางสาวสุภาวดี แก้วถึง"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62639,11 +62658,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62651,9 +62677,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62664,11 +62690,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62676,9 +62709,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -62689,11 +62722,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62701,9 +62741,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -62714,11 +62754,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -62768,10 +62815,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวกุลชญา เจริญสลุง",
-      "นางสาวปรารถนา คำสีทิพย์",
-      "นางสาวนรกมล บุญศรี",
-      "นางสาวสุภาวดี แก้วถึง"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
@@ -62948,18 +62992,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวชนาภา อุบลวัตร์",
-      "นางสาวสุภาวดี แก้วถึง",
-      "นางสาวพรปวีณา แจ่มสุวรรณ"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -62970,11 +63012,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -62982,9 +63031,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -62995,11 +63044,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -63007,9 +63063,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -63020,11 +63076,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -63032,9 +63095,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -63045,11 +63108,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -63099,9 +63169,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นางสาวชนาภา อุบลวัตร์",
-      "นางสาวสุภาวดี แก้วถึง",
-      "นางสาวพรปวีณา แจ่มสุวรรณ"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
@@ -68736,22 +68804,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายนนทกานต์ พรมมา",
-      "นายพงศธร แสนเมือง",
-      "นางสาวสุนิษา อินทรโชติ",
-      "นายพีรวัฒน์ แสงเงิน",
-      "นางสาวไอลดา พิณพาทย์",
-      "นายจักรพงษ์ งามวิริยะประเสริฐ",
-      "นางสาวกุลชญา เจริญสลุง"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -68762,11 +68824,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68774,9 +68843,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -68787,11 +68856,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68799,9 +68875,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -68812,11 +68888,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -68824,9 +68907,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -68837,11 +68920,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -68891,13 +68981,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายนนทกานต์ พรมมา",
-      "นายพงศธร แสนเมือง",
-      "นางสาวสุนิษา อินทรโชติ",
-      "นายพีรวัฒน์ แสงเงิน",
-      "นางสาวไอลดา พิณพาทย์",
-      "นายจักรพงษ์ งามวิริยะประเสริฐ",
-      "นางสาวกุลชญา เจริญสลุง"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
@@ -69074,20 +69158,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายนนทกานต์ พรมมา",
-      "นางสาวพรปวีณา แจ่มสุวรรณ",
-      "นายจักรพงษ์ งามวิริยะประเสริฐ",
-      "นางสาวสุนิษา อินทรโชติ",
-      "นายจักรกฤษณ์ โพธิ์ภาสี"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -69098,11 +69178,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69110,9 +69197,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -69123,11 +69210,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69135,9 +69229,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -69148,11 +69242,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69160,9 +69261,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -69173,11 +69274,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -69227,11 +69335,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายนนทกานต์ พรมมา",
-      "นางสาวพรปวีณา แจ่มสุวรรณ",
-      "นายจักรพงษ์ งามวิริยะประเสริฐ",
-      "นางสาวสุนิษา อินทรโชติ",
-      "นายจักรกฤษณ์ โพธิ์ภาสี"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
@@ -69408,20 +69512,16 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายพงศธร แสนเมือง",
-      "นายจักรกฤษณ์ โพธิ์ภาสี",
-      "นางสาวนรกมล บุญศรี",
-      "นายพีรวัฒน์ แสงเงิน",
-      "นางสาวชนาภา อุบลวัตร์"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
         "unit_no": "1",
         "unit_name": "STRONG / จิตพอเพียงต้านทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-2"
@@ -69432,11 +69532,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69444,9 +69551,9 @@ window.COURSES_2_2569 = {
         "unit_no": "2",
         "unit_name": "พลเมืองกับความรับผิดชอบต่อสังคม",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 3-4"
@@ -69457,11 +69564,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69469,9 +69583,9 @@ window.COURSES_2_2569 = {
         "unit_no": "3",
         "unit_name": "ความสำคัญของการต่อต้านและป้องกันการทุจริต",
         "hours": 4,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 5"
@@ -69482,11 +69596,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       },
@@ -69494,9 +69615,9 @@ window.COURSES_2_2569 = {
         "unit_no": "4",
         "unit_name": "บูรณาการความรู้ สู่การป้องกันการทุจริต",
         "hours": 5,
-        "score_k": 20,
-        "score_p": 0,
-        "score_a": 0,
+        "score_k": 16,
+        "score_p": 2,
+        "score_a": 2,
         "score_total": 20,
         "indicators": [
           "ข้อที่ 1-5"
@@ -69507,11 +69628,18 @@ window.COURSES_2_2569 = {
         "eval_method": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
         "assessments": [
           {
-            "eval_methods": "- การสังเกตพฤติกรรม\n- การถาม - ตอบ ในชั้นเรียน\n- แบบทดสอบก่อนเรียน-หลังเรียน",
-            "score_k": 20,
-            "score_p": "-",
-            "score_a": "-",
-            "score_total": 20
+            "eval_methods": "- การสังเกตพฤติกรรมและการมีส่วนร่วมในชั้นเรียน",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
+          },
+          {
+            "eval_methods": "- การประเมินใบงาน/กิจกรรมและการทดสอบย่อย",
+            "score_k": 8,
+            "score_p": 1,
+            "score_a": 1,
+            "score_total": 10
           }
         ]
       }
@@ -69561,11 +69689,7 @@ window.COURSES_2_2569 = {
     "target_pre_hours": 9,
     "target_post_hours": 9,
     "teachers": [
-      "นายพงศธร แสนเมือง",
-      "นายจักรกฤษณ์ โพธิ์ภาสี",
-      "นางสาวนรกมล บุญศรี",
-      "นายพีรวัฒน์ แสงเงิน",
-      "นางสาวชนาภา อุบลวัตร์"
+      "นายพีรวัฒน์ แสงเงิน"
     ],
     "units": [
       {
