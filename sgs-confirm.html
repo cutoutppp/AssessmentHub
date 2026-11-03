@@ -670,7 +670,11 @@
 
       // Initialize base plan units and blank exam durations by default
       Object.values(allCourses).forEach(c => {
-        c._originalPlanUnits = JSON.parse(JSON.stringify(c.units || []));
+        // Data uses 'กิจกรรมพัฒนาผู้เรียน (IS)'; dashboard/filter keys use the bare name
+        if (typeof c.learning_area === 'string' && c.learning_area.startsWith('กิจกรรมพัฒนาผู้เรียน')) {
+          c.learning_area = 'กิจกรรมพัฒนาผู้เรียน';
+        }
+        c._originalPlanUnits =JSON.parse(JSON.stringify(c.units || []));
         c._originalPlanCutoff = c.midterm_cutoff || getOptimalCutoff(c.units, c.target_pre_hours) || 1;
         c._planMidExam = c.mid_exam !== undefined ? parseInt(c.mid_exam, 10) : (isAntiCorruptionCourse(c) ? 10 : 15);
         c._planFinExam = c.fin_exam !== undefined ? parseInt(c.fin_exam, 10) : (isAntiCorruptionCourse(c) ? 10 : 15);
