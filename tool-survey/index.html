@@ -57,20 +57,20 @@
 
   <div class="max-w-3xl mx-auto">
 
-    <!-- Top Navigation / Mode Toggle -->
+    <!-- Top Navigation / Mode Toggle (Closed) -->
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Firebase Cloud Sync (บันทึกอัตโนมัติ)
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+          <span>🔒 ปิดรับการประเมินแล้ว</span>
+          <span class="text-amber-600 font-bold">(N = 82 คน)</span>
         </span>
       </div>
       <div class="flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
-        <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition">
-          📝 ทำแบบประเมิน
+        <button id="tabReportBtn" onclick="switchTab('report')" class="px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-xs transition cursor-pointer">
+          📊 รายงานผลสรุป (82 คน)
         </button>
-        <button id="tabReportBtn" onclick="switchTab('report')" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition">
-          📊 ผลการประเมินสด
+        <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition cursor-pointer">
+          📝 แบบฟอร์ม (ปิดรับแล้ว)
         </button>
       </div>
     </div>
@@ -94,8 +94,30 @@
       </p>
     </header>
 
-    <!-- ================= VIEW 1: แบบประเมิน (FORM) ================= -->
-    <main id="formView" class="space-y-6">
+    <!-- ================= VIEW 1: แบบประเมิน (FORM - ปิดรับแล้ว) ================= -->
+    <main id="formView" class="hidden space-y-6">
+      <!-- แจ้งปิดรับการประเมิน -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-xs">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 text-xl font-bold">
+          🔒
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-1">
+            <h2 class="text-sm sm:text-base font-black text-amber-950">ปิดรับการประเมินเรียบร้อยแล้ว</h2>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-200/80 text-amber-900">สิ้นสุดรอบการประเมิน (N = 82 คน)</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            งานวัดและประเมินผลการศึกษาขอขอบพระคุณคณะครูทุกท่านที่ได้ร่วมสะท้อนข้อมูลและข้อคิดเห็นอันเป็นประโยชน์ยิ่ง ท่านสามารถดูสรุปผลการประเมิน ข้อเสนอแนะ และข้อมูลสถิติฉบับสมบูรณ์ได้ที่แท็บ <strong>"รายงานผลสรุป"</strong>
+          </p>
+          <div class="mt-3">
+            <button type="button" onclick="switchTab('report')" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer">
+              <span>📊 ดูรายงานผลการประเมินฉบับสมบูรณ์</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <form id="surveyForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
 
         <!-- ตอนที่ 1: ข้อมูลทั่วไป -->
@@ -377,12 +399,11 @@
           </div>
         </section>
 
-        <!-- ปุ่มส่งแบบประเมิน -->
+        <!-- ปุ่มส่งแบบประเมิน (ปิดรับแล้ว) -->
         <div class="pt-2 pb-10">
-          <button type="submit" id="submitBtn"
-                  class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base">
-            <span>ส่งแบบประเมิน</span>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <button type="button" disabled
+                  class="w-full bg-slate-200 text-slate-500 font-bold py-3.5 px-6 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base border border-slate-300">
+            <span>🔒 ปิดรับการประเมินเรียบร้อยแล้ว (สิ้นสุดการรับข้อมูล)</span>
           </button>
         </div>
 
@@ -412,7 +433,7 @@
     </main>
 
     <!-- ================= VIEW 2: รายงานผลสด (REAL-TIME REPORT) ================= -->
-    <section id="reportView" class="hidden space-y-6">
+    <section id="reportView" class="space-y-6">
       
       <!-- Summary KPI Cards -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -878,9 +899,11 @@
       a.click();
     };
 
-    // เริ่มต้นแสดงผล
+    // เริ่มต้นแสดงผล (ค่าเริ่มต้น: แสดงผลรายงานสรุป)
     renderQuestions();
-    if (window.location.hash === '#report' || window.location.search.includes('tab=report')) {
+    if (window.location.hash === '#form' || window.location.search.includes('tab=form')) {
+      switchTab('form');
+    } else {
       switchTab('report');
     }
   </script>
