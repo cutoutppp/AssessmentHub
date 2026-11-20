@@ -218,11 +218,7 @@
     const sorted = Array.from(teacherSet).filter(Boolean).sort((a, b) => a.localeCompare(b, 'th'));
     els.filterTeacherSelect.innerHTML =
       '<option value="">-- ครูผู้สอนทุกคน --</option>' +
-      sorted.map(name => {
-        const code = findTeacherCode(name);
-        const label = code ? `[${code}] ${name}` : name;
-        return `<option value="${escapeHtml(name)}">${escapeHtml(label)}</option>`;
-      }).join('');
+      sorted.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
 
     if (prevVal && teacherSet.has(prevVal)) {
       els.filterTeacherSelect.value = prevVal;
