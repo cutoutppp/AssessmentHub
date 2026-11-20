@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "course_code": "ค20208",
+  "exam_type": "MID",
+  "term": "2",
+  "year": "2569",
+  "learning_area": "คณิตศาสตร์",
+  "teacher_name": "นางสาวรัศมี เฮงอรุณ",
+  "objective": {
+    "count": 21,
+    "points_each": 0.5
+  },
+  "subjective": {
+    "count": 3,
+    "points": [1, 1.5, 2]
+  },
+  "standard_text": "ผลการเรียนรู้ ข้อ 1–4",
+  "indicator_text": "",
+  "rows": [
+    {
+      "unit_no": "1",
+      "unit_name": "เศษส่วนและ การเปรียบเทียบเศษส่วน",
+      "indicator": "1. เปรียบเทียบทศนิยมและเศษส่วนได้",
+      "indicator_custom": false,
+      "bloom": 2,
+      "obj_items": "1-6",
+      "subj_items": ""
+    },
+    {
+      "unit_no": "1",
+      "unit_name": "เศษส่วนและ การเปรียบเทียบเศษส่วน",
+      "indicator": "3. เขียนเศษส่วนในรูปทศนิยม และเขียนทศนิยมซ้ำศูนย์ในรูปเศษส่วนได้",
+      "indicator_custom": false,
+      "bloom": 3,
+      "obj_items": "7-10",
+      "subj_items": "22"
+    },
+    {
+      "unit_no": "2",
+      "unit_name": "การบวกลบ คูณ หาร เศษส่วน",
+      "indicator": "2. หาผลบวก ผลลบ ผลคูณ และผลหารของทศนิยมและเศษส่วนได้",
+      "indicator_custom": false,
+      "bloom": 3,
+      "obj_items": "11-16",
+      "subj_items": "23"
+    },
+    {
+      "unit_no": "2",
+      "unit_name": "การบวกลบ คูณ หาร เศษส่วน",
+      "indicator": "4. นำความรู้เรื่องทศนิยมและเศษส่วนไปประยุกต์ใช้ในการแก้ปัญหาคณิตศาสตร์และปัญหาในชีวิตจริงได้",
+      "indicator_custom": false,
+      "bloom": 4,
+      "obj_items": "17-21",
+      "subj_items": "24"
+    }
+  ],
+  "updated_at": "2026-11-20T07:30:00.000Z"
+}

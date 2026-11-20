@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เครื่องมือจัดทำ วผ.29 (โครงสร้างของแบบทดสอบ) - โรงเรียนพัฒนานิคม</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'system-ui', 'sans-serif'],
+            sarabun: ['Sarabun', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            primary: '#1E40AF',
+            accent: '#0284C7',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- JSZip 3.10.1 & FileSaver 2.0.5 (matched to assessment-plan) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+  <style>
+    html, body {
+      font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+      background-color: #F8FAFC;
+      overflow-x: hidden;
+    }
+    .row-highlight {
+      animation: pulseRow 1.5s ease-out;
+    }
+    @keyframes pulseRow {
+      0% { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5); background-color: #FEF2F2; }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm w-full">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <div class="w-10 h-10 rounded-xl bg-blue-800 text-white flex items-center justify-center shrink-0 font-bold text-sm shadow-sm">
+          วผ.29
+        </div>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-sm sm:text-lg font-bold text-slate-900 leading-snug">เครื่องมือจัดทำ วผ.29 (โครงสร้างของแบบทดสอบ)</h1>
+          <p class="text-xs text-slate-500 leading-snug">โรงเรียนพัฒนานิคม · ภาคเรียนที่ 2/2569 · เกณฑ์สัดส่วน ปรนัย 70 : อัตนัย 30</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+        <a id="openAssessmentPlanLink" href="../assessment-plan/index.html" target="_blank" rel="noopener"
+          class="text-xs px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold transition-colors">
+          ระบบแผนวัดผล (วผ.19) ↗
+        </a>
+        <div id="saveStatusBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-medium shrink-0">
+          พร้อมใช้งาน
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-5 space-y-5">
+
+    <!-- Step 1: Assessment-Plan Linkage, Teacher & Course Selection -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">1. เชื่อมโยงระบบแผนวัดผล (วผ.19) — เลือกครูผู้สอนและรายวิชา</h2>
+          <p class="text-xs text-slate-500">ดึงรายชื่อครู วิชาที่สอน และโครงสร้างรายวิชา (หน่วย/ตัวชี้วัด/คะแนนสอบ) จากแผนวัดผลภาคเรียนที่ 2/2569</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <span id="firebaseSyncBadge" class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+            ✓ ข้อมูลแผนวัดผลในเครื่อง
+          </span>
+          <span id="courseCountHint" class="text-xs text-slate-500"></span>
+          <button id="resetFiltersBtn" type="button"
+            class="text-xs px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium">
+            ล้างตัวกรอง
+          </button>
+        </div>
+      </div>
+
+      <!-- 3 Filter Dropdowns synced with Assessment Plan -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+        <div>
+          <label for="filterAreaSelect" class="block text-xs font-semibold text-slate-600 mb-1">กลุ่มสาระการเรียนรู้</label>
+          <select id="filterAreaSelect"
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600">
+            <option value="">-- ทุกกลุ่มสาระการเรียนรู้ --</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterTeacherSelect" class="block text-xs font-semibold text-slate-600 mb-1">ครูผู้สอน (ตารางสอน 2/2569)</label>
+          <select id="filterTeacherSelect"
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600">
+            <option value="">-- ครูผู้สอนทุกคน --</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterCourseSelect" class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>วิชาที่สอน (จากแผนวัดผล)</span>
+            <span id="filteredCourseCountBadge" class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">0 วิชา</span>
+          </label>
+          <select id="filterCourseSelect"
+            class="w-full px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600">
+            <option value="">-- เลือกรายวิชาที่สอน --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <!-- Quick Search -->
+        <div class="md:col-span-6 relative">
+          <label for="courseSearchInput" class="block text-xs font-semibold text-slate-600 mb-1">หรือพิมพ์ค้นหาด่วน (รหัสวิชา / ชื่อวิชา / ชื่อครู)</label>
+          <div class="relative">
+            <input id="courseSearchInput" type="text" autocomplete="off"
+              placeholder="พิมพ์ เช่น ค21102, ส31204, หรือชื่อครู..."
+              class="w-full px-3 py-2 pr-9 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600">
+            <button id="clearCourseSearchBtn" type="button" title="ล้างคำค้นหา"
+              class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-base px-1">
+              ✕
+            </button>
+          </div>
+          <div id="courseDropdown"
+            class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-72 overflow-y-auto z-40 divide-y divide-slate-100">
+          </div>
+        </div>
+
+        <!-- Exam Type -->
+        <div class="md:col-span-3">
+          <span class="block text-xs font-semibold text-slate-600 mb-1">ประเภทการสอบ</span>
+          <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button id="examMidBtn" type="button" data-exam="MID"
+              class="py-1.5 px-2 rounded-lg text-sm font-semibold transition-colors">
+              ☑ กลางภาค
+            </button>
+            <button id="examFinalBtn" type="button" data-exam="FINAL"
+              class="py-1.5 px-2 rounded-lg text-sm font-semibold transition-colors">
+              ☐ ปลายภาค
+            </button>
+          </div>
+        </div>
+
+        <!-- Teacher Name in Document -->
+        <div class="md:col-span-3">
+          <label for="teacherNameInput" class="block text-xs font-semibold text-slate-600 mb-1">ชื่อครูผู้สอนในเอกสาร วผ.29</label>
+          <input id="teacherNameInput" type="text" list="teacherSuggestions"
+            placeholder="เลือกจากด้านบนหรือพิมพ์ชื่อ-สกุล"
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600">
+          <datalist id="teacherSuggestions"></datalist>
+        </div>
+      </div>
+
+      <!-- Auto-filled course metadata & Structure from Assessment Plan -->
+      <div id="selectedCourseBox" class="hidden rounded-xl bg-blue-50/60 border border-blue-200 p-3.5 space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+          <div>
+            <span class="text-xs text-slate-500 block">รหัสวิชา / ชื่อวิชา</span>
+            <span id="metaCourseTitle" class="font-bold text-slate-900"></span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 block">ระดับชั้น / คะแนนสอบกลางภาค–ปลายภาค</span>
+            <span id="metaGradeScore" class="font-semibold text-slate-800"></span>
+          </div>
+          <div>
+            <label for="learningAreaInput" class="text-xs text-slate-500 block mb-0.5">กลุ่มสาระการเรียนรู้ (แก้ได้)</label>
+            <input id="learningAreaInput" type="text"
+              class="w-full px-2.5 py-1 bg-white border border-blue-200 rounded-lg text-sm font-medium focus:outline-none focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label for="termInput" class="text-xs text-slate-500 block mb-0.5">ภาคเรียนที่</label>
+              <input id="termInput" type="text"
+                class="w-full px-2.5 py-1 bg-white border border-blue-200 rounded-lg text-sm font-medium text-center">
+            </div>
+            <div>
+              <label for="yearInput" class="text-xs text-slate-500 block mb-0.5">ปีการศึกษา</label>
+              <input id="yearInput" type="text"
+                class="w-full px-2.5 py-1 bg-white border border-blue-200 rounded-lg text-sm font-medium text-center">
+            </div>
+          </div>
+        </div>
+
+        <!-- Course plan status, classrooms & scores from Firebase -->
+        <div id="metaPlanExtra" class="hidden flex flex-wrap items-center gap-2 text-xs"></div>
+
+        <!-- Course teachers chips from assessment-plan -->
+        <div id="courseTeachersBar" class="hidden flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-slate-600 font-semibold">ครูผู้สอนวิชานี้ (แผนวัดผล):</span>
+          <div id="courseTeacherChips" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <div id="cutoffWarningBanner" class="hidden text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2">
+          ⚠ รายวิชานี้ยังไม่ได้กำหนดจุดแบ่งหน่วยกลางภาค (midterm_cutoff) — ระบบจึงแสดงหน่วยการเรียนรู้ทั้งหมดให้เลือก
+        </div>
+
+        <!-- Course Structure Preview (from Assessment Plan) -->
+        <details id="courseStructureDetails" open class="bg-white/90 rounded-xl border border-blue-200/80 p-3 text-xs">
+          <summary class="cursor-pointer font-bold text-blue-900 flex flex-wrap items-center justify-between gap-2 select-none">
+            <span>โครงสร้างรายวิชา (ดึงจากระบบแผนวัดผล วผ.19)</span>
+            <span id="courseStructureMeta" class="font-medium text-slate-600"></span>
+          </summary>
+          <div class="mt-2.5 space-y-2.5">
+            <div id="courseStructureUnits" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+              <button id="populateFromStructureBtn" type="button"
+                class="px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-semibold transition-colors">
+                ดึงหน่วยในช่วงสอบใส่ตารางอัตโนมัติ
+              </button>
+              <a id="coursePlanDeepLink" href="../assessment-plan/index.html" target="_blank" rel="noopener"
+                class="text-blue-700 hover:underline font-semibold">
+                เปิดโครงสร้างวิชานี้ในระบบแผนวัดผล (วผ.19) ↗
+              </a>
+            </div>
+          </div>
+        </details>
+
+        <!-- Optional top-of-table header lines -->
+        <details class="text-xs text-slate-600">
+          <summary class="cursor-pointer font-semibold text-blue-800 hover:underline select-none">
+            แก้ไขข้อความ "มาตรฐานการเรียนรู้/ผลการเรียนรู้" และ "ตัวชี้วัด" เหนือตาราง (ไม่บังคับ)
+          </summary>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2.5">
+            <div>
+              <label for="standardTextInput" class="block font-medium text-slate-600 mb-1">มาตรฐานการเรียนรู้/ผลการเรียนรู้</label>
+              <input id="standardTextInput" type="text" placeholder="เว้นว่างได้ หรือพิมพ์ระบุ..."
+                class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm">
+            </div>
+            <div>
+              <label for="indicatorTextInput" class="block font-medium text-slate-600 mb-1">ตัวชี้วัด (เว้นว่าง = สรุปรหัสจากตารางให้อัตโนมัติ)</label>
+              <input id="indicatorTextInput" type="text" placeholder="เว้นว่างเพื่อให้ระบบสรุปรหัสจากตาราง..."
+                class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm">
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div id="noCourseNotice" class="rounded-xl bg-slate-50 border border-dashed border-slate-300 p-4 text-center text-sm text-slate-500">
+        เลือกครูผู้สอนหรือรายวิชาด้านบน เพื่อดึงชื่อครู โครงสร้างรายวิชา หน่วยการเรียนรู้ ตัวชี้วัด และคะแนนสอบเต็มจากระบบแผนวัดผล
+      </div>
+    </section>
+
+    <!-- Step 2: Test Structure (1.1 & 1.2) -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <h2 class="text-base font-bold text-slate-900">2. รูปแบบแบบทดสอบและสัดส่วนคะแนน</h2>
+        <span class="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg font-medium">
+          อัตนัยใช้เลขข้อต่อจากปรนัย (เช่น ปรนัย 1–20 → อัตนัย 21, 22)
+        </span>
+      </div>
+
+      <!-- 70:30 Quick Presets Guide -->
+      <div id="ratioGuideBox" class="rounded-xl bg-emerald-50/70 border border-emerald-200 p-3 space-y-2"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <!-- Objective -->
+        <div class="rounded-xl border border-slate-200 p-3.5 bg-slate-50/70 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-slate-800">1.1 แบบทดสอบแบบปรนัย (4 ตัวเลือก)</span>
+            <span id="objSummaryBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">0 คะแนน (0%)</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="objCountInput" class="block text-xs font-semibold text-slate-600 mb-1">จำนวน (ข้อ)</label>
+              <input id="objCountInput" type="number" min="0" step="1"
+                class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold">
+            </div>
+            <div>
+              <label for="objEachInput" class="block text-xs font-semibold text-slate-600 mb-1">ข้อละ (คะแนน)</label>
+              <input id="objEachInput" type="number" min="0" step="0.25"
+                class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold">
+            </div>
+          </div>
+        </div>
+
+        <!-- Subjective -->
+        <div class="rounded-xl border border-slate-200 p-3.5 bg-slate-50/70 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-slate-800">1.2 แบบทดสอบแบบอัตนัย</span>
+            <span id="subjSummaryBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">0 คะแนน (0%)</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+            <div>
+              <label for="subjCountInput" class="block text-xs font-semibold text-slate-600 mb-1">จำนวน (ข้อ)</label>
+              <input id="subjCountInput" type="number" min="0" max="30" step="1"
+                class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm font-semibold">
+            </div>
+            <div class="sm:col-span-2">
+              <span class="block text-xs font-semibold text-slate-600 mb-1">คะแนนรายข้อ (เลขข้อต่อจากปรนัย)</span>
+              <div id="subjPointsContainer" class="flex flex-wrap gap-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live ratio & total summary bar -->
+      <div id="liveSummaryBar" class="rounded-xl border border-slate-200 bg-slate-50 p-3 flex flex-wrap items-center justify-between gap-3 text-sm">
+      </div>
+    </section>
+
+    <!-- Step 3: Blueprint Table -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">3. ตารางโครงสร้างแบบทดสอบรายข้อ</h2>
+          <p class="text-xs text-slate-500">เลือกหน่วยการเรียนรู้ ตัวชี้วัด ระดับ Bloom และระบุเลขข้อ เช่น <code>1-5, 8</code></p>
+        </div>
+        <button id="addRowBtn" type="button"
+          class="px-3.5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-sm font-semibold shadow-sm transition-colors">
+          + เพิ่มแถว
+        </button>
+      </div>
+
+      <!-- Live unassigned items bar -->
+      <div id="missingItemsBar" class="rounded-xl px-3.5 py-2 text-xs sm:text-sm font-medium border"></div>
+
+      <!-- Rows container (responsive cards on mobile, table-like grid on lg+) -->
+      <div id="rowsHeaderDesktop" class="hidden lg:grid lg:grid-cols-12 gap-2 px-3 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-700">
+        <div class="col-span-2">หน่วยการเรียนรู้</div>
+        <div class="col-span-3">ตัวชี้วัด / ผลการเรียนรู้</div>
+        <div class="col-span-2">ระดับ Bloom</div>
+        <div class="col-span-2">ปรนัย (ข้อที่)</div>
+        <div class="col-span-1">อัตนัย (ข้อที่)</div>
+        <div class="col-span-1 text-center">รวม (ข้อ/คะแนน)</div>
+        <div class="col-span-1 text-right">จัดการ</div>
+      </div>
+
+      <div id="rowsContainer" class="space-y-3"></div>
+
+      <div id="tableFooterTotals" class="flex flex-wrap items-center justify-end gap-4 pt-2 border-t border-slate-200 text-sm font-bold text-slate-800"></div>
+    </section>
+
+    <!-- Step 4: Validator Panel -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-bold text-slate-900">4. ผลการตรวจสอบความถูกต้อง</h2>
+        <span id="validatorBadge" class="text-xs font-bold px-2.5 py-1 rounded-full"></span>
+      </div>
+      <div id="validatorList" class="space-y-2"></div>
+    </section>
+
+    <!-- Step 5: Actions -->
+    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+      <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap gap-2">
+          <button id="clearDraftBtn" type="button"
+            class="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-sm font-semibold transition-colors">
+            ล้างฟอร์ม
+          </button>
+        </div>
+
+        <button id="downloadDocxBtn" type="button"
+          class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-bold shadow-sm transition-colors">
+          ดาวน์โหลด วผ.29 (.docx)
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation Modal for Downloading with Validation Errors -->
+  <div id="confirmModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl space-y-4">
+      <h3 class="text-base font-bold text-slate-900">ยืนยันการดาวน์โหลดร่างเอกสาร</h3>
+      <p id="confirmModalMsg" class="text-sm text-slate-700"></p>
+      <div class="flex justify-end gap-2">
+        <button id="confirmCancelBtn" type="button"
+          class="px-4 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+          กลับไปแก้ไข
+        </button>
+        <button id="confirmProceedBtn" type="button"
+          class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold">
+          ดาวน์โหลดต่อ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- External Read-Only Data from assessment-plan + Local Snapshot -->
+  <script src="../assessment-plan/data/courses_2_2569.js"></script>
+  <script src="../assessment-plan/data/teacher_directory.js"></script>
+  <script src="data/assessment_plan_sync.js"></script>
+
+  <!-- Embedded Template & App Scripts -->
+  <script src="templates/wp29_template_b64.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/courses.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/export_wp29.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
