@@ -99,7 +99,7 @@
       </div>
 
       <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-        <a href="<?= (typeof appUrl !== 'undefined' && appUrl) ? appUrl + '?openExternalBrowser=1' : 'https://script.google.com/macros/s/AKfycbx8fjFhCFgUpyrU05_xAon8yan5bOmHK-tardnunLyWJMOrGepFBtrjhCe3vw4cqq3ZFg/exec?openExternalBrowser=1' ?>" target="_top" onclick="goToIndex(event)" id="backToIndexBtn" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-600 font-bold transition cursor-pointer">
+        <a href="Index.html" target="_self" onclick="goToIndex(event)" id="backToIndexBtn" class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-600 font-bold transition cursor-pointer">
           <i class="material-icons-round text-base">arrow_back</i> กลับหน้ารายงานภาพรวม
         </a>
       </div>
@@ -268,17 +268,23 @@
 
     function goToIndex(e) {
       const btn = document.getElementById('backToIndexBtn');
-      if (btn && btn.href && btn.href.startsWith('http')) {
+      const isGas = (typeof google !== 'undefined' && google.script && google.script.run);
+
+      if (!isGas) {
+        if (btn) {
+          btn.setAttribute('href', 'Index.html');
+          btn.target = '_self';
+        }
+        return true;
+      }
+
+      const rawHref = btn ? (btn.getAttribute('href') || '') : '';
+      if (rawHref.startsWith('http')) {
         btn.target = '_top';
         return true;
       }
       if (e && e.preventDefault) e.preventDefault();
-      let targetUrl = '';
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
-      } else {
-        targetUrl = 'Index.html';
-      }
+      const targetUrl = (API_BASE_URL || ACTIVE_DEPLOY_URL) + '?openExternalBrowser=1';
       try {
         const a = document.createElement('a');
         a.href = targetUrl;
@@ -289,6 +295,7 @@
       } catch (err) {
         window.location.href = targetUrl;
       }
+      return false;
     }
 
     async function checkStudentLogin() {
