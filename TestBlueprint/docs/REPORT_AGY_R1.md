@@ -1,5 +1,6 @@
 # REPORT_AGY_R1 — รายงานผลการพัฒนาเครื่องมือจัดทำ วผ.29 (โครงสร้างของแบบทดสอบ)
 
+> สถานะรุ่น: **Beta** (`main` commit `442d3cf8` · GitHub Pages: https://cutoutppp.github.io/AssessmentHub/TestBlueprint/)  
 > วันที่ดำเนินการ: 20 พฤศจิกายน 2569  
 > สเปคอ้างอิง: [SPEC_AGY_R1.md](SPEC_AGY_R1.md)
 
@@ -33,34 +34,35 @@
 > หมายเหตุบน Windows PowerShell / Node v24.22.1: คำสั่ง `node --test tests/` มอง `tests` เป็นชื่อโมดูล จึงรันด้วย `node --test tests/*.test.mjs` ภายใน `AssessmentHub/TestBlueprint`
 
 ```text
-PS C:\Users\peera\Desktop\AntigravityProject\AssessmentHub\TestBlueprint> node --test tests/*.test.mjs
-✔ cleanIndicatorText joins spaced Thai letters without merging normal words (2.3242ms)
-✔ parseIndicator parses basic and elective indicators (1.6497ms)
-✔ unitsInRange handles MID, FINAL, and missing cutoff (0.4107ms)
-✔ indicatorsForUnit prefers unit indicators and falls back to course indicators (0.5791ms)
-✔ assessment-plan linkage helpers resolve teachers, filter courses, and merge overrides (0.9518ms)
-✔ resolveUnitIndicators resolves bound unit indicators, plan outcome_nos, and suggested mapping (0.4431ms)
-✔ buildDocumentXml fills all placeholders cleanly with XML escaping and vMerge (9.3456ms)
-✔ exportFilename follows วผ29_<code >_<exam>_<term>-<year>.docx format (0.315ms)
-✔ parseItemRange parses normal, en-dash, spaces, Thai digits, and rejects invalid ranges (2.1353ms)
-✔ formatItemRange compacts contiguous runs and singletons (0.3185ms)
-✔ validate passes cleanly on all 3 realistic fixtures (3.1357ms)
-✔ validate triggers and clears every error/warn code in section 4 (5.865ms)
-ℹ tests 12
+AssessmentHub/TestBlueprint> node --test tests/*.test.mjs
+✔ cleanIndicatorText joins spaced Thai letters without merging normal words (1.0437ms)
+✔ parseIndicator parses basic and elective indicators (2.6872ms)
+✔ unitsInRange handles MID, FINAL, and missing cutoff (0.4179ms)
+✔ indicatorsForUnit prefers unit indicators and falls back to course indicators (0.5721ms)
+✔ assessment-plan linkage helpers resolve teachers, filter courses, and merge overrides (1.0825ms)
+✔ resolveUnitIndicators resolves bound unit indicators, plan outcome_nos, and suggested mapping (0.5745ms)
+✔ buildDocumentXml fills all placeholders cleanly with XML escaping and vMerge (8.1792ms)
+✔ exportFilename follows วผ29_<code >_<exam>_<term>-<year>.docx format (0.2891ms)
+✔ parseItemRange parses normal, en-dash, spaces, Thai digits, and rejects invalid ranges (1.9906ms)
+✔ formatItemRange compacts contiguous runs and singletons (0.2865ms)
+✔ validate passes cleanly on all 3 realistic fixtures (2.9514ms)
+✔ validate triggers and clears every error/warn code in section 4 (5.5012ms)
+✔ suggestRatioPresets generates exact 70:30 combinations for 10, 15, and 20 point exams (0.674ms)
+ℹ tests 13
 ℹ suites 0
-ℹ pass 12
+ℹ pass 13
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 172.0675
+ℹ duration_ms 187.182
 ```
 
 ### 2.2 การสร้างแม่แบบและตรวจ Placeholder
 
 ```text
-Built: C:\Users\peera\Desktop\AntigravityProject\AssessmentHub\TestBlueprint\templates\wp29_template.docx
-Wrote C:\Users\peera\Desktop\AntigravityProject\AssessmentHub\TestBlueprint\templates\wp29_template_b64.js (54148 base64 chars)
+Built: AssessmentHub/TestBlueprint/templates/wp29_template.docx
+Wrote AssessmentHub/TestBlueprint/templates/wp29_template_b64.js (54148 base64 chars)
 Placeholders found: ['{{learning_area}}', '{{course_code}}', '{{course_name}}', '{{grade_level}}', '{{mid_box}}', '{{fin_box}}', '{{term}}', '{{year}}', '{{teacher_name}}', '{{obj_count}}', '{{obj_each}}', '{{obj_total}}', '{{obj_pct}}', '{{subj_count}}', '{{subj_each}}', '{{subj_total}}', '{{subj_pct}}', '{{standard_text}}', '{{indicator_text}}', '{{unit_no}}', '{{unit_name}}', '{{row_indicator}}', '{{row_bloom}}', '{{row_obj}}', '{{row_subj}}', '{{row_count}}', '{{row_score}}', '{{total_count}}', '{{total_score}}']
 Placeholders inside single <w:t>: 29 == 29
 ```
@@ -154,46 +156,23 @@ Opened browser-downloaded docx in Word cleanly! Pages: 2
 
 ---
 
-## 5. สถานะ Git (`git status`)
+## 5. สถานะ Git และการเผยแพร่รุ่น Beta
 
-ไม่มีการแก้ไขไฟล์ใน `assessment-plan/`, `ioc-system/`, `TeacherHub-Backend/` และยังไม่ได้ commit:
+- เผยแพร่เฉพาะโฟลเดอร์ `TestBlueprint/` (37 ไฟล์) ขึ้น GitHub (`https://github.com/cutoutppp/AssessmentHub.git`, branch `main`) ที่ commit `442d3cf8`
+- ไม่มีการแก้ไขไฟล์ใน `assessment-plan/`, `ioc-system/`, หรือ `TeacherHub-Backend/`
+- ลิงก์ใช้งานรุ่น Beta (GitHub Pages): https://cutoutppp.github.io/AssessmentHub/TestBlueprint/
 
-```text
-PS C:\Users\peera\Desktop\AntigravityProject\AssessmentHub> git status --untracked-files=all --short -- TestBlueprint/ assessment-plan/ ioc-system/ TeacherHub-Backend/
-?? TestBlueprint/docs/OBEC_W43879_SUMMARY.md
-?? TestBlueprint/docs/PLAN_MASTER.md
-?? TestBlueprint/docs/SAMPLES_CHECKLIST.md
-?? TestBlueprint/docs/SPEC_AGY_R1.md
-?? TestBlueprint/docs/WP29_FORM_REVIEW.md
-?? TestBlueprint/docs/images/elective_k20208_mid_p1.png
-?? TestBlueprint/docs/images/elective_k20208_mid_p2.png
-?? TestBlueprint/docs/images/elective_k20208_mid_p3.png
-?? TestBlueprint/docs/images/math_k21101_mid_p1.png
-?? TestBlueprint/docs/images/math_k21101_mid_p2.png
-?? TestBlueprint/docs/images/math_k21101_mid_p3.png
-?? TestBlueprint/docs/images/orig_p3.png
-?? TestBlueprint/docs/images/orig_p4.png
-?? TestBlueprint/docs/images/social_s31204_mid_p1.png
-?? TestBlueprint/docs/images/social_s31204_mid_p2.png
-?? TestBlueprint/docs/images/social_s31204_mid_p3.png
-?? TestBlueprint/docs/images/ui_desktop.png
-?? TestBlueprint/docs/images/ui_mobile.png
-?? TestBlueprint/index.html
-?? TestBlueprint/js/app.js
-?? TestBlueprint/js/config.js
-?? TestBlueprint/js/courses.js
-?? TestBlueprint/js/export_wp29.js
-?? TestBlueprint/js/model.js
-?? TestBlueprint/templates/wp29_template.docx
-?? TestBlueprint/templates/wp29_template_b64.js
-?? TestBlueprint/tests/courses.test.mjs
-?? TestBlueprint/tests/export_wp29.test.mjs
-?? TestBlueprint/tests/fixtures/elective_k20208_mid.json
-?? TestBlueprint/tests/fixtures/math_k21101_mid.json
-?? TestBlueprint/tests/fixtures/social_s31204_mid.json
-?? TestBlueprint/tests/model.test.mjs
-?? TestBlueprint/tools/build_template.py
-?? TestBlueprint/tools/build_template_b64.py
-?? "TestBlueprint/\340\270\247\340\270\23429 \340\271\202\340\270\204\340\270\243\340\270\207\340\270\252\340\270\243\340\271\211\340\270\262\340\270\207\340\270\202\340\270\255\340\270\207\340\271\201\340\270\232\340\270\232\340\270\227\340\270\224\340\270\252\340\270\255\340\270\232-3.docx"
-?? "TestBlueprint/\340\270\247\340\270\23429_\340\270\211\340\270\232\340\270\261\340\270\232\340\271\200\340\270\252\340\270\231\340\270\255_\340\270\225\340\270\261\340\270\247\340\270\255\340\270\242\340\271\210\340\270\262\340\270\207.docx"
-```
+---
+
+## 6. บันทึกรุ่น Beta และการตรวจสอบข้อมูลรั่วไหล (Security / Privacy Audit)
+
+### 6.1 การปรับปรุงเพิ่มเติมในรุ่น Beta
+- เพิ่มไกด์และปุ่มเลือกชุดสัดส่วน **70 : 30** อัตโนมัติในขั้นตอนที่ 2 (`suggestRatioPresets()` และ `#ratioGuideBox`) รองรับคะแนนสอบเต็มของแต่ละรายวิชา (เช่น เต็ม 10 คะแนน → `ปรนัย 7 + อัตนัย 3`, เต็ม 15 คะแนน → `ปรนัย 10.5 + อัตนัย 4.5`)
+- แสดง **คะแนนสอบกลางภาคและปลายภาค** ชัดเจนทุกจุดในขั้นตอนที่ 1 (`#filterCourseSelect`, ปุ่ม `#examMidBtn`/`#examFinalBtn`, `#metaGradeScore`, และป้าย `#metaPlanExtra`) ครบทั้ง 218 รายวิชาภาคเรียนที่ 2/2569 โดยไม่ดึงคะแนนสอบรายหน่วยมาปะปน
+
+### 6.2 ผลการสแกนความปลอดภัยและข้อมูลที่เผยแพร่ใน `TestBlueprint/`
+- **Secret / Credential / PII อ่อนไหว:** **ไม่พบ** API key, token, password, private key, อีเมล, เบอร์โทรศัพท์, เลขบัตรประชาชน 13 หลัก หรือข้อมูลนักเรียนในไฟล์ใด ๆ ของ `TestBlueprint/`
+- **ข้อมูลที่เปิดเผยตามลักษณะระบบโรงเรียน (Public Repo Scope):**
+  - `data/assessment_plan_sync.js`: มีรายชื่อครูผู้สอน (`teachers`, `confirmed_by`), เวลาที่ยืนยัน (`confirmed_at`), รหัสวิชา/ชื่อหน่วย/ตัวชี้วัด/คะแนนและเวลาสอบ (ขอบเขตเดียวกับ `assessment-plan/data/teacher_directory.js` และ `courses_2_2569.js` ที่อยู่บน GitHub อยู่แล้ว)
+  - `tools/pull_firebase_plan.py`: มีชื่อโปรเจกต์ Firestore (`tradesimschool`) ไม่มี API key หรือ credential ใด ๆ (ชื่อโปรเจกต์เดียวกับที่มีอยู่ใน `assessment-plan/index.html` และ `index.html` อยู่แล้ว)
+- **Local Windows Paths:** ล้าง path เครื่องพัฒนา (`C:\Users\...`) ที่เคยติดอยู่ในบันทึก Terminal ของรายงานนี้ให้เป็น relative path แล้วทั้งหมด
